@@ -4,6 +4,7 @@ using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Nodes.Console;
 using Elsa.Nodes.Containers;
+using Elsa.Pipelines.NodeExecution.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -13,30 +14,27 @@ namespace Elsa.Samples.Console1
     {
         static async Task Main()
         {
-            var services = CreateServices();
+            var services = CreateServices().ConfigureNodeExecutionPipeline(pipeline => pipeline
+                .UseLogging()
+                .UseNodeDrivers());
+
             var invoker = services.GetRequiredService<INodeInvoker>();
-            //var workflow = CreateHelloWorldWorkflow();
-            var workflow = CreateGreetingWorkflow();
-            await invoker.InvokeAsync(workflow);
+            var workflow1 = CreateHelloWorldWorkflow();
+            var workflow2 = CreateGreetingWorkflow();
+            await invoker.InvokeAsync(workflow1);
+            await invoker.InvokeAsync(workflow2);
         }
 
         private static IServiceProvider CreateServices()
         {
             var services = new ServiceCollection()
-                .AddLogging(logging => logging.AddConsole())
+                .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddElsa()
                 .AddExpressionHandler<LiteralHandler>(typeof(Literal<>))
                 .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>))
                 .AddNodeDriver<SequenceDriver>()
                 .AddNodeDriver<WriteLineDriver>()
                 .AddNodeDriver<ReadLineDriver>();
-
-            // services.Configure<WorkflowEngineOptions>(elsa => elsa
-            //     .RegisterExpressionHandler<LiteralHandler>(typeof(Literal<>))
-            //     .RegisterExpressionHandler<DelegateHandler>(typeof(Delegate<>))
-            //     .RegisterNodeDriver<Sequence, SequenceDriver>()
-            //     .RegisterNodeDriver<WriteLine, WriteLineDriver>()
-            //     .RegisterNodeDriver<ReadLine, ReadLineDriver>());
 
             return services.BuildServiceProvider();
         }
@@ -50,11 +48,11 @@ namespace Elsa.Samples.Console1
                     new WriteLine("Goodbye cruel world...")
                 }
             };
-        
+
         private static INode CreateGreetingWorkflow()
         {
             var readLine1 = new ReadLine();
-            
+
             return new Sequence
             {
                 Nodes = new INode[]

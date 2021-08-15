@@ -1,6 +1,7 @@
 using System;
 using Elsa.Contracts;
 using Elsa.Options;
+using Elsa.Pipelines.NodeExecution;
 using Elsa.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -9,11 +10,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddElsa(this IServiceCollection services)
         {
+            services.AddOptions<WorkflowEngineOptions>();
+            
             return services
                 .AddSingleton<INodeInvoker, NodeInvoker>()
                 .AddSingleton<INodeDriverRegistry, NodeDriverRegistry>()
                 .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
                 .AddSingleton<IExpressionHandlerRegistry, ExpressionHandlerRegistry>()
+                .AddSingleton<INodeExecutionPipeline, NodeExecutionPipeline>()
                 .AddLogging();
         }
 

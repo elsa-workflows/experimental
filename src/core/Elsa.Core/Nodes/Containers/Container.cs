@@ -6,5 +6,6 @@ namespace Elsa.Nodes.Containers
     public abstract class Container : INode
     {
         public ICollection<INode> Nodes { get; set; } = new List<INode>();
+        public IDictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
     }
 }

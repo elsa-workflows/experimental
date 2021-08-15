@@ -44,29 +44,27 @@ Example:
 ```csharp
 class If : INode
 {
-   [Input] IComputable<bool> Condition { get; set; }
+   [Input] IExpression<bool> Condition { get; set; }
    [Port] INode True { get; set; }
    [Port] INode False { get; set; }
 }
 
 class IfDriver : NodeDriver<If>
 {
-   IfDriver(IComputer computer)
+   IfDriver(IExpressionEvaluator expressionEvaluator)
    {
-      _computer = computer;
+      _expressionEvaluator = expressionEvaluator;
    }
 
    override async ValueTask<INodeExecutionResult> ExecuteAsync(If node, NodeExecutionContext context)
    {
-      var result = _computer.ComputeAsync(node.Condition, context.CancellationToken);
+      var result = _expressionEvaluator.EvaluateAsync(node.Condition, context.CancellationToken);
       var nextNode = result ? True : False;
       
       return new ScheduleNodeResult(nextNode);
    }
 }
 ```
-
-Although the Root property holds a single node, this node can be a container node such as `Sequence`, `Flowchart` and others.
 
 ## Node Driver
 
@@ -97,3 +95,13 @@ A container node is just like a regular node, but with the following additional 
 
 - `Nodes: ICollection<INode>`
 - `Variables: IDictionary<string, object>`
+
+## Middleware Pipelines
+
+The engine has different pipelines at different levels.
+
+- Node Execution Pipeline
+
+### Node Execution Pipeline
+
+This pipeline executes each middleware when executing a node.

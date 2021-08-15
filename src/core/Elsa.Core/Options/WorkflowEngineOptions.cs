@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Elsa.Contracts;
+using Elsa.Pipelines.NodeExecution;
+using Elsa.Pipelines.NodeExecution.Components;
 
 namespace Elsa.Options
 {
@@ -16,6 +18,7 @@ namespace Elsa.Options
             ExpressionHandlers = new ReadOnlyDictionary<Type, Type>(_expressionHandlers);
         }
 
+        public INodeExecutionBuilder NodeExecutionBuilder { get; private set; }
         public IDictionary<Type, Type> NodeDrivers { get; }
         public IDictionary<Type, Type> ExpressionHandlers { get; }
         public WorkflowEngineOptions RegisterNodeDriver<TNode, TDriver>() where TNode : INode where TDriver : INodeDriver => RegisterNodeDriver(typeof(TNode), typeof(TDriver));
