@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{61017E64-6D00-49CB-9E81-5002DC8F7D5F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{155227F0-A33B-40AA-A4B4-06F813EB921B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{C6658DE0-2B2F-47F0-BB61-2CA66D435C09}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "activities", "activities", "{F8604289-6D28-428E-9FA8-1480464964F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Samples.Console1", "src\samples\console\Elsa.Samples.Console1\Elsa.Samples.Console1.csproj", "{B44A9DDA-8091-490A-BC0B-2EAE4A601B09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Core", "src\core\Elsa.Core\Elsa.Core.csproj", "{6FA9ED7D-2D32-46BC-B47F-E503B2A4C0A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Extensions.DependencyInjection", "src\core\Elsa.Extensions.DependencyInjection\Elsa.Extensions.DependencyInjection.csproj", "{042022EA-62BC-44BD-A93F-11ABDB39C791}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{7D21EB5E-D6B4-48A5-A9BC-A26387A65F0B}"
+ProjectSection(SolutionItems) = preProject
+	README.md = README.md
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{0354F050-3992-4DD4-B0EE-5FBA04AC72B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "architecture", "architecture", "{A34FD350-79C5-492A-8811-6DBD80830F8B}"
+ProjectSection(SolutionItems) = preProject
+	docs\architecture\Core.md = docs\architecture\Core.md
+	docs\architecture\Management.md = docs\architecture\Management.md
+EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B44A9DDA-8091-490A-BC0B-2EAE4A601B09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B44A9DDA-8091-490A-BC0B-2EAE4A601B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B44A9DDA-8091-490A-BC0B-2EAE4A601B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B44A9DDA-8091-490A-BC0B-2EAE4A601B09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FA9ED7D-2D32-46BC-B47F-E503B2A4C0A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FA9ED7D-2D32-46BC-B47F-E503B2A4C0A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FA9ED7D-2D32-46BC-B47F-E503B2A4C0A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FA9ED7D-2D32-46BC-B47F-E503B2A4C0A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{042022EA-62BC-44BD-A93F-11ABDB39C791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{042022EA-62BC-44BD-A93F-11ABDB39C791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{042022EA-62BC-44BD-A93F-11ABDB39C791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{042022EA-62BC-44BD-A93F-11ABDB39C791}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{155227F0-A33B-40AA-A4B4-06F813EB921B} = {61017E64-6D00-49CB-9E81-5002DC8F7D5F}
+		{C6658DE0-2B2F-47F0-BB61-2CA66D435C09} = {61017E64-6D00-49CB-9E81-5002DC8F7D5F}
+		{F8604289-6D28-428E-9FA8-1480464964F0} = {61017E64-6D00-49CB-9E81-5002DC8F7D5F}
+		{B44A9DDA-8091-490A-BC0B-2EAE4A601B09} = {155227F0-A33B-40AA-A4B4-06F813EB921B}
+		{6FA9ED7D-2D32-46BC-B47F-E503B2A4C0A9} = {C6658DE0-2B2F-47F0-BB61-2CA66D435C09}
+		{042022EA-62BC-44BD-A93F-11ABDB39C791} = {C6658DE0-2B2F-47F0-BB61-2CA66D435C09}
+		{A34FD350-79C5-492A-8811-6DBD80830F8B} = {0354F050-3992-4DD4-B0EE-5FBA04AC72B6}
+	EndGlobalSection
+EndGlobal
