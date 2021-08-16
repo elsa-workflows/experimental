@@ -17,7 +17,7 @@ namespace Elsa.Nodes.Console
         protected override ValueTask<INodeExecutionResult> ExecuteAsync(ReadLine node, NodeExecutionContext context)
         {
             node.Output = System.Console.ReadLine();
-            return new ValueTask<INodeExecutionResult>(Empty());
+            return new ValueTask<INodeExecutionResult>(Done());
         }
     }
 }

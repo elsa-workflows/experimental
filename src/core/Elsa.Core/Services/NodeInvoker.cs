@@ -9,23 +9,29 @@ namespace Elsa.Services
     public class NodeInvoker : INodeInvoker
     {
         private readonly INodeExecutionPipeline _pipeline;
+        private readonly INodeDriverRegistry _nodeDriverRegistry;
 
-        public NodeInvoker(INodeExecutionPipeline pipeline)
+        public NodeInvoker(INodeExecutionPipeline pipeline, INodeDriverRegistry nodeDriverRegistry)
         {
             _pipeline = pipeline;
+            _nodeDriverRegistry = nodeDriverRegistry;
         }
 
         public async Task InvokeAsync(INode node, CancellationToken cancellationToken = default)
         {
             var workflowExecutionContext = new WorkflowExecutionContext();
+            workflowExecutionContext.ScheduleScope(new ScopedExecutionContext(node));
 
-            workflowExecutionContext.ScheduleNode(node);
-
-            while (workflowExecutionContext.ScheduledNodes.Any())
+            while (workflowExecutionContext.ScheduledScopes.Any())
             {
-                var currentNode = workflowExecutionContext.ScheduledNodes.Pop();
-                var nodeExecutionContext = new NodeExecutionContext(workflowExecutionContext, currentNode);
-                await _pipeline.ExecuteAsync(nodeExecutionContext);
+                var currentScope = workflowExecutionContext.ScheduledScopes.Pop();
+
+                while (currentScope.ScheduledNodes.Any())
+                {
+                    var nextNode = currentScope.ScheduledNodes.Pop();
+                    var nodeExecutionContext = new NodeExecutionContext(workflowExecutionContext, currentScope, nextNode, cancellationToken);
+                    await _pipeline.ExecuteAsync(nodeExecutionContext);
+                }
             }
         }
     }

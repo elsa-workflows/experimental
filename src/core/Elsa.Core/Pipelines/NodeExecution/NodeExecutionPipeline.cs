@@ -31,6 +31,8 @@ namespace Elsa.Pipelines.NodeExecution
             await pipeline(context);
         }
 
-        private ExecuteNode CreateDefaultPipeline() => Setup(x => x.UseNodeDrivers());
+        private ExecuteNode CreateDefaultPipeline() => Setup(x => x
+            .UseNodeDrivers()
+        );
     }
 }

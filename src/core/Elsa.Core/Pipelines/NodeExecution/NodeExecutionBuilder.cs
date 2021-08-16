@@ -9,12 +9,10 @@ namespace Elsa.Pipelines.NodeExecution
     public class NodeExecutionBuilder : INodeExecutionBuilder
     {
         private const string ServicesKey = "node-execution.Services";
-        private readonly IServiceProvider _serviceProvider;
         private readonly IList<Func<ExecuteNode, ExecuteNode>> _components = new List<Func<ExecuteNode, ExecuteNode>>();
 
         public NodeExecutionBuilder(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
             ApplicationServices = serviceProvider;
         }
 

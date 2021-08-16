@@ -9,7 +9,7 @@ namespace Elsa.Pipelines.NodeExecution.Components
     {
         private readonly ExecuteNode _next;
         private readonly INodeDriverRegistry _driverRegistry;
-        private readonly ILogger<NodeDriversMiddleware> _logger;
+        private readonly ILogger _logger;
 
         public NodeDriversMiddleware(ExecuteNode next, INodeDriverRegistry driverRegistry, ILogger<NodeDriversMiddleware> logger)
         {

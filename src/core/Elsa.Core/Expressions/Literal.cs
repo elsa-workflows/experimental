@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Models;
 
 namespace Elsa.Expressions
 {
@@ -12,7 +13,7 @@ namespace Elsa.Expressions
     
     public class LiteralHandler : IExpressionHandler
     {
-        public ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, CancellationToken cancellationToken = default)
+        public ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, NodeExecutionContext context)
         {
             var literalExpression = (Literal<T>)expression;
             var value = literalExpression.Value;

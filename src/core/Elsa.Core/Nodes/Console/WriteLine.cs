@@ -13,8 +13,12 @@ namespace Elsa.Nodes.Console
         public WriteLine(string text) : this(new Literal<string>(text))
         {
         }
-        
+
         public WriteLine(Func<string> text) : this(new Delegate<string>(text))
+        {
+        }
+        
+        public WriteLine(Func<NodeExecutionContext, string> text) : this(new Delegate<string>(text))
         {
         }
 
@@ -30,12 +34,12 @@ namespace Elsa.Nodes.Console
         {
             _expressionEvaluator = expressionEvaluator;
         }
-        
+
         protected override async ValueTask<INodeExecutionResult> ExecuteAsync(WriteLine node, NodeExecutionContext context)
         {
-            var text = await _expressionEvaluator.EvaluateAsync(node.Text);
+            var text = await _expressionEvaluator.EvaluateAsync(node.Text, context);
             System.Console.WriteLine(text);
-            return Empty();
+            return Done();
         }
     }
 }

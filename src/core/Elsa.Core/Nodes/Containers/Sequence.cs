@@ -16,8 +16,7 @@ namespace Elsa.Nodes.Containers
         protected override ValueTask<INodeExecutionResult> ExecuteAsync(Sequence node, NodeExecutionContext context)
         {
             var nodes = node.Nodes.Reverse();
-            var result = ScheduleNodes(nodes);
-            return new ValueTask<INodeExecutionResult>(result);
+            return new ValueTask<INodeExecutionResult>(ScheduleNodes(nodes));
         }
     }
 }

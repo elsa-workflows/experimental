@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Services
@@ -16,7 +17,7 @@ namespace Elsa.Services
             _logger = logger;
         }
         
-        public async ValueTask<T?> EvaluateAsync<T>(IExpression<T> expression, CancellationToken cancellationToken = default)
+        public async ValueTask<T?> EvaluateAsync<T>(IExpression<T> expression, NodeExecutionContext context)
         {
             var handler = _registry.GetHandler(expression);
             
@@ -26,7 +27,7 @@ namespace Elsa.Services
                 return default!;
             }
 
-            return await handler.EvaluateAsync(expression, cancellationToken);
+            return await handler.EvaluateAsync(expression, context);
         }
     }
     
