@@ -9,30 +9,42 @@ namespace Elsa.Services
     public class NodeInvoker : INodeInvoker
     {
         private readonly INodeExecutionPipeline _pipeline;
-        private readonly INodeDriverRegistry _nodeDriverRegistry;
 
-        public NodeInvoker(INodeExecutionPipeline pipeline, INodeDriverRegistry nodeDriverRegistry)
+        public NodeInvoker(INodeExecutionPipeline pipeline)
         {
             _pipeline = pipeline;
-            _nodeDriverRegistry = nodeDriverRegistry;
         }
 
-        public async Task InvokeAsync(INode node, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> InvokeAsync(INode node, CancellationToken cancellationToken = default)
         {
-            var workflowExecutionContext = new WorkflowExecutionContext();
-            workflowExecutionContext.ScheduleScope(new ScopedExecutionContext(node));
+            var workflowExecutionContext = new WorkflowExecutionContext(node);
+            workflowExecutionContext.ScheduleScope(new Scope(node));
 
-            while (workflowExecutionContext.ScheduledScopes.Any())
+            while (workflowExecutionContext.Scopes.Any())
             {
-                var currentScope = workflowExecutionContext.ScheduledScopes.Pop();
+                var currentScope = workflowExecutionContext.Scopes.Pop();
+                workflowExecutionContext.CurrentScope = currentScope;
 
                 while (currentScope.ScheduledNodes.Any())
                 {
                     var nextNode = currentScope.ScheduledNodes.Pop();
+                    workflowExecutionContext.CurrentNode = nextNode;
                     var nodeExecutionContext = new NodeExecutionContext(workflowExecutionContext, currentScope, nextNode, cancellationToken);
                     await _pipeline.ExecuteAsync(nodeExecutionContext);
+
+                    // If a bookmark is set, stop processing current scope.
+                    if (nodeExecutionContext.Bookmark != null)
+                    {
+                        workflowExecutionContext.AddBookmark(nodeExecutionContext.Bookmark);
+                        break;
+                    }
+
+                    if (nodeExecutionContext.SuspensionRequested)
+                        break;
                 }
             }
+
+            return workflowExecutionContext;
         }
     }
 }

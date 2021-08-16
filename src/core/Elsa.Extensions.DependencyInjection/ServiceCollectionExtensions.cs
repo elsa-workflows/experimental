@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Elsa.Contracts;
 using Elsa.Options;
 using Elsa.Pipelines.NodeExecution;
@@ -11,25 +12,35 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddElsa(this IServiceCollection services)
         {
             services.AddOptions<WorkflowEngineOptions>();
-            
+
             return services
                 .AddSingleton<INodeInvoker, NodeInvoker>()
                 .AddSingleton<INodeDriverRegistry, NodeDriverRegistry>()
                 .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
                 .AddSingleton<IExpressionHandlerRegistry, ExpressionHandlerRegistry>()
                 .AddSingleton<INodeExecutionPipeline, NodeExecutionPipeline>()
+                .AddSingleton<INodeWalker, NodeWalker>()
+                .AddSingleton<IIdentityGraphService, IdentityGraphService>()
+                .AddSingleton<IWorkflowStateService, WorkflowStateService>()
                 .AddLogging();
         }
 
-        public static IServiceCollection AddNodeDriver<TDriver>(this IServiceCollection services) where TDriver : class
+        public static IServiceCollection AddNodeDriver<TDriver>(this IServiceCollection services) where TDriver : class, INodeDriver
         {
-            var nodeType = typeof(TDriver).BaseType.GetGenericArguments()[0];
+            var driverType = typeof(TDriver);
+            var nodeType = driverType.BaseType!.GetGenericArguments().FirstOrDefault();
+
+            if (nodeType == null)
+                if (typeof(INode).IsAssignableFrom(driverType))
+                    nodeType = typeof(TDriver);
+                else
+                    throw new InvalidOperationException();
 
             // Register driver with DI.
             services.AddScoped<TDriver>();
 
             // Register driver with options.
-            services.Configure<WorkflowEngineOptions>(elsa => elsa.RegisterNodeDriver(nodeType, typeof(TDriver)));
+            services.Configure<WorkflowEngineOptions>(elsa => elsa.RegisterNodeDriver(nodeType, driverType));
 
             return services;
         }

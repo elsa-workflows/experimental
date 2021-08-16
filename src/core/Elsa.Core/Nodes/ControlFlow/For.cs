@@ -17,7 +17,7 @@ namespace Elsa.Nodes.ControlFlow
         GreaterThanOrEqual
     }
 
-    public class For : INode
+    public class For : Node
     {
         [Input] public int Start { get; set; } = 0;
         [Input] public int End { get; set; }

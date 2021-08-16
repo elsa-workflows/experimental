@@ -8,7 +8,7 @@ using static Elsa.Results.NodeExecutionResults;
 
 namespace Elsa.Nodes.ControlFlow
 {
-    public class If : INode
+    public class If : Node
     {
         [Input] public IExpression<bool> Condition { get; set; } = new Literal<bool>(false);
         [Port] public INode? True { get; set; }

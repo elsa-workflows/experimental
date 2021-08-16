@@ -8,7 +8,7 @@ using static Elsa.Results.NodeExecutionResults;
 
 namespace Elsa.Nodes.Console
 {
-    public class WriteLine : INode
+    public class WriteLine : Node
     {
         public WriteLine(string text) : this(new Literal<string>(text))
         {

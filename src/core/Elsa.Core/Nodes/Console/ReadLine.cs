@@ -7,7 +7,7 @@ using static Elsa.Results.NodeExecutionResults;
 
 namespace Elsa.Nodes.Console
 {
-    public class ReadLine : INode
+    public class ReadLine : Node
     {
         [Output] public string? Output { get; set; }
     }

@@ -1,25 +1,29 @@
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Threading;
+using System.Threading.Tasks;
 using Elsa.Contracts;
 
 namespace Elsa.Models
 {
     public class NodeExecutionContext
     {
-        public NodeExecutionContext(WorkflowExecutionContext workflowExecutionContext, ScopedExecutionContext scopedExecutionContext, ScheduledNode scheduledNode, CancellationToken cancellationToken)
+        public NodeExecutionContext(WorkflowExecutionContext workflowExecutionContext, Scope scope, ScheduledNode scheduledNode, CancellationToken cancellationToken)
         {
             WorkflowExecutionContext = workflowExecutionContext;
-            ScopedExecutionContext = scopedExecutionContext;
+            Scope = scope;
             ScheduledNode = scheduledNode;
             CancellationToken = cancellationToken;
         }
 
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
-        public ScopedExecutionContext ScopedExecutionContext { get; }
-        public Stack<ScheduledNode> ScheduledNodes => ScopedExecutionContext.ScheduledNodes;
+        public Scope Scope { get; }
+        public Stack<ScheduledNode> ScheduledNodes => Scope.ScheduledNodes;
         public ScheduledNode ScheduledNode { get; set; }
         public CancellationToken CancellationToken { get; }
         public INode Node => ScheduledNode.Node;
+        public Bookmark? Bookmark { get; private set; }
+        public bool SuspensionRequested { get; set; }
 
         public void ScheduleNode(INode node, INode? owner = default, IDictionary<string, object?>? variables = default)
         {
@@ -29,7 +33,7 @@ namespace Elsa.Models
                 return;
             }
 
-            var scope = new ScopedExecutionContext(owner, ScopedExecutionContext, variables);
+            var scope = new Scope(owner, Scope, variables);
             scope.ScheduledNodes.Push(new ScheduledNode(node));
             WorkflowExecutionContext.ScheduleScope(scope);
         }
@@ -46,7 +50,7 @@ namespace Elsa.Models
                 return;
             }
 
-            var scope = new ScopedExecutionContext(owner, ScopedExecutionContext, variables);
+            var scope = new Scope(owner, Scope, variables);
 
             foreach (var node in nodes)
                 scope.ScheduledNodes.Push(new ScheduledNode(node));
@@ -58,7 +62,7 @@ namespace Elsa.Models
 
         public object? GetVariable(string name)
         {
-            var current = ScopedExecutionContext;
+            var current = Scope;
 
             while (current != null)
             {
@@ -70,5 +74,7 @@ namespace Elsa.Models
 
             return default;
         }
+
+        public void SetBookmark(Bookmark bookmark) => Bookmark = bookmark;
     }
 }

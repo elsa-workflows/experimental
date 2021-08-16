@@ -5,6 +5,7 @@ using Elsa.Expressions;
 using Elsa.Nodes.Console;
 using Elsa.Nodes.Containers;
 using Elsa.Nodes.ControlFlow;
+using Elsa.Nodes.Primitives;
 using Elsa.Pipelines.NodeExecution.Components;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,10 @@ namespace Elsa.Samples.Console1
             var workflow2 = GreetingWorkflow.Create();
             var workflow3 = ConditionalWorkflow.Create();
             var workflow4 = ForEachWorkflow.Create();
-            await invoker.InvokeAsync(workflow4);
+            var workflow5 = BlockingWorkflow.Create();
+            var workflowExecutionContext = await invoker.InvokeAsync(workflow5);
+            var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
+            var workflowState = workflowStateService.CreateState(workflowExecutionContext);
         }
 
         private static IServiceProvider CreateServices()
@@ -40,7 +44,8 @@ namespace Elsa.Samples.Console1
                 .AddNodeDriver<WriteLineDriver>()
                 .AddNodeDriver<ReadLineDriver>()
                 .AddNodeDriver<IfDriver>()
-                .AddNodeDriver<ForDriver>();
+                .AddNodeDriver<ForDriver>()
+                .AddNodeDriver<Event>();
 
             return services.BuildServiceProvider();
         }
