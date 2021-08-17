@@ -20,7 +20,7 @@ namespace Elsa.Pipelines.NodeExecution
             {
                 var invokeMethod = GetInvokeMethod(middleware);
                 var instance = ActivatorUtilities.CreateInstance(builder.ApplicationServices, middleware, next);
-                return (ExecuteNode)invokeMethod.CreateDelegate(typeof(ExecuteNode), instance);
+                return (ExecuteNodeDelegate)invokeMethod.CreateDelegate(typeof(ExecuteNodeDelegate), instance);
             });
         }
 

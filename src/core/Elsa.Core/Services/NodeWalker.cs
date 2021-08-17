@@ -8,21 +8,24 @@ namespace Elsa.Services
 {
     public class NodeWalker : INodeWalker
     {
-        public IEnumerable<INode> Walk(INode node)
+        public GraphNode Walk(INode node)
         {
             var collectedNodes = new HashSet<INode>(new[] { node });
-            WalkRecursive(node, collectedNodes);
-            return collectedNodes;
+            var graph = new GraphNode(node, null);
+            WalkRecursive(graph, collectedNodes);
+            return graph;
         }
 
-        private void WalkRecursive(INode node, HashSet<INode> collectedNodes)
+        private void WalkRecursive(GraphNode node, HashSet<INode> collectedNodes)
         {
-            var ports = GetSinglePorts(node).Concat(GetManyPorts(node)).ToHashSet();
+            var ports = GetSinglePorts(node.Node).Concat(GetManyPorts(node.Node)).ToHashSet();
 
             foreach (var port in ports)
             {
+                var childNode = new GraphNode(port, node);
                 collectedNodes.Add(port);
-                WalkRecursive(port, collectedNodes);
+                node.Children.Add(childNode);
+                WalkRecursive(childNode, collectedNodes);
             }
         }
 
@@ -53,5 +56,18 @@ namespace Elsa.Services
 
             return ports.SelectMany(x => x);
         }
+    }
+
+    public class GraphNode
+    {
+        public GraphNode(INode node, GraphNode? parent)
+        {
+            Node = node;
+            Parent = parent;
+        }
+
+        public INode Node { get; }
+        public GraphNode? Parent { get; }
+        public ICollection<GraphNode> Children { get; } = new List<GraphNode>();
     }
 }

@@ -22,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<INodeWalker, NodeWalker>()
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
                 .AddSingleton<IWorkflowStateService, WorkflowStateService>()
+                .AddSingleton<INodeSchedulerFactory, NodeSchedulerFactory>()
                 .AddLogging();
         }
 

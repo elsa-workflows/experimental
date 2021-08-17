@@ -8,20 +8,16 @@ namespace Elsa.Results
 {
     public class ScheduleNodesResult : INodeExecutionResult
     {
-        public ScheduleNodesResult(IEnumerable<INode> nodes, INode? owner = default, IDictionary<string, object?>? variables = default)
+        public ScheduleNodesResult(IEnumerable<INode> nodes)
         {
             Nodes = nodes.ToList();
-            Owner = owner;
-            Variables = variables;
         }
         
         public ICollection<INode> Nodes { get; }
-        public INode? Owner { get; set; }
-        public IDictionary<string, object?>? Variables { get; }
 
         public ValueTask ExecuteAsync(NodeExecutionContext context)
         {
-            context.ScheduleNodes(Nodes, Owner, Variables);
+            context.ScheduleNodes(Nodes);
             return new ValueTask();
         }
     }

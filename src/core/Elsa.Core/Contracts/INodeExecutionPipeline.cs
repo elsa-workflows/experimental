@@ -6,7 +6,7 @@ namespace Elsa.Contracts
 {
     public interface INodeExecutionPipeline
     {
-        ExecuteNode Setup(Action<INodeExecutionBuilder> setup);
+        ExecuteNodeDelegate Setup(Action<INodeExecutionBuilder> setup);
         Task ExecuteAsync(NodeExecutionContext context);
     }
 }

@@ -4,5 +4,5 @@ using Elsa.Contracts;
 
 namespace Elsa.Models
 {
-    public record Bookmark(INode Target, string Name, IDictionary<string, object?> Data, Action? Resume);
+    public record Bookmark(INode Target, string Name, IDictionary<string, object?> Data, Execute? Resume);
 }

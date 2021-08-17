@@ -26,8 +26,6 @@ namespace Elsa.Services
             AddOutput(state, identityLookup);
             AddScheduledNodes(state, identityLookup, workflowExecutionContext);
             AddBookmarks(state, identityLookup, workflowExecutionContext);
-            SetCurrentNode(state, identityLookup, workflowExecutionContext);
-            SetCurrentScope(state, identityLookup, workflowExecutionContext);
 
             return state;
         }
@@ -42,36 +40,8 @@ namespace Elsa.Services
             state.Bookmarks = bookmarkStates.ToList();
         }
 
-        private void SetCurrentScope(WorkflowState state, Dictionary<INode, string> identityLookup, WorkflowExecutionContext workflowExecutionContext)
-        {
-            if (workflowExecutionContext.CurrentScope == null)
-                return;
-
-            state.CurrentScope = CreateScopeState(workflowExecutionContext.CurrentScope, identityLookup);
-        }
-
-        private void SetCurrentNode(WorkflowState state, Dictionary<INode, string> identityLookup, WorkflowExecutionContext workflowExecutionContext)
-        {
-            if (workflowExecutionContext.CurrentNode == null)
-                return;
-
-            state.CurrentNode = new ScheduledNodeState(identityLookup[workflowExecutionContext.CurrentNode.Node]);
-        }
-
         private void AddScheduledNodes(WorkflowState state, IDictionary<INode, string> identityLookup, WorkflowExecutionContext workflowExecutionContext)
         {
-            var scopes = workflowExecutionContext.Scopes.ToList();
-            var scopeStates = CreateScopeList(workflowExecutionContext, identityLookup);
-            var scopeStateLookup = scopeStates.ToDictionary(x => x.Scope, x => x.ScopeState);
-
-            // Assign parents.
-            foreach (var scope in scopes.Where(x => x.Parent != null))
-            {
-                var scopeState = scopeStateLookup[scope];
-                scopeState.Parent = scopeStateLookup[scope.Parent!];
-            }
-
-            state.Scopes = new Stack<ScopeState>(scopeStateLookup.Select(x => x.Value));
         }
 
         private ScopeState CreateScopeState(Scope scope, IDictionary<INode, string> identityLookup)
@@ -87,11 +57,6 @@ namespace Elsa.Services
             };
         }
         
-        private IEnumerable<(Scope Scope, ScopeState ScopeState)> CreateScopeList(WorkflowExecutionContext workflowExecutionContext, IDictionary<INode, string> identityLookup) =>
-            from scope in workflowExecutionContext.Scopes
-            let scopeState = CreateScopeState(scope, identityLookup)
-            select (scope, scopeState);
-
         private void AddOutput(WorkflowState state, IDictionary<INode, string> identityLookup)
         {
             foreach (var nodeIdentity in identityLookup)

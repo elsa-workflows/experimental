@@ -28,9 +28,15 @@ namespace Elsa.Samples.Console1
             var workflow3 = ConditionalWorkflow.Create();
             var workflow4 = ForEachWorkflow.Create();
             var workflow5 = BlockingWorkflow.Create();
+            var workflow6 = ForkedWorkflow.Create();
             var workflowExecutionContext = await invoker.InvokeAsync(workflow5);
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
             var workflowState = workflowStateService.CreateState(workflowExecutionContext);
+
+            foreach (var bookmark in workflowState.Bookmarks)
+            {
+                
+            }
         }
 
         private static IServiceProvider CreateServices()
@@ -45,7 +51,8 @@ namespace Elsa.Samples.Console1
                 .AddNodeDriver<ReadLineDriver>()
                 .AddNodeDriver<IfDriver>()
                 .AddNodeDriver<ForDriver>()
-                .AddNodeDriver<Event>();
+                .AddNodeDriver<EventDriver>()
+                .AddNodeDriver<ForkDriver>();
 
             return services.BuildServiceProvider();
         }

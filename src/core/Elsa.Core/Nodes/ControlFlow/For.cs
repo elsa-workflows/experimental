@@ -51,9 +51,8 @@ namespace Elsa.Nodes.ControlFlow
 
             if (loop)
             {
-                var variables = new Dictionary<string, object?> { ["CurrentValue"] = currentValue };
                 node.CurrentValue = currentValue;
-                return new ValueTask<INodeExecutionResult>(ScheduleNode(iterateNode, node, variables));
+                return new ValueTask<INodeExecutionResult>(ScheduleNode(iterateNode));
             }
 
             node.CurrentValue = null;

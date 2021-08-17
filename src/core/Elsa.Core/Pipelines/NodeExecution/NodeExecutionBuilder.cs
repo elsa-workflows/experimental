@@ -9,7 +9,7 @@ namespace Elsa.Pipelines.NodeExecution
     public class NodeExecutionBuilder : INodeExecutionBuilder
     {
         private const string ServicesKey = "node-execution.Services";
-        private readonly IList<Func<ExecuteNode, ExecuteNode>> _components = new List<Func<ExecuteNode, ExecuteNode>>();
+        private readonly IList<Func<ExecuteNodeDelegate, ExecuteNodeDelegate>> _components = new List<Func<ExecuteNodeDelegate, ExecuteNodeDelegate>>();
 
         public NodeExecutionBuilder(IServiceProvider serviceProvider)
         {
@@ -24,15 +24,15 @@ namespace Elsa.Pipelines.NodeExecution
             set => SetProperty(ServicesKey, value);
         }
 
-        public INodeExecutionBuilder Use(Func<ExecuteNode, ExecuteNode> middleware)
+        public INodeExecutionBuilder Use(Func<ExecuteNodeDelegate, ExecuteNodeDelegate> middleware)
         {
             _components.Add(middleware);
             return this;
         }
         
-        public ExecuteNode Build()
+        public ExecuteNodeDelegate Build()
         {
-            ExecuteNode pipeline = _ => new ValueTask();
+            ExecuteNodeDelegate pipeline = _ => new ValueTask();
 
             foreach (var component in _components.Reverse()) 
                 pipeline = component(pipeline);

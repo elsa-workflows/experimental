@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Elsa.Contracts;
+using Elsa.Extensions;
 using Elsa.Models;
 
 namespace Elsa.Services
@@ -18,8 +19,8 @@ namespace Elsa.Services
 
         public IEnumerable<NodeIdentity> CreateIdentityGraph(INode root)
         {
-            var graph = _nodeWalker.Walk(root);
-            return graph.Select(CreateIdentity);
+            var list = _nodeWalker.Walk(root).Flatten().Select(x => x.Node);
+            return list.Select(CreateIdentity);
         }
 
         private NodeIdentity CreateIdentity(INode node)

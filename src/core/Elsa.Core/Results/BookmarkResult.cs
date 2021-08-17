@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elsa.Contracts;
@@ -8,7 +7,7 @@ namespace Elsa.Results
 {
     public class BookmarkResult : INodeExecutionResult
     {
-        public BookmarkResult(string name, IDictionary<string, object?>? data = default, Action? resume = default)
+        public BookmarkResult(string name, IDictionary<string, object?>? data = default, Execute? resume = default)
         {
             Name = name;
             Resume = resume;
@@ -16,13 +15,13 @@ namespace Elsa.Results
         }
 
         public string Name { get; set; }
-        public Action? Resume { get; }
+        public Execute? Resume { get; }
         public IDictionary<string, object?> Data { get; set; }
         
         public ValueTask ExecuteAsync(NodeExecutionContext context)
         {
             var bookmark = new Bookmark(context.Node, Name, Data, Resume);
-            context.SetBookmark(bookmark);
+            context.AddBookmark(bookmark);
             return new ValueTask();
         }
     }

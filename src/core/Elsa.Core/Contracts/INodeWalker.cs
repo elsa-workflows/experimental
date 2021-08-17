@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+using Elsa.Services;
 
 namespace Elsa.Contracts
 {
     public interface INodeWalker
     {
-        IEnumerable<INode> Walk(INode node);
+        GraphNode Walk(INode node);
     }
 }

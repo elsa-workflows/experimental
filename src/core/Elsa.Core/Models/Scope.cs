@@ -9,8 +9,6 @@ namespace Elsa.Models
         {
             Owner = owner;
             Parent = parent;
-            Variables = variables ?? new Dictionary<string, object?>();
-            ScheduledNodes = new Stack<ScheduledNode>(new[] { new ScheduledNode(owner) });
         }
 
         public INode Owner { get; set; }
