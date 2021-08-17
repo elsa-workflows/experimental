@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Expressions;
@@ -20,22 +22,43 @@ namespace Elsa.Samples.Console1
             var services = CreateServices().ConfigureNodeExecutionPipeline(pipeline => pipeline
                 //.UseLogging()
                 .UseNodeDrivers()
+                .UseParentDrivers()
             );
 
             var invoker = services.GetRequiredService<INodeInvoker>();
             var workflow1 = HelloWorldWorkflow.Create();
-            var workflow2 = GreetingWorkflow.Create();
-            var workflow3 = ConditionalWorkflow.Create();
-            var workflow4 = ForEachWorkflow.Create();
-            var workflow5 = BlockingWorkflow.Create();
-            var workflow6 = ForkedWorkflow.Create();
-            var workflowExecutionContext = await invoker.InvokeAsync(workflow5);
+            var workflow2 = HelloGoodbyeWorkflow.Create();
+            var workflow3 = GreetingWorkflow.Create();
+            var workflow4 = ConditionalWorkflow.Create();
+            var workflow5 = ForEachWorkflow.Create();
+            var workflow6 = BlockingWorkflow.Create();
+            var workflow7 = ForkedWorkflow.Create();
+            var workflowExecutionContext = await invoker.InvokeAsync(workflow2);
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
             var workflowState = workflowStateService.CreateState(workflowExecutionContext);
+            var nodeDriverRegistry = services.GetRequiredService<INodeDriverRegistry>();
+            var identityGraphService = services.GetRequiredService<IIdentityGraphService>();
+            var identityGraph = identityGraphService.CreateIdentityGraph(workflowExecutionContext.Root).ToList();
 
-            foreach (var bookmark in workflowState.Bookmarks)
+            if(workflowState.Bookmarks.Any())
             {
+                Console.WriteLine("Press enter to resume workflow.");
+                Console.ReadLine();
                 
+                foreach (var bookmark in workflowState.Bookmarks)
+                {
+                    var blockingNode = identityGraph.First(x => x.NodeName == bookmark.TargetNodeId);
+
+                    if (bookmark.ResumeAction != null)
+                    {
+                        var node = blockingNode.Node.Node;
+                        var driver = nodeDriverRegistry.GetDriver(node)!;
+                        var driverType = driver.GetType();
+                        var resumeMethodInfo = driverType.GetMethod(bookmark.ResumeAction)!;
+                        var resumeDelegate = (ExecuteNodeDelegate)Delegate.CreateDelegate(typeof(ExecuteNodeDelegate), driver, resumeMethodInfo);
+                        await invoker.InvokeAsync(node, workflowExecutionContext.Root, resumeDelegate);
+                    }
+                }
             }
         }
 

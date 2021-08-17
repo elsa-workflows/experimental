@@ -7,7 +7,7 @@ namespace Elsa.Contracts
     {
         public IDictionary<string, object?> Properties { get; }
         IServiceProvider ApplicationServices { get; }
-        INodeExecutionBuilder Use(Func<ExecuteNodeDelegate, ExecuteNodeDelegate> middleware);
-        public ExecuteNodeDelegate Build();
+        INodeExecutionBuilder Use(Func<ExecuteNodeMiddlewareDelegate, ExecuteNodeMiddlewareDelegate> middleware);
+        public ExecuteNodeMiddlewareDelegate Build();
     }
 }

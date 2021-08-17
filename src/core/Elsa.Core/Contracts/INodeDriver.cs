@@ -7,6 +7,6 @@ namespace Elsa.Contracts
     {
         bool GetSupportsNode(INode node);
         int Priority { get; }
-        ValueTask<INodeExecutionResult> ExecuteAsync(NodeExecutionContext context);
+        ValueTask ExecuteAsync(NodeExecutionContext context);
     }
 }

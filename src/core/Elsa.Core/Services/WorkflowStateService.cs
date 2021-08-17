@@ -20,7 +20,7 @@ namespace Elsa.Services
         public WorkflowState CreateState(WorkflowExecutionContext workflowExecutionContext)
         {
             var root = workflowExecutionContext.Root;
-            var identityLookup = _identityGraphService.CreateIdentityGraph(root).ToDictionary(x => x.Node, x => x.NodeName);
+            var identityLookup = _identityGraphService.CreateIdentityGraph(root).ToDictionary(x => x.Node.Node, x => x.NodeName);
             var state = new WorkflowState();
 
             AddOutput(state, identityLookup);
@@ -42,19 +42,6 @@ namespace Elsa.Services
 
         private void AddScheduledNodes(WorkflowState state, IDictionary<INode, string> identityLookup, WorkflowExecutionContext workflowExecutionContext)
         {
-        }
-
-        private ScopeState CreateScopeState(Scope scope, IDictionary<INode, string> identityLookup)
-        {
-            var ownerId = identityLookup[scope.Owner];
-            var scheduledNodeStates = new Stack<ScheduledNodeState>(scope.ScheduledNodes.Select(x => new ScheduledNodeState(identityLookup[x.Node])));
-
-            return new ScopeState
-            {
-                Variables = scope.Variables,
-                OwnerId = ownerId,
-                ScheduledNodes = scheduledNodeStates,
-            };
         }
         
         private void AddOutput(WorkflowState state, IDictionary<INode, string> identityLookup)

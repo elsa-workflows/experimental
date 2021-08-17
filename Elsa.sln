@@ -23,8 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{0354F050-3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "architecture", "architecture", "{A34FD350-79C5-492A-8811-6DBD80830F8B}"
 ProjectSection(SolutionItems) = preProject
-	docs\architecture\Core.md = docs\architecture\Core.md
-	docs\architecture\Management.md = docs\architecture\Management.md
+	docs\architecture\Layer1.md = docs\architecture\Layer1.md
+	docs\architecture\Layer2.md = docs\architecture\Layer2.md
 EndProjectSection
 EndProject
 Global

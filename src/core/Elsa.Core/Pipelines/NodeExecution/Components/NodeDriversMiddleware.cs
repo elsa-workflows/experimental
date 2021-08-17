@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -8,11 +10,11 @@ namespace Elsa.Pipelines.NodeExecution.Components
 {
     public class NodeDriversMiddleware
     {
-        private readonly ExecuteNodeDelegate _next;
+        private readonly ExecuteNodeMiddlewareDelegate _next;
         private readonly INodeDriverRegistry _driverRegistry;
         private readonly ILogger _logger;
 
-        public NodeDriversMiddleware(ExecuteNodeDelegate next, INodeDriverRegistry driverRegistry, ILogger<NodeDriversMiddleware> logger)
+        public NodeDriversMiddleware(ExecuteNodeMiddlewareDelegate next, INodeDriverRegistry driverRegistry, ILogger<NodeDriversMiddleware> logger)
         {
             _next = next;
             _driverRegistry = driverRegistry;
@@ -22,7 +24,7 @@ namespace Elsa.Pipelines.NodeExecution.Components
         public async ValueTask InvokeAsync(NodeExecutionContext context)
         {
             var node = context.Node;
-            
+
             // Get node driver.
             var driver = _driverRegistry.GetDriver(node);
 
@@ -33,27 +35,17 @@ namespace Elsa.Pipelines.NodeExecution.Components
             }
 
             // Execute driver.
-            var result = await driver.ExecuteAsync(context);
-
-            // Execute result.
-            await result.ExecuteAsync(context);
-
+            var driverType = typeof(INodeDriver);
+            var methodInfo = driverType.GetMethod(nameof(INodeDriver.ExecuteAsync))!;
+            var executeDelegate = context.ExecuteDelegate ?? (ExecuteNodeDelegate)Delegate.CreateDelegate(typeof(ExecuteNodeDelegate), driver, methodInfo);
+            await executeDelegate(context);
+            
             // Invoke next middleware.
             await _next(context);
-
-            if (!context.Bookmarks.Any())
-            {
-                // Notify node's parent (if any) that its child has executed.
-                var owner = context.ScheduledNode.Owner;
-
-                if (owner != null)
-                    if (_driverRegistry.GetDriver(owner) is INotifyNodeExecuted parentDriver)
-                        await parentDriver.HandleNodeExecuted(context, owner);
-            }
         }
     }
 
-    public static class ExecuteNodeMiddlewareExtensions
+    public static class InvokeDriversMiddlewareExtensions
     {
         public static INodeExecutionBuilder UseNodeDrivers(this INodeExecutionBuilder builder) => builder.UseMiddleware<NodeDriversMiddleware>();
     }

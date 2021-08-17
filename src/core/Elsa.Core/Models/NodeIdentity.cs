@@ -1,6 +1,7 @@
 using Elsa.Contracts;
+using Elsa.Services;
 
 namespace Elsa.Models
 {
-    public record NodeIdentity(INode Node, string NodeName);
+    public record NodeIdentity(GraphNode Node, string NodeName);
 }

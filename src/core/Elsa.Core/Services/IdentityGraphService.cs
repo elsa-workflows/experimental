@@ -10,7 +10,6 @@ namespace Elsa.Services
     public class IdentityGraphService : IIdentityGraphService
     {
         private readonly INodeWalker _nodeWalker;
-        private readonly IDictionary<Type, int> _identityCounters = new Dictionary<Type, int>();
 
         public IdentityGraphService(INodeWalker nodeWalker)
         {
@@ -19,31 +18,32 @@ namespace Elsa.Services
 
         public IEnumerable<NodeIdentity> CreateIdentityGraph(INode root)
         {
-            var list = _nodeWalker.Walk(root).Flatten().Select(x => x.Node);
-            return list.Select(CreateIdentity);
+            var identityCounters = new Dictionary<Type, int>();
+            var list = _nodeWalker.Walk(root).Flatten();
+            return list.Select(x => CreateIdentity(x, identityCounters));
         }
 
-        private NodeIdentity CreateIdentity(INode node)
+        private NodeIdentity CreateIdentity(GraphNode node, IDictionary<Type, int> identityCounters)
         {
-            if (!string.IsNullOrWhiteSpace(node.Name))
-                return new NodeIdentity(node, node.Name);
-            
-            var type = node.GetType();
-            var index = GetNextIndexFor(type);
+            if (!string.IsNullOrWhiteSpace(node.Node.Name))
+                return new NodeIdentity(node, node.Node.Name);
+
+            var type = node.Node.GetType();
+            var index = GetNextIndexFor(type, identityCounters);
             var name = $"{Camelize(type.Name)}{index + 1}";
             return new NodeIdentity(node, name);
         }
 
-        private int GetNextIndexFor(Type nodeType)
+        private int GetNextIndexFor(Type nodeType, IDictionary<Type, int> identityCounters)
         {
-            if (!_identityCounters.TryGetValue(nodeType, out var index))
+            if (!identityCounters.TryGetValue(nodeType, out var index))
             {
-                _identityCounters[nodeType] = index;
+                identityCounters[nodeType] = index;
             }
             else
             {
-                index = _identityCounters[nodeType] + 1;
-                _identityCounters[nodeType] = index;
+                index = identityCounters[nodeType] + 1;
+                identityCounters[nodeType] = index;
             }
 
             return index;

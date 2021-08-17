@@ -6,6 +6,6 @@ namespace Elsa.Contracts
 {
     public interface INodeInvoker
     {
-        Task<WorkflowExecutionContext> InvokeAsync(INode node, CancellationToken cancellationToken = default);
+        Task<WorkflowExecutionContext> InvokeAsync(INode node, INode? root = default, ExecuteNodeDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default);
     }
 }

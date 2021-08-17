@@ -1,9 +1,7 @@
-# Core
+# Layer 1: Core protocol
 
-This document describes the architecture of the envisioned workflow engine.
-The library separates core low-level engine functionality from higher-level parts. 
-
-At the core, the library deals with nodes and drivers only. It has no concept of a workflow itself, only that of graphs of nodes and executing them.
+This document describes the core architecture of the envisioned workflow engine.
+The library separates core layer 1 engine functionality from higher layers.
 
 ## Node
 
@@ -28,11 +26,11 @@ Node properties exist in 3 categories:
 
 ### Input Properties
 
-An input properties represents activity input that can be configured at design time. These properties can be simple primitive types, complex objects and workflow expressions.
+An input property represents activity input that can be configured at design time. These properties can be simple primitive types, complex objects and workflow expressions.
 
 ### Output Properties
 
-When a node handler executes, it receives the node object itself. The handlers can update the node if it has output properties deeclared.
+When a node handler executes, it receives the node object itself. The handlers can update the node if it has output properties declared.
 
 ### Ports
 
@@ -42,7 +40,7 @@ When the handler evaluates the condition (provided as an input property), it wil
 Example:
 
 ```csharp
-class If : INode
+class IfElse : INode
 {
    [Input] IExpression<bool> Condition { get; set; }
    [Port] INode True { get; set; }

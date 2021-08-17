@@ -21,7 +21,7 @@ namespace Elsa.Samples.Console1.Workflows
                     new If
                     {
                         Condition = new Delegate<bool>(() => int.Parse(readLine1.Output!) >= 16),
-                        True = new Sequence
+                        Then = new Sequence
                         {
                             Nodes = new INode[]
                             {
@@ -29,7 +29,7 @@ namespace Elsa.Samples.Console1.Workflows
                                 new WriteLine("But be careful!")
                             }
                         },
-                        False = new WriteLine("Enjoy your bicycle!")
+                        Else = new WriteLine("Enjoy your bicycle!")
                     }
                 }
             };

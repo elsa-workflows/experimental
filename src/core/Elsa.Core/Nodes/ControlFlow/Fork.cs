@@ -4,7 +4,6 @@ using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Services;
-using static Elsa.Results.NodeExecutionResults;
 
 namespace Elsa.Nodes.ControlFlow
 {
@@ -15,6 +14,6 @@ namespace Elsa.Nodes.ControlFlow
 
     public class ForkDriver : NodeDriver<Fork>
     {
-        protected override INodeExecutionResult Execute(Fork node, NodeExecutionContext context) => ScheduleNodes(node.Branches.Reverse());
+        protected override void Execute(Fork node, NodeExecutionContext context) => context.ScheduleNodes(node.Branches.Reverse());
     }
 }

@@ -9,14 +9,14 @@ namespace Elsa.Pipelines.NodeExecution
     public class NodeExecutionPipeline : INodeExecutionPipeline
     {
         private readonly IServiceProvider _serviceProvider;
-        private ExecuteNodeDelegate? _pipeline;
+        private ExecuteNodeMiddlewareDelegate? _pipeline;
 
         public NodeExecutionPipeline(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public ExecuteNodeDelegate Setup(Action<INodeExecutionBuilder> setup)
+        public ExecuteNodeMiddlewareDelegate Setup(Action<INodeExecutionBuilder> setup)
         {
             var builder = new NodeExecutionBuilder(_serviceProvider);
             setup(builder);
@@ -31,8 +31,9 @@ namespace Elsa.Pipelines.NodeExecution
             await pipeline(context);
         }
 
-        private ExecuteNodeDelegate CreateDefaultPipeline() => Setup(x => x
+        private ExecuteNodeMiddlewareDelegate CreateDefaultPipeline() => Setup(x => x
             .UseNodeDrivers()
+            .UseParentDrivers()
         );
     }
 }

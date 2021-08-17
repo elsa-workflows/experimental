@@ -20,23 +20,23 @@ namespace Elsa.Services
             _nodeWalker = nodeWalker;
         }
 
-        public async Task<WorkflowExecutionContext> InvokeAsync(INode node, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> InvokeAsync(INode node, INode? root = default, ExecuteNodeDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
-            var graph = _nodeWalker.Walk(node).Flatten().ToList();
+            root ??= node; // If no root was provided, it means the node IS the root node.
+            var graph = _nodeWalker.Walk(root).Flatten().ToList();
             var scheduler = _schedulerFactory.CreateScheduler();
             scheduler.Schedule(new ScheduledNode(node));
-            var workflowExecutionContext = new WorkflowExecutionContext(node, graph, scheduler);
+            var workflowExecutionContext = new WorkflowExecutionContext(root, graph, scheduler);
 
             while (scheduler.HasAny)
             {
                 var currentNode = scheduler.Unschedule();
-                var nodeExecutionContext = new NodeExecutionContext(workflowExecutionContext, currentNode, cancellationToken);
+                var nodeExecutionContext = new NodeExecutionContext(workflowExecutionContext, currentNode, executeNodeDelegate, cancellationToken);
                 await _pipeline.ExecuteAsync(nodeExecutionContext);
+
+                // Reset delegate.
+                executeNodeDelegate = null;
             }
-            
-            // Handle bookmarks.
-            
-            // 
 
             return workflowExecutionContext;
         }

@@ -8,11 +8,11 @@ namespace Elsa.Pipelines.NodeExecution.Components
 {
     public class LoggingMiddleware
     {
-        private readonly ExecuteNodeDelegate _next;
+        private readonly ExecuteNodeMiddlewareDelegate _next;
         private readonly ILogger _logger;
         private readonly Stopwatch _stopwatch;
 
-        public LoggingMiddleware(ExecuteNodeDelegate next, ILogger<LoggingMiddleware> logger)
+        public LoggingMiddleware(ExecuteNodeMiddlewareDelegate next, ILogger<LoggingMiddleware> logger)
         {
             _next = next;
             _logger = logger;

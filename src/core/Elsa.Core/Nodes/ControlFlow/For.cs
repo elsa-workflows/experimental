@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Services;
-using static Elsa.Results.NodeExecutionResults;
 
 namespace Elsa.Nodes.ControlFlow
 {
@@ -30,12 +28,12 @@ namespace Elsa.Nodes.ControlFlow
 
     public class ForDriver : NodeDriver<For>
     {
-        protected override ValueTask<INodeExecutionResult> ExecuteAsync(For node, NodeExecutionContext context)
+        protected override void Execute(For node, NodeExecutionContext context)
         {
             var iterateNode = node.Iterate;
 
             if (iterateNode == null)
-                return new ValueTask<INodeExecutionResult>(Done());
+                return;
 
             var end = node.End;
             var currentValue = node.CurrentValue != null ? node.CurrentValue + node.Step : node.Start;
@@ -52,12 +50,14 @@ namespace Elsa.Nodes.ControlFlow
             if (loop)
             {
                 node.CurrentValue = currentValue;
-                return new ValueTask<INodeExecutionResult>(ScheduleNode(iterateNode));
+                context.ScheduleNode(iterateNode);
+                return;
             }
 
             node.CurrentValue = null;
-            var result = node.Next != null ? (INodeExecutionResult)ScheduleNode(node.Next) : Done();
-            return new ValueTask<INodeExecutionResult>(result);
+
+            if (node.Next != null)
+                context.ScheduleNode(node.Next);
         }
     }
 }

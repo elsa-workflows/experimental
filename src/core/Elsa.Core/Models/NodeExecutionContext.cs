@@ -7,15 +7,17 @@ namespace Elsa.Models
 {
     public class NodeExecutionContext
     {
-        public NodeExecutionContext(WorkflowExecutionContext workflowExecutionContext, ScheduledNode scheduledNode, CancellationToken cancellationToken)
+        public NodeExecutionContext(WorkflowExecutionContext workflowExecutionContext, ScheduledNode scheduledNode, ExecuteNodeDelegate? executeDelegate, CancellationToken cancellationToken)
         {
             WorkflowExecutionContext = workflowExecutionContext;
             ScheduledNode = scheduledNode;
+            ExecuteDelegate = executeDelegate;
             CancellationToken = cancellationToken;
         }
 
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
         public ScheduledNode ScheduledNode { get; set; }
+        public ExecuteNodeDelegate? ExecuteDelegate { get; }
         public CancellationToken CancellationToken { get; }
         public INode Node => ScheduledNode.Node;
         public IEnumerable<Bookmark> Bookmarks => WorkflowExecutionContext.Bookmarks;
@@ -36,5 +38,6 @@ namespace Elsa.Models
         }
 
         public void AddBookmark(Bookmark bookmark) => WorkflowExecutionContext.AddBookmark(bookmark);
+        public void AddBookmark(string name, IDictionary<string, object?>? data = default, ExecuteNodeDelegate? resume = default) => AddBookmark(new Bookmark(Node, name, data ?? new Dictionary<string, object?>(), resume));
     }
 }

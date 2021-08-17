@@ -4,7 +4,6 @@ using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Services;
-using static Elsa.Results.NodeExecutionResults;
 
 namespace Elsa.Nodes.Console
 {
@@ -35,11 +34,10 @@ namespace Elsa.Nodes.Console
             _expressionEvaluator = expressionEvaluator;
         }
 
-        protected override async ValueTask<INodeExecutionResult> ExecuteAsync(WriteLine node, NodeExecutionContext context)
+        protected override async ValueTask ExecuteAsync(WriteLine node, NodeExecutionContext context)
         {
             var text = await _expressionEvaluator.EvaluateAsync(node.Text, context);
             System.Console.WriteLine(text);
-            return Done();
         }
     }
 }
