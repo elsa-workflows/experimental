@@ -21,13 +21,13 @@ namespace Elsa.Models
         public CancellationToken CancellationToken { get; }
         public INode Node => ScheduledNode.Node;
         public IEnumerable<Bookmark> Bookmarks => WorkflowExecutionContext.Bookmarks;
-        public void ScheduleNode(INode node) => WorkflowExecutionContext.Scheduler.Schedule(new ScheduledNode(node));
+        public void ScheduleNode(INode node, NodeCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Scheduler.Schedule(new ScheduledNode(node, completionCallback));
         public void ScheduleNodes(params INode[] nodes) => ScheduleNodes((IEnumerable<INode>)nodes);
 
-        public void ScheduleNodes(IEnumerable<INode> nodes)
+        public void ScheduleNodes(IEnumerable<INode> nodes, NodeCompletionCallback? completionCallback = default)
         {
             foreach (var node in nodes)
-                WorkflowExecutionContext.Scheduler.Schedule(new ScheduledNode(node, Node));
+                WorkflowExecutionContext.Scheduler.Schedule(new ScheduledNode(node, completionCallback));
         }
 
         public T? GetVariable<T>(string name) => (T?)GetVariable(name);

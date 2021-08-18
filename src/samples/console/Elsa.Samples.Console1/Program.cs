@@ -33,7 +33,7 @@ namespace Elsa.Samples.Console1
             var workflow5 = ForEachWorkflow.Create();
             var workflow6 = BlockingWorkflow.Create();
             var workflow7 = ForkedWorkflow.Create();
-            var workflowExecutionContext = await invoker.InvokeAsync(workflow2);
+            var workflowExecutionContext = await invoker.InvokeAsync(workflow5);
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
             var workflowState = workflowStateService.CreateState(workflowExecutionContext);
             var nodeDriverRegistry = services.GetRequiredService<INodeDriverRegistry>();
