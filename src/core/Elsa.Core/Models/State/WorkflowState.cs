@@ -9,5 +9,6 @@ namespace Elsa.Models.State
         public ScopeState? CurrentScope { get; set; }
         public ScheduledNodeState? CurrentNode { get; set; }
         public ICollection<BookmarkState> Bookmarks { get; set; } = new List<BookmarkState>();
+        public IDictionary<string, string> CompletionCallbacks { get; set; } = new Dictionary<string, string>();
     }
 }

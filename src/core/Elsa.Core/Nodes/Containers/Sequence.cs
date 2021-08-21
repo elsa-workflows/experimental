@@ -31,7 +31,7 @@ namespace Elsa.Nodes.Containers
             if (nextIndex < childNodes.Count)
             {
                 var nextNode = childNodes.ElementAt(nextIndex);
-                childContext.ScheduleNode(nextNode, OnChildComplete);
+                childContext.WorkflowExecutionContext.Schedule(nextNode, owner, OnChildComplete);
             }
 
             return new ValueTask();

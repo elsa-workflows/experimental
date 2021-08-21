@@ -19,6 +19,13 @@ namespace Elsa.Services
             _schedulerFactory = schedulerFactory;
             _nodeWalker = nodeWalker;
         }
+        
+        public async Task<WorkflowExecutionContext> ResumeAsync(Bookmark bookmark, INode root, CancellationToken cancellationToken = default)
+        {
+            var scheduledNode = bookmark.Target;
+            var executeNodeDelegate = bookmark.Resume;
+            return await InvokeAsync(scheduledNode, root, executeNodeDelegate, cancellationToken);
+        }
 
         public async Task<WorkflowExecutionContext> InvokeAsync(INode node, INode? root = default, ExecuteNodeDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
@@ -41,12 +48,17 @@ namespace Elsa.Services
             // Setup a workflow execution context.
             var workflowExecutionContext = new WorkflowExecutionContext(root, graph, scheduler);
 
+            return await InvokeAsync(workflowExecutionContext, scheduler, executeNodeDelegate, cancellationToken);
+        }
+
+        private async Task<WorkflowExecutionContext> InvokeAsync(WorkflowExecutionContext workflowExecutionContext, INodeScheduler scheduler, ExecuteNodeDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
+        {
             // As long as there are nodes scheduled, keep executing them.
             while (scheduler.HasAny)
             {
                 // Pop next node for execution.
                 var currentNode = scheduler.Unschedule();
-                
+
                 // Setup a node execution context.
                 var nodeExecutionContext = new NodeExecutionContext(workflowExecutionContext, currentNode, executeNodeDelegate, cancellationToken);
                 

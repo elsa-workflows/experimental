@@ -12,5 +12,6 @@ namespace Elsa.Services
         public bool HasAny => _stack.Any();
         public void Schedule(ScheduledNode node) => _stack.Push(node);
         public ScheduledNode Unschedule() => _stack.Pop();
+        public IEnumerable<ScheduledNode> List() => _stack.ToList();
     }
 }

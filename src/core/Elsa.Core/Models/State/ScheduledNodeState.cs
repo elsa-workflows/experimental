@@ -1,4 +1,4 @@
 namespace Elsa.Models.State
 {
-    public record ScheduledNodeState(string NodeId, string? NodeCompletionCallbackName);
+    public record ScheduledNodeState(string NodeId);
 }

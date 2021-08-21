@@ -35,7 +35,7 @@ namespace Elsa.Services
             var bookmarkStates =
                 from bookmark in workflowExecutionContext.Bookmarks
                 let targetId = identityLookup[bookmark.Target.Node]
-                let scheduledNodeState = new ScheduledNodeState(targetId, bookmark.Target.CompletionCallback?.Method.Name)
+                let scheduledNodeState = new ScheduledNodeState(targetId)
                 select new BookmarkState(scheduledNodeState, bookmark.Name, bookmark.Data, bookmark.Resume?.Method.Name);
 
             state.Bookmarks = bookmarkStates.ToList();

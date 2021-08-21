@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Elsa.Models;
 
 namespace Elsa.Contracts
@@ -7,5 +8,6 @@ namespace Elsa.Contracts
         bool HasAny { get; }
         void Schedule(ScheduledNode node);
         ScheduledNode Unschedule();
+        IEnumerable<ScheduledNode> List();
     }
 }

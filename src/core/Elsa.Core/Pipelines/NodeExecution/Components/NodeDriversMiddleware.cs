@@ -38,20 +38,42 @@ namespace Elsa.Pipelines.NodeExecution.Components
             var methodInfo = driverType.GetMethod(nameof(INodeDriver.ExecuteAsync))!;
             var executeDelegate = context.ExecuteDelegate ?? (ExecuteNodeDelegate)Delegate.CreateDelegate(typeof(ExecuteNodeDelegate), driver, methodInfo);
             await executeDelegate(context);
-            
+
             // Invoke next middleware.
             await _next(context);
-            
+
             // Exit if any bookmarks were created.
             if (context.Bookmarks.Any())
                 return;
-            
-            // Invoke the completion callback, if any.
-            var graphNode = context.WorkflowExecutionContext.Graph.First(x => x.Node == node);
-            var parentNode = graphNode.Parent?.Node;
 
-            if (parentNode != null && context.ScheduledNode.CompletionCallback != null)
-                await context.ScheduledNode.CompletionCallback.Invoke(context, parentNode);
+            // Complete parent chain.
+            await CompleteParentsAsync(context, node);
+        }
+
+        private static async Task CompleteParentsAsync(NodeExecutionContext context, INode node)
+        {
+            var graph = context.WorkflowExecutionContext.Graph.ToDictionary(x => x.Node);
+            var graphNode = graph[node];
+            var currentParent = graphNode.Parent;
+            var currentChildContext = context;
+
+            while (currentParent != null)
+            {
+                var hasScheduledChildren = context.WorkflowExecutionContext.Scheduler.List().Any(x => graph[x.Node].Parent?.Node == node);
+
+                if (!hasScheduledChildren)
+                {
+                    // Invoke the completion callback, if any.
+                    var parentNode = currentParent.Node;
+                    var completionCallback = currentChildContext.WorkflowExecutionContext.PopCompletionCallback(parentNode);
+
+                    if (completionCallback != null)
+                        await completionCallback.Invoke(currentChildContext, parentNode);
+                }
+
+                currentChildContext = new NodeExecutionContext(currentChildContext.WorkflowExecutionContext, new ScheduledNode(currentParent.Node), default, currentChildContext.CancellationToken);
+                currentParent = currentParent.Parent;
+            }
         }
     }
 
