@@ -2,5 +2,5 @@ using System.Collections.Generic;
 
 namespace Elsa.Models.State
 {
-    public record BookmarkState(string TargetNodeId, string Name, IDictionary<string, object?> Data, string? ResumeAction);
+    public record BookmarkState(ScheduledNodeState ScheduledNode, string Name, IDictionary<string, object?> Data, string? ResumeActionName);
 }

@@ -16,6 +16,6 @@ namespace Elsa.Nodes.Primitives
     public class EventDriver : NodeDriver<Event>
     {
         protected override void Execute(Event node, NodeExecutionContext context) =>
-            context.AddBookmark(nameof(Event), new Dictionary<string, object?> { [nameof(Event.EventName)] = node.EventName });
+            context.SetBookmark(nameof(Event), new Dictionary<string, object?> { [nameof(Event.EventName)] = node.EventName });
     }
 }

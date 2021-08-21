@@ -14,6 +14,7 @@ namespace Elsa.Models
         public WorkflowExecutionContext(INode root, IEnumerable<GraphNode> graph, INodeScheduler scheduler)
         {
             Root = root;
+            //CurrentNode = currentNode;
             _graph = graph.ToList();
             Scheduler = scheduler;
         }
@@ -22,6 +23,7 @@ namespace Elsa.Models
         public IEnumerable<GraphNode> Graph => new ReadOnlyCollection<GraphNode>(_graph);
         public INodeScheduler Scheduler { get; }
         public IEnumerable<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
-        public void AddBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
+        //public ScheduledNode CurrentNode { get; set; }
+        public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
     }
 }

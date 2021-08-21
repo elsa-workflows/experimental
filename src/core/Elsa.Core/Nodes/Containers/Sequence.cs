@@ -10,25 +10,18 @@ namespace Elsa.Nodes.Containers
     {
     }
 
-    public class SequenceDriver : NodeDriver<Sequence>, INotifyNodeExecuted
+    public class SequenceDriver : NodeDriver<Sequence>
     {
-        private readonly NodeCompletionCallback _onChildComplete;
-
-        public SequenceDriver()
-        {
-            _onChildComplete = OnChildComplete;
-        }
-        
         protected override void Execute(Sequence node, NodeExecutionContext context)
         {
             var childNodes = node.Nodes.ToList();
             var firstNode = childNodes.FirstOrDefault();
 
             if (firstNode != null)
-                context.ScheduleNode(firstNode, _onChildComplete);
+                context.ScheduleNode(firstNode, OnChildComplete);
         }
 
-        public ValueTask OnChildComplete(NodeExecutionContext childContext, INode owner)
+        private ValueTask OnChildComplete(NodeExecutionContext childContext, INode owner)
         {
             var sequence = (Sequence)owner;
             var childNodes = sequence.Nodes.ToList();
@@ -38,7 +31,7 @@ namespace Elsa.Nodes.Containers
             if (nextIndex < childNodes.Count)
             {
                 var nextNode = childNodes.ElementAt(nextIndex);
-                childContext.ScheduleNode(nextNode, _onChildComplete);
+                childContext.ScheduleNode(nextNode, OnChildComplete);
             }
 
             return new ValueTask();

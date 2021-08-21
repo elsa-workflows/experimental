@@ -33,7 +33,6 @@ namespace Elsa.Pipelines.NodeExecution
 
         private NodeMiddlewareDelegate CreateDefaultPipeline() => Setup(x => x
             .UseNodeDrivers()
-            .UseParentDrivers()
         );
     }
 }

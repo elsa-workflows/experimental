@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading;
 using Elsa.Contracts;
 
@@ -37,7 +36,7 @@ namespace Elsa.Models
             return default;
         }
 
-        public void AddBookmark(Bookmark bookmark) => WorkflowExecutionContext.AddBookmark(bookmark);
-        public void AddBookmark(string name, IDictionary<string, object?>? data = default, ExecuteNodeDelegate? resume = default) => AddBookmark(new Bookmark(Node, name, data ?? new Dictionary<string, object?>(), resume));
+        public void SetBookmark(Bookmark bookmark) => WorkflowExecutionContext.SetBookmark(bookmark);
+        public void SetBookmark(string name, IDictionary<string, object?>? data = default, ExecuteNodeDelegate? resume = default) => SetBookmark(new Bookmark(ScheduledNode, name, data ?? new Dictionary<string, object?>(), resume));
     }
 }

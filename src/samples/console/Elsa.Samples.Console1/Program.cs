@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Expressions;
+using Elsa.Models;
 using Elsa.Nodes.Console;
 using Elsa.Nodes.Containers;
 using Elsa.Nodes.ControlFlow;
@@ -22,7 +23,6 @@ namespace Elsa.Samples.Console1
             var services = CreateServices().ConfigureNodeExecutionPipeline(pipeline => pipeline
                 //.UseLogging()
                 .UseNodeDrivers()
-                .UseParentDrivers()
             );
 
             var invoker = services.GetRequiredService<INodeInvoker>();
@@ -33,34 +33,46 @@ namespace Elsa.Samples.Console1
             var workflow5 = ForEachWorkflow.Create();
             var workflow6 = BlockingWorkflow.Create();
             var workflow7 = ForkedWorkflow.Create();
-            var workflowExecutionContext = await invoker.InvokeAsync(workflow5);
+            var workflowExecutionContext = await invoker.InvokeAsync(workflow6);
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
             var workflowState = workflowStateService.CreateState(workflowExecutionContext);
             var nodeDriverRegistry = services.GetRequiredService<INodeDriverRegistry>();
             var identityGraphService = services.GetRequiredService<IIdentityGraphService>();
             var identityGraph = identityGraphService.CreateIdentityGraph(workflowExecutionContext.Root).ToList();
 
-            if(workflowState.Bookmarks.Any())
+            if (workflowState.Bookmarks.Any())
             {
                 Console.WriteLine("Press enter to resume workflow.");
                 Console.ReadLine();
-                
+
                 foreach (var bookmark in workflowState.Bookmarks)
                 {
-                    var blockingNode = identityGraph.First(x => x.NodeName == bookmark.TargetNodeId);
+                    var scheduledNodeState = bookmark.ScheduledNode;
+                    var blockingNode = identityGraph.First(x => x.NodeName == scheduledNodeState.NodeId);
+                    var resumeActionName = bookmark.ResumeActionName;
+                    var completionCallbackName = scheduledNodeState.NodeCompletionCallbackName;
+                    var node = blockingNode.Node.Node;
 
-                    if (bookmark.ResumeAction != null)
-                    {
-                        var node = blockingNode.Node.Node;
-                        var driver = nodeDriverRegistry.GetDriver(node)!;
-                        var driverType = driver.GetType();
-                        var resumeMethodInfo = driverType.GetMethod(bookmark.ResumeAction)!;
-                        var resumeDelegate = (ExecuteNodeDelegate)Delegate.CreateDelegate(typeof(ExecuteNodeDelegate), driver, resumeMethodInfo);
-                        await invoker.InvokeAsync(node, workflowExecutionContext.Root, resumeDelegate);
-                    }
+                    // Setup Resume delegate.
+                    var driver = nodeDriverRegistry.GetDriver(node);
+                    var driverType = driver!.GetType();
+                    var resumeMethodInfo = resumeActionName != null ? driverType.GetMethod(resumeActionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic) : null;
+                    var resumeDelegate = resumeMethodInfo != null ? (ExecuteNodeDelegate)Delegate.CreateDelegate(typeof(ExecuteNodeDelegate), driver, resumeMethodInfo) : Noop;
+
+                    // Setup Completion delegate
+                    var graphNode = workflowExecutionContext.Graph.First(x => x.Node == node);
+                    var parentNode = graphNode.Parent?.Node;
+                    var parentDriver = parentNode != null ? nodeDriverRegistry.GetDriver(parentNode) : default;
+                    var parentDriverType = parentDriver?.GetType();
+                    var completionMethodInfo = completionCallbackName != null && parentDriverType != null ? parentDriverType.GetMethod(completionCallbackName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic) : default;
+                    var completionDelegate = completionMethodInfo != null ? (NodeCompletionCallback)Delegate.CreateDelegate(typeof(NodeCompletionCallback), parentDriver, completionMethodInfo) : default;
+                    var scheduledNode = new ScheduledNode(node, completionDelegate);
+                    await invoker.InvokeAsync(scheduledNode, workflowExecutionContext.Root, resumeDelegate);
                 }
             }
         }
+
+        private static ValueTask Noop(NodeExecutionContext context) => new();
 
         private static IServiceProvider CreateServices()
         {

@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -42,6 +41,17 @@ namespace Elsa.Pipelines.NodeExecution.Components
             
             // Invoke next middleware.
             await _next(context);
+            
+            // Exit if any bookmarks were created.
+            if (context.Bookmarks.Any())
+                return;
+            
+            // Invoke the completion callback, if any.
+            var graphNode = context.WorkflowExecutionContext.Graph.First(x => x.Node == node);
+            var parentNode = graphNode.Parent?.Node;
+
+            if (parentNode != null && context.ScheduledNode.CompletionCallback != null)
+                await context.ScheduledNode.CompletionCallback.Invoke(context, parentNode);
         }
     }
 
