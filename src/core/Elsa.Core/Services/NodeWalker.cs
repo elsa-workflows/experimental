@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Elsa.Attributes;
 using Elsa.Contracts;
+using Elsa.Models;
 
 namespace Elsa.Services
 {
@@ -56,18 +57,5 @@ namespace Elsa.Services
 
             return ports.SelectMany(x => x);
         }
-    }
-
-    public class GraphNode
-    {
-        public GraphNode(INode node, GraphNode? parent)
-        {
-            Node = node;
-            Parent = parent;
-        }
-
-        public INode Node { get; }
-        public GraphNode? Parent { get; }
-        public ICollection<GraphNode> Children { get; } = new List<GraphNode>();
     }
 }

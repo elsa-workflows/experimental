@@ -22,6 +22,16 @@ namespace Elsa.Services
             var list = _nodeWalker.Walk(root).Flatten();
             return list.Select(x => CreateIdentity(x, identityCounters));
         }
+        
+        public IEnumerable<NodeIdentity> AssignIdentities(INode root)
+        {
+            var identityGraph = CreateIdentityGraph(root).ToList();
+
+            foreach (var nodeIdentity in identityGraph) 
+                nodeIdentity.Node.Node.Name = nodeIdentity.NodeName;
+
+            return identityGraph;
+        }
 
         private NodeIdentity CreateIdentity(GraphNode node, IDictionary<Type, int> identityCounters)
         {

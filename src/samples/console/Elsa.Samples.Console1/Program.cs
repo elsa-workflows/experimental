@@ -26,48 +26,30 @@ namespace Elsa.Samples.Console1
             );
 
             var invoker = services.GetRequiredService<INodeInvoker>();
-            var workflow1 = HelloWorldWorkflow.Create();
-            var workflow2 = HelloGoodbyeWorkflow.Create();
-            var workflow3 = GreetingWorkflow.Create();
-            var workflow4 = ConditionalWorkflow.Create();
-            var workflow5 = ForEachWorkflow.Create();
-            var workflow6 = BlockingWorkflow.Create();
-            var workflow7 = ForkedWorkflow.Create();
-            var workflowExecutionContext = await invoker.InvokeAsync(workflow6);
+            var workflow1 = new Func<INode>(HelloWorldWorkflow.Create);
+            var workflow2 = new Func<INode>(HelloGoodbyeWorkflow.Create);
+            var workflow3 = new Func<INode>(GreetingWorkflow.Create);
+            var workflow4 = new Func<INode>(ConditionalWorkflow.Create);
+            var workflow5 = new Func<INode>(ForEachWorkflow.Create);
+            var workflow6 = new Func<INode>(BlockingWorkflow.Create);
+            var workflow7 = new Func<INode>(ForkedWorkflow.Create);
+            var workflowFactory = workflow6;
+            var workflowExecutionContext = await invoker.InvokeAsync(workflow6());
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
             var workflowState = workflowStateService.CreateState(workflowExecutionContext);
-            var nodeDriverRegistry = services.GetRequiredService<INodeDriverRegistry>();
-            var identityGraphService = services.GetRequiredService<IIdentityGraphService>();
-            var identityGraph = identityGraphService.CreateIdentityGraph(workflowExecutionContext.Root).ToList();
 
             if (workflowState.Bookmarks.Any())
             {
                 Console.WriteLine("Press enter to resume workflow.");
                 Console.ReadLine();
 
+                var workflow = workflowFactory();
                 foreach (var bookmarkState in workflowState.Bookmarks)
                 {
-                    var scheduledNodeState = bookmarkState.ScheduledNode;
-                    var blockingNode = identityGraph.First(x => x.NodeName == scheduledNodeState.NodeId);
-                    var resumeActionName = bookmarkState.ResumeActionName;
-                    var node = blockingNode.Node.Node;
-
-                    // Setup Resume delegate.
-                    var driver = nodeDriverRegistry.GetDriver(node);
-                    var driverType = driver!.GetType();
-                    var resumeMethodInfo = resumeActionName != null ? driverType.GetMethod(resumeActionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic) : null;
-                    var resumeDelegate = resumeMethodInfo != null ? (ExecuteNodeDelegate)Delegate.CreateDelegate(typeof(ExecuteNodeDelegate), driver, resumeMethodInfo) : Noop;
-
-                    // Setup Completion delegate
-                    var scheduledNode = new ScheduledNode(node);
-
-                    var bookmark = new Bookmark(scheduledNode, bookmarkState.Name, bookmarkState.Data, resumeDelegate);
-                    await invoker.ResumeAsync(bookmark, workflowExecutionContext.Root);
+                    await invoker.ResumeAsync(bookmarkState.Name, workflow, workflowState);
                 }
             }
         }
-
-        private static ValueTask Noop(NodeExecutionContext context) => new();
 
         private static IServiceProvider CreateServices()
         {

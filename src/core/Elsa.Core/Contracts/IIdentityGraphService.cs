@@ -6,5 +6,6 @@ namespace Elsa.Contracts
     public interface IIdentityGraphService
     {
         IEnumerable<NodeIdentity> CreateIdentityGraph(INode root);
+        IEnumerable<NodeIdentity> AssignIdentities(INode root);
     }
 }
