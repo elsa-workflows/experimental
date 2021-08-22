@@ -8,6 +8,13 @@ namespace Elsa.Activities.Containers
 {
     public class Sequence : Container
     {
+        public Sequence()
+        {
+        }
+
+        public Sequence(params IActivity[] activities) : base(activities)
+        {
+        }
     }
 
     public class SequenceDriver : ActivityDriver<Sequence>

@@ -19,13 +19,10 @@ namespace Elsa.Samples.Console1.Workflows
             for1.Iterate = new WriteLine(() => for1.CurrentValue.ToString()!);
 
             return new Sequence
-            {
-                Activities = new IActivity[]
-                {
-                    new WriteLine(() => $"Counting numbers from {for1.Start} to {for1.End}:"),
-                    for1
-                }
-            };
+            (
+                new WriteLine(() => $"Counting numbers from {for1.Start} to {for1.End}:"),
+                for1
+            );
         }
     }
 }
