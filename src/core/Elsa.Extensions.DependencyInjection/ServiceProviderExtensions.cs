@@ -10,6 +10,6 @@ namespace Microsoft.Extensions.DependencyInjection
             var pipeline = services.GetRequiredService<INodeExecutionPipeline>();
             pipeline.Setup(setup);
             return services;
-        } 
+        }
     }
 }

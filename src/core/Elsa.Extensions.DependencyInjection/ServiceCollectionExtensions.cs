@@ -1,15 +1,29 @@
 using System;
 using System.Linq;
+using Elsa.Activities.Console;
+using Elsa.Activities.Containers;
+using Elsa.Activities.ControlFlow;
+using Elsa.Activities.Primitives;
 using Elsa.Contracts;
+using Elsa.Expressions;
 using Elsa.Options;
 using Elsa.Pipelines.ActivityExecution;
+using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Options;
+using Elsa.Runtime.Providers;
 using Elsa.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddElsa(this IServiceCollection services)
+        public static IServiceCollection AddElsa(this IServiceCollection services) => services
+            .AddElsaCore()
+            .AddElsaRuntime()
+            .AddDefaultActivities()
+            .AddDefaultExpressionHandlers();
+
+        public static IServiceCollection AddElsaCore(this IServiceCollection services)
         {
             services.AddOptions<WorkflowEngineOptions>();
 
@@ -23,12 +37,38 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
                 .AddSingleton<IWorkflowStateService, WorkflowStateService>()
                 .AddSingleton<IActivitySchedulerFactory, ActivitySchedulerFactory>()
+                .AddSingleton<IActivityPortResolver, CodeActivityPortResolver>()
+                .AddSingleton<IActivityPortResolver, DynamicActivityPortResolver>()
                 .AddLogging();
         }
 
-        public static IServiceCollection AddNodeDriver<TDriver, TActivity>(this IServiceCollection services) where TDriver : class, IActivityDriver => services.AddNodeDriver<TDriver>(typeof(TActivity).Name);
+        private static IServiceCollection AddDefaultActivities(this IServiceCollection services) =>
+            services
+                .AddExpressionHandler<LiteralHandler>(typeof(Literal<>))
+                .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>))
+                .AddActivityDriver<SequenceDriver>()
+                .AddActivityDriver<WriteLineDriver>()
+                .AddActivityDriver<ReadLineDriver>()
+                .AddActivityDriver<IfDriver>()
+                .AddActivityDriver<ForDriver>()
+                .AddActivityDriver<EventDriver>()
+                .AddActivityDriver<ForkDriver>();
 
-        public static IServiceCollection AddNodeDriver<TDriver>(this IServiceCollection services, string? activityTypeName = default) where TDriver : class, IActivityDriver
+        private static IServiceCollection AddDefaultExpressionHandlers(this IServiceCollection services) =>
+            services
+                .AddExpressionHandler<LiteralHandler>(typeof(Literal<>))
+                .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>));
+
+        public static IServiceCollection AddElsaRuntime(this IServiceCollection services)
+        {
+            services.AddOptions<WorkflowRuntimeOptions>();
+
+            return services.AddWorkflowProvider<ConfigurationWorkflowProvider>();
+        }
+
+        public static IServiceCollection AddActivityDriver<TDriver, TActivity>(this IServiceCollection services) where TDriver : class, IActivityDriver => services.AddActivityDriver<TDriver>(typeof(TActivity).Name);
+
+        public static IServiceCollection AddActivityDriver<TDriver>(this IServiceCollection services, string? activityTypeName = default) where TDriver : class, IActivityDriver
         {
             var driverType = typeof(TDriver);
             var activityType = driverType.BaseType!.GetGenericArguments().FirstOrDefault();
@@ -60,5 +100,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
+        public static IServiceCollection AddWorkflowProvider<TProvider>(this IServiceCollection services) where TProvider : class, IWorkflowProvider
+        {
+            services.AddScoped<IWorkflowProvider, TProvider>();
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureWorkflowRuntime(this IServiceCollection services, Action<WorkflowRuntimeOptions> configure) => services.Configure(configure);
     }
 }

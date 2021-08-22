@@ -3,22 +3,22 @@
 This document describes the core architecture of the envisioned workflow engine.
 The library separates core layer 1 engine functionality from higher layers.
 
-## Node
+## Activity
 
-A node represents a single element within a node graph that can be executed and is implemented as a class implementing `INode`.
+A activity represents a single element within a activity graph that can be executed and is implemented as a class implementing `IActivity`.
 
 ```csharp
-interface INode
+interface IActivity
 {
    string Name { get; set; }
 }
 ```
 
-The node itself does not execute logic. This is instead handled by a corresponding node handler.
+The activity itself does not execute logic. This is instead handled by a corresponding activity handler.
 
-### Node Properties
+### Activity Properties
 
-Node properties exist in 3 categories:
+Activity properties exist in 3 categories:
 
 1. Input properties.
 2. Output properties.
@@ -30,33 +30,33 @@ An input property represents activity input that can be configured at design tim
 
 ### Output Properties
 
-When a node handler executes, it receives the node object itself. The handlers can update the node if it has output properties declared.
+When a activity handler executes, it receives the activity object itself. The handlers can update the activity if it has output properties declared.
 
 ### Ports
 
-A port represents a reference to a connected node. The node handler can schedule these nodes. For example, the `If` node has two ports: `True` and `False`.
-When the handler evaluates the condition (provided as an input property), it will schedule either the node stored in the `True` property or `False` property.
+A port represents a reference to a connected activity. The activity handler can schedule these activities. For example, the `If` activity has two ports: `True` and `False`.
+When the handler evaluates the condition (provided as an input property), it will schedule either the activity stored in the `True` property or `False` property.
 
 Example:
 
 ```csharp
-class IfElse : INode
+class IfElse : IActivity
 {
    [Input] IExpression<bool> Condition { get; set; }
-   [Port] INode True { get; set; }
-   [Port] INode False { get; set; }
+   [Port] IActivity True { get; set; }
+   [Port] IActivity False { get; set; }
 }
 
-class IfDriver : NodeDriver<If>
+class IfDriver : ActivityDriver<If>
 {
    IfDriver(IExpressionEvaluator expressionEvaluator)
    {
       _expressionEvaluator = expressionEvaluator;
    }
 
-   override async ValueTask<INodeExecutionResult> ExecuteAsync(If node, NodeExecutionContext context)
+   override async ValueTask<INodeExecutionResult> ExecuteAsync(If activity, NodeExecutionContext context)
    {
-      var result = _expressionEvaluator.EvaluateAsync(node.Condition, context.CancellationToken);
+      var result = _expressionEvaluator.EvaluateAsync(activity.Condition, context.CancellationToken);
       var nextNode = result ? True : False;
       
       return new ScheduleNodeResult(nextNode);
@@ -64,42 +64,42 @@ class IfDriver : NodeDriver<If>
 }
 ```
 
-## Node Driver
+## Activity Driver
 
-A node driver declares what node type they can execute and has a single `ExecuteAsync` method.
+An activity driver declares what activity type they can execute and has a single `ExecuteAsync` method.
 
 ```charp
 class NodeExecutionContext
 {
-   INode Node { get; }
+   IActivity Activity { get; }
    CancellationToken CancellationToken { get; }
 }
 
-interface INodeDriver
+interface IActivityDriver
 {
-   ValueTask<INodeExecutionResult> ExecuteAsync(NodeExecutionContext context);
+   ValueTask ExecuteAsync(NodeExecutionContext context);
 }
 
-abstract class NodeDriver<TNode> : INodeDriver
+abstract class ActivityDriver<TActivity> : IActivityDriver
 {
-   ValueTask<INodeExecutionResult> INodeDriver.ExecuteAsync(NodeExecutionContext context) => ExecuteAsync((TNode)context.Node, context);
-   protected abstract ValueTask<INodeExecutionResult> ExecuteAsync(TNode node, NodeExecutionContext context);
+   ValueTask IActivityDriver.ExecuteAsync(NodeExecutionContext context) => ExecuteAsync((TActivity)context.Activity, context);
+   protected abstract ValueTask ExecuteAsync(TActivity activity, NodeExecutionContext context);
 }
 ```
 
-## Container Nodes
+## Container Activities
 
-A container node is just like a regular node, but with the following additional properties:
+A container activity is just like a regular activity, but with the following additional properties:
 
-- `Nodes: ICollection<INode>`
+- `Activities: ICollection<IActivity>`
 - `Variables: IDictionary<string, object>`
 
 ## Middleware Pipelines
 
 The engine has different pipelines at different levels.
 
-- Node Execution Pipeline
+- Activity Execution Pipeline
 
-### Node Execution Pipeline
+### Activity Execution Pipeline
 
-This pipeline executes each middleware when executing a node.
+This pipeline executes each middleware when executing a activity.

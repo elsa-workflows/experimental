@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Elsa.Core\Elsa.Core.csproj" />
+      <ProjectReference Include="..\Elsa.Runtime\Elsa.Runtime.csproj" />
     </ItemGroup>
 
 </Project>

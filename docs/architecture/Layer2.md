@@ -1,6 +1,6 @@
-# Management
+# Runtime
 
-At the management level, the library deals with workflows and workflow instances as well as repository services to store and load workflows.
+At the runtime level, the engine deals with workflows and workflow instances as well as repository services to store and load workflows.
 
 ## Workflow
 
@@ -10,9 +10,8 @@ A workflow holds both the node graph as well as metadata about the workflow, suc
 class Workflow
 {
    string Id { get; set; }
-   string Name { get; set; }
    int Version { get; set; }
-   INode Root { get; set; }
+   IActivity Root { get; set; }
 }
 ```
 
@@ -26,6 +25,6 @@ class WorkflowInstance
    string Id { get; set; }
    string WorkflowId { get; set; }
    int WorkflowVersion { get; set; }
-   IDictionary<string, IDictionary<string, object>> NodeOutput { get; set; }
+   WorkflowState State { get; set; }
 }
 ```

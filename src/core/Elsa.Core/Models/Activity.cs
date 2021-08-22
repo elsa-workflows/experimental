@@ -17,5 +17,6 @@ namespace Elsa.Models
         public string ActivityType { get; set; }
         public IDictionary<string, object?> Input { get; set; } = new Dictionary<string, object?>();
         public IDictionary<string, object?> Output { get; set; } = new Dictionary<string, object?>();
+        public IDictionary<string, IActivity?> Ports { get; set; } = new Dictionary<string, IActivity?>();
     }
 }

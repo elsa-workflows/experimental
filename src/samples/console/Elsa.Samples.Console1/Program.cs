@@ -2,11 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Activities.Console;
-using Elsa.Activities.Containers;
-using Elsa.Activities.ControlFlow;
-using Elsa.Activities.Primitives;
 using Elsa.Contracts;
-using Elsa.Expressions;
 using Elsa.Pipelines.ActivityExecution.Components;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,17 +54,8 @@ namespace Elsa.Samples.Console1
             var services = new ServiceCollection()
                 .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
                 .AddElsa()
-                .AddExpressionHandler<LiteralHandler>(typeof(Literal<>))
-                .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>))
-                .AddNodeDriver<SequenceDriver>()
-                .AddNodeDriver<WriteLineDriver>()
-                .AddNodeDriver<ReadLineDriver>()
-                .AddNodeDriver<IfDriver>()
-                .AddNodeDriver<ForDriver>()
-                .AddNodeDriver<EventDriver>()
-                .AddNodeDriver<ForkDriver>()
-                .AddNodeDriver<MyWriteLineDriver>("MyWriteLine")
-                .AddNodeDriver<WriteLineDriver, CustomWriteLine>();
+                .AddActivityDriver<MyWriteLineDriver>("MyWriteLine")
+                .AddActivityDriver<WriteLineDriver, CustomWriteLine>();
 
             return services.BuildServiceProvider();
         }
