@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using Elsa.Runtime.Models;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Elsa.Contracts;
 
 namespace Elsa.Runtime.Contracts
 {
@@ -9,6 +9,6 @@ namespace Elsa.Runtime.Contracts
     /// </summary>
     public interface IWorkflowProvider
     {
-        IEnumerable<Workflow> GetWorkflowsAsync(CancellationToken cancellationToken = default);
+        ValueTask<IActivity?> FindByIdAsync(string id, CancellationToken cancellationToken = default);
     }
 }

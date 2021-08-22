@@ -5,7 +5,7 @@ namespace Elsa.Runtime.Models
     /// <summary>
     /// Represents a workflow definition.
     /// </summary>
-    public class Workflow
+    public class WorkflowDefinition
     {
         public string Id { get; set; } = default!;
         private int Version { get; set; } = 1;

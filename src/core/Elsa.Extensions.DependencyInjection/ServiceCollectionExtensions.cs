@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services
                 .AddSingleton<IActivityInvoker, ActivityInvoker>()
-                .AddSingleton<IActivityDriverRegistry, ActivityDriverRegistry>()
+                .AddScoped<IActivityDriverRegistry, ActivityDriverRegistry>()
                 .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
                 .AddSingleton<IExpressionHandlerRegistry, ExpressionHandlerRegistry>()
                 .AddSingleton<INodeExecutionPipeline, NodeExecutionPipeline>()
@@ -41,11 +41,18 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IActivityPortResolver, DynamicActivityPortResolver>()
                 .AddLogging();
         }
+        
+        public static IServiceCollection AddElsaRuntime(this IServiceCollection services)
+        {
+            services.AddOptions<WorkflowRuntimeOptions>();
+
+            return services
+                .AddScoped<IWorkflowStore, WorkflowStore>()
+                .AddWorkflowProvider<ConfigurationWorkflowProvider>();
+        }
 
         private static IServiceCollection AddDefaultActivities(this IServiceCollection services) =>
             services
-                .AddExpressionHandler<LiteralHandler>(typeof(Literal<>))
-                .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>))
                 .AddActivityDriver<SequenceDriver>()
                 .AddActivityDriver<WriteLineDriver>()
                 .AddActivityDriver<ReadLineDriver>()
@@ -58,13 +65,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddExpressionHandler<LiteralHandler>(typeof(Literal<>))
                 .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>));
-
-        public static IServiceCollection AddElsaRuntime(this IServiceCollection services)
-        {
-            services.AddOptions<WorkflowRuntimeOptions>();
-
-            return services.AddWorkflowProvider<ConfigurationWorkflowProvider>();
-        }
 
         public static IServiceCollection AddActivityDriver<TDriver, TActivity>(this IServiceCollection services) where TDriver : class, IActivityDriver => services.AddActivityDriver<TDriver>(typeof(TActivity).Name);
 
