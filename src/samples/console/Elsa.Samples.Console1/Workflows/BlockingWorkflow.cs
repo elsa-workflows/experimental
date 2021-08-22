@@ -7,11 +7,11 @@ namespace Elsa.Samples.Console1.Workflows
 {
     public static class BlockingWorkflow
     {
-        public static INode Create()
+        public static IActivity Create()
         {
             return new Sequence
             {
-                Nodes = new INode[]
+                Activities = new IActivity[]
                 {
                     new WriteLine("Waiting for event..."),
                     new Event("SomeEvent"), // Block here.

@@ -2,21 +2,21 @@ using System;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Pipelines.NodeExecution.Components;
+using Elsa.Pipelines.ActivityExecution.Components;
 
-namespace Elsa.Pipelines.NodeExecution
+namespace Elsa.Pipelines.ActivityExecution
 {
     public class NodeExecutionPipeline : INodeExecutionPipeline
     {
         private readonly IServiceProvider _serviceProvider;
-        private NodeMiddlewareDelegate? _pipeline;
+        private ActivityMiddlewareDelegate? _pipeline;
 
         public NodeExecutionPipeline(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public NodeMiddlewareDelegate Setup(Action<INodeExecutionBuilder> setup)
+        public ActivityMiddlewareDelegate Setup(Action<INodeExecutionBuilder> setup)
         {
             var builder = new NodeExecutionBuilder(_serviceProvider);
             setup(builder);
@@ -24,14 +24,14 @@ namespace Elsa.Pipelines.NodeExecution
             return _pipeline;
         }
 
-        public async Task ExecuteAsync(NodeExecutionContext context)
+        public async Task ExecuteAsync(ActivityExecutionContext context)
         {
             var pipeline = _pipeline ?? CreateDefaultPipeline();
             
             await pipeline(context);
         }
 
-        private NodeMiddlewareDelegate CreateDefaultPipeline() => Setup(x => x
+        private ActivityMiddlewareDelegate CreateDefaultPipeline() => Setup(x => x
             .UseNodeDrivers()
         );
     }

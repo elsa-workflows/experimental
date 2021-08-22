@@ -7,8 +7,12 @@ using Elsa.Services;
 
 namespace Elsa.Nodes.Console
 {
-    public class WriteLine : Node
+    public class WriteLine : CodeActivity
     {
+        public WriteLine()
+        {
+        }
+        
         public WriteLine(string text) : this(new Literal<string>(text))
         {
         }
@@ -17,15 +21,15 @@ namespace Elsa.Nodes.Console
         {
         }
         
-        public WriteLine(Func<NodeExecutionContext, string> text) : this(new Delegate<string>(text))
+        public WriteLine(Func<ActivityExecutionContext, string> text) : this(new Delegate<string>(text))
         {
         }
 
         public WriteLine(IExpression<string> text) => Text = text;
-        public IExpression<string> Text { get; set; }
+        public IExpression<string> Text { get; set; } = default!;
     }
 
-    public class WriteLineDriver : NodeDriver<WriteLine>
+    public class WriteLineDriver : ActivityDriver<WriteLine>
     {
         private readonly IExpressionEvaluator _expressionEvaluator;
 
@@ -34,9 +38,9 @@ namespace Elsa.Nodes.Console
             _expressionEvaluator = expressionEvaluator;
         }
 
-        protected override async ValueTask ExecuteAsync(WriteLine node, NodeExecutionContext context)
+        protected override async ValueTask ExecuteAsync(WriteLine activity, ActivityExecutionContext context)
         {
-            var text = await _expressionEvaluator.EvaluateAsync(node.Text, context);
+            var text = await _expressionEvaluator.EvaluateAsync(activity.Text, context);
             System.Console.WriteLine(text);
         }
     }

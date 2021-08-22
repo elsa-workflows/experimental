@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Elsa.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Elsa.Pipelines.NodeExecution
+namespace Elsa.Pipelines.ActivityExecution
 {
     public static class NodeExecutionMiddlewareExtensions
     {
@@ -20,7 +20,7 @@ namespace Elsa.Pipelines.NodeExecution
             {
                 var invokeMethod = GetInvokeMethod(middleware);
                 var instance = ActivatorUtilities.CreateInstance(builder.ApplicationServices, middleware, next);
-                return (NodeMiddlewareDelegate)invokeMethod.CreateDelegate(typeof(NodeMiddlewareDelegate), instance);
+                return (ActivityMiddlewareDelegate)invokeMethod.CreateDelegate(typeof(ActivityMiddlewareDelegate), instance);
             });
         }
 

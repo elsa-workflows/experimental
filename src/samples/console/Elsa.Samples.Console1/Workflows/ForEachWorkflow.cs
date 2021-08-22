@@ -7,7 +7,7 @@ namespace Elsa.Samples.Console1.Workflows
 {
     public static class ForEachWorkflow
     {
-        public static INode Create()
+        public static IActivity Create()
         {
             var for1 = new For
             {
@@ -16,11 +16,11 @@ namespace Elsa.Samples.Console1.Workflows
                 Next = new WriteLine("Done.")
             };
 
-            for1.Iterate = new WriteLine(() => for1.CurrentValue.ToString());
+            for1.Iterate = new WriteLine(() => for1.CurrentValue.ToString()!);
 
             return new Sequence
             {
-                Nodes = new INode[]
+                Activities = new IActivity[]
                 {
                     new WriteLine(() => $"Counting numbers from {for1.Start} to {for1.End}:"),
                     for1

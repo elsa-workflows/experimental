@@ -5,17 +5,17 @@ using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Extensions;
 using Elsa.Models;
-using Elsa.Models.State;
+using Elsa.State;
 
 namespace Elsa.Services
 {
     public class WorkflowStateService : IWorkflowStateService
     {
-        private readonly INodeDriverRegistry _nodeDriverRegistry;
+        private readonly IActivityDriverRegistry _activityDriverRegistry;
 
-        public WorkflowStateService(INodeDriverRegistry nodeDriverRegistry)
+        public WorkflowStateService(IActivityDriverRegistry activityDriverRegistry)
         {
-            _nodeDriverRegistry = nodeDriverRegistry;
+            _activityDriverRegistry = activityDriverRegistry;
         }
         
         public WorkflowState CreateState(WorkflowExecutionContext workflowExecutionContext)
@@ -42,8 +42,8 @@ namespace Elsa.Services
 
             foreach (var entry in completionCallbacks)
             {
-                var node = entry.Key;
-                state.CompletionCallbacks[node.Name] = entry.Value.Method.Name;
+                var activity = entry.Key;
+                state.CompletionCallbacks[activity.ActivityId] = entry.Value.Method.Name;
             }
         }
         
@@ -53,10 +53,11 @@ namespace Elsa.Services
             {
                 var nodeId = completionCallbackEntry.Key;
                 var node = workflowExecutionContext.FindNodeById(nodeId);
-                var driver = _nodeDriverRegistry.GetDriver(node)!;
+                var activity = node.Activity;
+                var driver = _activityDriverRegistry.GetDriver(activity)!;
                 var callbackName = completionCallbackEntry.Value;
                 var callbackDelegate = driver.GetNodeCompletionCallback(callbackName);
-                workflowExecutionContext.AddCompletionCallback(node, callbackDelegate);
+                workflowExecutionContext.AddCompletionCallback(activity, callbackDelegate);
             }
         }
 
@@ -64,8 +65,8 @@ namespace Elsa.Services
         {
             var bookmarkStates =
                 from bookmark in workflowExecutionContext.Bookmarks
-                let targetId = bookmark.Target.Node.Name
-                let scheduledNodeState = new ScheduledNodeState(targetId)
+                let targetId = bookmark.Target.Activity.ActivityId
+                let scheduledNodeState = new ScheduledActivityState(targetId)
                 select new BookmarkState(scheduledNodeState, bookmark.Name, bookmark.Data, bookmark.Resume?.Method.Name);
 
             state.Bookmarks = bookmarkStates.ToList();
@@ -75,9 +76,9 @@ namespace Elsa.Services
         {
             var bookmarks =
                 from bookmarkState in state.Bookmarks
-                let node = workflowExecutionContext.FindNodeById(bookmarkState.ScheduledNode.NodeId)
-                let scheduledNode = new ScheduledNode(node)
-                let driver = _nodeDriverRegistry.GetDriver(node)
+                let activity = workflowExecutionContext.FindActivityById(bookmarkState.ScheduledActivity.ActivityId)
+                let scheduledNode = new ScheduledActivity(activity)
+                let driver = _activityDriverRegistry.GetDriver(activity)
                 let resumeDelegate = bookmarkState.ResumeActionName != null ? driver.GetResumeNodeDelegate(bookmarkState.ResumeActionName) : default
                 select new Bookmark(scheduledNode, bookmarkState.Name, bookmarkState.Data, resumeDelegate);
 
@@ -86,16 +87,16 @@ namespace Elsa.Services
 
         private void AddOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
-            foreach (var node in workflowExecutionContext.Graph)
-                AddOutput(state, node.Node);
+            foreach (var node in workflowExecutionContext.Nodes)
+                AddOutput(state, node);
         }
 
-        private void AddOutput(WorkflowState state, INode node)
+        private void AddOutput(WorkflowState state, Node node)
         {
             var output = GetOutputFrom(node);
 
             if (output.Any())
-                state.ActivityOutput.Add(node.Name, output);
+                state.ActivityOutput.Add(node.NodeId, output);
         }
         
         private void ApplyOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
@@ -116,7 +117,10 @@ namespace Elsa.Services
             }
         }
 
-        private IDictionary<string, object?> GetOutputFrom(INode node) =>
+        // private IDictionary<string, object?> GetOutputFrom(INode node) =>
+        //     node.GetType().GetProperties(BindingFlags.Public).Where(x => x.GetCustomAttribute<OutputAttribute>() != null).ToDictionary(x => x.Name, x => (object?)x.GetValue(node));
+        
+        private IDictionary<string, object?> GetOutputFrom(Node node) =>
             node.GetType().GetProperties(BindingFlags.Public).Where(x => x.GetCustomAttribute<OutputAttribute>() != null).ToDictionary(x => x.Name, x => (object?)x.GetValue(node));
     }
 }

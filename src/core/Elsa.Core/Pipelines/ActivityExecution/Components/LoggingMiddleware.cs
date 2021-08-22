@@ -4,22 +4,22 @@ using Elsa.Contracts;
 using Elsa.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Elsa.Pipelines.NodeExecution.Components
+namespace Elsa.Pipelines.ActivityExecution.Components
 {
     public class LoggingMiddleware
     {
-        private readonly NodeMiddlewareDelegate _next;
+        private readonly ActivityMiddlewareDelegate _next;
         private readonly ILogger _logger;
         private readonly Stopwatch _stopwatch;
 
-        public LoggingMiddleware(NodeMiddlewareDelegate next, ILogger<LoggingMiddleware> logger)
+        public LoggingMiddleware(ActivityMiddlewareDelegate next, ILogger<LoggingMiddleware> logger)
         {
             _next = next;
             _logger = logger;
             _stopwatch = new Stopwatch();
         }
 
-        public async ValueTask InvokeAsync(NodeExecutionContext context)
+        public async ValueTask InvokeAsync(ActivityExecutionContext context)
         {
             var node = context.Node;
             _logger.LogDebug("Executing node {Node}", node.GetType().Name);

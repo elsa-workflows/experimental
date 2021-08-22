@@ -1,5 +1,5 @@
 using Elsa.Models;
-using Elsa.Models.State;
+using Elsa.State;
 
 namespace Elsa.Contracts
 {

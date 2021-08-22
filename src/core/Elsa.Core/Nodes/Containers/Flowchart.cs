@@ -3,7 +3,7 @@ using Elsa.Contracts;
 
 namespace Elsa.Nodes.Containers
 {
-    public record Connection(INode Source, INode Target);
+    public record Connection(IActivity Source, IActivity Target);
     
     public class Flowchart : Container
     {

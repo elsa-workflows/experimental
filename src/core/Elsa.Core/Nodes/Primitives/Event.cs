@@ -5,17 +5,21 @@ using Elsa.Services;
 
 namespace Elsa.Nodes.Primitives
 {
-    public class Event : Node
+    public class Event : CodeActivity
     {
+        public Event()
+        {
+        }
+        
         public Event(string eventName) => EventName = eventName;
 
-        [Input] public string EventName { get; set; }
+        [Input] public string EventName { get; set; } = default!;
         [Output] public object? Payload { get; set; }
     }
 
-    public class EventDriver : NodeDriver<Event>
+    public class EventDriver : ActivityDriver<Event>
     {
-        protected override void Execute(Event node, NodeExecutionContext context) =>
-            context.SetBookmark(nameof(Event), new Dictionary<string, object?> { [nameof(Event.EventName)] = node.EventName });
+        protected override void Execute(Event activity, ActivityExecutionContext context) =>
+            context.SetBookmark(nameof(Event), new Dictionary<string, object?> { [nameof(Event.EventName)] = activity.EventName });
     }
 }

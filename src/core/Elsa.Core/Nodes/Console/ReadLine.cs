@@ -4,16 +4,16 @@ using Elsa.Services;
 
 namespace Elsa.Nodes.Console
 {
-    public class ReadLine : Node
+    public class ReadLine : CodeActivity
     {
         [Output] public string? Output { get; set; }
     }
 
-    public class ReadLineDriver : NodeDriver<ReadLine>
+    public class ReadLineDriver : ActivityDriver<ReadLine>
     {
-        protected override void Execute(ReadLine node, NodeExecutionContext context)
+        protected override void Execute(ReadLine activity, ActivityExecutionContext context)
         {
-            node.Output = System.Console.ReadLine();
+            activity.Output = System.Console.ReadLine();
         }
     }
 }

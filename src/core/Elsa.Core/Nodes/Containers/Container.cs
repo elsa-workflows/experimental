@@ -5,9 +5,9 @@ using Elsa.Models;
 
 namespace Elsa.Nodes.Containers
 {
-    public abstract class Container : Node
+    public abstract class Container : CodeActivity
     {
-        [Ports]public ICollection<INode> Nodes { get; set; } = new List<INode>();
+        [Ports]public ICollection<IActivity> Activities { get; set; } = new List<IActivity>();
         public IDictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
     }
 }

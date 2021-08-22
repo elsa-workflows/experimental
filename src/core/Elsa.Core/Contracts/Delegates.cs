@@ -3,9 +3,9 @@ using Elsa.Models;
 
 namespace Elsa.Contracts
 {
-    public delegate ValueTask NodeMiddlewareDelegate(NodeExecutionContext context);
+    public delegate ValueTask ActivityMiddlewareDelegate(ActivityExecutionContext context);
 
-    public delegate ValueTask ExecuteNodeDelegate(NodeExecutionContext context);
+    public delegate ValueTask ExecuteActivityDelegate(ActivityExecutionContext context);
 
-    public delegate ValueTask NodeCompletionCallback(NodeExecutionContext context, INode completedNode);
+    public delegate ValueTask ActivityCompletionCallback(ActivityExecutionContext context, IActivity completedActivity);
 }

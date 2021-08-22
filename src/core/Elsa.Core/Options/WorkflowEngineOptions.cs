@@ -7,22 +7,22 @@ namespace Elsa.Options
 {
     public class WorkflowEngineOptions
     {
-        private readonly IDictionary<Type, Type> _nodeDrivers = new Dictionary<Type, Type>();
+        private readonly IDictionary<string, Type> _nodeDrivers = new Dictionary<string, Type>();
         private readonly IDictionary<Type, Type> _expressionHandlers = new Dictionary<Type, Type>();
 
         public WorkflowEngineOptions()
         {
-            NodeDrivers = new ReadOnlyDictionary<Type, Type>(_nodeDrivers);
+            Drivers = new ReadOnlyDictionary<string, Type>(_nodeDrivers);
             ExpressionHandlers = new ReadOnlyDictionary<Type, Type>(_expressionHandlers);
         }
         
-        public IDictionary<Type, Type> NodeDrivers { get; }
+        public IDictionary<string, Type> Drivers { get; }
         public IDictionary<Type, Type> ExpressionHandlers { get; }
-        public WorkflowEngineOptions RegisterNodeDriver<TNode, TDriver>() where TNode : INode where TDriver : INodeDriver => RegisterNodeDriver(typeof(TNode), typeof(TDriver));
+        public WorkflowEngineOptions RegisterNodeDriver<TNode, TDriver>() where TNode : IActivity where TDriver : IActivityDriver => RegisterNodeDriver(typeof(TNode).Name, typeof(TDriver));
 
-        public WorkflowEngineOptions RegisterNodeDriver(Type node, Type driver)
+        public WorkflowEngineOptions RegisterNodeDriver(string nodeType, Type driver)
         {
-            _nodeDrivers.Add(node, driver);
+            _nodeDrivers.Add(nodeType, driver);
             return this;
         }
 

@@ -14,30 +14,30 @@ namespace Elsa.Nodes.ControlFlow
         GreaterThanOrEqual
     }
 
-    public class For : Node
+    public class For : CodeActivity
     {
         [Input] public int Start { get; set; } = 0;
         [Input] public int End { get; set; }
         [Input] public int Step { get; set; } = 1;
         [Input] public ForOperator Operator { get; set; } = ForOperator.LessThanOrEqual;
-        [Port] public INode? Iterate { get; set; }
-        [Port] public INode? Next { get; set; }
+        [Port] public IActivity? Iterate { get; set; }
+        [Port] public IActivity? Next { get; set; }
         public int? CurrentValue { get; set; }
     }
 
-    public class ForDriver : NodeDriver<For>
+    public class ForDriver : ActivityDriver<For>
     {
-        protected override void Execute(For node, NodeExecutionContext context)
+        protected override void Execute(For activity, ActivityExecutionContext context)
         {
-            var iterateNode = node.Iterate;
+            var iterateNode = activity.Iterate;
 
             if (iterateNode == null)
                 return;
 
-            var end = node.End;
-            var currentValue = node.CurrentValue != null ? node.CurrentValue + node.Step : node.Start;
+            var end = activity.End;
+            var currentValue = activity.CurrentValue != null ? activity.CurrentValue + activity.Step : activity.Start;
 
-            var loop = node.Operator switch
+            var loop = activity.Operator switch
             {
                 ForOperator.LessThan => currentValue < end,
                 ForOperator.LessThanOrEqual => currentValue <= end,
@@ -48,15 +48,15 @@ namespace Elsa.Nodes.ControlFlow
 
             if (loop)
             {
-                node.CurrentValue = currentValue;
-                context.ScheduleNode(iterateNode);
+                activity.CurrentValue = currentValue;
+                context.ScheduleActivity(iterateNode);
                 return;
             }
 
-            node.CurrentValue = null;
+            activity.CurrentValue = null;
 
-            if (node.Next != null)
-                context.ScheduleNode(node.Next);
+            if (activity.Next != null)
+                context.ScheduleActivity(activity.Next);
         }
     }
 }

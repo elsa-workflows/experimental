@@ -5,6 +5,6 @@ namespace Elsa.Contracts
 {
     public interface IExpressionHandler
     {
-        ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, NodeExecutionContext context);
+        ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, ActivityExecutionContext context);
     }
 }

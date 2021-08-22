@@ -16,7 +16,7 @@ namespace Elsa.Services
             _logger = logger;
         }
         
-        public async ValueTask<T?> EvaluateAsync<T>(IExpression<T> expression, NodeExecutionContext context)
+        public async ValueTask<T?> EvaluateAsync<T>(IExpression<T> expression, ActivityExecutionContext context)
         {
             var handler = _registry.GetHandler(expression);
             

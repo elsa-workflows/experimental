@@ -8,13 +8,13 @@ namespace Elsa.Samples.Console1.Workflows
 {
     public static class ConditionalWorkflow
     {
-        public static INode Create()
+        public static IActivity Create()
         {
             var readLine1 = new ReadLine();
 
             return new Sequence
             {
-                Nodes = new INode[]
+                Activities = new IActivity[]
                 {
                     new WriteLine("What's your age?"),
                     readLine1,
@@ -23,7 +23,7 @@ namespace Elsa.Samples.Console1.Workflows
                         Condition = new Delegate<bool>(() => int.Parse(readLine1.Output!) >= 16),
                         Then = new Sequence
                         {
-                            Nodes = new INode[]
+                            Activities = new IActivity[]
                             {
                                 new WriteLine("Enjoy your driver's license!"),
                                 new WriteLine("But be careful!")

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 
-namespace Elsa.Pipelines.NodeExecution
+namespace Elsa.Pipelines.ActivityExecution
 {
     public class NodeExecutionBuilder : INodeExecutionBuilder
     {
         private const string ServicesKey = "node-execution.Services";
-        private readonly IList<Func<NodeMiddlewareDelegate, NodeMiddlewareDelegate>> _components = new List<Func<NodeMiddlewareDelegate, NodeMiddlewareDelegate>>();
+        private readonly IList<Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate>> _components = new List<Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate>>();
 
         public NodeExecutionBuilder(IServiceProvider serviceProvider)
         {
@@ -24,15 +24,15 @@ namespace Elsa.Pipelines.NodeExecution
             set => SetProperty(ServicesKey, value);
         }
 
-        public INodeExecutionBuilder Use(Func<NodeMiddlewareDelegate, NodeMiddlewareDelegate> middleware)
+        public INodeExecutionBuilder Use(Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate> middleware)
         {
             _components.Add(middleware);
             return this;
         }
         
-        public NodeMiddlewareDelegate Build()
+        public ActivityMiddlewareDelegate Build()
         {
-            NodeMiddlewareDelegate pipeline = _ => new ValueTask();
+            ActivityMiddlewareDelegate pipeline = _ => new ValueTask();
 
             foreach (var component in _components.Reverse()) 
                 pipeline = component(pipeline);

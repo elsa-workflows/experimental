@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Elsa.Models.State
+namespace Elsa.State
 {
     public class WorkflowState
     {

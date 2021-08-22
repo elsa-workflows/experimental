@@ -12,7 +12,7 @@ namespace Elsa.Expressions
     
     public class LiteralHandler : IExpressionHandler
     {
-        public ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, NodeExecutionContext context)
+        public ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, ActivityExecutionContext context)
         {
             var literalExpression = (Literal<T>)expression;
             var value = literalExpression.Value;

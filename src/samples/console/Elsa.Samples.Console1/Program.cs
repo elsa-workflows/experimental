@@ -7,7 +7,7 @@ using Elsa.Nodes.Console;
 using Elsa.Nodes.Containers;
 using Elsa.Nodes.ControlFlow;
 using Elsa.Nodes.Primitives;
-using Elsa.Pipelines.NodeExecution.Components;
+using Elsa.Pipelines.ActivityExecution.Components;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,17 +23,20 @@ namespace Elsa.Samples.Console1
                 .UseNodeDrivers()
             );
 
-            var invoker = services.GetRequiredService<INodeInvoker>();
-            var workflow1 = new Func<INode>(HelloWorldWorkflow.Create);
-            var workflow2 = new Func<INode>(HelloGoodbyeWorkflow.Create);
-            var workflow3 = new Func<INode>(GreetingWorkflow.Create);
-            var workflow4 = new Func<INode>(ConditionalWorkflow.Create);
-            var workflow5 = new Func<INode>(ForEachWorkflow.Create);
-            var workflow6 = new Func<INode>(BlockingWorkflow.Create);
-            var workflow7 = new Func<INode>(ForkedWorkflow.Create);
-            
-            var workflowFactory = workflow6;
-            var workflowExecutionContext = await invoker.InvokeAsync(workflowFactory());
+            var invoker = services.GetRequiredService<IActivityInvoker>();
+            var workflow1 = new Func<IActivity>(HelloWorldWorkflow.Create);
+            var workflow2 = new Func<IActivity>(HelloGoodbyeWorkflow.Create);
+            var workflow3 = new Func<IActivity>(GreetingWorkflow.Create);
+            var workflow4 = new Func<IActivity>(ConditionalWorkflow.Create);
+            var workflow5 = new Func<IActivity>(ForEachWorkflow.Create);
+            var workflow6 = new Func<IActivity>(BlockingWorkflow.Create);
+            var workflow7 = new Func<IActivity>(ForkedWorkflow.Create);
+            var workflow8 = new Func<IActivity>(DynamicNodeWorkflow.Create);
+            var workflow9 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
+
+            var workflowFactory = workflow9;
+            var workflowGraph = workflowFactory();
+            var workflowExecutionContext = await invoker.InvokeAsync(workflowGraph);
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
             var workflowState = workflowStateService.CreateState(workflowExecutionContext);
 
@@ -42,10 +45,10 @@ namespace Elsa.Samples.Console1
                 Console.WriteLine("Press enter to resume workflow.");
                 Console.ReadLine();
 
-                var workflow = workflowFactory();
+                workflowGraph = workflowFactory();
                 foreach (var bookmarkState in workflowState.Bookmarks)
                 {
-                    await invoker.ResumeAsync(bookmarkState.Name, workflow, workflowState);
+                    await invoker.ResumeAsync(bookmarkState.Name, workflowGraph, workflowState);
                 }
             }
         }
@@ -63,7 +66,9 @@ namespace Elsa.Samples.Console1
                 .AddNodeDriver<IfDriver>()
                 .AddNodeDriver<ForDriver>()
                 .AddNodeDriver<EventDriver>()
-                .AddNodeDriver<ForkDriver>();
+                .AddNodeDriver<ForkDriver>()
+                .AddNodeDriver<MyWriteLineDriver>("MyWriteLine")
+                .AddNodeDriver<WriteLineDriver, CustomWriteLine>();
 
             return services.BuildServiceProvider();
         }

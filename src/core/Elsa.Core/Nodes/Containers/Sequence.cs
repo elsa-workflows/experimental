@@ -10,28 +10,28 @@ namespace Elsa.Nodes.Containers
     {
     }
 
-    public class SequenceDriver : NodeDriver<Sequence>
+    public class SequenceDriver : ActivityDriver<Sequence>
     {
-        protected override void Execute(Sequence node, NodeExecutionContext context)
+        protected override void Execute(Sequence activity, ActivityExecutionContext context)
         {
-            var childNodes = node.Nodes.ToList();
-            var firstNode = childNodes.FirstOrDefault();
+            var childActivities = activity.Activities.ToList();
+            var firstActivity = childActivities.FirstOrDefault();
 
-            if (firstNode != null)
-                context.ScheduleNode(firstNode, OnChildComplete);
+            if (firstActivity != null)
+                context.ScheduleActivity(firstActivity, OnChildComplete);
         }
 
-        private ValueTask OnChildComplete(NodeExecutionContext childContext, INode owner)
+        private ValueTask OnChildComplete(ActivityExecutionContext childContext, IActivity owner)
         {
             var sequence = (Sequence)owner;
-            var childNodes = sequence.Nodes.ToList();
-            var completedNode = childContext.Node;
-            var nextIndex = childNodes.IndexOf(completedNode) + 1;
+            var childActivities = sequence.Activities.ToList();
+            var completedActivity = childContext.Activity;
+            var nextIndex = childActivities.IndexOf(completedActivity) + 1;
 
-            if (nextIndex < childNodes.Count)
+            if (nextIndex < childActivities.Count)
             {
-                var nextNode = childNodes.ElementAt(nextIndex);
-                childContext.WorkflowExecutionContext.Schedule(nextNode, owner, OnChildComplete);
+                var nextActivity = childActivities.ElementAt(nextIndex);
+                childContext.WorkflowExecutionContext.Schedule(nextActivity, owner, OnChildComplete);
             }
 
             return new ValueTask();

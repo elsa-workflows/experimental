@@ -8,20 +8,20 @@ namespace Elsa.Samples.Console1.Workflows
 {
     public static class ForkedWorkflow
     {
-        public static INode Create()
+        public static IActivity Create()
         {
             return new Sequence
             {
-                Nodes = new INode[]
+                Activities = new IActivity[]
                 {
                     new WriteLine("Forking..."),
                     new Fork
                     {
-                        Branches = new INode[]
+                        Branches = new IActivity[]
                         {
                             new Sequence
                             {
-                                Nodes = new INode[]
+                                Activities = new IActivity[]
                                 {
                                     new WriteLine("Branch 1 (blocking)"),
                                     new Event("Branch1"),

@@ -3,28 +3,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Models.State;
+using Elsa.State;
 
 namespace Elsa.Services
 {
-    public class NodeInvoker : INodeInvoker
+    public class ActivityInvoker : IActivityInvoker
     {
-        private static ValueTask Noop(NodeExecutionContext context) => new();
+        private static ValueTask Noop(ActivityExecutionContext context) => new();
         
         private readonly INodeExecutionPipeline _pipeline;
-        private readonly INodeSchedulerFactory _schedulerFactory;
+        private readonly IActivitySchedulerFactory _schedulerFactory;
         private readonly IIdentityGraphService _identityGraphService;
         private readonly IWorkflowStateService _workflowStateService;
+        private readonly IActivityWalker _activityWalker;
 
-        public NodeInvoker(INodeExecutionPipeline pipeline, INodeSchedulerFactory schedulerFactory, IIdentityGraphService identityGraphService, IWorkflowStateService workflowStateService)
+        public ActivityInvoker(INodeExecutionPipeline pipeline, IActivitySchedulerFactory schedulerFactory, IIdentityGraphService identityGraphService, IWorkflowStateService workflowStateService, IActivityWalker activityWalker)
         {
             _pipeline = pipeline;
             _schedulerFactory = schedulerFactory;
             _identityGraphService = identityGraphService;
             _workflowStateService = workflowStateService;
+            _activityWalker = activityWalker;
         }
 
-        public async Task<WorkflowExecutionContext> ResumeAsync(string bookmarkName, INode root, WorkflowState workflowState, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> ResumeAsync(string bookmarkName, IActivity root, WorkflowState workflowState, CancellationToken cancellationToken = default)
         {
             var workflowExecutionContext = CreateWorkflowExecutionContext(root, workflowState);
             var bookmark = workflowExecutionContext.PopBookmark(bookmarkName);
@@ -40,39 +42,39 @@ namespace Elsa.Services
             return await InvokeAsync(workflowExecutionContext, executeDelegate, cancellationToken);
         }
 
-        public async Task<WorkflowExecutionContext> InvokeAsync(INode node, INode? root = default, ExecuteNodeDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> InvokeAsync(IActivity activity, IActivity? root = default, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
-            var currentNode = new ScheduledNode(node);
+            var currentNode = new ScheduledActivity(activity);
             return await InvokeAsync(currentNode, root, null, executeNodeDelegate, cancellationToken);
         }
 
-        private async Task<WorkflowExecutionContext> InvokeAsync(ScheduledNode scheduledNode, INode? root = default, WorkflowState? workflowState = default, ExecuteNodeDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
+        private async Task<WorkflowExecutionContext> InvokeAsync(ScheduledActivity scheduledActivity, IActivity? root = default, WorkflowState? workflowState = default, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
             // If no root was provided, it means the node *is* the root node.
-            root ??= scheduledNode.Node;
+            root ??=  scheduledActivity.Activity;
             
             // Setup a workflow execution context.
             var workflowExecutionContext = CreateWorkflowExecutionContext(root, workflowState);
             
             // Schedule the first node.
-            workflowExecutionContext.Scheduler.Schedule(scheduledNode);
+            workflowExecutionContext.Scheduler.Schedule(scheduledActivity);
 
             return await InvokeAsync(workflowExecutionContext, executeNodeDelegate, cancellationToken);
         }
 
-        private WorkflowExecutionContext CreateWorkflowExecutionContext(INode root, WorkflowState? workflowState = default)
+        private WorkflowExecutionContext CreateWorkflowExecutionContext(IActivity root, WorkflowState? workflowState = default)
         {
+            // Build graph.
+            var graph = _activityWalker.Walk(root);
+            
             // Assign identities.
-            var identityGraph = _identityGraphService.AssignIdentities(root);
-
-            // Build a flattened graph of all nodes in the workflow.
-            var graph = identityGraph.Select(x => x.Node).ToList();
+            _identityGraphService.AssignIdentities(graph);
 
             // Create scheduler.
             var scheduler = _schedulerFactory.CreateScheduler();
 
             // Setup a workflow execution context.
-            var workflowExecutionContext = new WorkflowExecutionContext(root, graph, scheduler);
+            var workflowExecutionContext = new WorkflowExecutionContext(graph, scheduler);
             
             // Restore workflow execution context from state, if provided.
             if (workflowState != null)
@@ -81,7 +83,7 @@ namespace Elsa.Services
             return workflowExecutionContext;
         }
 
-        private async Task<WorkflowExecutionContext> InvokeAsync(WorkflowExecutionContext workflowExecutionContext, ExecuteNodeDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
+        private async Task<WorkflowExecutionContext> InvokeAsync(WorkflowExecutionContext workflowExecutionContext, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
             var scheduler = workflowExecutionContext.Scheduler;
             
@@ -92,7 +94,7 @@ namespace Elsa.Services
                 var currentNode = scheduler.Unschedule();
 
                 // Setup a node execution context.
-                var nodeExecutionContext = new NodeExecutionContext(workflowExecutionContext, currentNode, executeNodeDelegate, cancellationToken);
+                var nodeExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentNode, executeNodeDelegate, cancellationToken);
 
                 // Execute the node execution pipeline.
                 await _pipeline.ExecuteAsync(nodeExecutionContext);

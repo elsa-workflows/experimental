@@ -5,7 +5,7 @@ namespace Elsa.Extensions
 {
     public static class GraphNodeExtensions
     {
-        public static IEnumerable<GraphNode> Flatten(this GraphNode root)
+        public static IEnumerable<Node> Flatten(this Node root)
         {
             yield return root;
 

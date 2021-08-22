@@ -2,42 +2,45 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Elsa.Contracts;
+using Elsa.Extensions;
 
 namespace Elsa.Models
 {
     public class WorkflowExecutionContext
     {
-        private readonly IList<GraphNode> _graph;
-        private readonly IDictionary<INode, NodeCompletionCallback> _completionCallbacks = new Dictionary<INode, NodeCompletionCallback>();
+        private readonly IList<Node> _nodes;
+        private readonly IDictionary<IActivity, ActivityCompletionCallback> _completionCallbacks = new Dictionary<IActivity, ActivityCompletionCallback>();
         private IList<Bookmark> _bookmarks = new List<Bookmark>();
 
-        public WorkflowExecutionContext(INode root, IEnumerable<GraphNode> graph, INodeScheduler scheduler)
+        public WorkflowExecutionContext(Node graph, IActivityScheduler scheduler)
         {
-            Root = root;
-            _graph = graph.ToList();
+            Graph = graph;
+            _nodes = graph.Flatten().ToList();
             Scheduler = scheduler;
-            NodeLookup = _graph.ToDictionary(x => x.NodeId, x => x.Node);
+            NodeIdLookup = _nodes.ToDictionary(x => x.NodeId);
+            NodeActivityLookup = _nodes.ToDictionary(x => x.Activity);
         }
 
-        public INode Root { get; set; }
-        public IEnumerable<GraphNode> Graph => new ReadOnlyCollection<GraphNode>(_graph);
-        public IDictionary<string, INode> NodeLookup { get; }
-        public INodeScheduler Scheduler { get; }
+        public Node Graph { get; set; }
+        public IEnumerable<Node> Nodes => new ReadOnlyCollection<Node>(_nodes);
+        public IDictionary<string, Node> NodeIdLookup { get; }
+        public IDictionary<IActivity, Node> NodeActivityLookup { get; }
+        public IActivityScheduler Scheduler { get; }
         public IEnumerable<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
-        public IReadOnlyDictionary<INode, NodeCompletionCallback> CompletionCallbacks => new ReadOnlyDictionary<INode, NodeCompletionCallback>(_completionCallbacks);
+        public IReadOnlyDictionary<IActivity, ActivityCompletionCallback> CompletionCallbacks => new ReadOnlyDictionary<IActivity, ActivityCompletionCallback>(_completionCallbacks);
         public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
-
-        public void Schedule(INode node, INode owner, NodeCompletionCallback? completionCallback = default)
+        
+        public void Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
         {
-            Scheduler.Schedule(new ScheduledNode(node));
+            Scheduler.Schedule(new ScheduledActivity(activity));
 
             if (completionCallback != null)
                 AddCompletionCallback(owner, completionCallback);
         }
 
-        public void AddCompletionCallback(INode owner, NodeCompletionCallback completionCallback) => _completionCallbacks.Add(owner, completionCallback);
+        public void AddCompletionCallback(IActivity owner, ActivityCompletionCallback completionCallback) => _completionCallbacks.Add(owner, completionCallback);
 
-        public NodeCompletionCallback? PopCompletionCallback(INode owner)
+        public ActivityCompletionCallback? PopCompletionCallback(IActivity owner)
         {
             if (!_completionCallbacks.TryGetValue(owner, out var callback))
                 return default;
@@ -46,7 +49,10 @@ namespace Elsa.Models
             return callback;
         }
 
-        public INode FindNodeById(string nodeId) => NodeLookup[nodeId];
+        public Node FindNodeById(string nodeId) => NodeIdLookup[nodeId];
+        public Node FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
+        public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
+        
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks = bookmarks.ToList();
 
         public Bookmark? PopBookmark(string name)

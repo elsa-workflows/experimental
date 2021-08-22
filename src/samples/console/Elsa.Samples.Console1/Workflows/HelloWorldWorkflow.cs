@@ -5,6 +5,6 @@ namespace Elsa.Samples.Console1.Workflows
 {
     public static class HelloWorldWorkflow
     {
-        public static INode Create() => new WriteLine("Hello World!");
+        public static IActivity Create() => new WriteLine("Hello World!");
     }
 }

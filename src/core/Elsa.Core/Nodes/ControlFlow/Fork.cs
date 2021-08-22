@@ -7,13 +7,13 @@ using Elsa.Services;
 
 namespace Elsa.Nodes.ControlFlow
 {
-    public class Fork : Node
+    public class Fork : CodeActivity
     {
-        [Ports] public ICollection<INode> Branches { get; set; } = new List<INode>();
+        [Ports] public ICollection<IActivity> Branches { get; set; } = new List<IActivity>();
     }
 
-    public class ForkDriver : NodeDriver<Fork>
+    public class ForkDriver : ActivityDriver<Fork>
     {
-        protected override void Execute(Fork node, NodeExecutionContext context) => context.ScheduleNodes(node.Branches.Reverse());
+        protected override void Execute(Fork activity, ActivityExecutionContext context) => context.ScheduleActivities(activity.Branches.Reverse());
     }
 }

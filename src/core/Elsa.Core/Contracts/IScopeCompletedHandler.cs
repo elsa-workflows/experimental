@@ -5,6 +5,6 @@ namespace Elsa.Contracts
 {
     public interface IScopeCompletedHandler
     {
-        ValueTask HandleAsync(NodeExecutionContext context);
+        ValueTask HandleAsync(ActivityExecutionContext context);
     }
 }

@@ -5,6 +5,6 @@ namespace Elsa.Contracts
 {
     public interface IWorkflowInvoker
     {
-        Task InvokeAsync(INode root, CancellationToken cancellationToken);
+        Task InvokeAsync(IActivity root, CancellationToken cancellationToken);
     }
 }
