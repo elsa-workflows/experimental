@@ -5,7 +5,7 @@ using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Services;
 
-namespace Elsa.Nodes.ControlFlow
+namespace Elsa.Activities.ControlFlow
 {
     public class Fork : CodeActivity
     {

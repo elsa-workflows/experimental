@@ -1,6 +1,6 @@
+using Elsa.Activities.Console;
+using Elsa.Activities.Containers;
 using Elsa.Contracts;
-using Elsa.Nodes.Console;
-using Elsa.Nodes.Containers;
 
 namespace Elsa.Samples.Console1.Workflows
 {

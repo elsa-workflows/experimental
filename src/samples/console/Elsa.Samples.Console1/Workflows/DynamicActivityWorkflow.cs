@@ -8,7 +8,7 @@ using Elsa.Services;
 
 namespace Elsa.Samples.Console1.Workflows
 {
-    public static class DynamicNodeWorkflow
+    public static class DynamicActivityWorkflow
     {
         public static IActivity Create() => new Activity("MyWriteLine", new Dictionary<string, object?> { ["Text"] = new Literal<string>("Hello World!") });
     }

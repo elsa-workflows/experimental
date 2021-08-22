@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Elsa.Activities.Console;
+using Elsa.Activities.Containers;
+using Elsa.Activities.ControlFlow;
+using Elsa.Activities.Primitives;
 using Elsa.Contracts;
 using Elsa.Expressions;
-using Elsa.Nodes.Console;
-using Elsa.Nodes.Containers;
-using Elsa.Nodes.ControlFlow;
-using Elsa.Nodes.Primitives;
 using Elsa.Pipelines.ActivityExecution.Components;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,13 +28,13 @@ namespace Elsa.Samples.Console1
             var workflow2 = new Func<IActivity>(HelloGoodbyeWorkflow.Create);
             var workflow3 = new Func<IActivity>(GreetingWorkflow.Create);
             var workflow4 = new Func<IActivity>(ConditionalWorkflow.Create);
-            var workflow5 = new Func<IActivity>(ForEachWorkflow.Create);
+            var workflow5 = new Func<IActivity>(ForWorkflow.Create);
             var workflow6 = new Func<IActivity>(BlockingWorkflow.Create);
             var workflow7 = new Func<IActivity>(ForkedWorkflow.Create);
-            var workflow8 = new Func<IActivity>(DynamicNodeWorkflow.Create);
+            var workflow8 = new Func<IActivity>(DynamicActivityWorkflow.Create);
             var workflow9 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
 
-            var workflowFactory = workflow9;
+            var workflowFactory = workflow5;
             var workflowGraph = workflowFactory();
             var workflowExecutionContext = await invoker.InvokeAsync(workflowGraph);
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();

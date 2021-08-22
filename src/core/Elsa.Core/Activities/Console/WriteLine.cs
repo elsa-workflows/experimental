@@ -5,7 +5,7 @@ using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Services;
 
-namespace Elsa.Nodes.Console
+namespace Elsa.Activities.Console
 {
     public class WriteLine : CodeActivity
     {

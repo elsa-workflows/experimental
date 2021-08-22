@@ -3,7 +3,7 @@ using Elsa.Attributes;
 using Elsa.Models;
 using Elsa.Services;
 
-namespace Elsa.Nodes.Primitives
+namespace Elsa.Activities.Primitives
 {
     public class Event : CodeActivity
     {

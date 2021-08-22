@@ -4,7 +4,7 @@ using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Services;
 
-namespace Elsa.Nodes.Containers
+namespace Elsa.Activities.Containers
 {
     public class Sequence : Container
     {

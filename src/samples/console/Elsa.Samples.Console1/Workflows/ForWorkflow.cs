@@ -1,11 +1,11 @@
+using Elsa.Activities.Console;
+using Elsa.Activities.Containers;
+using Elsa.Activities.ControlFlow;
 using Elsa.Contracts;
-using Elsa.Nodes.Console;
-using Elsa.Nodes.Containers;
-using Elsa.Nodes.ControlFlow;
 
 namespace Elsa.Samples.Console1.Workflows
 {
-    public static class ForEachWorkflow
+    public static class ForWorkflow
     {
         public static IActivity Create()
         {

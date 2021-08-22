@@ -1,8 +1,8 @@
+using Elsa.Activities.Console;
+using Elsa.Activities.Containers;
+using Elsa.Activities.ControlFlow;
+using Elsa.Activities.Primitives;
 using Elsa.Contracts;
-using Elsa.Nodes.Console;
-using Elsa.Nodes.Containers;
-using Elsa.Nodes.ControlFlow;
-using Elsa.Nodes.Primitives;
 
 namespace Elsa.Samples.Console1.Workflows
 {

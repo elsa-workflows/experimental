@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Elsa.Contracts;
 
-namespace Elsa.Nodes.Containers
+namespace Elsa.Activities.Containers
 {
     public record Connection(IActivity Source, IActivity Target);
     

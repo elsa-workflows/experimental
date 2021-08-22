@@ -52,7 +52,6 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
         private static async Task CompleteParentsAsync(ActivityExecutionContext context, IActivity activity)
         {
-            var graph = context.WorkflowExecutionContext.NodeIdLookup;
             var node = context.WorkflowExecutionContext.FindNodeByActivity(activity);
             var currentParent = node.Parent;
             var currentChildContext = context;

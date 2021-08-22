@@ -3,7 +3,7 @@ using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
 
-namespace Elsa.Nodes.Containers
+namespace Elsa.Activities.Containers
 {
     public abstract class Container : CodeActivity
     {
