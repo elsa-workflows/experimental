@@ -26,6 +26,7 @@ namespace Elsa.Samples.Console1.Workflows
                                     new WriteLine("Branch 1 (blocking)"),
                                     new Event("Branch1"),
                                     new WriteLine("Branch 1 (resumed)"),
+                                    new WriteLine("Done!"),
                                 }
                             },
                             new WriteLine("Branch 2"),

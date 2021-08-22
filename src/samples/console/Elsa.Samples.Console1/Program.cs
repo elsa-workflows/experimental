@@ -34,7 +34,7 @@ namespace Elsa.Samples.Console1
             var workflow8 = new Func<IActivity>(DynamicActivityWorkflow.Create);
             var workflow9 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
 
-            var workflowFactory = workflow5;
+            var workflowFactory = workflow7;
             var workflowGraph = workflowFactory();
             var workflowExecutionContext = await invoker.InvokeAsync(workflowGraph);
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();

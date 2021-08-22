@@ -15,25 +15,30 @@ namespace Elsa.Services
             return list.Select(x => CreateIdentity(x, identityCounters));
         }
 
-        public IEnumerable<NodeIdentity> AssignIdentities(Node root)
+        public void AssignIdentities(Node root)
         {
-            var identityGraph = CreateIdentityGraph(root).ToList();
+            var identityCounters = new Dictionary<string, int>();
+            var list = root.Flatten();
 
-            foreach (var nodeIdentity in identityGraph)
-                nodeIdentity.Node.Activity.ActivityId = nodeIdentity.NodeName;
-
-            return identityGraph;
+            foreach (var node in list)
+                node.Activity.ActivityId = CreateId(node, identityCounters);
         }
 
         private NodeIdentity CreateIdentity(Node node, IDictionary<string, int> identityCounters)
         {
+            var id = CreateId(node, identityCounters);
+            return new NodeIdentity(node, id);
+        }
+        
+        private string CreateId(Node node, IDictionary<string, int> identityCounters)
+        {
             if (!string.IsNullOrWhiteSpace(node.NodeId))
-                return new NodeIdentity(node, node.NodeId);
+                return node.NodeId;
 
             var type = node.Activity.ActivityType;
             var index = GetNextIndexFor(type, identityCounters);
             var name = $"{Camelize(type)}{index + 1}";
-            return new NodeIdentity(node, name);
+            return name;
         }
 
         private int GetNextIndexFor(string nodeType, IDictionary<string, int> identityCounters)
