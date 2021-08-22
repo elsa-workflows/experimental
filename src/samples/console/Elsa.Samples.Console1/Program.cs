@@ -33,8 +33,9 @@ namespace Elsa.Samples.Console1
             var workflow5 = new Func<INode>(ForEachWorkflow.Create);
             var workflow6 = new Func<INode>(BlockingWorkflow.Create);
             var workflow7 = new Func<INode>(ForkedWorkflow.Create);
+            
             var workflowFactory = workflow6;
-            var workflowExecutionContext = await invoker.InvokeAsync(workflow6());
+            var workflowExecutionContext = await invoker.InvokeAsync(workflowFactory());
             var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
             var workflowState = workflowStateService.CreateState(workflowExecutionContext);
 

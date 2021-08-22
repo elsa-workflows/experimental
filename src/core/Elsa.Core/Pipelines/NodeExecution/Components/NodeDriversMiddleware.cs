@@ -71,6 +71,9 @@ namespace Elsa.Pipelines.NodeExecution.Components
                         await completionCallback.Invoke(currentChildContext, parentNode);
                 }
 
+                if (context.WorkflowExecutionContext.Scheduler.HasAny)
+                    break;
+
                 currentChildContext = new NodeExecutionContext(currentChildContext.WorkflowExecutionContext, new ScheduledNode(currentParent.Node), default, currentChildContext.CancellationToken);
                 currentParent = currentParent.Parent;
             }

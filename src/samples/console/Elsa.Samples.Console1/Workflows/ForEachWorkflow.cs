@@ -5,7 +5,7 @@ using Elsa.Nodes.ControlFlow;
 
 namespace Elsa.Samples.Console1.Workflows
 {
-    public class ForEachWorkflow
+    public static class ForEachWorkflow
     {
         public static INode Create()
         {

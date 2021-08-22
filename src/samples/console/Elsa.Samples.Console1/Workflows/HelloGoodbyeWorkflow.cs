@@ -4,7 +4,7 @@ using Elsa.Nodes.Containers;
 
 namespace Elsa.Samples.Console1.Workflows
 {
-    public class HelloGoodbyeWorkflow
+    public static class HelloGoodbyeWorkflow
     {
         public static INode Create() =>
             new Sequence
