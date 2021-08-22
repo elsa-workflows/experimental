@@ -1,10 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Services;
 
-namespace Elsa.Nodes.ControlFlow
+namespace Elsa.Activities.ControlFlow
 {
     public enum ForOperator
     {
@@ -34,6 +35,19 @@ namespace Elsa.Nodes.ControlFlow
             if (iterateNode == null)
                 return;
 
+            HandleIteration(context, activity);
+        }
+
+        private ValueTask OnChildComplete(ActivityExecutionContext childContext, IActivity owner)
+        {
+            var activity = (For)owner;
+            HandleIteration(childContext, activity);
+            return new ValueTask();
+        }
+
+        private void HandleIteration(ActivityExecutionContext context, For activity)
+        {
+            var iterateNode = activity.Iterate!;
             var end = activity.End;
             var currentValue = activity.CurrentValue != null ? activity.CurrentValue + activity.Step : activity.Start;
 
@@ -49,7 +63,7 @@ namespace Elsa.Nodes.ControlFlow
             if (loop)
             {
                 activity.CurrentValue = currentValue;
-                context.ScheduleActivity(iterateNode);
+                context.WorkflowExecutionContext.Schedule(iterateNode, activity, OnChildComplete);
                 return;
             }
 
