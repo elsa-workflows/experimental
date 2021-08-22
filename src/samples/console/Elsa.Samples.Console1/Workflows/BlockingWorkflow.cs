@@ -14,22 +14,8 @@ namespace Elsa.Samples.Console1.Workflows
                 Nodes = new INode[]
                 {
                     new WriteLine("Waiting for event..."),
-                    new Sequence
-                    {
-                        Nodes = new INode[]
-                        {
-                            new Event("SomeEvent"), // Block here.
-                            new Sequence
-                            {
-                                Nodes = new INode[]
-                                {
-                                    new WriteLine("Resumed!"),
-                                    new WriteLine("!!!")
-                                } 
-                            }
-                            
-                        }
-                    },
+                    new Event("SomeEvent"), // Block here.
+                    new WriteLine("Resumed!"),
                     new WriteLine("Done")
                 }
             };

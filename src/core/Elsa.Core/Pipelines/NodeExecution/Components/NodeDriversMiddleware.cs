@@ -71,6 +71,7 @@ namespace Elsa.Pipelines.NodeExecution.Components
                         await completionCallback.Invoke(currentChildContext, parentNode);
                 }
 
+                // Do not continue completion callbacks of parents while there are scheduled nodes.
                 if (context.WorkflowExecutionContext.Scheduler.HasAny)
                     break;
 

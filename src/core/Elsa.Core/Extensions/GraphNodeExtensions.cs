@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Elsa.Models;
-using Elsa.Services;
 
 namespace Elsa.Extensions
 {
