@@ -32,6 +32,6 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
     public static class LoggingMiddlewareExtensions
     {
-        public static INodeExecutionBuilder UseLogging(this INodeExecutionBuilder builder) => builder.UseMiddleware<LoggingMiddleware>();
+        public static IActivityExecutionBuilder UseLogging(this IActivityExecutionBuilder builder) => builder.UseMiddleware<LoggingMiddleware>();
     }
 }

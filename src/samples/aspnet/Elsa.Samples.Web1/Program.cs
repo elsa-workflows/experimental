@@ -1,7 +1,6 @@
 using System;
 using Elsa.Activities.Http;
 using Elsa.Api;
-using Elsa.Api.Endpoints.Workflows;
 using Elsa.Samples.Web1.Workflows;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

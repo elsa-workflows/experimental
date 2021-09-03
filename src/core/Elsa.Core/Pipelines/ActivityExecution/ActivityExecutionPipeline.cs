@@ -6,19 +6,19 @@ using Elsa.Pipelines.ActivityExecution.Components;
 
 namespace Elsa.Pipelines.ActivityExecution
 {
-    public class NodeExecutionPipeline : INodeExecutionPipeline
+    public class ActivityExecutionPipeline : IActivityExecutionPipeline
     {
         private readonly IServiceProvider _serviceProvider;
         private ActivityMiddlewareDelegate? _pipeline;
 
-        public NodeExecutionPipeline(IServiceProvider serviceProvider)
+        public ActivityExecutionPipeline(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public ActivityMiddlewareDelegate Setup(Action<INodeExecutionBuilder> setup)
+        public ActivityMiddlewareDelegate Setup(Action<IActivityExecutionBuilder> setup)
         {
-            var builder = new NodeExecutionBuilder(_serviceProvider);
+            var builder = new ActivityExecutionBuilder(_serviceProvider);
             setup(builder);
             _pipeline = builder.Build();
             return _pipeline;

@@ -25,17 +25,17 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             var activity = context.Activity;
 
             // Get driver.
-            var driver = _driverRegistry.GetDriver(activity);
+            var driverActivator = context.WorkflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
+            var driver = driverActivator.GetDriver(activity);
 
             if (driver == null)
             {
-                _logger.LogWarning("No driver found for node {NodeType}", activity.GetType());
+                _logger.LogWarning("No driver found for activity {ActivityType}", activity.GetType());
                 return;
             }
-
+            
             // Execute driver.
-            var driverType = typeof(IActivityDriver);
-            var methodInfo = driverType.GetMethod(nameof(IActivityDriver.ExecuteAsync))!;
+            var methodInfo = typeof(IActivityDriver).GetMethod(nameof(IActivityDriver.ExecuteAsync))!;
             var executeDelegate = context.ExecuteDelegate ?? (ExecuteActivityDelegate)Delegate.CreateDelegate(typeof(ExecuteActivityDelegate), driver, methodInfo);
             await executeDelegate(context);
 
@@ -83,6 +83,6 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
     public static class InvokeDriversMiddlewareExtensions
     {
-        public static INodeExecutionBuilder UseNodeDrivers(this INodeExecutionBuilder builder) => builder.UseMiddleware<ActivityDriversMiddleware>();
+        public static IActivityExecutionBuilder UseNodeDrivers(this IActivityExecutionBuilder builder) => builder.UseMiddleware<ActivityDriversMiddleware>();
     }
 }

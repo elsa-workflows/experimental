@@ -6,12 +6,12 @@ using Elsa.Contracts;
 
 namespace Elsa.Pipelines.ActivityExecution
 {
-    public class NodeExecutionBuilder : INodeExecutionBuilder
+    public class ActivityExecutionBuilder : IActivityExecutionBuilder
     {
-        private const string ServicesKey = "node-execution.Services";
+        private const string ServicesKey = "activity-execution.Services";
         private readonly IList<Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate>> _components = new List<Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate>>();
 
-        public NodeExecutionBuilder(IServiceProvider serviceProvider)
+        public ActivityExecutionBuilder(IServiceProvider serviceProvider)
         {
             ApplicationServices = serviceProvider;
         }
@@ -24,7 +24,7 @@ namespace Elsa.Pipelines.ActivityExecution
             set => SetProperty(ServicesKey, value);
         }
 
-        public INodeExecutionBuilder Use(Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate> middleware)
+        public IActivityExecutionBuilder Use(Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate> middleware)
         {
             _components.Add(middleware);
             return this;

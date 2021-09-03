@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Elsa.Contracts
 {
-    public interface INodeExecutionBuilder
+    public interface IActivityExecutionBuilder
     {
         public IDictionary<string, object?> Properties { get; }
         IServiceProvider ApplicationServices { get; }
-        INodeExecutionBuilder Use(Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate> middleware);
+        IActivityExecutionBuilder Use(Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate> middleware);
         public ActivityMiddlewareDelegate Build();
     }
 }

@@ -4,9 +4,9 @@ using Elsa.Models;
 
 namespace Elsa.Contracts
 {
-    public interface INodeExecutionPipeline
+    public interface IActivityExecutionPipeline
     {
-        ActivityMiddlewareDelegate Setup(Action<INodeExecutionBuilder> setup);
+        ActivityMiddlewareDelegate Setup(Action<IActivityExecutionBuilder> setup);
         Task ExecuteAsync(ActivityExecutionContext context);
     }
 }

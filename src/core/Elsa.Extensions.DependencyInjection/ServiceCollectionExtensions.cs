@@ -29,16 +29,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services
                 .AddSingleton<IActivityInvoker, ActivityInvoker>()
-                .AddScoped<IActivityDriverRegistry, ActivityDriverRegistry>()
+                .AddSingleton<IActivityDriverRegistry, ActivityDriverRegistry>()
                 .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
                 .AddSingleton<IExpressionHandlerRegistry, ExpressionHandlerRegistry>()
-                .AddSingleton<INodeExecutionPipeline, NodeExecutionPipeline>()
+                .AddSingleton<IActivityExecutionPipeline, ActivityExecutionPipeline>()
                 .AddSingleton<IActivityWalker, ActivityWalker>()
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
                 .AddSingleton<IWorkflowStateService, WorkflowStateService>()
                 .AddSingleton<IActivitySchedulerFactory, ActivitySchedulerFactory>()
                 .AddSingleton<IActivityPortResolver, CodeActivityPortResolver>()
                 .AddSingleton<IActivityPortResolver, DynamicActivityPortResolver>()
+                .AddScoped<IActivityDriverActivator, ActivityDriverActivator>()
                 .AddLogging();
         }
         

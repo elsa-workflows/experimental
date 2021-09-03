@@ -6,16 +6,17 @@ using Elsa.Contracts;
 using Elsa.Extensions;
 using Elsa.Models;
 using Elsa.State;
+using Microsoft.Extensions.Logging;
 
 namespace Elsa.Services
 {
     public class WorkflowStateService : IWorkflowStateService
     {
-        private readonly IActivityDriverRegistry _activityDriverRegistry;
+        private readonly ILogger _logger;
 
-        public WorkflowStateService(IActivityDriverRegistry activityDriverRegistry)
+        public WorkflowStateService(ILogger<WorkflowStateService> logger)
         {
-            _activityDriverRegistry = activityDriverRegistry;
+            _logger = logger;
         }
         
         public WorkflowState CreateState(WorkflowExecutionContext workflowExecutionContext)
@@ -49,12 +50,21 @@ namespace Elsa.Services
         
         private void ApplyCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
+            var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
+            
             foreach (var completionCallbackEntry in state.CompletionCallbacks)
             {
                 var nodeId = completionCallbackEntry.Key;
                 var node = workflowExecutionContext.FindNodeById(nodeId);
                 var activity = node.Activity;
-                var driver = _activityDriverRegistry.GetDriver(activity)!;
+                var driver = activityDriverActivator.GetDriver(activity);
+
+                if (driver == null)
+                {
+                    _logger.LogWarning("No driver found for node {ActivityType}", activity.GetType());
+                    continue;
+                }
+                
                 var callbackName = completionCallbackEntry.Value;
                 var callbackDelegate = driver.GetNodeCompletionCallback(callbackName);
                 workflowExecutionContext.AddCompletionCallback(activity, callbackDelegate);
@@ -74,11 +84,13 @@ namespace Elsa.Services
         
         private void ApplyBookmarks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
+            var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
+            
             var bookmarks =
                 from bookmarkState in state.Bookmarks
                 let activity = workflowExecutionContext.FindActivityById(bookmarkState.ScheduledActivity.ActivityId)
                 let scheduledNode = new ScheduledActivity(activity)
-                let driver = _activityDriverRegistry.GetDriver(activity)
+                let driver = activityDriverActivator.GetDriver(activity)
                 let resumeDelegate = bookmarkState.ResumeActionName != null ? driver.GetResumeNodeDelegate(bookmarkState.ResumeActionName) : default
                 select new Bookmark(scheduledNode, bookmarkState.Name, bookmarkState.Data, resumeDelegate);
 

@@ -32,9 +32,8 @@ namespace Elsa.Samples.Console1
 
             var workflowFactory = workflow7;
             var workflowGraph = workflowFactory();
-            var workflowExecutionContext = await invoker.InvokeAsync(workflowGraph);
-            var workflowStateService = services.GetRequiredService<IWorkflowStateService>();
-            var workflowState = workflowStateService.CreateState(workflowExecutionContext);
+            var workflowExecutionResult = await invoker.InvokeAsync(workflowGraph);
+            var workflowState = workflowExecutionResult.WorkflowState;
 
             if (workflowState.Bookmarks.Any())
             {

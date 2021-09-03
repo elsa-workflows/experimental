@@ -1,19 +1,23 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Elsa.Contracts;
 using Elsa.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Models
 {
     public class WorkflowExecutionContext
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IList<Node> _nodes;
         private readonly IDictionary<IActivity, ActivityCompletionCallback> _completionCallbacks = new Dictionary<IActivity, ActivityCompletionCallback>();
         private IList<Bookmark> _bookmarks = new List<Bookmark>();
 
-        public WorkflowExecutionContext(Node graph, IActivityScheduler scheduler)
+        public WorkflowExecutionContext(IServiceProvider serviceProvider, Node graph, IActivityScheduler scheduler)
         {
+            _serviceProvider = serviceProvider;
             Graph = graph;
             _nodes = graph.Flatten().ToList();
             Scheduler = scheduler;
@@ -28,8 +32,11 @@ namespace Elsa.Models
         public IActivityScheduler Scheduler { get; }
         public IEnumerable<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyDictionary<IActivity, ActivityCompletionCallback> CompletionCallbacks => new ReadOnlyDictionary<IActivity, ActivityCompletionCallback>(_completionCallbacks);
+
+
+        public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
         public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
-        
+
         public void Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
         {
             Scheduler.Schedule(new ScheduledActivity(activity));
@@ -52,7 +59,7 @@ namespace Elsa.Models
         public Node FindNodeById(string nodeId) => NodeIdLookup[nodeId];
         public Node FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
-        
+
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks = bookmarks.ToList();
 
         public Bookmark? PopBookmark(string name)

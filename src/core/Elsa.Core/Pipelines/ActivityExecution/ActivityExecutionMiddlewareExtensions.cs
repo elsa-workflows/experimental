@@ -7,12 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Pipelines.ActivityExecution
 {
-    public static class NodeExecutionMiddlewareExtensions
+    public static class ActivityExecutionMiddlewareExtensions
     {
         private const string InvokeMethodName = "Invoke";
         private const string InvokeAsyncMethodName = "InvokeAsync";
 
-        public static INodeExecutionBuilder UseMiddleware<TMiddleware>(this INodeExecutionBuilder builder)
+        public static IActivityExecutionBuilder UseMiddleware<TMiddleware>(this IActivityExecutionBuilder builder)
         {
             var middleware = typeof(TMiddleware);
 
