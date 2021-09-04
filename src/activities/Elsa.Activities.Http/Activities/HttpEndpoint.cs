@@ -15,5 +15,9 @@ namespace Elsa.Activities.Http
 
     public class HttpEndpointDriver : ActivityDriver<HttpEndpoint>
     {
+        protected override void Execute(HttpEndpoint activity, ActivityExecutionContext context)
+        {
+            //var input = context.WorkflowExecutionContext
+        }
     }
 }

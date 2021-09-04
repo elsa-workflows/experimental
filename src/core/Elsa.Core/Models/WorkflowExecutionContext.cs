@@ -26,11 +26,11 @@ namespace Elsa.Models
         }
 
         public Node Graph { get; set; }
-        public IEnumerable<Node> Nodes => new ReadOnlyCollection<Node>(_nodes);
+        public IReadOnlyCollection<Node> Nodes => new ReadOnlyCollection<Node>(_nodes);
         public IDictionary<string, Node> NodeIdLookup { get; }
         public IDictionary<IActivity, Node> NodeActivityLookup { get; }
         public IActivityScheduler Scheduler { get; }
-        public IEnumerable<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
+        public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyDictionary<IActivity, ActivityCompletionCallback> CompletionCallbacks => new ReadOnlyDictionary<IActivity, ActivityCompletionCallback>(_completionCallbacks);
 
 
@@ -59,18 +59,6 @@ namespace Elsa.Models
         public Node FindNodeById(string nodeId) => NodeIdLookup[nodeId];
         public Node FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
-
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks = bookmarks.ToList();
-
-        public Bookmark? PopBookmark(string name)
-        {
-            var bookmark = _bookmarks.FirstOrDefault(x => x.Name == name);
-
-            if (bookmark == null)
-                return null;
-
-            _bookmarks.Remove(bookmark);
-            return bookmark;
-        }
     }
 }

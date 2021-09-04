@@ -1,6 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
+using Elsa.Activities.Http;
 
-namespace Elsa.Activities.Http
+// ReSharper disable once CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

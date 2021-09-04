@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Extensions;
 using Elsa.Models;
 using Elsa.State;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,22 +37,24 @@ namespace Elsa.Services
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        public async Task<WorkflowExecutionResult> ResumeAsync(string bookmarkName, IActivity root, WorkflowState workflowState, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionResult> ResumeAsync(Bookmark bookmark, IActivity root, WorkflowState workflowState, CancellationToken cancellationToken = default)
         {
             // Create a child service scope.
             using var scope = _serviceScopeFactory.CreateScope();
             
             var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, root, workflowState);
-            var bookmark = workflowExecutionContext.PopBookmark(bookmarkName);
+            
+            // Construct bookmark.
+            var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
+            var bookmarkedActivity = workflowExecutionContext.FindActivityById(bookmark.ActivityId);
+            var bookmarkedActivityDriver = activityDriverActivator.GetDriver(bookmarkedActivity);
+            var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivityDriver?.GetResumeActivityDelegate(bookmark.CallbackMethodName) : default;
 
-            if (bookmark == null)
-                return new WorkflowExecutionResult(workflowState);
-
-            // Schedule the node to resume.
-            workflowExecutionContext.Scheduler.Schedule(bookmark.Target);
+            // Schedule the activity to resume.
+            workflowExecutionContext.Scheduler.Schedule(new ScheduledActivity(bookmarkedActivity));
 
             // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
-            var executeDelegate = bookmark.Resume ?? Noop;
+            var executeDelegate = resumeDelegate ?? Noop;
             return await InvokeAsync(workflowExecutionContext, executeDelegate, cancellationToken);
         }
 
@@ -62,7 +66,7 @@ namespace Elsa.Services
 
         private async Task<WorkflowExecutionResult> InvokeAsync(ScheduledActivity scheduledActivity, IActivity? root = default, WorkflowState? workflowState = default, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
-            // If no root was provided, it means the node *is* the root node.
+            // If no root was provided, it means the activity *is* the root activity.
             root ??= scheduledActivity.Activity;
 
             // Create a child service scope.
@@ -98,7 +102,7 @@ namespace Elsa.Services
             }
 
             var workflowState = _workflowStateService.CreateState(workflowExecutionContext);
-            return new WorkflowExecutionResult(workflowState);
+            return new WorkflowExecutionResult(workflowState, workflowExecutionContext.Bookmarks.ToList());
         }
         
         private WorkflowExecutionContext CreateWorkflowExecutionContext(IServiceProvider serviceProvider, IActivity root, WorkflowState? workflowState = default)

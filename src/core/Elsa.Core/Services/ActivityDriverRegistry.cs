@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Elsa.Contracts;
 using Elsa.Options;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Elsa.Services

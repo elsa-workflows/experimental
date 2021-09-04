@@ -11,6 +11,7 @@ using Elsa.Pipelines.ActivityExecution;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Options;
 using Elsa.Runtime.Providers;
+using Elsa.Runtime.Services;
 using Elsa.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -39,6 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IActivitySchedulerFactory, ActivitySchedulerFactory>()
                 .AddSingleton<IActivityPortResolver, CodeActivityPortResolver>()
                 .AddSingleton<IActivityPortResolver, DynamicActivityPortResolver>()
+                .AddSingleton<IHasher, Hasher>()
                 .AddScoped<IActivityDriverActivator, ActivityDriverActivator>()
                 .AddLogging();
         }
@@ -48,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions<WorkflowRuntimeOptions>();
 
             return services
-                .AddScoped<IWorkflowStore, WorkflowStore>()
+                .AddScoped<IWorkflowManager, WorkflowManager>()
                 .AddWorkflowProvider<ConfigurationWorkflowProvider>();
         }
 

@@ -34,17 +34,16 @@ namespace Elsa.Samples.Console1
             var workflowGraph = workflowFactory();
             var workflowExecutionResult = await invoker.InvokeAsync(workflowGraph);
             var workflowState = workflowExecutionResult.WorkflowState;
+            var bookmarks = workflowExecutionResult.Bookmarks;
 
-            if (workflowState.Bookmarks.Any())
+            if (bookmarks.Any())
             {
                 Console.WriteLine("Press enter to resume workflow.");
                 Console.ReadLine();
 
                 workflowGraph = workflowFactory();
-                foreach (var bookmarkState in workflowState.Bookmarks)
-                {
-                    await invoker.ResumeAsync(bookmarkState.Name, workflowGraph, workflowState);
-                }
+                foreach (var bookmark in bookmarks) 
+                    await invoker.ResumeAsync(bookmark, workflowGraph, workflowState);
             }
         }
 

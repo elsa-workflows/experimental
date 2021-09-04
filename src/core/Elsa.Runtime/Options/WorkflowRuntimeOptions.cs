@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Elsa.Contracts;
+using Elsa.Runtime.Models;
 
 namespace Elsa.Runtime.Options
 {
@@ -9,6 +9,6 @@ namespace Elsa.Runtime.Options
         /// <summary>
         /// A list of workflow factories configured at application startup.
         /// </summary>
-        public IDictionary<string, Func<IActivity>> WorkflowFactories { get; set; } = new Dictionary<string, Func<IActivity>>();
+        public IDictionary<string, Func<WorkflowDefinition>> WorkflowFactories { get; set; } = new Dictionary<string, Func<WorkflowDefinition>>();
     }
 }

@@ -7,7 +7,7 @@ namespace Elsa.Contracts
 {
     public interface IActivityInvoker
     {
-        Task<WorkflowExecutionResult> ResumeAsync(string bookmarkName, IActivity root, WorkflowState workflowState, CancellationToken cancellationToken = default);
+        Task<WorkflowExecutionResult> ResumeAsync(Bookmark bookmark, IActivity root, WorkflowState workflowState, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionResult> InvokeAsync(IActivity activity, IActivity? root = default, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default);
     }
 }

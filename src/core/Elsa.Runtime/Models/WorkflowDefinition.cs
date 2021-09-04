@@ -8,7 +8,7 @@ namespace Elsa.Runtime.Models
     public class WorkflowDefinition
     {
         public string Id { get; set; } = default!;
-        private int Version { get; set; } = 1;
+        public int Version { get; set; } = 1;
         public IActivity Root { get; set; } = default!;
     }
 }

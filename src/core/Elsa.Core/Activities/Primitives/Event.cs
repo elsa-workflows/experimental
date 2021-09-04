@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Elsa.Attributes;
+using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Services;
 
@@ -10,7 +11,7 @@ namespace Elsa.Activities.Primitives
         public Event()
         {
         }
-        
+
         public Event(string eventName) => EventName = eventName;
 
         [Input] public string EventName { get; set; } = default!;
@@ -19,7 +20,25 @@ namespace Elsa.Activities.Primitives
 
     public class EventDriver : ActivityDriver<Event>
     {
-        protected override void Execute(Event activity, ActivityExecutionContext context) =>
-            context.SetBookmark(nameof(Event), new Dictionary<string, object?> { [nameof(Event.EventName)] = activity.EventName });
+        private readonly IHasher _hasher;
+
+        public EventDriver(IHasher hasher)
+        {
+            _hasher = hasher;
+        }
+        
+        protected override void Execute(Event activity, ActivityExecutionContext context)
+        {
+            var hash = _hasher.Hash(activity.EventName);
+            context.SetBookmark(hash, callback: Resume);
+        }
+
+        private ValueTask Resume(ActivityExecutionContext context)
+        {
+            var eventActivity = (Event)context.Activity;
+            //eventActivity.Payload = context.wo
+            
+            return ValueTask.CompletedTask;
+        }
     }
 }
