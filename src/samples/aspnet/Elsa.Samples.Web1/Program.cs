@@ -2,7 +2,6 @@ using System;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Api;
 using Elsa.Persistence.InMemory.Extensions;
-using Elsa.Runtime.Models;
 using Elsa.Samples.Web1.Workflows;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,13 +17,8 @@ builder.Services
     .AddHttpActivities()
     .ConfigureWorkflowRuntime(options =>
     {
-        options.WorkflowFactories.Add("HelloWorldWorkflow", () => new WorkflowDefinition
-        {
-            Id = "HelloWordWorkflow",
-            Root = HelloWorldWorkflow.Create(),
-            Version = 1
-        });
-        //options.WorkflowFactories.Add("HttpWorkflow", HttpWorkflowBuilder.Create);
+        options.Workflows.Add("HelloWorldWorkflow", new HelloWorldWorkflow());
+        options.Workflows.Add("HttpWorkflow", new HttpWorkflow());
     });
 
 // Configure middleware pipeline.

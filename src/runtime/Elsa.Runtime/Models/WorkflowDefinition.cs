@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Elsa.Contracts;
 
 namespace Elsa.Runtime.Models
@@ -10,5 +11,6 @@ namespace Elsa.Runtime.Models
         public string Id { get; set; } = default!;
         public int Version { get; set; } = 1;
         public IActivity Root { get; set; } = default!;
+        public ICollection<Trigger> Triggers { get; set; } = new List<Trigger>();
     }
 }

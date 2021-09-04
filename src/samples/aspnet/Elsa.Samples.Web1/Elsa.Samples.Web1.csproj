@@ -11,6 +11,7 @@
       <ProjectReference Include="..\..\..\core\Elsa.Extensions.DependencyInjection\Elsa.Extensions.DependencyInjection.csproj" />
       <ProjectReference Include="..\..\..\core\Elsa.WorkflowBuilderApi\Elsa.WorkflowBuilderApi.csproj" />
       <ProjectReference Include="..\..\..\persistence\Elsa.Persistence.InMemory\Elsa.Persistence.InMemory.csproj" />
+      <ProjectReference Include="..\..\..\runtime\Elsa.Runtime\Elsa.Runtime.csproj" />
     </ItemGroup>
 
 </Project>

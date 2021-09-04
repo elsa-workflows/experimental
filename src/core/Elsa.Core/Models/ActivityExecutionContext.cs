@@ -38,9 +38,8 @@ namespace Elsa.Models
         }
 
         public void SetBookmark(Bookmark bookmark) => WorkflowExecutionContext.SetBookmark(bookmark);
-        public void SetBookmark(string? hash, IDictionary<string, object?>? data = default, ExecuteActivityDelegate? callback = default)
-        {
-            SetBookmark(new Bookmark(ScheduledActivity.Activity.ActivityType, ScheduledActivity.Activity.ActivityId, hash, data ?? new Dictionary<string, object?>(), callback?.Method.Name));
-        }
+
+        public void SetBookmark(string? hash, IDictionary<string, object?>? data = default, ExecuteActivityDelegate? callback = default) => 
+            SetBookmark(new Bookmark(ScheduledActivity.Activity.ActivityType, hash, ScheduledActivity.Activity.ActivityId, data ?? new Dictionary<string, object?>(), callback?.Method.Name));
     }
 }

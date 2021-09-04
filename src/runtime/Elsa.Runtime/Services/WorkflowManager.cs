@@ -72,7 +72,7 @@ namespace Elsa.Runtime.Services
                 else
                 {
                     var result = await _activityInvoker.InvokeAsync(workflowDefinition.Root, cancellationToken: cancellationToken);
-                    
+
                     workflowInstance = new WorkflowInstanceRecord
                     {
                         Id = Guid.NewGuid().ToString("N"),
@@ -86,10 +86,10 @@ namespace Elsa.Runtime.Services
                     results.Add(result);
                 }
             }
-            
+
             // Delete used bookmarks.
             await _bookmarkStore.DeleteManyAsync(bookmarkRecordList.Select(x => x.Id), cancellationToken);
-            
+
             // Store new bookmarks.
             await _bookmarkStore.SaveManyAsync(newBookmarkRecords, cancellationToken);
 
@@ -99,7 +99,7 @@ namespace Elsa.Runtime.Services
         public async Task<WorkflowExecutionResult> ExecuteWorkflowAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
         {
             var result = await _activityInvoker.InvokeAsync(workflowDefinition.Root, cancellationToken: cancellationToken);
-                    
+
             var workflowInstance = new WorkflowInstanceRecord
             {
                 Id = Guid.NewGuid().ToString("N"),
@@ -129,8 +129,8 @@ namespace Elsa.Runtime.Services
             }
         }
 
-        private Bookmark MapBookmarkRecord(BookmarkRecord bookmarkRecord) => new Bookmark(bookmarkRecord.Name, bookmarkRecord.ActivityId, bookmarkRecord.Hash, bookmarkRecord.Data, bookmarkRecord.CallbackMethodName);
-        
+        private Bookmark MapBookmarkRecord(BookmarkRecord bookmarkRecord) => new Bookmark(bookmarkRecord.Name, bookmarkRecord.Hash, bookmarkRecord.ActivityId, bookmarkRecord.Data, bookmarkRecord.CallbackMethodName);
+
         private BookmarkRecord MapBookmark(Bookmark bookmark, string workflowDefinitionId, string workflowInstanceId) => new()
         {
             Name = bookmark.Name,

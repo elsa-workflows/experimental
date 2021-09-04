@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Elsa.Contracts;
 using Elsa.Runtime.Models;
 
-namespace Elsa.WorkflowBuilderApi.Contracts
+namespace Elsa.Runtime.Contracts
 {
     public interface IWorkflowBuilder
     {

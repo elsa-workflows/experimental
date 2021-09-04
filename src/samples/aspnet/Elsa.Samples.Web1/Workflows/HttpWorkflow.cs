@@ -4,15 +4,18 @@ using Elsa.Activities.Containers;
 using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
 using Elsa.Expressions;
+using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Models;
-using Elsa.WorkflowBuilderApi.Contracts;
 
 namespace Elsa.Samples.Web1.Workflows
 {
     using HttpMethods = Microsoft.AspNetCore.Http.HttpMethods;
 
-    public class HttpWorkflowBuilder : IWorkflow
+    public class HttpWorkflow : IWorkflow
     {
+        public string Id => nameof(HttpWorkflow);
+        public int Version => 1;
+
         public void Build(IWorkflowBuilder builder)
         {
             // Create triggers.
