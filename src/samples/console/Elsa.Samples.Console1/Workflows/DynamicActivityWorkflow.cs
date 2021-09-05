@@ -27,7 +27,7 @@ namespace Elsa.Samples.Console1.Workflows
         protected override async ValueTask ExecuteAsync(Activity activity, ActivityExecutionContext context)
         {
             var textExpression = (IExpression<string>)activity.Input["Text"]!;
-            var text = await _expressionEvaluator.EvaluateAsync(textExpression, context);
+            var text = await _expressionEvaluator.EvaluateAsync(textExpression, new ExpressionExecutionContext());
             Console.WriteLine(text);
         }
     }

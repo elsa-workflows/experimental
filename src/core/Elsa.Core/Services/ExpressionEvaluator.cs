@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -15,19 +16,16 @@ namespace Elsa.Services
             _registry = registry;
             _logger = logger;
         }
-        
-        public async ValueTask<T?> EvaluateAsync<T>(IExpression<T> expression, ActivityExecutionContext context)
+
+        public async ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, ExpressionExecutionContext context)
         {
             var handler = _registry.GetHandler(expression);
-            
-            if(handler == null)
-            {
-                _logger.LogWarning("Could not find handler for expression type {ExpressionType}", expression.GetType().GetGenericTypeDefinition());
-                return default!;
-            }
 
-            return await handler.EvaluateAsync(expression, context);
+            if (handler != null) 
+                return await handler.EvaluateAsync(expression, context);
+            
+            var expressionType = expression.GetType().GetGenericTypeDefinition();
+            throw new InvalidOperationException($"Could not find handler for expression type {expressionType}");
         }
     }
-    
 }

@@ -26,7 +26,7 @@ namespace Elsa.Samples.Web1.Workflows
             };
             
             // Register triggers.
-            builder.Triggers.Add(new Trigger(httpEndpoint));
+            builder.Triggers.Add(new TriggerSource(httpEndpoint));
             
             // Setup workflow graph.
             builder.Root = new Sequence(

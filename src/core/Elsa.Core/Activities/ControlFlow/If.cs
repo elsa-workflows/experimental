@@ -21,7 +21,7 @@ namespace Elsa.Activities.ControlFlow
 
         protected override async ValueTask ExecuteAsync(If activity, ActivityExecutionContext context)
         {
-            var result = await _expressionEvaluator.EvaluateAsync(activity.Condition, context);
+            var result = await _expressionEvaluator.EvaluateAsync(activity.Condition, new ExpressionExecutionContext());
             var nextNode = result ? activity.Then : activity.Else;
 
             if (nextNode != null)

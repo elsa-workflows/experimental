@@ -21,7 +21,7 @@ namespace Elsa.Activities.Console
         {
         }
         
-        public WriteLine(Func<ActivityExecutionContext, string> text) : this(new Delegate<string>(text))
+        public WriteLine(Func<ExpressionExecutionContext, string> text) : this(new Delegate<string>(text))
         {
         }
 
@@ -40,7 +40,7 @@ namespace Elsa.Activities.Console
 
         protected override async ValueTask ExecuteAsync(WriteLine activity, ActivityExecutionContext context)
         {
-            var text = await _expressionEvaluator.EvaluateAsync(activity.Text, context);
+            var text = await _expressionEvaluator.EvaluateAsync(activity.Text, new ExpressionExecutionContext());
             System.Console.WriteLine(text);
         }
     }
