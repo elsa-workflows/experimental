@@ -190,6 +190,7 @@ namespace Elsa.Runtime.Services
 
         private WorkflowBookmark MapBookmark(Bookmark bookmark, string workflowDefinitionId, string workflowInstanceId) => new()
         {
+            Id = Guid.NewGuid().ToString(),
             Name = bookmark.Name,
             Hash = bookmark.Hash,
             ActivityId = bookmark.ActivityId,

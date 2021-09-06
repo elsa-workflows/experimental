@@ -10,7 +10,7 @@ namespace Elsa.Persistence.Abstractions.Models
         public string WorkflowDefinitionId { get; set; } = default!;
         public string WorkflowInstanceId { get; set; } = default!;
         public string ActivityId { get; set; } = default!;
-        public IDictionary<string, object?> Data { get; set; } = new Dictionary<string, object?>();
+        public IDictionary<string, object?>? Data { get; set; }
         public string? CallbackMethodName { get; set; }
     }
 }

@@ -63,7 +63,7 @@ namespace Elsa.Services
             // Create a child service scope.
             using var scope = _serviceScopeFactory.CreateScope();
             
-            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, root);
+            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, root, trigger: trigger);
             
             // Get the activity to execute.
             var activity = workflowExecutionContext.FindActivityById(trigger.ActivityId);
@@ -122,7 +122,7 @@ namespace Elsa.Services
             return new ActivityExecutionResult(workflowState, workflowExecutionContext.Bookmarks.ToList());
         }
         
-        private WorkflowExecutionContext CreateWorkflowExecutionContext(IServiceProvider serviceProvider, IActivity root, WorkflowState? workflowState = default)
+        private WorkflowExecutionContext CreateWorkflowExecutionContext(IServiceProvider serviceProvider, IActivity root, WorkflowState? workflowState = default, Trigger? trigger = default)
         {
             // Build graph.
             var graph = _activityWalker.Walk(root);
@@ -134,7 +134,7 @@ namespace Elsa.Services
             var scheduler = _schedulerFactory.CreateScheduler();
 
             // Setup a workflow execution context.
-            var workflowExecutionContext = new WorkflowExecutionContext(serviceProvider, graph, scheduler);
+            var workflowExecutionContext = new WorkflowExecutionContext(serviceProvider, graph, scheduler, trigger);
 
             // Restore workflow execution context from state, if provided.
             if (workflowState != null)

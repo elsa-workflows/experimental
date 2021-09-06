@@ -14,12 +14,13 @@ namespace Elsa.Models
         private readonly IList<Node> _nodes;
         private IList<Bookmark> _bookmarks = new List<Bookmark>();
 
-        public WorkflowExecutionContext(IServiceProvider serviceProvider, Node graph, IActivityScheduler scheduler)
+        public WorkflowExecutionContext(IServiceProvider serviceProvider, Node graph, IActivityScheduler scheduler, Trigger? trigger)
         {
             _serviceProvider = serviceProvider;
             Graph = graph;
             _nodes = graph.Flatten().ToList();
             Scheduler = scheduler;
+            Trigger = trigger;
             NodeIdLookup = _nodes.ToDictionary(x => x.NodeId);
             NodeActivityLookup = _nodes.ToDictionary(x => x.Activity);
         }
@@ -29,6 +30,7 @@ namespace Elsa.Models
         public IDictionary<string, Node> NodeIdLookup { get; }
         public IDictionary<IActivity, Node> NodeActivityLookup { get; }
         public IActivityScheduler Scheduler { get; }
+        public Trigger? Trigger { get; }
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
         public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);

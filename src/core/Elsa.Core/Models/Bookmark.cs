@@ -6,7 +6,7 @@ namespace Elsa.Models
         string Name,
         string? Hash,
         string ActivityId,
-        IDictionary<string, object?> Data,
-        string? CallbackMethodName
+        IDictionary<string, object?>? Data = default,
+        string? CallbackMethodName = default
     );
 }

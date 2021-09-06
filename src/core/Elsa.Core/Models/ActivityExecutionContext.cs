@@ -37,9 +37,12 @@ namespace Elsa.Models
             return default;
         }
 
+        public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => WorkflowExecutionContext.SetBookmarks(bookmarks);
         public void SetBookmark(Bookmark bookmark) => WorkflowExecutionContext.SetBookmark(bookmark);
 
         public void SetBookmark(string? hash, IDictionary<string, object?>? data = default, ExecuteActivityDelegate? callback = default) => 
             SetBookmark(new Bookmark(ScheduledActivity.Activity.ActivityType, hash, ScheduledActivity.Activity.ActivityId, data ?? new Dictionary<string, object?>(), callback?.Method.Name));
+
+        public bool GetActivityIsCurrentTrigger(IActivity activity) => WorkflowExecutionContext.Trigger?.ActivityId == activity.ActivityId;
     }
 }
