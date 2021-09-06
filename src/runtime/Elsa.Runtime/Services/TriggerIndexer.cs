@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Persistence.Abstractions.Contracts;
+using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Models;
 using Microsoft.Extensions.Logging;
@@ -13,47 +15,49 @@ namespace Elsa.Runtime.Services
 {
     public class TriggerIndexer : ITriggerIndexer
     {
-        private readonly IActivityDriverActivator _activityDriverActivator;
+        private readonly IEnumerable<ITriggerProvider> _triggerProviders;
         private readonly IHasher _hasher;
+        private readonly IWorkflowTriggerStore _workflowTriggerStore;
         private readonly ILogger _logger;
 
-        public TriggerIndexer(IActivityDriverActivator activityDriverActivator, IHasher hasher, ILogger<TriggerIndexer> logger)
+        public TriggerIndexer(IEnumerable<ITriggerProvider> triggerProviders, IHasher hasher, IWorkflowTriggerStore workflowTriggerStore, ILogger<TriggerIndexer> logger)
         {
-            _activityDriverActivator = activityDriverActivator;
+            _triggerProviders = triggerProviders;
             _hasher = hasher;
+            _workflowTriggerStore = workflowTriggerStore;
             _logger = logger;
         }
 
-        public async Task<IEnumerable<WorkflowTrigger>> IndexTriggersAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default) =>
-            await IndexTriggersInternalAsync(workflowDefinition, cancellationToken).ToListAsync(cancellationToken);
-
-        private async IAsyncEnumerable<WorkflowTrigger> IndexTriggersInternalAsync(WorkflowDefinition workflowDefinition, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async Task IndexTriggersAsync(Workflow workflow, CancellationToken cancellationToken = default)
         {
-            var triggerSources = workflowDefinition.Triggers;
+            // Collect new triggers.
+            var triggers = await GetTriggersAsync(workflow, cancellationToken).ToListAsync(cancellationToken);
+            
+            // Replace triggers for the specified workflow.
+            await _workflowTriggerStore.ReplaceTriggersAsync(workflow.Id, triggers, cancellationToken);
+        }
+
+        private async IAsyncEnumerable<WorkflowTrigger> GetTriggersAsync(Workflow workflow, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            var triggerSources = workflow.Triggers;
 
             foreach (var triggerSource in triggerSources)
             {
-                var triggers = await GetTriggers(workflowDefinition, triggerSource, cancellationToken);
+                var triggers = await GetTriggersAsync(workflow, triggerSource, cancellationToken);
 
                 foreach (var trigger in triggers)
                     yield return trigger;
             }
         }
 
-        private async Task<IEnumerable<WorkflowTrigger>> GetTriggers(WorkflowDefinition workflowDefinition, TriggerSource triggerSource, CancellationToken cancellationToken)
+        private async Task<IEnumerable<WorkflowTrigger>> GetTriggersAsync(Workflow workflow, TriggerSource triggerSource, CancellationToken cancellationToken)
         {
             var activity = triggerSource.Activity;
-            var driver = _activityDriverActivator.GetDriver(activity);
+            var triggerProvider = _triggerProviders.FirstOrDefault(x => x.GetSupportsActivity(activity));
 
-            if (driver == null)
+            if (triggerProvider == null)
             {
-                _logger.LogWarning("No driver found for trigger source {ActivityType}", activity.ActivityType);
-                return ArraySegment<WorkflowTrigger>.Empty;
-            }
-
-            if (driver is not ITriggerProvider triggerProvider)
-            {
-                _logger.LogWarning("Driver for trigger source {ActivityType} does not implement ITriggerProvider", activity.ActivityType);
+                _logger.LogWarning("No trigger provider found for trigger source {ActivityType}", activity.ActivityType);
                 return ArraySegment<WorkflowTrigger>.Empty;
             }
 
@@ -61,8 +65,9 @@ namespace Elsa.Runtime.Services
 
             var triggers = hashInputs.Select(x => new WorkflowTrigger
             {
-                WorkflowDefinitionId = workflowDefinition.DefinitionId,
-                ActivityTypeName = triggerSource.Activity.ActivityType,
+                Id = Guid.NewGuid().ToString(),
+                WorkflowDefinitionId = workflow.Id,
+                Name = triggerSource.Activity.ActivityType,
                 ActivityId = triggerSource.Activity.ActivityId,
                 Hash = _hasher.Hash(x)
             });

@@ -3,10 +3,11 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Runtime.Contracts;
 using Microsoft.AspNetCore.Http;
 
-namespace Elsa.Activities.Http.Middleware
+namespace Elsa.Activities.Http
 {
     public class HttpEndpointMiddleware
     {
@@ -19,16 +20,23 @@ namespace Elsa.Activities.Http.Middleware
             _hasher = hasher;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, IWorkflowManager workflowManager)
+        public async Task InvokeAsync(HttpContext httpContext, IWorkflowManager workflowManager, IWorkflowTriggerStore workflowTriggerStore, IWorkflowBookmarkStore workflowBookmarkStore)
         {
             var path = GetPath(httpContext);
             var method = httpContext.Request.Method!.ToLowerInvariant();
             var abortToken = httpContext.RequestAborted;
             var hash = _hasher.Hash((path.ToLowerInvariant(), method.ToLowerInvariant()));
-            var bookmarkName = nameof(HttpEndpoint);
-            var results = (await workflowManager.ResumeBookmarksAsync(bookmarkName, hash, CancellationToken.None)).ToList();
+            var activityTypeName = nameof(HttpEndpoint);
+            
+            // Start new workflows.
+            var startedWorkflowExecutionResults = (await workflowManager.TriggerWorkflowsAsync(activityTypeName, hash, CancellationToken.None)).ToList();
+            
+            // Resume blocked workflows.
+            var resumedWorkflowExecutionResults = (await workflowManager.ResumeWorkflowsAsync(activityTypeName, hash, CancellationToken.None)).ToList();
 
-            if (!results.Any())
+            var executionResults = startedWorkflowExecutionResults.Concat(resumedWorkflowExecutionResults).ToList();
+
+            if (!executionResults.Any())
             {
                 await _next(httpContext);
                 return;
@@ -40,6 +48,7 @@ namespace Elsa.Activities.Http.Middleware
             {
                 response.ContentType = "application/json";
                 response.StatusCode = StatusCodes.Status200OK;
+                var results = executionResults.Select(x => x.WorkflowInstance);
                 var json = JsonSerializer.Serialize(results);
                 await response.WriteAsync(json, abortToken);
             }

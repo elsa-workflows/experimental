@@ -14,6 +14,8 @@ builder.Services
     .AddElsa()
     .AddInMemoryWorkflowInstanceStore()
     .AddInMemoryBookmarkStore()
+    .AddInMemoryTriggerStore()
+    .IndexWorkflowTriggers()
     .AddHttpActivities()
     .ConfigureWorkflowRuntime(options =>
     {

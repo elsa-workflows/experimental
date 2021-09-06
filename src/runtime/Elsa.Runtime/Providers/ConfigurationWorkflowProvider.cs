@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Elsa.Contracts;
+using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Extensions;
 using Elsa.Runtime.Models;
 using Elsa.Runtime.Options;
 using Elsa.Runtime.Services;
@@ -12,55 +16,52 @@ namespace Elsa.Runtime.Providers
 {
     public class ConfigurationWorkflowProvider : IWorkflowProvider
     {
+        private readonly IIdentityGraphService _identityGraphService;
         private readonly WorkflowRuntimeOptions _options;
-        public ConfigurationWorkflowProvider(IOptions<WorkflowRuntimeOptions> options) => _options = options.Value;
-
-        public ValueTask<WorkflowDefinition?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        private readonly IDictionary<string, Workflow> _workflows;
+        
+        public ConfigurationWorkflowProvider(IOptions<WorkflowRuntimeOptions> options, IIdentityGraphService identityGraphService)
         {
-            if (!_options.Workflows.TryGetValue(id, out var workflow))
-                return ValueTask.FromResult<WorkflowDefinition?>(default);
-
-            var builder = new WorkflowBuilder();
-            workflow.Build(builder);
-
-            var definition = new WorkflowDefinition
-            {
-                Id = workflow.Id,
-                Version = workflow.Version,
-                Root = builder.Root,
-                Triggers = builder.Triggers
-            };
-
-            return ValueTask.FromResult<WorkflowDefinition?>(definition);
+            _identityGraphService = identityGraphService;
+            _options = options.Value;
+            _workflows = CreateWorkflowDefinitions().ToDictionary(x => x.Id);
         }
 
-        public ValueTask<IEnumerable<WorkflowDefinition>> FindManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken)
+        public ValueTask<Workflow?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        {
+            var result = _workflows.TryGetValue(id, out var workflowDefinition) ? workflowDefinition : default;
+            return ValueTask.FromResult(result);
+        }
+
+        public ValueTask<IEnumerable<Workflow>> FindManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken)
         {
             var workflowDefinitions = FindManyById(ids);
             return ValueTask.FromResult(workflowDefinitions);
         }
 
-        private IEnumerable<WorkflowDefinition> FindManyById(IEnumerable<string> ids)
+        public ValueTask<PagedList<Workflow>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken = default)
         {
-            var idList = ids as ICollection<string> ?? ids.ToHashSet();
-            var keys = _options.Workflows.Keys.Where(x => idList.Contains(x)).ToList();
-
-            foreach (var workflow in keys.Select(key => _options.Workflows[key]))
-                yield return BuildWorkflowDefinition(workflow);
+            var pagedList = _workflows.Values.Paginate(pagerParameters);
+            return ValueTask.FromResult(pagedList);
         }
 
-        private WorkflowDefinition BuildWorkflowDefinition(IWorkflow workflow)
+        private IEnumerable<Workflow> FindManyById(IEnumerable<string> ids)
+        {
+            var idList = ids as ICollection<string> ?? ids.ToHashSet();
+            var keys = _workflows.Keys.Where(x => idList.Contains(x)).ToList();
+
+            foreach (var workflow in keys.Select(key => _workflows[key]))
+                yield return workflow;
+        }
+
+        private IEnumerable<Workflow> CreateWorkflowDefinitions() => _options.Workflows.Values.Select(BuildWorkflowDefinition).ToList();
+
+        private Workflow BuildWorkflowDefinition(IWorkflow workflow)
         {
             var builder = new WorkflowBuilder();
             workflow.Build(builder);
-
-            return new WorkflowDefinition
-            {
-                Id = workflow.Id,
-                Version = workflow.Version,
-                Root = builder.Root,
-                Triggers = builder.Triggers
-            };
+            _identityGraphService.AssignIdentities(builder.Root);
+            return new Workflow(workflow.Id, workflow.Version, DateTime.MinValue, builder.Root, builder.Triggers);
         }
     }
 }

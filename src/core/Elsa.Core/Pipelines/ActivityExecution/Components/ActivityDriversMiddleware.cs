@@ -10,13 +10,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
     public class ActivityDriversMiddleware
     {
         private readonly ActivityMiddlewareDelegate _next;
-        private readonly IActivityDriverRegistry _driverRegistry;
         private readonly ILogger _logger;
 
-        public ActivityDriversMiddleware(ActivityMiddlewareDelegate next, IActivityDriverRegistry driverRegistry, ILogger<ActivityDriversMiddleware> logger)
+        public ActivityDriversMiddleware(ActivityMiddlewareDelegate next, ILogger<ActivityDriversMiddleware> logger)
         {
             _next = next;
-            _driverRegistry = driverRegistry;
             _logger = logger;
         }
 
@@ -26,7 +24,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
             // Get driver.
             var driverActivator = context.WorkflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
-            var driver = driverActivator.GetDriver(activity);
+            var driver = driverActivator.ActivateDriver(activity);
 
             if (driver == null)
             {
@@ -47,10 +45,10 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 return;
 
             // Complete parent chain.
-            await CompleteParentsAsync(context, activity);
+            await CompleteParentsAsync(context, activity, driverActivator);
         }
 
-        private static async Task CompleteParentsAsync(ActivityExecutionContext context, IActivity activity)
+        private static async Task CompleteParentsAsync(ActivityExecutionContext context, IActivity activity, IActivityDriverActivator driverActivator)
         {
             var node = context.WorkflowExecutionContext.FindNodeByActivity(activity);
             var currentParent = node.Parent;
@@ -63,12 +61,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
                 if (!hasScheduledChildren)
                 {
-                    // Invoke the completion callback, if any.
+                    // Notify the parent activity about the child's completion.
                     var parentNode = currentParent;
-                    var completionCallback = currentChildContext.WorkflowExecutionContext.PopCompletionCallback(parentNode.Activity);
-
-                    if (completionCallback != null)
-                        await completionCallback.Invoke(currentChildContext, parentNode.Activity);
+                    
+                    if (driverActivator.ActivateDriver(parentNode.Activity) is IContainerDriver containerDriver) 
+                        await containerDriver.OnChildCompleteAsync(currentChildContext, parentNode.Activity);
                 }
 
                 // Do not continue completion callbacks of parents while there are scheduled nodes.

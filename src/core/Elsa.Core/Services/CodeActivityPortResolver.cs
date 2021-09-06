@@ -27,7 +27,7 @@ namespace Elsa.Services
                 where typeof(IActivity).IsAssignableFrom(prop.PropertyType)
                 let portAttr = prop.GetCustomAttribute<PortAttribute>()
                 where portAttr != null
-                select (IActivity)prop.GetValue(activity);
+                select (IActivity)prop.GetValue(activity)!;
 
             return ports;
         }
@@ -41,7 +41,7 @@ namespace Elsa.Services
                 where typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
                 let portsAttr = prop.GetCustomAttribute<PortsAttribute>()
                 where portsAttr != null
-                select (IEnumerable<IActivity>)prop.GetValue(activity);
+                select (IEnumerable<IActivity>)prop.GetValue(activity)!;
 
             return ports.SelectMany(x => x);
         }

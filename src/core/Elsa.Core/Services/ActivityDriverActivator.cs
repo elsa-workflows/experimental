@@ -17,13 +17,13 @@ namespace Elsa.Services
 
         public IActivityDriver ActivateDriver(Type driverType) => (IActivityDriver)ActivatorUtilities.GetServiceOrCreateInstance(_serviceProvider, driverType);
         
-        public IActivityDriver? GetDriver(IActivity activity)
+        public IActivityDriver? ActivateDriver(IActivity activity)
         {
             var driverType = _driverRegistry.GetDriverType(activity);
             return driverType == null ? null : ActivateDriver(driverType);
         }
 
-        public IActivityDriver? GetDriver(string activityType)
+        public IActivityDriver? ActivateDriver(string activityType)
         {
             var driverType = _driverRegistry.GetDriverType(activityType);
             return driverType == null ? null : ActivateDriver(driverType);

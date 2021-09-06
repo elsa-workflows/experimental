@@ -26,7 +26,7 @@ namespace Elsa.Activities.ControlFlow
         public int? CurrentValue { get; set; }
     }
 
-    public class ForDriver : ActivityDriver<For>
+    public class ForDriver : ContainerActivityDriver<For>
     {
         protected override void Execute(For activity, ActivityExecutionContext context)
         {
@@ -38,11 +38,10 @@ namespace Elsa.Activities.ControlFlow
             HandleIteration(context, activity);
         }
 
-        private ValueTask OnChildComplete(ActivityExecutionContext childContext, IActivity owner)
+        protected override void OnChildComplete(ActivityExecutionContext childContext, For owner)
         {
             var activity = (For)owner;
             HandleIteration(childContext, activity);
-            return new ValueTask();
         }
 
         private void HandleIteration(ActivityExecutionContext context, For activity)
@@ -63,7 +62,7 @@ namespace Elsa.Activities.ControlFlow
             if (loop)
             {
                 activity.CurrentValue = currentValue;
-                context.WorkflowExecutionContext.Schedule(iterateNode, activity, OnChildComplete);
+                context.WorkflowExecutionContext.Schedule(iterateNode);
                 return;
             }
 

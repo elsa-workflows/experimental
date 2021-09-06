@@ -10,7 +10,8 @@ namespace Microsoft.Extensions.DependencyInjection
             return services
                 .AddHttpContextAccessor()
                 .AddActivityDriver<HttpEndpointDriver>()
-                .AddActivityDriver<HttpResponseDriver>();
+                .AddActivityDriver<HttpResponseDriver>()
+                .AddTriggerProvider<HttpEndpointTriggerProvider>();
         }
     }
 }

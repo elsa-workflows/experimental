@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Services;
@@ -17,7 +16,7 @@ namespace Elsa.Activities.Containers
         }
     }
 
-    public class SequenceDriver : ActivityDriver<Sequence>
+    public class SequenceDriver : ContainerActivityDriver<Sequence>
     {
         protected override void Execute(Sequence activity, ActivityExecutionContext context)
         {
@@ -25,23 +24,21 @@ namespace Elsa.Activities.Containers
             var firstActivity = childActivities.FirstOrDefault();
 
             if (firstActivity != null)
-                context.ScheduleActivity(firstActivity, OnChildComplete);
+                context.ScheduleActivity(firstActivity);
         }
 
-        private ValueTask OnChildComplete(ActivityExecutionContext childContext, IActivity owner)
+        protected override void OnChildComplete(ActivityExecutionContext childContext, Sequence owner)
         {
-            var sequence = (Sequence)owner;
+            var sequence = owner;
             var childActivities = sequence.Activities.ToList();
             var completedActivity = childContext.Activity;
             var nextIndex = childActivities.IndexOf(completedActivity) + 1;
 
-            if (nextIndex < childActivities.Count)
-            {
-                var nextActivity = childActivities.ElementAt(nextIndex);
-                childContext.WorkflowExecutionContext.Schedule(nextActivity, owner, OnChildComplete);
-            }
-
-            return new ValueTask();
+            if (nextIndex >= childActivities.Count) 
+                return;
+            
+            var nextActivity = childActivities.ElementAt(nextIndex);
+            childContext.WorkflowExecutionContext.Schedule(nextActivity);
         }
     }
 }

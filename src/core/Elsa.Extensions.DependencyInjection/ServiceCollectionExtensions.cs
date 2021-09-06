@@ -9,6 +9,7 @@ using Elsa.Expressions;
 using Elsa.Options;
 using Elsa.Pipelines.ActivityExecution;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.HostedServices;
 using Elsa.Runtime.Options;
 using Elsa.Runtime.Providers;
 using Elsa.Runtime.Services;
@@ -44,14 +45,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<IActivityDriverActivator, ActivityDriverActivator>()
                 .AddLogging();
         }
-        
+
         public static IServiceCollection AddElsaRuntime(this IServiceCollection services)
         {
             services.AddOptions<WorkflowRuntimeOptions>();
 
             return services
                 .AddScoped<IWorkflowManager, WorkflowManager>()
-                .AddWorkflowProvider<ConfigurationWorkflowProvider>();
+                .AddWorkflowProvider<ConfigurationWorkflowProvider>()
+                .AddScoped<ITriggerIndexer, TriggerIndexer>();
         }
 
         private static IServiceCollection AddDefaultActivities(this IServiceCollection services) =>
@@ -104,13 +106,9 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddWorkflowProvider<TProvider>(this IServiceCollection services) where TProvider : class, IWorkflowProvider
-        {
-            services.AddScoped<IWorkflowProvider, TProvider>();
-
-            return services;
-        }
-
+        public static IServiceCollection AddTriggerProvider<T>(this IServiceCollection services) where T : class, ITriggerProvider => services.AddScoped<ITriggerProvider, T>();
+        public static IServiceCollection AddWorkflowProvider<TProvider>(this IServiceCollection services) where TProvider : class, IWorkflowProvider => services.AddScoped<IWorkflowProvider, TProvider>();
         public static IServiceCollection ConfigureWorkflowRuntime(this IServiceCollection services, Action<WorkflowRuntimeOptions> configure) => services.Configure(configure);
+        public static IServiceCollection IndexWorkflowTriggers(this IServiceCollection services) => services.AddHostedService<IndexWorkflowTriggers>();
     }
 }

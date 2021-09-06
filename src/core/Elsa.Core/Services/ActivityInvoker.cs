@@ -37,7 +37,7 @@ namespace Elsa.Services
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        public async Task<WorkflowExecutionResult> ResumeAsync(Bookmark bookmark, IActivity root, WorkflowState workflowState, CancellationToken cancellationToken = default)
+        public async Task<ActivityExecutionResult> ResumeAsync(Bookmark bookmark, IActivity root, WorkflowState workflowState, CancellationToken cancellationToken = default)
         {
             // Create a child service scope.
             using var scope = _serviceScopeFactory.CreateScope();
@@ -47,7 +47,7 @@ namespace Elsa.Services
             // Construct bookmark.
             var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
             var bookmarkedActivity = workflowExecutionContext.FindActivityById(bookmark.ActivityId);
-            var bookmarkedActivityDriver = activityDriverActivator.GetDriver(bookmarkedActivity);
+            var bookmarkedActivityDriver = activityDriverActivator.ActivateDriver(bookmarkedActivity);
             var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivityDriver?.GetResumeActivityDelegate(bookmark.CallbackMethodName) : default;
 
             // Schedule the activity to resume.
@@ -57,14 +57,31 @@ namespace Elsa.Services
             var executeDelegate = resumeDelegate ?? Noop;
             return await InvokeAsync(workflowExecutionContext, executeDelegate, cancellationToken);
         }
+        
+        public async Task<ActivityExecutionResult> TriggerAsync(Trigger trigger, IActivity root, CancellationToken cancellationToken = default)
+        {
+            // Create a child service scope.
+            using var scope = _serviceScopeFactory.CreateScope();
+            
+            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, root);
+            
+            // Get the activity to execute.
+            var activity = workflowExecutionContext.FindActivityById(trigger.ActivityId);
 
-        public async Task<WorkflowExecutionResult> InvokeAsync(IActivity activity, IActivity? root = default, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
+            // Schedule the activity to execute.
+            workflowExecutionContext.Scheduler.Schedule(new ScheduledActivity(activity));
+            
+            // Execute the workflow.
+            return await InvokeAsync(workflowExecutionContext, cancellationToken: cancellationToken);
+        }
+
+        public async Task<ActivityExecutionResult> InvokeAsync(IActivity activity, IActivity? root = default, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
             var currentNode = new ScheduledActivity(activity);
             return await InvokeAsync(currentNode, root, null, executeNodeDelegate, cancellationToken);
         }
 
-        private async Task<WorkflowExecutionResult> InvokeAsync(ScheduledActivity scheduledActivity, IActivity? root = default, WorkflowState? workflowState = default, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
+        private async Task<ActivityExecutionResult> InvokeAsync(ScheduledActivity scheduledActivity, IActivity? root = default, WorkflowState? workflowState = default, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
             // If no root was provided, it means the activity *is* the root activity.
             root ??= scheduledActivity.Activity;
@@ -81,7 +98,7 @@ namespace Elsa.Services
             return await InvokeAsync(workflowExecutionContext, executeNodeDelegate, cancellationToken);
         }
 
-        private async Task<WorkflowExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
+        private async Task<ActivityExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext, ExecuteActivityDelegate? executeNodeDelegate = default, CancellationToken cancellationToken = default)
         {
             var scheduler = workflowExecutionContext.Scheduler;
 
@@ -102,7 +119,7 @@ namespace Elsa.Services
             }
 
             var workflowState = _workflowStateService.CreateState(workflowExecutionContext);
-            return new WorkflowExecutionResult(workflowState, workflowExecutionContext.Bookmarks.ToList());
+            return new ActivityExecutionResult(workflowState, workflowExecutionContext.Bookmarks.ToList());
         }
         
         private WorkflowExecutionContext CreateWorkflowExecutionContext(IServiceProvider serviceProvider, IActivity root, WorkflowState? workflowState = default)
@@ -111,7 +128,7 @@ namespace Elsa.Services
             var graph = _activityWalker.Walk(root);
 
             // Assign identities.
-            _identityGraphService.AssignIdentities(graph);
+            _identityGraphService.AssignIdentities(root);
 
             // Create scheduler.
             var scheduler = _schedulerFactory.CreateScheduler();

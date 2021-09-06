@@ -10,13 +10,19 @@ namespace Elsa.Services
     {
         public string Hash(object value)
         {
-            var json = JsonSerializer.Serialize(value);
+            var options = new JsonSerializerOptions
+            {
+                // Enables serialization of ValueTuples, which use fields instead of properties. 
+                IncludeFields = true
+            };
+            
+            var json = JsonSerializer.Serialize(value, options);
             return Hash(json);
         }
         
         private static string Hash(string input)
         {
-            using var sha = new HMACMD5();
+            using var sha = new SHA256Managed();
             return Hash(sha, input);
         }
 

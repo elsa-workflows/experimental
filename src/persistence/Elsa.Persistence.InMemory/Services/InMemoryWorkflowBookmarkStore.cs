@@ -8,23 +8,23 @@ using Elsa.Persistence.Abstractions.Models;
 
 namespace Elsa.Persistence.InMemory.Services
 {
-    public class InMemoryBookmarkStore : IBookmarkStore
+    public class InMemoryWorkflowBookmarkStore : IWorkflowBookmarkStore
     {
-        private readonly ConcurrentDictionary<string, BookmarkRecord> _records = new();
+        private readonly ConcurrentDictionary<string, WorkflowBookmark> _records = new();
 
-        public Task SaveAsync(BookmarkRecord record, CancellationToken cancellationToken = default)
+        public Task SaveAsync(WorkflowBookmark record, CancellationToken cancellationToken = default)
         {
             _records.AddOrUpdate(record.Id, record, (_, _) => record);
             return Task.CompletedTask;
         }
 
-        public async Task SaveManyAsync(IEnumerable<BookmarkRecord> records, CancellationToken cancellationToken = default)
+        public async Task SaveManyAsync(IEnumerable<WorkflowBookmark> records, CancellationToken cancellationToken = default)
         {
             foreach (var record in records) 
                 await SaveAsync(record, cancellationToken);
         }
 
-        public Task<IEnumerable<BookmarkRecord>> FindManyAsync(string name, string? hash, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<WorkflowBookmark>> FindManyAsync(string name, string? hash, CancellationToken cancellationToken = default)
         {
             var results = _records.Values.Where(x => x.Name == name && x.Hash == hash);
             return Task.FromResult(results);

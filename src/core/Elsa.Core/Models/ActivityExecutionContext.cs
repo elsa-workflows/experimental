@@ -21,13 +21,13 @@ namespace Elsa.Models
         public Node Node => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
         public IActivity Activity => ScheduledActivity.Activity;
         public IEnumerable<Bookmark> Bookmarks => WorkflowExecutionContext.Bookmarks;
-        public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, Activity, completionCallback);
+        public void ScheduleActivity(IActivity activity) => WorkflowExecutionContext.Schedule(activity);
         public void ScheduleActivities(params IActivity[] activities) => ScheduleActivities((IEnumerable<IActivity>)activities);
 
-        public void ScheduleActivities(IEnumerable<IActivity> activities, ActivityCompletionCallback? completionCallback = default)
+        public void ScheduleActivities(IEnumerable<IActivity> activities)
         {
             foreach (var node in activities)
-                ScheduleActivity(node, completionCallback);
+                ScheduleActivity(node);
         }
 
         public T? GetVariable<T>(string name) => (T?)GetVariable(name);

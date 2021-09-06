@@ -14,6 +14,5 @@ namespace Elsa.Extensions
         }
 
         public static ExecuteActivityDelegate GetResumeActivityDelegate(this IActivityDriver driver, string resumeMethodName) => driver.GetDelegate<ExecuteActivityDelegate>(resumeMethodName);
-        public static ActivityCompletionCallback GetActivityCompletionCallback(this IActivityDriver driver, string completionMethodName) => driver.GetDelegate<ActivityCompletionCallback>(completionMethodName);
     }
 }

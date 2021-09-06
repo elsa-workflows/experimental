@@ -7,5 +7,6 @@ namespace Elsa.Contracts
     {
         IEnumerable<NodeIdentity> CreateIdentityGraph(Node root);
         void AssignIdentities(Node root);
+        void AssignIdentities(IActivity root);
     }
 }

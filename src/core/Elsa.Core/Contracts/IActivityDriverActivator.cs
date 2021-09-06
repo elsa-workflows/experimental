@@ -5,7 +5,7 @@ namespace Elsa.Contracts
     public interface IActivityDriverActivator
     {
         IActivityDriver ActivateDriver(Type driverType);
-        IActivityDriver? GetDriver(IActivity activity);
-        IActivityDriver? GetDriver(string activityType);
+        IActivityDriver? ActivateDriver(IActivity activity);
+        IActivityDriver? ActivateDriver(string activityType);
     }
 }

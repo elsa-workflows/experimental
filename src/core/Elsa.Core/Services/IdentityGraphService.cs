@@ -8,6 +8,13 @@ namespace Elsa.Services
 {
     public class IdentityGraphService : IIdentityGraphService
     {
+        private readonly IActivityWalker _activityWalker;
+
+        public IdentityGraphService(IActivityWalker activityWalker)
+        {
+            _activityWalker = activityWalker;
+        }
+        
         public IEnumerable<NodeIdentity> CreateIdentityGraph(Node root)
         {
             var identityCounters = new Dictionary<string, int>();
@@ -15,6 +22,12 @@ namespace Elsa.Services
             return list.Select(x => CreateIdentity(x, identityCounters));
         }
 
+        public void AssignIdentities(IActivity root)
+        {
+            var graph = _activityWalker.Walk(root);
+            AssignIdentities(graph);
+        }
+        
         public void AssignIdentities(Node root)
         {
             var identityCounters = new Dictionary<string, int>();

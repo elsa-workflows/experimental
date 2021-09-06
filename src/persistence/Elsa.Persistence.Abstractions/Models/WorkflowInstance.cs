@@ -2,7 +2,7 @@ using Elsa.State;
 
 namespace Elsa.Persistence.Abstractions.Models
 {
-    public record WorkflowInstanceRecord
+    public record WorkflowInstance
     {
         public string Id { get; set; } = default!;
         public string DefinitionId { get; set; } = default!;

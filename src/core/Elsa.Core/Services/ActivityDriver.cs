@@ -15,7 +15,7 @@ namespace Elsa.Services
         protected virtual ValueTask ExecuteAsync(TActivity activity, ActivityExecutionContext context)
         {
             Execute(activity, context);
-            return new ValueTask();
+            return ValueTask.CompletedTask;
         }
 
         protected virtual void Execute(TActivity activity, ActivityExecutionContext context)

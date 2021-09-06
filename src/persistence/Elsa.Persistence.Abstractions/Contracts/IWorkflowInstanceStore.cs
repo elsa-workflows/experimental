@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Persistence.Abstractions.Models;
@@ -6,7 +7,8 @@ namespace Elsa.Persistence.Abstractions.Contracts
 {
     public interface IWorkflowInstanceStore
     {
-        Task<WorkflowInstanceRecord?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
-        Task SaveAsync(WorkflowInstanceRecord record, CancellationToken cancellationToken = default);
+        Task<WorkflowInstance?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
+        Task SaveAsync(WorkflowInstance record, CancellationToken cancellationToken = default);
+        Task SaveManyAsync(IEnumerable<WorkflowInstance> records, CancellationToken cancellationToken = default);
     }
 }

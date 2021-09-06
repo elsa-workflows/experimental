@@ -6,14 +6,8 @@ namespace Elsa.Persistence.InMemory.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddInMemoryWorkflowInstanceStore(this IServiceCollection services)
-        {
-            return services.AddSingleton<IWorkflowInstanceStore, InMemoryWorkflowInstanceStore>();
-        }
-        
-        public static IServiceCollection AddInMemoryBookmarkStore(this IServiceCollection services)
-        {
-            return services.AddSingleton<IBookmarkStore, InMemoryBookmarkStore>();
-        }
+        public static IServiceCollection AddInMemoryWorkflowInstanceStore(this IServiceCollection services) => services.AddSingleton<IWorkflowInstanceStore, InMemoryWorkflowInstanceStore>();
+        public static IServiceCollection AddInMemoryBookmarkStore(this IServiceCollection services) => services.AddSingleton<IWorkflowBookmarkStore, InMemoryWorkflowBookmarkStore>();
+        public static IServiceCollection AddInMemoryTriggerStore(this IServiceCollection services) => services.AddSingleton<IWorkflowTriggerStore, InMemoryWorkflowTriggerStore>();
     }
 }

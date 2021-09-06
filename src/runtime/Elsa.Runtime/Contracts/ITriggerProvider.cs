@@ -6,6 +6,7 @@ namespace Elsa.Runtime.Contracts
 {
     public interface ITriggerProvider
     {
+        bool GetSupportsActivity(object activity);
         ValueTask<IEnumerable<object>> GetHashInputsAsync(object activity, CancellationToken cancellationToken = default);
     }
 }
