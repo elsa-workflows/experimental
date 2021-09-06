@@ -1,10 +1,10 @@
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Activities.Http
@@ -20,22 +20,17 @@ namespace Elsa.Activities.Http
             _hasher = hasher;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, IWorkflowManager workflowManager, IWorkflowTriggerStore workflowTriggerStore, IWorkflowBookmarkStore workflowBookmarkStore)
+        public async Task InvokeAsync(HttpContext httpContext, IWorkflowInstructionManager workflowInstructionManager, IWorkflowRegistry workflowRegistry, IWorkflowTriggerStore workflowTriggerStore, IWorkflowBookmarkStore workflowBookmarkStore)
         {
             var path = GetPath(httpContext);
             var method = httpContext.Request.Method!.ToLowerInvariant();
             var abortToken = httpContext.RequestAborted;
             var hash = _hasher.Hash((path.ToLowerInvariant(), method.ToLowerInvariant()));
             var activityTypeName = nameof(HttpEndpoint);
+            var stimulus = Stimuli.Standard(activityTypeName, hash);
+            var instructions = await workflowInstructionManager.GetExecutionInstructionsAsync(stimulus, abortToken);
+            var executionResults = (await workflowInstructionManager.ExecuteInstructionsAsync(instructions, CancellationToken.None)).ToList();
             
-            // Start new workflows.
-            var startedWorkflowExecutionResults = (await workflowManager.TriggerWorkflowsAsync(activityTypeName, hash, CancellationToken.None)).ToList();
-            
-            // Resume blocked workflows.
-            var resumedWorkflowExecutionResults = (await workflowManager.ResumeWorkflowsAsync(activityTypeName, hash, CancellationToken.None)).ToList();
-
-            var executionResults = startedWorkflowExecutionResults.Concat(resumedWorkflowExecutionResults).ToList();
-
             if (!executionResults.Any())
             {
                 await _next(httpContext);
@@ -48,8 +43,7 @@ namespace Elsa.Activities.Http
             {
                 response.ContentType = "application/json";
                 response.StatusCode = StatusCodes.Status200OK;
-                var results = executionResults.Select(x => x.WorkflowInstance);
-                var json = JsonSerializer.Serialize(results);
+                var json = "{}";
                 await response.WriteAsync(json, abortToken);
             }
         }

@@ -12,7 +12,7 @@ using Elsa.Runtime.Options;
 using Elsa.Runtime.Services;
 using Microsoft.Extensions.Options;
 
-namespace Elsa.Runtime.Providers
+namespace Elsa.Runtime.WorkflowProviders
 {
     public class ConfigurationWorkflowProvider : IWorkflowProvider
     {

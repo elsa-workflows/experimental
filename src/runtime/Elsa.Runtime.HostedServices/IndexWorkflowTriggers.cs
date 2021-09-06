@@ -28,11 +28,11 @@ namespace Elsa.Runtime.HostedServices
         {
             using var scope = _serviceScopeFactory.CreateScope();
             var triggerIndexer = scope.ServiceProvider.GetRequiredService<ITriggerIndexer>();
-            var workflowManager = scope.ServiceProvider.GetRequiredService<IWorkflowManager>();
+            var workflowManager = scope.ServiceProvider.GetRequiredService<IWorkflowRegistry>();
             await IndexAsync(triggerIndexer, workflowManager, cancellationToken);
         }
 
-        private async Task IndexAsync(ITriggerIndexer triggerIndexer, IWorkflowManager workflowManager, CancellationToken cancellationToken)
+        private async Task IndexAsync(ITriggerIndexer triggerIndexer, IWorkflowRegistry workflowRegistry, CancellationToken cancellationToken)
         {
             const int limit = 100;
             PagedList<Workflow> pagedList;
@@ -44,7 +44,7 @@ namespace Elsa.Runtime.HostedServices
 
             do
             {
-                pagedList = await workflowManager.ListAsync(new PagerParameters(limit), cancellationToken);
+                pagedList = await workflowRegistry.ListAsync(new PagerParameters(limit), cancellationToken);
                 var indexTasks = pagedList.Items.Select(x => triggerIndexer.IndexTriggersAsync(x, cancellationToken));
                 await Task.WhenAll(indexTasks);
                 _logger.LogInformation("Indexed batch {CurrentBatch}", currentBatch++);

@@ -11,8 +11,8 @@ using Elsa.Pipelines.ActivityExecution;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.HostedServices;
 using Elsa.Runtime.Options;
-using Elsa.Runtime.Providers;
 using Elsa.Runtime.Services;
+using Elsa.Runtime.WorkflowProviders;
 using Elsa.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -51,7 +51,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions<WorkflowRuntimeOptions>();
 
             return services
-                .AddScoped<IWorkflowManager, WorkflowManager>()
+                .AddScoped<IWorkflowRegistry, WorkflowRegistry>()
+                .AddScoped<IWorkflowInstructionManager, WorkflowInstructionManager>()
                 .AddWorkflowProvider<ConfigurationWorkflowProvider>()
                 .AddScoped<ITriggerIndexer, TriggerIndexer>();
         }

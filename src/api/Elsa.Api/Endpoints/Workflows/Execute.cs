@@ -9,9 +9,9 @@ namespace Elsa.Api.Endpoints.Workflows
 {
     public static class Execute
     {
-        public static async Task<IResult> HandleAsync(string id, IWorkflowManager workflowManager, IActivityInvoker activityInvoker, HttpResponse response, CancellationToken cancellationToken)
+        public static async Task<IResult> HandleAsync(string id, IWorkflowRegistry workflowRegistry, IActivityInvoker activityInvoker, HttpResponse response, CancellationToken cancellationToken)
         {
-            var workflow = await workflowManager.GetByIdAsync(id, cancellationToken);
+            var workflow = await workflowRegistry.GetByIdAsync(id, cancellationToken);
             return workflow == null ? Results.NotFound() : new ExecuteWorkflowResult(workflow);
         }
     }
