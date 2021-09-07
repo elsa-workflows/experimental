@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
-using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Models;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +19,7 @@ namespace Elsa.Activities.Http
             _hasher = hasher;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, IWorkflowInstructionManager workflowInstructionManager, IWorkflowRegistry workflowRegistry, IWorkflowTriggerStore workflowTriggerStore, IWorkflowBookmarkStore workflowBookmarkStore)
+        public async Task InvokeAsync(HttpContext httpContext, IWorkflowInstructionManager workflowInstructionManager)
         {
             var path = GetPath(httpContext);
             var method = httpContext.Request.Method!.ToLowerInvariant();
@@ -28,8 +27,7 @@ namespace Elsa.Activities.Http
             var hash = _hasher.Hash((path.ToLowerInvariant(), method.ToLowerInvariant()));
             var activityTypeName = nameof(HttpEndpoint);
             var stimulus = Stimuli.Standard(activityTypeName, hash);
-            var instructions = await workflowInstructionManager.GetExecutionInstructionsAsync(stimulus, abortToken);
-            var executionResults = (await workflowInstructionManager.ExecuteInstructionsAsync(instructions, CancellationToken.None)).ToList();
+            var executionResults = (await workflowInstructionManager.TriggerWorkflowsAsync(stimulus, CancellationToken.None)).ToList();
             
             if (!executionResults.Any())
             {

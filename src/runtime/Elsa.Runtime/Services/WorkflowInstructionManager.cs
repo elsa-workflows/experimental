@@ -38,5 +38,11 @@ namespace Elsa.Runtime.Services
             var tasks = instructions.Select(x => ExecuteInstructionAsync(x, cancellationToken));
             return (await Task.WhenAll(tasks)).SelectMany(x => x);
         }
+
+        public async Task<IEnumerable<IWorkflowInstructionResult>> TriggerWorkflowsAsync(IStimulus stimulus, CancellationToken cancellationToken = default)
+        {
+            var instructions = await GetExecutionInstructionsAsync(stimulus, cancellationToken);
+            return await ExecuteInstructionsAsync(instructions, cancellationToken);
+        }
     }
 }

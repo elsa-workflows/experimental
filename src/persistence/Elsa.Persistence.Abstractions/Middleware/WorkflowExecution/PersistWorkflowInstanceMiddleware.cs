@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Contracts;
@@ -6,7 +5,6 @@ using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Pipelines.WorkflowExecution;
-using Elsa.State;
 
 namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
 {

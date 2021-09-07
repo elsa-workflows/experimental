@@ -10,7 +10,6 @@ using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Pipelines.ActivityExecution.Components;
 using Elsa.Pipelines.WorkflowExecution.Components;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Services;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -63,11 +62,10 @@ namespace Elsa.Samples.Console1
 
         private static IWorkflowEngine CreateWorkflowEngine()
         {
-            var builder = new WorkflowEngineBuilder();
+            var builder = DefaultWorkflowEngineBuilder.CreateDefaultBuilder();
 
             builder.Services
                 .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
-                .AddElsa()
                 .AddInMemoryWorkflowInstanceStore()
                 .AddInMemoryBookmarkStore()
                 .AddInMemoryTriggerStore()

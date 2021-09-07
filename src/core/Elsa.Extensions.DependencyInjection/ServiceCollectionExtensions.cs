@@ -7,6 +7,7 @@ using Elsa.Activities.Primitives;
 using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Options;
+using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Pipelines.ActivityExecution;
 using Elsa.Pipelines.WorkflowExecution;
 using Elsa.Runtime.Contracts;
@@ -14,7 +15,6 @@ using Elsa.Runtime.HostedServices;
 using Elsa.Runtime.Instructions;
 using Elsa.Runtime.Options;
 using Elsa.Runtime.Services;
-using Elsa.Runtime.Stimuli;
 using Elsa.Runtime.Stimuli.Handlers;
 using Elsa.Runtime.WorkflowProviders;
 using Elsa.Services;
@@ -139,5 +139,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddInstructionHandler<T>(this IServiceCollection services) where T : class, IWorkflowInstructionHandler => services.AddSingleton<IWorkflowInstructionHandler, T>();
         public static IServiceCollection ConfigureWorkflowRuntime(this IServiceCollection services, Action<WorkflowRuntimeOptions> configure) => services.Configure(configure);
         public static IServiceCollection IndexWorkflowTriggers(this IServiceCollection services) => services.AddHostedService<IndexWorkflowTriggers>();
+        public static IServiceCollection AddWorkflowInstanceStore<T>(this IServiceCollection services) where T : class, IWorkflowInstanceStore => services.AddSingleton<IWorkflowInstanceStore, T>();
+        public static IServiceCollection AddBookmarkStore<T>(this IServiceCollection services) where T : class, IWorkflowBookmarkStore => services.AddSingleton<IWorkflowBookmarkStore, T>();
+        public static IServiceCollection AddTriggerStore<T>(this IServiceCollection services) where T : class, IWorkflowTriggerStore => services.AddSingleton<IWorkflowTriggerStore, T>();
+        public static IServiceCollection AddWorkflowInstanceStore(this IServiceCollection services, IWorkflowInstanceStore store) => services.AddSingleton(store);
+        public static IServiceCollection AddBookmarkStore(this IServiceCollection services, IWorkflowBookmarkStore store) => services.AddSingleton(store);
+        public static IServiceCollection AddTriggerStore(this IServiceCollection services, IWorkflowTriggerStore store) => services.AddSingleton(store);
     }
 }
