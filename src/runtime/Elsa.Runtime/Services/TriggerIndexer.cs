@@ -9,7 +9,6 @@ using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Services

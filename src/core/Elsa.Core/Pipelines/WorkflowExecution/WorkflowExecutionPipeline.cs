@@ -2,8 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Pipelines.ActivityExecution;
-using Elsa.Pipelines.ActivityExecution.Components;
 using Elsa.Pipelines.WorkflowExecution.Components;
 
 namespace Elsa.Pipelines.WorkflowExecution

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Models;
-using Elsa.Runtime.Models;
 
 namespace Elsa.Runtime.Extensions
 {

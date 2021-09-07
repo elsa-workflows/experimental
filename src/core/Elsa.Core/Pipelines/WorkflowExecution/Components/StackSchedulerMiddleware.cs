@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Pipelines.ActivityExecution.Components;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Pipelines.WorkflowExecution.Components

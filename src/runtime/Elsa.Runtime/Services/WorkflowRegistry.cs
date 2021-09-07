@@ -7,7 +7,6 @@ using Elsa.Models;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Extensions;
-using Elsa.Runtime.Models;
 
 namespace Elsa.Runtime.Services
 {

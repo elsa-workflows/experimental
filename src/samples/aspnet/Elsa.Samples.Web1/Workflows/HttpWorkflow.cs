@@ -7,7 +7,6 @@ using Elsa.Activities.Http;
 using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Models;
 
 namespace Elsa.Samples.Web1.Workflows
 {

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

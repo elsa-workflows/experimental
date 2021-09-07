@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Models;
 
 namespace Elsa.Runtime.Services
 {
