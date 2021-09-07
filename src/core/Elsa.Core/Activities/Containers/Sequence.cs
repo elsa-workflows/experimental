@@ -38,7 +38,7 @@ namespace Elsa.Activities.Containers
                 return;
             
             var nextActivity = childActivities.ElementAt(nextIndex);
-            childContext.WorkflowExecutionContext.Schedule(nextActivity);
+            childContext.ScheduleActivity(nextActivity);
         }
     }
 }

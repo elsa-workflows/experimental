@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Elsa.Attributes;
 using Elsa.Contracts;
+using Elsa.Extensions;
 using Elsa.Models;
 using Elsa.State;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,7 @@ namespace Elsa.Services
             var state = new WorkflowState();
 
             AddOutput(state, workflowExecutionContext);
+            AddCompletionCallbacks(state, workflowExecutionContext);
 
             return state;
         }
@@ -30,6 +32,7 @@ namespace Elsa.Services
         public void ApplyState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state)
         {
             ApplyOutput(state, workflowExecutionContext);
+            ApplyCompletionCallbacks(state, workflowExecutionContext);
         }
 
         private void AddOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
@@ -61,6 +64,40 @@ namespace Elsa.Services
                     var propertyInfo = nodeType.GetProperty(propertyName, BindingFlags.Public)!;
                     propertyInfo.SetValue(node, propertyValue);
                 }
+            }
+        }
+        
+        private void ApplyCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        {
+            var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
+
+            foreach (var completionCallbackEntry in state.CompletionCallbacks)
+            {
+                var nodeId = completionCallbackEntry.Key;
+                var node = workflowExecutionContext.FindNodeById(nodeId);
+                var activity = node.Activity;
+                var driver = activityDriverActivator.ActivateDriver(activity);
+
+                if (driver == null)
+                {
+                    _logger.LogWarning("No driver found for node {ActivityType}", activity.GetType());
+                    continue;
+                }
+
+                var callbackName = completionCallbackEntry.Value;
+                var callbackDelegate = driver.GetActivityCompletionCallback(callbackName);
+                workflowExecutionContext.AddCompletionCallback(activity, callbackDelegate);
+            }
+        }
+        
+        private void AddCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        {
+            var completionCallbacks = workflowExecutionContext.CompletionCallbacks;
+
+            foreach (var entry in completionCallbacks)
+            {
+                var activity = entry.Key;
+                state.CompletionCallbacks[activity.ActivityId] = entry.Value.Method.Name;
             }
         }
 

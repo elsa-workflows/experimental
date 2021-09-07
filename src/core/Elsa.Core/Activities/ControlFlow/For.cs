@@ -26,7 +26,7 @@ namespace Elsa.Activities.ControlFlow
         public int? CurrentValue { get; set; }
     }
 
-    public class ForDriver : ContainerActivityDriver<For>
+    public class ForDriver : ActivityDriver<For>
     {
         protected override void Execute(For activity, ActivityExecutionContext context)
         {
@@ -36,12 +36,6 @@ namespace Elsa.Activities.ControlFlow
                 return;
 
             HandleIteration(context, activity);
-        }
-
-        protected override void OnChildComplete(ActivityExecutionContext childContext, For owner)
-        {
-            var activity = (For)owner;
-            HandleIteration(childContext, activity);
         }
 
         private void HandleIteration(ActivityExecutionContext context, For activity)
@@ -62,7 +56,10 @@ namespace Elsa.Activities.ControlFlow
             if (loop)
             {
                 activity.CurrentValue = currentValue;
-                context.WorkflowExecutionContext.Schedule(iterateNode);
+                
+                // Important: this method can execute in either the For activity context or one of its "child" activities' context.
+                // We need to always schedule the `For` activity as the owner, never the child.
+                context.ScheduleActivity(iterateNode, activity, OnChildComplete);
                 return;
             }
 
@@ -70,6 +67,13 @@ namespace Elsa.Activities.ControlFlow
 
             if (activity.Next != null)
                 context.ScheduleActivity(activity.Next);
+        }
+        
+        private ValueTask OnChildComplete(ActivityExecutionContext childContext, IActivity owner)
+        {
+            var activity = (For)owner;
+            HandleIteration(childContext, activity);
+            return ValueTask.CompletedTask;
         }
     }
 }

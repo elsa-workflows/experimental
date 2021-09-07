@@ -68,9 +68,16 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 {
                     // Notify the parent activity about the child's completion.
                     var parentNode = currentParent;
-                    
+                 
+                    // If the driver implements IContainerDriver, invoke it.
                     if (driverActivator.ActivateDriver(parentNode.Activity) is IContainerDriver containerDriver) 
                         await containerDriver.OnChildCompleteAsync(currentChildContext, parentNode.Activity);
+                    
+                    // Invoke any completion callback.
+                    var completionCallback = currentChildContext.WorkflowExecutionContext.PopCompletionCallback(parentNode.Activity);
+
+                    if (completionCallback != null)
+                        await completionCallback.Invoke(currentChildContext, parentNode.Activity);
                 }
 
                 // Do not continue completion callbacks of parents while there are scheduled nodes.
