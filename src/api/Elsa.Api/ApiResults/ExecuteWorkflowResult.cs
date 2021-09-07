@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Models;
+using Elsa.Contracts;
+using Elsa.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,8 +14,8 @@ namespace Elsa.Api.ApiResults
         public async Task ExecuteAsync(HttpContext httpContext)
         {
             var response = httpContext.Response;
-            var workflowManager = httpContext.RequestServices.GetRequiredService<IWorkflowRegistry>();
-            var result = await workflowManager.ExecuteWorkflowAsync(Workflow);
+            var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowInvoker>();
+            var result = await workflowInvoker.InvokeAsync(Workflow);
 
             if (!response.HasStarted) 
                 await response.WriteAsJsonAsync(result, httpContext.RequestAborted);

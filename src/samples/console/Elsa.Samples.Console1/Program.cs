@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Activities.Console;
 using Elsa.Contracts;
+using Elsa.Models;
 using Elsa.Pipelines.ActivityExecution.Components;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +18,10 @@ namespace Elsa.Samples.Console1
         {
             var services = CreateServices().ConfigureNodeExecutionPipeline(pipeline => pipeline
                 //.UseLogging()
-                .UseNodeDrivers()
+                .UseActivityDrivers()
             );
 
-            var invoker = services.GetRequiredService<IActivityInvoker>();
+            var invoker = services.GetRequiredService<IWorkflowInvoker>();
             var workflow1 = new Func<IActivity>(HelloWorldWorkflow.Create);
             var workflow2 = new Func<IActivity>(HelloGoodbyeWorkflow.Create);
             var workflow3 = new Func<IActivity>(GreetingWorkflow.Create);
@@ -30,9 +32,10 @@ namespace Elsa.Samples.Console1
             var workflow8 = new Func<IActivity>(DynamicActivityWorkflow.Create);
             var workflow9 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
 
-            var workflowFactory = workflow7;
+            var workflowFactory = workflow5;
             var workflowGraph = workflowFactory();
-            var workflowExecutionResult = await invoker.InvokeAsync(workflowGraph);
+            var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph, new List<TriggerSource>());
+            var workflowExecutionResult = await invoker.InvokeAsync(workflow);
             var workflowState = workflowExecutionResult.WorkflowState;
             var bookmarks = workflowExecutionResult.Bookmarks;
 
@@ -41,9 +44,9 @@ namespace Elsa.Samples.Console1
                 Console.WriteLine("Press enter to resume workflow.");
                 Console.ReadLine();
 
-                workflowGraph = workflowFactory();
-                foreach (var bookmark in bookmarks) 
-                    await invoker.ResumeAsync(bookmark, workflowGraph, workflowState);
+                workflow = workflow with { Root = workflowFactory() };
+                foreach (var bookmark in bookmarks)
+                    await invoker.ResumeAsync(workflow, bookmark, workflowState);
             }
         }
 

@@ -1,6 +1,6 @@
 using Elsa.Contracts;
 
-namespace Elsa.Runtime.Models
+namespace Elsa.Models
 {
     public record TriggerSource(IActivity Activity);
 }

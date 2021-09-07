@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Models;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Extensions;

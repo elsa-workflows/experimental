@@ -32,7 +32,7 @@ namespace Elsa.Pipelines.ActivityExecution
         }
 
         private ActivityMiddlewareDelegate CreateDefaultPipeline() => Setup(x => x
-            .UseNodeDrivers()
+            .UseActivityDrivers()
         );
     }
 }

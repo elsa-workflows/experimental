@@ -5,6 +5,7 @@ using Elsa.Activities.Containers;
 using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
 using Elsa.Expressions;
+using Elsa.Models;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Models;
 

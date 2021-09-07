@@ -7,23 +7,22 @@ using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.InstructionResults;
-using Elsa.Runtime.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Instructions
 {
     public record TriggerWorkflowInstruction(WorkflowTrigger WorkflowTrigger) : IWorkflowInstruction;
-    public record TriggerWorkflowExecutionResult(Workflow Workflow, WorkflowInstance WorkflowInstance, ActivityExecutionResult ActivityExecutionResult) : IWorkflowInstructionResult;
+    public record TriggerWorkflowExecutionResult(Workflow Workflow, WorkflowInstance WorkflowInstance, WorkflowExecutionResult WorkflowExecutionResult) : IWorkflowInstructionResult;
 
     public class TriggerWorkflowInstructionHandler : WorkflowInstructionHandler<TriggerWorkflowInstruction>
     {
-        private readonly IActivityInvoker _activityInvoker;
+        private readonly IWorkflowInvoker _workflowInvoker;
         private readonly IWorkflowRegistry _workflowRegistry;
         private readonly ILogger _logger;
 
-        public TriggerWorkflowInstructionHandler(IActivityInvoker activityInvoker, IWorkflowRegistry workflowRegistry, ILogger<TriggerWorkflowInstructionHandler> logger)
+        public TriggerWorkflowInstructionHandler(IWorkflowInvoker workflowInvoker, IWorkflowRegistry workflowRegistry, ILogger<TriggerWorkflowInstructionHandler> logger)
         {
-            _activityInvoker = activityInvoker;
+            _workflowInvoker = workflowInvoker;
             _workflowRegistry = workflowRegistry;
             _logger = logger;
         }
@@ -44,7 +43,7 @@ namespace Elsa.Runtime.Instructions
             }
 
             // Execute workflow.
-            var activityExecutionResult = await _activityInvoker.TriggerAsync(trigger, workflow.Root, cancellationToken);
+            var workflowExecutionResult = await _workflowInvoker.TriggerAsync(workflow, trigger, cancellationToken);
 
             // Create workflow instance.
             var workflowInstance = new WorkflowInstance
@@ -52,10 +51,10 @@ namespace Elsa.Runtime.Instructions
                 Id = Guid.NewGuid().ToString("N"),
                 DefinitionId = workflow.Id,
                 Version = workflow.Version,
-                WorkflowState = activityExecutionResult.WorkflowState
+                WorkflowState = workflowExecutionResult.WorkflowState
             };
 
-            return new TriggerWorkflowExecutionResult(workflow, workflowInstance, activityExecutionResult);
+            return new TriggerWorkflowExecutionResult(workflow, workflowInstance, workflowExecutionResult);
         }
     }
 }

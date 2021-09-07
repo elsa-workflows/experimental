@@ -8,6 +8,7 @@ using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Options;
 using Elsa.Pipelines.ActivityExecution;
+using Elsa.Pipelines.WorkflowExecution;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.HostedServices;
 using Elsa.Runtime.Options;
@@ -31,10 +32,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services
                 .AddSingleton<IActivityInvoker, ActivityInvoker>()
+                .AddSingleton<IWorkflowInvoker, WorkflowInvoker>()
                 .AddSingleton<IActivityDriverRegistry, ActivityDriverRegistry>()
                 .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
                 .AddSingleton<IExpressionHandlerRegistry, ExpressionHandlerRegistry>()
                 .AddSingleton<IActivityExecutionPipeline, ActivityExecutionPipeline>()
+                .AddSingleton<IWorkflowExecutionPipeline, WorkflowExecutionPipeline>()
                 .AddSingleton<IActivityWalker, ActivityWalker>()
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
                 .AddSingleton<IWorkflowStateService, WorkflowStateService>()

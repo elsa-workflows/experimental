@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;

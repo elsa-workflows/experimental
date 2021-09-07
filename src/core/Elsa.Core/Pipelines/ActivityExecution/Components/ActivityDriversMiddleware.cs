@@ -7,6 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Elsa.Pipelines.ActivityExecution.Components
 {
+    public static class InvokeDriversMiddlewareExtensions
+    {
+        public static IActivityExecutionBuilder UseActivityDrivers(this IActivityExecutionBuilder builder) => builder.UseMiddleware<ActivityDriversMiddleware>();
+    }
+    
     public class ActivityDriversMiddleware
     {
         private readonly ActivityMiddlewareDelegate _next;
@@ -76,10 +81,5 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 currentParent = currentParent.Parent;
             }
         }
-    }
-
-    public static class InvokeDriversMiddlewareExtensions
-    {
-        public static IActivityExecutionBuilder UseNodeDrivers(this IActivityExecutionBuilder builder) => builder.UseMiddleware<ActivityDriversMiddleware>();
     }
 }
