@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Models;
 using Elsa.Pipelines.WorkflowExecution.Components;
 
 namespace Elsa.Pipelines.WorkflowExecution
@@ -19,6 +21,8 @@ namespace Elsa.Pipelines.WorkflowExecution
             _pipeline = builder.Build();
             return _pipeline;
         }
+        
+        public async Task ExecuteAsync(WorkflowExecutionContext context) => await Pipeline(context);
 
         private WorkflowMiddlewareDelegate CreateDefaultPipeline() => Setup(x => x
             .UseActivityScheduler()

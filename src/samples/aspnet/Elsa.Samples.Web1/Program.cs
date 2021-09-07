@@ -29,7 +29,7 @@ builder.Services
 var app = builder.Build();
 
 app.Services.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
-    .UsePersistWorkflowInstance()
+    .PersistWorkflows()
     .UseActivityScheduler()
 );
 

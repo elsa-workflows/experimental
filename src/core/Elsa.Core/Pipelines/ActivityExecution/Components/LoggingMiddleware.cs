@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Elsa.Pipelines.ActivityExecution.Components
 {
-    public class LoggingMiddleware
+    public class LoggingMiddleware : IActivityExecutionMiddleware
     {
         private readonly ActivityMiddlewareDelegate _next;
         private readonly ILogger _logger;

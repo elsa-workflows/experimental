@@ -6,8 +6,11 @@ using Elsa.Activities.Console;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
+using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Pipelines.ActivityExecution.Components;
 using Elsa.Pipelines.WorkflowExecution.Components;
+using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Services;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,17 +21,18 @@ namespace Elsa.Samples.Console1
     {
         static async Task Main()
         {
-            var services = CreateServices()
+            var workflowEngine = CreateWorkflowEngine();
+
+            workflowEngine.ServiceProvider
                 .ConfigureDefaultActivityExecutionPipeline(pipeline => pipeline
-                    //.UseLogging()
+                    .UseLogging()
                     .UseActivityDrivers()
                 )
                 .ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
-                    .UsePersistWorkflowInstance()
+                    .PersistWorkflows()
                     .UseActivityScheduler()
                 );
-
-            var invoker = services.GetRequiredService<IWorkflowInvoker>();
+            
             var workflow1 = new Func<IActivity>(HelloWorldWorkflow.Create);
             var workflow2 = new Func<IActivity>(HelloGoodbyeWorkflow.Create);
             var workflow3 = new Func<IActivity>(GreetingWorkflow.Create);
@@ -42,7 +46,7 @@ namespace Elsa.Samples.Console1
             var workflowFactory = workflow7;
             var workflowGraph = workflowFactory();
             var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph, new List<TriggerSource>());
-            var workflowExecutionResult = await invoker.InvokeAsync(workflow);
+            var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);
             var workflowState = workflowExecutionResult.WorkflowState;
             var bookmarks = workflowExecutionResult.Bookmarks;
 
@@ -53,19 +57,24 @@ namespace Elsa.Samples.Console1
 
                 workflow = workflow with { Root = workflowFactory() };
                 foreach (var bookmark in bookmarks)
-                    await invoker.ResumeAsync(workflow, bookmark, workflowState);
+                    await workflowEngine.ResumeAsync(workflow, bookmark, workflowState);
             }
         }
 
-        private static IServiceProvider CreateServices()
+        private static IWorkflowEngine CreateWorkflowEngine()
         {
-            var services = new ServiceCollection()
+            var builder = new WorkflowEngineBuilder();
+
+            builder.Services
                 .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
                 .AddElsa()
+                .AddInMemoryWorkflowInstanceStore()
+                .AddInMemoryBookmarkStore()
+                .AddInMemoryTriggerStore()
                 .AddActivityDriver<MyWriteLineDriver>("MyWriteLine")
                 .AddActivityDriver<WriteLineDriver, CustomWriteLine>();
 
-            return services.BuildServiceProvider();
+            return builder.BuildWorkflowEngine();
         }
     }
 }

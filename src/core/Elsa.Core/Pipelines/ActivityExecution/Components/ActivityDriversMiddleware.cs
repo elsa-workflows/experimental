@@ -12,7 +12,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
         public static IActivityExecutionBuilder UseActivityDrivers(this IActivityExecutionBuilder builder) => builder.UseMiddleware<ActivityDriversMiddleware>();
     }
     
-    public class ActivityDriversMiddleware
+    public class ActivityDriversMiddleware : IActivityExecutionMiddleware
     {
         private readonly ActivityMiddlewareDelegate _next;
         private readonly ILogger _logger;

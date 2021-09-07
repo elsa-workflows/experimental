@@ -23,7 +23,7 @@ namespace Elsa.Services
         {
             var state = new WorkflowState
             {
-                WorkflowInstanceId = workflowExecutionContext.Id
+                Id = workflowExecutionContext.Id
             };
 
             AddOutput(state, workflowExecutionContext);
@@ -34,7 +34,7 @@ namespace Elsa.Services
 
         public void WriteState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state)
         {
-            workflowExecutionContext.Id = state.WorkflowInstanceId;
+            workflowExecutionContext.Id = state.Id;
             ApplyOutput(state, workflowExecutionContext);
             ApplyCompletionCallbacks(state, workflowExecutionContext);
         }

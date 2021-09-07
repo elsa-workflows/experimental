@@ -12,10 +12,10 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
 {
     public static class PersistWorkflowInstanceMiddlewareExtensions
     {
-        public static IWorkflowExecutionBuilder UsePersistWorkflowInstance(this IWorkflowExecutionBuilder builder) => builder.UseMiddleware<PersistWorkflowInstanceMiddleware>();
+        public static IWorkflowExecutionBuilder PersistWorkflows(this IWorkflowExecutionBuilder builder) => builder.UseMiddleware<PersistWorkflowInstanceMiddleware>();
     }
     
-    public class PersistWorkflowInstanceMiddleware
+    public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
     {
         private readonly WorkflowMiddlewareDelegate _next;
         private readonly IWorkflowInstanceStore _workflowInstanceStore;
@@ -40,8 +40,6 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
                 Version = context.Workflow.Version,
                 WorkflowState = _workflowStateService.ReadState(context)
             };
-            
-            context.SetProperty(nameof(WorkflowInstance), workflowInstance);
             
             // Persist workflow instance.
             await _workflowInstanceStore.SaveAsync(workflowInstance, context.CancellationToken);

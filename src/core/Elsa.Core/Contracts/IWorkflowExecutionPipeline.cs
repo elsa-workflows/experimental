@@ -8,5 +8,6 @@ namespace Elsa.Contracts
     {
         WorkflowMiddlewareDelegate Setup(Action<IWorkflowExecutionBuilder> setup);
         WorkflowMiddlewareDelegate Pipeline { get; }
+        Task ExecuteAsync(WorkflowExecutionContext context);
     }
 }

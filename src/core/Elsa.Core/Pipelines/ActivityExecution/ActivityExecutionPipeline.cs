@@ -24,13 +24,9 @@ namespace Elsa.Pipelines.ActivityExecution
             return _pipeline;
         }
 
-        public async Task ExecuteAsync(ActivityExecutionContext context)
-        {
-            var pipeline = _pipeline ?? CreateDefaultPipeline();
-            
-            await pipeline(context);
-        }
-
+        public ActivityMiddlewareDelegate Pipeline => _pipeline ??= CreateDefaultPipeline();
+        public async Task ExecuteAsync(ActivityExecutionContext context) => await Pipeline(context);
+        
         private ActivityMiddlewareDelegate CreateDefaultPipeline() => Setup(x => x
             .UseActivityDrivers()
         );

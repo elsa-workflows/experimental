@@ -56,7 +56,8 @@ namespace Elsa.Runtime.Instructions
 
             // Resume workflow instance.
             var bookmark = new Bookmark(workflowBookmark.Id, workflowBookmark.Name, workflowBookmark.Hash, workflowBookmark.ActivityId, workflowBookmark.Data, workflowBookmark.CallbackMethodName);
-            var workflowExecutionResult = await _workflowInvoker.ResumeAsync(workflow, bookmark, workflowInstance.WorkflowState, cancellationToken);
+            var workflowState = workflowInstance.WorkflowState;
+            var workflowExecutionResult = await _workflowInvoker.ResumeAsync(workflow, bookmark, workflowState, cancellationToken);
 
             // Update workflow instance with new workflow state.
             workflowInstance.WorkflowState = workflowExecutionResult.WorkflowState;

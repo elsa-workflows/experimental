@@ -10,7 +10,7 @@ namespace Elsa.Pipelines.WorkflowExecution.Components
         public static IWorkflowExecutionBuilder UseActivityScheduler(this IWorkflowExecutionBuilder builder) => builder.UseMiddleware<ActivitySchedulerMiddleware>();
     }
     
-    public class ActivitySchedulerMiddleware
+    public class ActivitySchedulerMiddleware : IWorkflowExecutionMiddleware
     {
         private readonly WorkflowMiddlewareDelegate _next;
         private readonly ILogger _logger;

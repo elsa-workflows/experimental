@@ -92,12 +92,10 @@ namespace Elsa.Services
             return await InvokeAsync(workflowExecutionContext);
         }
 
-        private async Task<WorkflowExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext, WorkflowMiddlewareDelegate? pipeline = default)
+        public async Task<WorkflowExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext)
         {
-            pipeline ??= _pipeline.Pipeline;
-
             // Execute the activity execution pipeline.
-            await pipeline(workflowExecutionContext);
+            await _pipeline.ExecuteAsync(workflowExecutionContext);
 
             // Extract workflow state.
             var workflowState = _workflowStateService.ReadState(workflowExecutionContext);
@@ -106,7 +104,7 @@ namespace Elsa.Services
             return new WorkflowExecutionResult(workflowState, workflowExecutionContext.Bookmarks);
         }
 
-        private WorkflowExecutionContext CreateWorkflowExecutionContext(
+        public WorkflowExecutionContext CreateWorkflowExecutionContext(
             IServiceProvider serviceProvider,
             Workflow workflow,
             WorkflowState? workflowState,
