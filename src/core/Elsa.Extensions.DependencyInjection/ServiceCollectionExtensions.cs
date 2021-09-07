@@ -11,8 +11,11 @@ using Elsa.Pipelines.ActivityExecution;
 using Elsa.Pipelines.WorkflowExecution;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.HostedServices;
+using Elsa.Runtime.Instructions;
 using Elsa.Runtime.Options;
 using Elsa.Runtime.Services;
+using Elsa.Runtime.Stimuli;
+using Elsa.Runtime.Stimuli.Handlers;
 using Elsa.Runtime.WorkflowProviders;
 using Elsa.Services;
 
@@ -31,13 +34,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions<WorkflowEngineOptions>();
 
             return services
+
+                // Core.
                 .AddSingleton<IActivityInvoker, ActivityInvoker>()
                 .AddSingleton<IWorkflowInvoker, WorkflowInvoker>()
                 .AddSingleton<IActivityDriverRegistry, ActivityDriverRegistry>()
-                .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
-                .AddSingleton<IExpressionHandlerRegistry, ExpressionHandlerRegistry>()
-                .AddSingleton<IActivityExecutionPipeline, ActivityExecutionPipeline>()
-                .AddSingleton<IWorkflowExecutionPipeline, WorkflowExecutionPipeline>()
                 .AddSingleton<IActivityWalker, ActivityWalker>()
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
                 .AddSingleton<IWorkflowStateService, WorkflowStateService>()
@@ -46,6 +47,16 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IActivityPortResolver, DynamicActivityPortResolver>()
                 .AddSingleton<IHasher, Hasher>()
                 .AddScoped<IActivityDriverActivator, ActivityDriverActivator>()
+
+                // Expressions.
+                .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
+                .AddSingleton<IExpressionHandlerRegistry, ExpressionHandlerRegistry>()
+
+                // Pipelines.
+                .AddSingleton<IActivityExecutionPipeline, ActivityExecutionPipeline>()
+                .AddSingleton<IWorkflowExecutionPipeline, WorkflowExecutionPipeline>()
+
+                // Logging
                 .AddLogging();
         }
 
@@ -54,10 +65,22 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions<WorkflowRuntimeOptions>();
 
             return services
-                .AddScoped<IWorkflowRegistry, WorkflowRegistry>()
-                .AddScoped<IWorkflowInstructionManager, WorkflowInstructionManager>()
+                // Core.
+                .AddSingleton<IWorkflowRegistry, WorkflowRegistry>()
+                .AddSingleton<IWorkflowInstructionManager, WorkflowInstructionManager>()
+                .AddSingleton<ITriggerIndexer, TriggerIndexer>()
+                
+                // Stimulus handlers.
+                .AddStimulusHandler<TriggerWorkflowsStimulusHandler>()
+                .AddStimulusHandler<ResumeWorkflowsStimulusHandler>()
+                
+                // Instruction handlers.
+                .AddInstructionHandler<TriggerWorkflowInstructionHandler>()
+                .AddInstructionHandler<ResumeWorkflowInstructionHandler>()
+
+                // Workflow providers.
                 .AddWorkflowProvider<ConfigurationWorkflowProvider>()
-                .AddScoped<ITriggerIndexer, TriggerIndexer>();
+;
         }
 
         private static IServiceCollection AddDefaultActivities(this IServiceCollection services) =>
@@ -110,8 +133,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddTriggerProvider<T>(this IServiceCollection services) where T : class, ITriggerProvider => services.AddScoped<ITriggerProvider, T>();
-        public static IServiceCollection AddWorkflowProvider<TProvider>(this IServiceCollection services) where TProvider : class, IWorkflowProvider => services.AddScoped<IWorkflowProvider, TProvider>();
+        public static IServiceCollection AddTriggerProvider<T>(this IServiceCollection services) where T : class, ITriggerProvider => services.AddSingleton<ITriggerProvider, T>();
+        public static IServiceCollection AddWorkflowProvider<T>(this IServiceCollection services) where T : class, IWorkflowProvider => services.AddSingleton<IWorkflowProvider, T>();
+        public static IServiceCollection AddStimulusHandler<T>(this IServiceCollection services) where T : class, IStimulusHandler => services.AddSingleton<IStimulusHandler, T>();
+        public static IServiceCollection AddInstructionHandler<T>(this IServiceCollection services) where T : class, IWorkflowInstructionHandler => services.AddSingleton<IWorkflowInstructionHandler, T>();
         public static IServiceCollection ConfigureWorkflowRuntime(this IServiceCollection services, Action<WorkflowRuntimeOptions> configure) => services.Configure(configure);
         public static IServiceCollection IndexWorkflowTriggers(this IServiceCollection services) => services.AddHostedService<IndexWorkflowTriggers>();
     }

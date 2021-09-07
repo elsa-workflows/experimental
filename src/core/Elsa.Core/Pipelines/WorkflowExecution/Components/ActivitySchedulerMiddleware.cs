@@ -5,17 +5,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Elsa.Pipelines.WorkflowExecution.Components
 {
-    public static class InvokeStackSchedulerMiddlewareExtensions
+    public static class UseActivitySchedulerMiddlewareExtensions
     {
-        public static IWorkflowExecutionBuilder UseStackScheduler(this IWorkflowExecutionBuilder builder) => builder.UseMiddleware<StackSchedulerMiddleware>();
+        public static IWorkflowExecutionBuilder UseActivityScheduler(this IWorkflowExecutionBuilder builder) => builder.UseMiddleware<ActivitySchedulerMiddleware>();
     }
     
-    public class StackSchedulerMiddleware
+    public class ActivitySchedulerMiddleware
     {
         private readonly WorkflowMiddlewareDelegate _next;
         private readonly ILogger _logger;
 
-        public StackSchedulerMiddleware(WorkflowMiddlewareDelegate next, ILogger<StackSchedulerMiddleware> logger)
+        public ActivitySchedulerMiddleware(WorkflowMiddlewareDelegate next, ILogger<ActivitySchedulerMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -32,12 +32,12 @@ namespace Elsa.Pipelines.WorkflowExecution.Components
             while (scheduler.HasAny)
             {
                 // Pop next activity for execution.
-                var currentActivity = scheduler.Unschedule();
+                var currentActivity = scheduler.Pop();
 
                 // Execute activity.
-                var activityExecutionResult = await activityInvoker.InvokeAsync(context, currentActivity.Activity, executeActivityDelegate, cancellationToken);
+                await activityInvoker.InvokeAsync(context, currentActivity.Activity, executeActivityDelegate, cancellationToken);
                 
-                // Reset custom activity execution delegate. This is used only once for the initial node being executed.
+                // Reset custom activity execution delegate. This is used only once for the initial activity being executed.
                 executeActivityDelegate = null;
             }
 

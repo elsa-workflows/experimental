@@ -18,7 +18,7 @@ namespace Elsa.Pipelines.ActivityExecution
 
         public ActivityMiddlewareDelegate Setup(Action<IActivityExecutionBuilder> setup)
         {
-            var builder = new ActivityExecutionBuilder(_serviceProvider);
+            var builder = new ActivityExecutionPipelineBuilder(_serviceProvider);
             setup(builder);
             _pipeline = builder.Build();
             return _pipeline;

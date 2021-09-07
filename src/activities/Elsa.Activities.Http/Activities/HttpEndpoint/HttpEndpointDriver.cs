@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace Elsa.Activities.Http
             // If the activity triggered the workflow, do nothing.
             if (context.GetActivityIsCurrentTrigger(activity))
                 return;
-            
+
             // Create bookmarks.
             var bookmarks = await CreateBookmarksAsync(activity, context).ToListAsync(context.CancellationToken);
             context.SetBookmarks(bookmarks);
@@ -38,7 +39,7 @@ namespace Elsa.Activities.Http
             {
                 var hashInput = (path.ToLowerInvariant(), method.ToLowerInvariant());
                 var hash = _hasher.Hash(hashInput);
-                yield return new Bookmark(activity.ActivityType, hash, activity.ActivityId);
+                yield return new Bookmark(Guid.NewGuid().ToString(), activity.ActivityType, hash, activity.ActivityId);
             }
         }
     }

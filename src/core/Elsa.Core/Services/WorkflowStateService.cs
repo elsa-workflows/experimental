@@ -19,9 +19,12 @@ namespace Elsa.Services
             _logger = logger;
         }
 
-        public WorkflowState CreateState(WorkflowExecutionContext workflowExecutionContext)
+        public WorkflowState ReadState(WorkflowExecutionContext workflowExecutionContext)
         {
-            var state = new WorkflowState();
+            var state = new WorkflowState
+            {
+                WorkflowInstanceId = workflowExecutionContext.Id
+            };
 
             AddOutput(state, workflowExecutionContext);
             AddCompletionCallbacks(state, workflowExecutionContext);
@@ -29,8 +32,9 @@ namespace Elsa.Services
             return state;
         }
 
-        public void ApplyState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state)
+        public void WriteState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state)
         {
+            workflowExecutionContext.Id = state.WorkflowInstanceId;
             ApplyOutput(state, workflowExecutionContext);
             ApplyCompletionCallbacks(state, workflowExecutionContext);
         }

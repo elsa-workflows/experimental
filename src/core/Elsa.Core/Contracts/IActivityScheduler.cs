@@ -6,8 +6,8 @@ namespace Elsa.Contracts
     public interface IActivityScheduler
     {
         bool HasAny { get; }
-        void Schedule(ScheduledActivity activity);
-        ScheduledActivity Unschedule();
+        void Push(ScheduledActivity activity);
+        ScheduledActivity Pop();
         IEnumerable<ScheduledActivity> List();
     }
 }

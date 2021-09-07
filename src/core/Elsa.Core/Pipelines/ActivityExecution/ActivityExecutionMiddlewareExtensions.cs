@@ -12,7 +12,7 @@ namespace Elsa.Pipelines.ActivityExecution
             return builder.Use(next =>
             {
                 var invokeMethod = MiddlewareHelpers.GetInvokeMethod(middleware);
-                var instance = ActivatorUtilities.CreateInstance(builder.ApplicationServices, middleware, next);
+                var instance = ActivatorUtilities.CreateInstance(builder.ServiceProvider, middleware, next);
                 return (ActivityMiddlewareDelegate)invokeMethod.CreateDelegate(typeof(ActivityMiddlewareDelegate), instance);
             });
         }

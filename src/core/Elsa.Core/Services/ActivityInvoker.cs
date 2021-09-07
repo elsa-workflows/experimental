@@ -14,15 +14,13 @@ namespace Elsa.Services
             _pipeline = pipeline;
         }
 
-        public async Task<ActivityExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext, IActivity activity, ExecuteActivityDelegate? executeActivityDelegate = default, CancellationToken cancellationToken = default)
+        public async Task InvokeAsync(WorkflowExecutionContext workflowExecutionContext, IActivity activity, ExecuteActivityDelegate? executeActivityDelegate = default, CancellationToken cancellationToken = default)
         {
             // Setup an activity execution context.
             var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, new ScheduledActivity(activity), executeActivityDelegate, cancellationToken);
 
             // Execute the activity execution pipeline.
             await _pipeline.ExecuteAsync(activityExecutionContext);
-
-            return new ActivityExecutionResult();
         }
     }
 }

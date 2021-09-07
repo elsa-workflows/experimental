@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace Elsa.Runtime.Instructions
 {
     public record TriggerWorkflowInstruction(WorkflowTrigger WorkflowTrigger) : IWorkflowInstruction;
-    public record TriggerWorkflowExecutionResult(Workflow Workflow, WorkflowInstance WorkflowInstance, WorkflowExecutionResult WorkflowExecutionResult) : IWorkflowInstructionResult;
+    public record TriggerWorkflowExecutionResult(Workflow Workflow, WorkflowExecutionResult WorkflowExecutionResult) : IWorkflowInstructionResult;
 
     public class TriggerWorkflowInstructionHandler : WorkflowInstructionHandler<TriggerWorkflowInstruction>
     {
@@ -44,17 +44,8 @@ namespace Elsa.Runtime.Instructions
 
             // Execute workflow.
             var workflowExecutionResult = await _workflowInvoker.TriggerAsync(workflow, trigger, cancellationToken);
-
-            // Create workflow instance.
-            var workflowInstance = new WorkflowInstance
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                DefinitionId = workflow.Id,
-                Version = workflow.Version,
-                WorkflowState = workflowExecutionResult.WorkflowState
-            };
-
-            return new TriggerWorkflowExecutionResult(workflow, workflowInstance, workflowExecutionResult);
+            
+            return new TriggerWorkflowExecutionResult(workflow, workflowExecutionResult);
         }
     }
 }

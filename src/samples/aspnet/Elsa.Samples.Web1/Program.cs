@@ -1,7 +1,9 @@
 using System;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Api;
+using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Persistence.InMemory.Extensions;
+using Elsa.Pipelines.WorkflowExecution.Components;
 using Elsa.Samples.Web1.Workflows;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,11 @@ builder.Services
 
 // Configure middleware pipeline.
 var app = builder.Build();
+
+app.Services.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
+    .UsePersistWorkflowInstance()
+    .UseActivityScheduler()
+);
 
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();

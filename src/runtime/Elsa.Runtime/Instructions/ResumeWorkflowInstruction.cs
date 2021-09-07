@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace Elsa.Runtime.Instructions
 {
     public record ResumeWorkflowInstruction(WorkflowBookmark WorkflowBookmark) : IWorkflowInstruction;
+
     public record ResumeWorkflowExecutionResult(Workflow Workflow, WorkflowInstance WorkflowInstance, WorkflowExecutionResult WorkflowExecutionResult, WorkflowBookmark OriginalWorkflowBookmark) : IWorkflowInstructionResult;
 
     public class ResumeWorkflowInstructionHandler : WorkflowInstructionHandler<ResumeWorkflowInstruction>
@@ -54,12 +55,12 @@ namespace Elsa.Runtime.Instructions
             }
 
             // Resume workflow instance.
-            var bookmark = new Bookmark(workflowBookmark.Name, workflowBookmark.Hash, workflowBookmark.ActivityId, workflowBookmark.Data, workflowBookmark.CallbackMethodName);
+            var bookmark = new Bookmark(workflowBookmark.Id, workflowBookmark.Name, workflowBookmark.Hash, workflowBookmark.ActivityId, workflowBookmark.Data, workflowBookmark.CallbackMethodName);
             var workflowExecutionResult = await _workflowInvoker.ResumeAsync(workflow, bookmark, workflowInstance.WorkflowState, cancellationToken);
 
             // Update workflow instance with new workflow state.
             workflowInstance.WorkflowState = workflowExecutionResult.WorkflowState;
-            
+
             return new ResumeWorkflowExecutionResult(workflow, workflowInstance, workflowExecutionResult, workflowBookmark);
         }
     }

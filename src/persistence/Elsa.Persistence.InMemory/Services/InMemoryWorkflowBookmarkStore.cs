@@ -20,7 +20,7 @@ namespace Elsa.Persistence.InMemory.Services
 
         public async Task SaveManyAsync(IEnumerable<WorkflowBookmark> records, CancellationToken cancellationToken = default)
         {
-            foreach (var record in records) 
+            foreach (var record in records)
                 await SaveAsync(record, cancellationToken);
         }
 
@@ -30,12 +30,17 @@ namespace Elsa.Persistence.InMemory.Services
             return Task.FromResult(results);
         }
 
-        public Task DeleteManyAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(string id, CancellationToken cancellationToken = default)
         {
-            foreach (var id in ids)
-                _records.TryRemove(id, out _);
+            _records.TryRemove(id, out _);
 
             return Task.CompletedTask;
+        }
+
+        public async Task DeleteManyAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+        {
+            foreach (var id in ids)
+                await DeleteAsync(id, cancellationToken);
         }
     }
 }

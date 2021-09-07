@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Elsa.Contracts;
@@ -18,6 +19,7 @@ namespace Elsa.Models
         public ScheduledActivity ScheduledActivity { get; set; }
         public ExecuteActivityDelegate? ExecuteDelegate { get; }
         public CancellationToken CancellationToken { get; }
+        public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
         public Node Node => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
         public IActivity Activity => ScheduledActivity.Activity;
         public IEnumerable<Bookmark> Bookmarks => WorkflowExecutionContext.Bookmarks;
@@ -41,9 +43,17 @@ namespace Elsa.Models
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => WorkflowExecutionContext.SetBookmarks(bookmarks);
         public void SetBookmark(Bookmark bookmark) => WorkflowExecutionContext.SetBookmark(bookmark);
 
-        public void SetBookmark(string? hash, IDictionary<string, object?>? data = default, ExecuteActivityDelegate? callback = default) => 
-            SetBookmark(new Bookmark(ScheduledActivity.Activity.ActivityType, hash, ScheduledActivity.Activity.ActivityId, data ?? new Dictionary<string, object?>(), callback?.Method.Name));
+        public void SetBookmark(string? hash, IDictionary<string, object?>? data = default, ExecuteActivityDelegate? callback = default) =>
+            SetBookmark(new Bookmark(
+                Guid.NewGuid().ToString(),
+                ScheduledActivity.Activity.ActivityType,
+                hash,
+                ScheduledActivity.Activity.ActivityId,
+                data ?? new Dictionary<string, object?>(),
+                callback?.Method.Name));
 
         public bool GetActivityIsCurrentTrigger(IActivity activity) => WorkflowExecutionContext.Trigger?.ActivityId == activity.ActivityId;
+        public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
+        public void SetProperty<T>(string key, T value) => Properties[key] = value;
     }
 }

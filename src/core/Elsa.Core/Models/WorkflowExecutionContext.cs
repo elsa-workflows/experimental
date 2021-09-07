@@ -16,25 +16,32 @@ namespace Elsa.Models
         private readonly IDictionary<IActivity, ActivityCompletionCallback> _completionCallbacks = new Dictionary<IActivity, ActivityCompletionCallback>();
         private IList<Bookmark> _bookmarks = new List<Bookmark>();
 
-        public WorkflowExecutionContext(IServiceProvider serviceProvider, Node graph, IActivityScheduler scheduler, Trigger? trigger, ExecuteActivityDelegate? executeDelegate, CancellationToken cancellationToken)
+        public WorkflowExecutionContext(IServiceProvider serviceProvider, Workflow workflow, Node graph, IActivityScheduler scheduler, Trigger? trigger, Bookmark? bookmark, ExecuteActivityDelegate? executeDelegate, CancellationToken cancellationToken)
         {
             _serviceProvider = serviceProvider;
+            Workflow = workflow;
             Graph = graph;
+            Id = Guid.NewGuid().ToString("N");
             _nodes = graph.Flatten().ToList();
             Scheduler = scheduler;
             Trigger = trigger;
+            Bookmark = bookmark;
             ExecuteDelegate = executeDelegate;
             CancellationToken = cancellationToken;
             NodeIdLookup = _nodes.ToDictionary(x => x.NodeId);
             NodeActivityLookup = _nodes.ToDictionary(x => x.Activity);
         }
 
+        public Workflow Workflow { get; }
         public Node Graph { get; set; }
+        public string Id { get; set; }
         public IReadOnlyCollection<Node> Nodes => new ReadOnlyCollection<Node>(_nodes);
         public IDictionary<string, Node> NodeIdLookup { get; }
         public IDictionary<IActivity, Node> NodeActivityLookup { get; }
         public IActivityScheduler Scheduler { get; }
         public Trigger? Trigger { get; }
+        public Bookmark? Bookmark { get; }
+        public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
         public ExecuteActivityDelegate? ExecuteDelegate { get; set; }
         public CancellationToken CancellationToken { get; }
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
@@ -44,7 +51,7 @@ namespace Elsa.Models
         
         public void Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
         {
-            Scheduler.Schedule(new ScheduledActivity(activity));
+            Scheduler.Push(new ScheduledActivity(activity));
             
             if (completionCallback != null)
                 AddCompletionCallback(owner, completionCallback);
@@ -65,5 +72,7 @@ namespace Elsa.Models
         public Node FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks = bookmarks.ToList();
+        public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
+        public void SetProperty<T>(string key, T value) => Properties[key] = value;
     }
 }

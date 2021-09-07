@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 
-namespace Elsa.Pipelines.ActivityExecution
+namespace Elsa.Pipelines.WorkflowExecution
 {
-    public class ActivityExecutionBuilder : IActivityExecutionBuilder
+    public class WorkflowExecutionPipelineBuilder : IWorkflowExecutionBuilder
     {
-        private const string ServicesKey = "activity-execution.Services";
-        private readonly IList<Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate>> _components = new List<Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate>>();
+        private const string ServicesKey = "workflow-execution.Services";
+        private readonly IList<Func<WorkflowMiddlewareDelegate, WorkflowMiddlewareDelegate>> _components = new List<Func<WorkflowMiddlewareDelegate, WorkflowMiddlewareDelegate>>();
 
-        public ActivityExecutionBuilder(IServiceProvider serviceProvider)
+        public WorkflowExecutionPipelineBuilder(IServiceProvider serviceProvider)
         {
             ApplicationServices = serviceProvider;
         }
@@ -24,15 +24,15 @@ namespace Elsa.Pipelines.ActivityExecution
             set => SetProperty(ServicesKey, value);
         }
 
-        public IActivityExecutionBuilder Use(Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate> middleware)
+        public IWorkflowExecutionBuilder Use(Func<WorkflowMiddlewareDelegate, WorkflowMiddlewareDelegate> middleware)
         {
             _components.Add(middleware);
             return this;
         }
         
-        public ActivityMiddlewareDelegate Build()
+        public WorkflowMiddlewareDelegate Build()
         {
-            ActivityMiddlewareDelegate pipeline = _ => new ValueTask();
+            WorkflowMiddlewareDelegate pipeline = _ => new ValueTask();
 
             foreach (var component in _components.Reverse()) 
                 pipeline = component(pipeline);

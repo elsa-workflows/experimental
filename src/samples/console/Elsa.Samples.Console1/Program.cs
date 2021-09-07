@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Elsa.Activities.Console;
 using Elsa.Contracts;
 using Elsa.Models;
+using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Pipelines.ActivityExecution.Components;
+using Elsa.Pipelines.WorkflowExecution.Components;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,10 +18,15 @@ namespace Elsa.Samples.Console1
     {
         static async Task Main()
         {
-            var services = CreateServices().ConfigureNodeExecutionPipeline(pipeline => pipeline
-                //.UseLogging()
-                .UseActivityDrivers()
-            );
+            var services = CreateServices()
+                .ConfigureDefaultActivityExecutionPipeline(pipeline => pipeline
+                    //.UseLogging()
+                    .UseActivityDrivers()
+                )
+                .ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
+                    .UsePersistWorkflowInstance()
+                    .UseActivityScheduler()
+                );
 
             var invoker = services.GetRequiredService<IWorkflowInvoker>();
             var workflow1 = new Func<IActivity>(HelloWorldWorkflow.Create);
