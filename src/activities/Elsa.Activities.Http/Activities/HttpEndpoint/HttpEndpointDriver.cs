@@ -10,30 +10,28 @@ namespace Elsa.Activities.Http
 {
     public class HttpEndpointDriver : ActivityDriver<HttpEndpoint>
     {
-        private readonly IExpressionEvaluator _expressionEvaluator;
         private readonly IHasher _hasher;
 
-        public HttpEndpointDriver(IExpressionEvaluator expressionEvaluator, IHasher hasher)
+        public HttpEndpointDriver(IHasher hasher)
         {
-            _expressionEvaluator = expressionEvaluator;
             _hasher = hasher;
         }
 
-        protected override async ValueTask ExecuteAsync(HttpEndpoint activity, ActivityExecutionContext context)
+        protected override void Execute(HttpEndpoint activity, ActivityExecutionContext context)
         {
             // If the activity triggered the workflow, do nothing.
             if (context.GetActivityIsCurrentTrigger(activity))
                 return;
 
             // Create bookmarks.
-            var bookmarks = await CreateBookmarksAsync(activity, context).ToListAsync(context.CancellationToken);
+            var bookmarks = CreateBookmarks(activity, context).ToList();
             context.SetBookmarks(bookmarks);
         }
 
-        private async IAsyncEnumerable<Bookmark> CreateBookmarksAsync(HttpEndpoint activity, ActivityExecutionContext context)
+        private IEnumerable<Bookmark> CreateBookmarks(HttpEndpoint activity, ActivityExecutionContext context)
         {
-            var path = await _expressionEvaluator.EvaluateAsync(activity.Path, new ExpressionExecutionContext());
-            var methods = await _expressionEvaluator.EvaluateAsync(activity.SupportedMethods, new ExpressionExecutionContext());
+            var path = context.Get<string>(activity.Path.LocationReference)!;
+            var methods = context.Get<ICollection<string>>(activity.SupportedMethods.LocationReference)!;
 
             foreach (var method in methods)
             {

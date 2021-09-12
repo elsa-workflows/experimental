@@ -1,11 +1,14 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Contracts;
+using Elsa.Expressions;
 using Elsa.Models;
 
 namespace Elsa.Activities.Containers
 {
-    public abstract class Container : CodeActivity
+    public abstract class Container : Activity
     {
         public Container()
         {
@@ -17,6 +20,6 @@ namespace Elsa.Activities.Containers
         }
         
         [Ports]public ICollection<IActivity> Activities { get; set; } = new List<IActivity>();
-        public IDictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
+        public ICollection<Variable> Variables { get; set; } = new Collection<Variable>();
     }
 }

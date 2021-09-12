@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.InstructionResults;
 
 namespace Elsa.Runtime.Abstractions
 {
@@ -9,14 +8,14 @@ namespace Elsa.Runtime.Abstractions
     {
         bool IWorkflowInstructionHandler.GetSupportsInstruction(IWorkflowInstruction instruction) => instruction is TInstruction;
 
-        ValueTask<IWorkflowInstructionResult> IWorkflowInstructionHandler.ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken) => ExecuteInstructionAsync((TInstruction)instruction, cancellationToken);
+        ValueTask<WorkflowInstructionResult?> IWorkflowInstructionHandler.ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken) => ExecuteInstructionAsync((TInstruction)instruction, cancellationToken);
 
-        protected virtual ValueTask<IWorkflowInstructionResult> ExecuteInstructionAsync(TInstruction instruction, CancellationToken cancellationToken = default)
+        protected virtual ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(TInstruction instruction, CancellationToken cancellationToken = default)
         {
             var result = ExecuteInstruction(instruction);
             return ValueTask.FromResult(result);
         }
 
-        protected virtual IWorkflowInstructionResult ExecuteInstruction(TInstruction instruction) => NullInstructionResult.Instance;
+        protected virtual WorkflowInstructionResult? ExecuteInstruction(TInstruction instruction) => null;
     }
 }

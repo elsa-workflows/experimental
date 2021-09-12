@@ -20,6 +20,10 @@ namespace Elsa.Activities.Containers
     {
         protected override void Execute(Sequence activity, ActivityExecutionContext context)
         {
+            // Register variables.
+            context.Register.Declare(activity.Variables);
+            
+            // Schedule first child.
             var childActivities = activity.Activities.ToList();
             var firstActivity = childActivities.FirstOrDefault();
 

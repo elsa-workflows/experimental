@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
@@ -19,7 +20,7 @@ namespace Elsa.Activities.Http
             _hasher = hasher;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, IWorkflowInstructionManager workflowInstructionManager)
+        public async Task InvokeAsync(HttpContext httpContext, IStimulusInterpreter stimulusInterpreter, IWorkflowInstructionExecutor instructionExecutor)
         {
             var path = GetPath(httpContext);
             var method = httpContext.Request.Method!.ToLowerInvariant();
@@ -27,8 +28,9 @@ namespace Elsa.Activities.Http
             var hash = _hasher.Hash((path.ToLowerInvariant(), method.ToLowerInvariant()));
             var activityTypeName = nameof(HttpEndpoint);
             var stimulus = Stimuli.Standard(activityTypeName, hash);
-            var executionResults = (await workflowInstructionManager.TriggerWorkflowsAsync(stimulus, CancellationToken.None)).ToList();
-            
+            var instructions = await stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, abortToken);
+            var executionResults = (await instructionExecutor.ExecuteInstructionsAsync(instructions, CancellationToken.None)).ToList();
+
             if (!executionResults.Any())
             {
                 await _next(httpContext);
@@ -41,7 +43,11 @@ namespace Elsa.Activities.Http
             {
                 response.ContentType = "application/json";
                 response.StatusCode = StatusCodes.Status200OK;
-                var json = "{}";
+                var model = new
+                {
+                    workflowInstanceIds = executionResults.Where(x => x != null).Select(x => x!.WorkflowExecutionResult.WorkflowState.Id).ToArray()
+                };
+                var json = JsonSerializer.Serialize(model);
                 await response.WriteAsync(json, abortToken);
             }
         }

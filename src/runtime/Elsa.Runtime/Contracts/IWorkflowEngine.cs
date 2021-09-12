@@ -12,7 +12,7 @@ namespace Elsa.Runtime.Contracts
         IServiceProvider ServiceProvider { get; }
         Task<WorkflowExecutionResult> ExecuteWorkflowAsync(Workflow workflow, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionResult> ResumeAsync(Workflow workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default);
-        Task<IEnumerable<IWorkflowInstructionResult>> TriggerWorkflowsAsync(IStimulus stimulus, CancellationToken cancellationToken);
+        Task<IEnumerable<WorkflowInstructionResult?>> TriggerWorkflowsAsync(IStimulus stimulus, CancellationToken cancellationToken);
         
     }
 }

@@ -5,13 +5,11 @@ using Elsa.Models;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.InstructionResults;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Instructions
 {
     public record TriggerWorkflowInstruction(WorkflowTrigger WorkflowTrigger) : IWorkflowInstruction;
-    public record TriggerWorkflowExecutionResult(Workflow Workflow, WorkflowExecutionResult WorkflowExecutionResult) : IWorkflowInstructionResult;
 
     public class TriggerWorkflowInstructionHandler : WorkflowInstructionHandler<TriggerWorkflowInstruction>
     {
@@ -26,7 +24,7 @@ namespace Elsa.Runtime.Instructions
             _logger = logger;
         }
 
-        protected override async ValueTask<IWorkflowInstructionResult> ExecuteInstructionAsync(TriggerWorkflowInstruction instruction, CancellationToken cancellationToken = default)
+        protected override async ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(TriggerWorkflowInstruction instruction, CancellationToken cancellationToken = default)
         {
             var workflowTrigger = instruction.WorkflowTrigger;
             var trigger = new Trigger(workflowTrigger.Name, workflowTrigger.Hash, workflowTrigger.ActivityId, workflowTrigger.Data);
@@ -38,13 +36,13 @@ namespace Elsa.Runtime.Instructions
             if (workflow == null)
             {
                 _logger.LogWarning("Could not trigger workflow definition {WorkflowDefinitionId} because it was not found", workflowDefinitionId);
-                return NullInstructionResult.Instance;
+                return null;
             }
 
             // Execute workflow.
             var workflowExecutionResult = await _workflowInvoker.TriggerAsync(workflow, trigger, cancellationToken);
             
-            return new TriggerWorkflowExecutionResult(workflow, workflowExecutionResult);
+            return new WorkflowInstructionResult(workflow, workflowExecutionResult);
         }
     }
 }

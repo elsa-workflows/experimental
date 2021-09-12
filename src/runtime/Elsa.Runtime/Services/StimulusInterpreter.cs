@@ -6,12 +6,12 @@ using Elsa.Runtime.Contracts;
 
 namespace Elsa.Runtime.Services
 {
-    public class WorkflowInstructionManager : IWorkflowInstructionManager
+    public class StimulusInterpreter : IStimulusInterpreter
     {
         private readonly IEnumerable<IStimulusHandler> _workflowExecutionInstructionProviders;
         private readonly IEnumerable<IWorkflowInstructionHandler> _workflowExecutionInstructionHandlers;
 
-        public WorkflowInstructionManager(
+        public StimulusInterpreter(
             IEnumerable<IStimulusHandler> workflowExecutionInstructionProviders,
             IEnumerable<IWorkflowInstructionHandler> workflowExecutionInstructionHandlers)
         {
@@ -26,20 +26,20 @@ namespace Elsa.Runtime.Services
             return (await Task.WhenAll(tasks)).SelectMany(x => x);
         }
 
-        public async Task<IEnumerable<IWorkflowInstructionResult>> ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowInstructionResult?>> ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken = default)
         {
             var handlers = _workflowExecutionInstructionHandlers.Where(x => x.GetSupportsInstruction(instruction)).ToList();
             var tasks = handlers.Select(x => x.ExecuteInstructionAsync(instruction, cancellationToken).AsTask());
             return await Task.WhenAll(tasks);
         }
 
-        public async Task<IEnumerable<IWorkflowInstructionResult>> ExecuteInstructionsAsync(IEnumerable<IWorkflowInstruction> instructions, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowInstructionResult?>> ExecuteInstructionsAsync(IEnumerable<IWorkflowInstruction> instructions, CancellationToken cancellationToken = default)
         {
             var tasks = instructions.Select(x => ExecuteInstructionAsync(x, cancellationToken));
             return (await Task.WhenAll(tasks)).SelectMany(x => x);
         }
 
-        public async Task<IEnumerable<IWorkflowInstructionResult>> TriggerWorkflowsAsync(IStimulus stimulus, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowInstructionResult?>> TriggerWorkflowsAsync(IStimulus stimulus, CancellationToken cancellationToken = default)
         {
             var instructions = await GetExecutionInstructionsAsync(stimulus, cancellationToken);
             return await ExecuteInstructionsAsync(instructions, cancellationToken);

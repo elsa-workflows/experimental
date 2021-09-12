@@ -1,22 +1,19 @@
-using System.Collections.Generic;
 using Elsa.Contracts;
 
 namespace Elsa.Models
 {
-    public class Activity : IActivity
+    public abstract class Activity : IActivity
     {
-        public Activity(string activityType, IDictionary<string, object?>? input = default)
-        {
-            ActivityType = activityType;
-
-            if (input != null)
-                Input = input;
-        }
-
         public string ActivityId { get; set; } = default!;
-        public string ActivityType { get; set; }
-        public IDictionary<string, object?> Input { get; set; } = new Dictionary<string, object?>();
-        public IDictionary<string, object?> Output { get; set; } = new Dictionary<string, object?>();
-        public IDictionary<string, IActivity?> Ports { get; set; } = new Dictionary<string, IActivity?>();
+        public string ActivityType => GetType().Name;
+    }
+    
+    public abstract class ActivityWithResult : Activity
+    {
+        public Output? Result { get; set; }
+    }
+
+    public abstract class Activity<T> : ActivityWithResult
+    {
     }
 }

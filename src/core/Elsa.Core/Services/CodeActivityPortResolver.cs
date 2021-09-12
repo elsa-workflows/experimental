@@ -9,7 +9,7 @@ namespace Elsa.Services
 {
     public class CodeActivityPortResolver : IActivityPortResolver
     {
-        public bool GetSupportsActivity(IActivity activity) => activity is CodeActivity;
+        public bool GetSupportsActivity(IActivity activity) => activity is Activity;
 
         public IEnumerable<IActivity> GetPorts(IActivity activity) =>
             GetSinglePorts(activity)

@@ -6,7 +6,7 @@ using Elsa.Services;
 
 namespace Elsa.Activities.Primitives
 {
-    public class Event : CodeActivity
+    public class Event : Activity
     {
         public Event()
         {

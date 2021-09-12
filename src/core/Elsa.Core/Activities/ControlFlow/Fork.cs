@@ -7,7 +7,7 @@ using Elsa.Services;
 
 namespace Elsa.Activities.ControlFlow
 {
-    public class Fork : CodeActivity
+    public class Fork : Activity
     {
         [Ports] public ICollection<IActivity> Branches { get; set; } = new List<IActivity>();
     }

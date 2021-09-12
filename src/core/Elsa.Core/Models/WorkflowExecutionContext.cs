@@ -16,7 +16,14 @@ namespace Elsa.Models
         private readonly IDictionary<IActivity, ActivityCompletionCallback> _completionCallbacks = new Dictionary<IActivity, ActivityCompletionCallback>();
         private IList<Bookmark> _bookmarks = new List<Bookmark>();
 
-        public WorkflowExecutionContext(IServiceProvider serviceProvider, Workflow workflow, Node graph, IActivityScheduler scheduler, Trigger? trigger, Bookmark? bookmark, ExecuteActivityDelegate? executeDelegate, CancellationToken cancellationToken)
+        public WorkflowExecutionContext(
+            IServiceProvider serviceProvider,
+            Workflow workflow, Node graph,
+            IActivityScheduler scheduler,
+            Trigger? trigger,
+            Bookmark? bookmark,
+            ExecuteActivityDelegate? executeDelegate,
+            CancellationToken cancellationToken)
         {
             _serviceProvider = serviceProvider;
             Workflow = workflow;
@@ -46,17 +53,19 @@ namespace Elsa.Models
         public CancellationToken CancellationToken { get; }
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyDictionary<IActivity, ActivityCompletionCallback> CompletionCallbacks => new ReadOnlyDictionary<IActivity, ActivityCompletionCallback>(_completionCallbacks);
+        public IDictionary<IActivity, Register> Registers { get; } = new Dictionary<IActivity, Register>();
+
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
         public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
-        
+
         public void Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
         {
             Scheduler.Push(new ScheduledActivity(activity));
-            
+
             if (completionCallback != null)
                 AddCompletionCallback(owner, completionCallback);
         }
-        
+
         public void AddCompletionCallback(IActivity owner, ActivityCompletionCallback completionCallback) => _completionCallbacks.Add(owner, completionCallback);
 
         public ActivityCompletionCallback? PopCompletionCallback(IActivity owner)
@@ -74,5 +83,22 @@ namespace Elsa.Models
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks = bookmarks.ToList();
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
+
+        public Register GetOrCreateRegister(IActivity activity)
+        {
+            if (!Registers.TryGetValue(activity, out var register))
+            {
+                var activityNode = FindNodeById(activity.ActivityId);
+                var parentActivityNode = activityNode.Parent;
+                var parentRegister = parentActivityNode != null ? Registers.TryGetValue(parentActivityNode.Activity, out var parent) ? parent : default : default;
+                register = new Register(parentRegister);
+
+                Registers[activity] = register;
+            }
+
+            return register;
+        }
+
+        public void RemoveRegister(IActivity activity) => Registers.Remove(activity);
     }
 }

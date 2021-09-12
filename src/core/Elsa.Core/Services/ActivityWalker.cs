@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elsa.Contracts;
+using Elsa.Extensions;
 using Elsa.Models;
 
 namespace Elsa.Services
@@ -21,8 +22,13 @@ namespace Elsa.Services
             WalkRecursive((graph, activity), collectedActivities);
             return graph;
         }
-
+        
         private void WalkRecursive((Node Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities)
+        {
+            WalkPortsRecursive(pair, collectedActivities);
+        }
+
+        private void WalkPortsRecursive((Node Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities)
         {
             var resolver = _portResolvers.FirstOrDefault(x => x.GetSupportsActivity(pair.Activity));
             

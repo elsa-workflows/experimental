@@ -10,24 +10,16 @@ namespace Elsa.Samples.Console1.Workflows
 {
     public static class DynamicActivityWorkflow
     {
-        public static IActivity Create() => new Activity("MyWriteLine", new Dictionary<string, object?> { ["Text"] = new Literal<string>("Hello World!") });
+        public static IActivity Create() => new DynamicActivity("MyWriteLine", new Dictionary<string, object?> { ["Text"] = new Literal<string>("Hello World!") });
     }
     
     public class MyWriteLineDriver : DynamicActivityDriver
     {
-        private readonly IExpressionEvaluator _expressionEvaluator;
-
-        public MyWriteLineDriver(IExpressionEvaluator expressionEvaluator)
-        {
-            _expressionEvaluator = expressionEvaluator;
-        }
-        
         protected override string ActivityType => "MyWriteLine";
 
-        protected override async ValueTask ExecuteAsync(Activity activity, ActivityExecutionContext context)
+        protected override void Execute(DynamicActivity dynamicActivity, ActivityExecutionContext context)
         {
-            var textExpression = (IExpression<string>)activity.Input["Text"]!;
-            var text = await _expressionEvaluator.EvaluateAsync(textExpression, new ExpressionExecutionContext());
+            var text = dynamicActivity.Input["Text"]!;
             Console.WriteLine(text);
         }
     }

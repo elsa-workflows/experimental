@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Activities.Http
 {
-    public class HttpResponse : CodeActivity
+    public class HttpResponse : Activity
     {
         public HttpStatusCode StatusCode { get; set; }
         public string? Content { get; set; }

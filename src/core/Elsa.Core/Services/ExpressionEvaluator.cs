@@ -9,22 +9,20 @@ namespace Elsa.Services
     public class ExpressionEvaluator : IExpressionEvaluator
     {
         private readonly IExpressionHandlerRegistry _registry;
-        private readonly ILogger<ExpressionEvaluator> _logger;
 
-        public ExpressionEvaluator(IExpressionHandlerRegistry registry, ILogger<ExpressionEvaluator> logger)
+        public ExpressionEvaluator(IExpressionHandlerRegistry registry)
         {
             _registry = registry;
-            _logger = logger;
         }
 
-        public async ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, ExpressionExecutionContext context)
+        public async ValueTask<T?> EvaluateAsync<T>(IExpression input, ExpressionExecutionContext context)
         {
-            var handler = _registry.GetHandler(expression);
+            var handler = _registry.GetHandler<T>(input);
 
             if (handler != null) 
-                return await handler.EvaluateAsync(expression, context);
+                return await handler.EvaluateAsync<T>(input, context);
             
-            var expressionType = expression.GetType().GetGenericTypeDefinition();
+            var expressionType = input.GetType().GetGenericTypeDefinition();
             throw new InvalidOperationException($"Could not find handler for expression type {expressionType}");
         }
     }

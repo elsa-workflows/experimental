@@ -15,7 +15,7 @@ namespace Elsa.Activities.ControlFlow
         GreaterThanOrEqual
     }
 
-    public class For : CodeActivity
+    public class For : Activity
     {
         [Input] public int Start { get; set; } = 0;
         [Input] public int End { get; set; }

@@ -1,6 +1,6 @@
+using Elsa.Models;
+
 namespace Elsa.Runtime.Contracts
 {
-    public interface IWorkflowInstructionResult
-    {
-    }
+    public record WorkflowInstructionResult(Workflow Workflow, WorkflowExecutionResult WorkflowExecutionResult);
 }

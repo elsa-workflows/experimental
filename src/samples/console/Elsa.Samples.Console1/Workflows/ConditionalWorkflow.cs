@@ -3,6 +3,7 @@ using Elsa.Activities.Containers;
 using Elsa.Activities.ControlFlow;
 using Elsa.Contracts;
 using Elsa.Expressions;
+using Elsa.Models;
 
 namespace Elsa.Samples.Console1.Workflows
 {
@@ -17,7 +18,7 @@ namespace Elsa.Samples.Console1.Workflows
                 readLine1,
                 new If
                 {
-                    Condition = new Delegate<bool>(() => int.Parse(readLine1.Output!) >= 16),
+                    Condition = new Input<bool>(() => int.Parse(readLine1.Output!) >= 16),
                     Then = new Sequence(
                         new WriteLine("Enjoy your driver's license!"),
                         new WriteLine("But be careful!")),

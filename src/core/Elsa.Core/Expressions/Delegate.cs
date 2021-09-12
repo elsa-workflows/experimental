@@ -5,20 +5,27 @@ using Elsa.Models;
 
 namespace Elsa.Expressions
 {
-    public class Delegate<T> : IExpression<T>
+    public class Delegate : IExpression
     {
-        public Delegate(Func<ExpressionExecutionContext, T> value) => Value = value;
-        public Delegate(Func<T> value) => Value = _ => value();
-        public Func<ExpressionExecutionContext, T> Value { get; }   
+        public Delegate(Func<object?> value) => Value = value;
+        public Func<object?> Value { get; }
+    }
+
+    public class Delegate<T> : Delegate
+    {
+        public Delegate(Func<T?> value) : base(() => value())
+        {
+        }
     }
 
     public class DelegateHandler : IExpressionHandler
     {
-        public ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, ExpressionExecutionContext context)
+        public ValueTask<T?> EvaluateAsync<T>(IExpression input, ExpressionExecutionContext context)
         {
-            var delegateExpression = (Delegate<T>)expression;
-            var value = delegateExpression.Value(context);
-            return new ValueTask<T>(value);
+            var delegateExpression = (Delegate)input;
+            var @delegate = delegateExpression.Value;
+            var value = (T?)@delegate();
+            return ValueTask.FromResult(value);
         }
     }
 }

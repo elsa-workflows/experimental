@@ -7,11 +7,11 @@ namespace Elsa.Services
 {
     public class DynamicActivityPortResolver : IActivityPortResolver
     {
-        public bool GetSupportsActivity(IActivity activity) => activity is Activity; 
+        public bool GetSupportsActivity(IActivity activity) => activity is DynamicActivity; 
 
         public IEnumerable<IActivity> GetPorts(IActivity activity)
         {
-            var ports = ((Activity)activity).Ports.Values;
+            var ports = ((DynamicActivity)activity).Ports.Values;
             return ports.Where(x => x != null).Select(x => x!);
         }
     }

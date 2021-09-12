@@ -14,7 +14,7 @@ namespace Elsa.Samples.Console1.Workflows
                 new WriteLine("Forking..."),
                 new Fork
                 {
-                    Branches = new IActivity[]
+                    Branches =
                     {
                         new Sequence(
                             new WriteLine("Branch 1 (blocking)"),

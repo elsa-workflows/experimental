@@ -10,7 +10,13 @@ namespace Elsa.Services
         private readonly Stack<ScheduledActivity> _stack = new();
 
         public bool HasAny => _stack.Any();
-        public void Push(ScheduledActivity activity) => _stack.Push(activity);
+        
+        public void Push(ScheduledActivity activity)
+        {
+            // Push activity itself.
+            _stack.Push(activity);
+        }
+
         public ScheduledActivity Pop() => _stack.Pop();
         public IEnumerable<ScheduledActivity> List() => _stack.ToList();
     }

@@ -13,6 +13,7 @@ namespace Elsa.Models
             ScheduledActivity = scheduledActivity;
             ExecuteDelegate = executeDelegate;
             CancellationToken = cancellationToken;
+            Register = workflowExecutionContext.GetOrCreateRegister(scheduledActivity.Activity);
         }
 
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
@@ -55,5 +56,39 @@ namespace Elsa.Models
         public bool GetActivityIsCurrentTrigger(IActivity activity) => WorkflowExecutionContext.Trigger?.ActivityId == activity.ActivityId;
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
+
+        public Register Register { get; }
+
+        public object Get(RegisterLocationReference locationReference) => locationReference.GetLocation(Register);
+
+        public T Get<T>(RegisterLocationReference locationReference) => (T)Get(locationReference);
+
+        public T? Get<T>(Input<T> input)
+        {
+            if (input.LocationReference == null)
+                return default;
+
+            return (T?)input.LocationReference.GetLocation(Register).Value;
+        }
+
+        public void Set(RegisterLocationReference locationReference, object? value)
+        {
+            var location = locationReference.GetLocation(Register);
+            location.Value = value;
+        }
+
+        public void Set(Output? output, object? value)
+        {
+            if(output?.LocationReference == null)
+                return;
+
+            Set(output.LocationReference, value);
+        }
+
+        public void Cleanup()
+        {
+            // Delete register.
+            WorkflowExecutionContext.RemoveRegister(Activity);
+        }
     }
 }

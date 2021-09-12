@@ -1,9 +1,9 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
 using Microsoft.Extensions.Logging;
+using Delegate = System.Delegate;
 
 namespace Elsa.Pipelines.ActivityExecution.Components
 {
@@ -26,6 +26,9 @@ namespace Elsa.Pipelines.ActivityExecution.Components
         public async ValueTask InvokeAsync(ActivityExecutionContext context)
         {
             var activity = context.Activity;
+            
+            // Evaluate input properties.
+            await EvaluateInputPropertiesAsync(context);
 
             // Get driver.
             var driverActivator = context.WorkflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
@@ -50,11 +53,12 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 return;
 
             // Complete parent chain.
-            await CompleteParentsAsync(context, activity, driverActivator);
+            await CompleteParentsAsync(context, driverActivator);
         }
 
-        private static async Task CompleteParentsAsync(ActivityExecutionContext context, IActivity activity, IActivityDriverActivator driverActivator)
+        private static async Task CompleteParentsAsync(ActivityExecutionContext context, IActivityDriverActivator driverActivator)
         {
+            var activity = context.Activity;
             var node = context.WorkflowExecutionContext.FindNodeByActivity(activity);
             var currentParent = node.Parent;
             var currentChildContext = context;
@@ -78,6 +82,9 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
                     if (completionCallback != null)
                         await completionCallback.Invoke(currentChildContext, parentNode.Activity);
+                    
+                    // Handle activity completion.
+                    CompleteActivity(context);
                 }
 
                 // Do not continue completion callbacks of parents while there are scheduled nodes.
@@ -88,5 +95,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 currentParent = currentParent.Parent;
             }
         }
+        
+        private static void CompleteActivity(ActivityExecutionContext context) => context.Cleanup();
     }
 }

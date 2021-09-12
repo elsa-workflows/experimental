@@ -27,7 +27,8 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddElsaCore()
             .AddElsaRuntime()
             .AddDefaultActivities()
-            .AddDefaultExpressionHandlers();
+        //.AddDefaultExpressionHandlers()
+        ;
 
         public static IServiceCollection AddElsaCore(this IServiceCollection services)
         {
@@ -65,22 +66,23 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions<WorkflowRuntimeOptions>();
 
             return services
-                // Core.
-                .AddSingleton<IWorkflowRegistry, WorkflowRegistry>()
-                .AddSingleton<IWorkflowInstructionManager, WorkflowInstructionManager>()
-                .AddSingleton<ITriggerIndexer, TriggerIndexer>()
-                
-                // Stimulus handlers.
-                .AddStimulusHandler<TriggerWorkflowsStimulusHandler>()
-                .AddStimulusHandler<ResumeWorkflowsStimulusHandler>()
-                
-                // Instruction handlers.
-                .AddInstructionHandler<TriggerWorkflowInstructionHandler>()
-                .AddInstructionHandler<ResumeWorkflowInstructionHandler>()
+                    // Core.
+                    .AddSingleton<IWorkflowRegistry, WorkflowRegistry>()
+                    .AddSingleton<IStimulusInterpreter, StimulusInterpreter>()
+                    .AddSingleton<IWorkflowInstructionExecutor, WorkflowInstructionExecutor>()
+                    .AddSingleton<ITriggerIndexer, TriggerIndexer>()
 
-                // Workflow providers.
-                .AddWorkflowProvider<ConfigurationWorkflowProvider>()
-;
+                    // Stimulus handlers.
+                    .AddStimulusHandler<TriggerWorkflowsStimulusHandler>()
+                    .AddStimulusHandler<ResumeWorkflowsStimulusHandler>()
+
+                    // Instruction handlers.
+                    .AddInstructionHandler<TriggerWorkflowInstructionHandler>()
+                    .AddInstructionHandler<ResumeWorkflowInstructionHandler>()
+
+                    // Workflow providers.
+                    .AddWorkflowProvider<ConfigurationWorkflowProvider>()
+                ;
         }
 
         private static IServiceCollection AddDefaultActivities(this IServiceCollection services) =>
@@ -96,7 +98,8 @@ namespace Microsoft.Extensions.DependencyInjection
         private static IServiceCollection AddDefaultExpressionHandlers(this IServiceCollection services) =>
             services
                 .AddExpressionHandler<LiteralHandler>(typeof(Literal<>))
-                .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>));
+                .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>))
+                .AddExpressionHandler<VariableExpressionHandler>(typeof(VariableExpression<>));
 
         public static IServiceCollection AddActivityDriver<TDriver, TActivity>(this IServiceCollection services) where TDriver : class, IActivityDriver => services.AddActivityDriver<TDriver>(typeof(TActivity).Name);
 

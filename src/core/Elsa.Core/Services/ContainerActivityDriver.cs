@@ -4,7 +4,7 @@ using Elsa.Models;
 
 namespace Elsa.Services
 {
-    public abstract class ContainerActivityDriver<TActivity> : ActivityDriver<TActivity>, IContainerDriver where TActivity :  new()
+    public abstract class ContainerActivityDriver<TActivity> : ActivityDriver<TActivity>, IContainerDriver where TActivity : IActivity, new()
     {
         ValueTask IContainerDriver.OnChildCompleteAsync(ActivityExecutionContext childContext, IActivity owner)
         {

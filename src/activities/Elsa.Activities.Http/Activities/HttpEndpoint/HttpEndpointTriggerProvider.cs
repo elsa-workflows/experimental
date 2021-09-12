@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -21,12 +22,13 @@ namespace Elsa.Activities.Http
 
         public async ValueTask<IEnumerable<object>> GetHashInputsAsync(object activity, CancellationToken cancellationToken = default)
         {
-            var httpEndpoint = (HttpEndpoint)activity;
-            var path = await _expressionEvaluator.EvaluateAsync(httpEndpoint.Path, new ExpressionExecutionContext());
-            var methods = await _expressionEvaluator.EvaluateAsync(httpEndpoint.SupportedMethods, new ExpressionExecutionContext());
-            var hashInputs = methods.Select(x => (path.ToLowerInvariant(), x.ToLowerInvariant())).Cast<object>().ToArray();
+            // var httpEndpoint = (HttpEndpoint)activity;
+            // var path = await _expressionEvaluator.EvaluateAsync<string>(httpEndpoint.Path.Expression, new ExpressionExecutionContext(default!));
+            // var methods = await _expressionEvaluator.EvaluateAsync<ICollection<string>>(httpEndpoint.SupportedMethods.Expression, default!);
+            // var hashInputs = methods!.Select(x => (path!.ToLowerInvariant(), x.ToLowerInvariant())).Cast<object>().ToArray();
 
-            return hashInputs;
+            //return hashInputs;
+            throw new NotImplementedException();
         }
     }
 }

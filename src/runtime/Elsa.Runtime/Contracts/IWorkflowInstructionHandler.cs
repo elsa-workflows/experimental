@@ -6,6 +6,6 @@ namespace Elsa.Runtime.Contracts
     public interface IWorkflowInstructionHandler
     {
         bool GetSupportsInstruction(IWorkflowInstruction instruction);
-        ValueTask<IWorkflowInstructionResult> ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken = default);
+        ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken = default);
     }
 }

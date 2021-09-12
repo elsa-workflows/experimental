@@ -30,11 +30,12 @@ namespace Elsa.Runtime.Services
             return await workflowInvoker.InvokeAsync(workflow, cancellationToken);
         }
 
-        public async Task<IEnumerable<IWorkflowInstructionResult>> TriggerWorkflowsAsync(IStimulus stimulus, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowInstructionResult?>> TriggerWorkflowsAsync(IStimulus stimulus, CancellationToken cancellationToken = default)
         {
-            var instructionManager = ServiceProvider.GetRequiredService<IWorkflowInstructionManager>();
-            var instructions = await instructionManager.GetExecutionInstructionsAsync(stimulus, cancellationToken);
-            return await instructionManager.ExecuteInstructionsAsync(instructions, cancellationToken);
+            var stimulusInterpreter = ServiceProvider.GetRequiredService<IStimulusInterpreter>();
+            var instructions = await stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, cancellationToken);
+            var instructionExecutor = ServiceProvider.GetRequiredService<IWorkflowInstructionExecutor>();
+            return await instructionExecutor.ExecuteInstructionsAsync(instructions, cancellationToken);
         }
 
         public async Task<WorkflowExecutionResult> ResumeAsync(Workflow workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default)

@@ -12,17 +12,17 @@ namespace Elsa.Services
         
         ValueTask IActivityDriver.ExecuteAsync(ActivityExecutionContext context)
         {
-            var activity = (Activity)context.Node.Activity;
+            var activity = (DynamicActivity)context.Node.Activity;
             return ExecuteAsync(activity, context);
         }
 
-        protected virtual ValueTask ExecuteAsync(Activity activity, ActivityExecutionContext context)
+        protected virtual ValueTask ExecuteAsync(DynamicActivity dynamicActivity, ActivityExecutionContext context)
         {
-            Execute(activity, context);
+            Execute(dynamicActivity, context);
             return new ValueTask();
         }
 
-        protected virtual void Execute(Activity activity, ActivityExecutionContext context)
+        protected virtual void Execute(DynamicActivity dynamicActivity, ActivityExecutionContext context)
         {
         }
     }

@@ -6,14 +6,11 @@ using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.InstructionResults;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Instructions
 {
     public record ResumeWorkflowInstruction(WorkflowBookmark WorkflowBookmark) : IWorkflowInstruction;
-
-    public record ResumeWorkflowExecutionResult(Workflow Workflow, WorkflowInstance WorkflowInstance, WorkflowExecutionResult WorkflowExecutionResult, WorkflowBookmark OriginalWorkflowBookmark) : IWorkflowInstructionResult;
 
     public class ResumeWorkflowInstructionHandler : WorkflowInstructionHandler<ResumeWorkflowInstruction>
     {
@@ -30,7 +27,7 @@ namespace Elsa.Runtime.Instructions
             _logger = logger;
         }
 
-        protected override async ValueTask<IWorkflowInstructionResult> ExecuteInstructionAsync(ResumeWorkflowInstruction instruction, CancellationToken cancellationToken = default)
+        protected override async ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(ResumeWorkflowInstruction instruction, CancellationToken cancellationToken = default)
         {
             var workflowBookmark = instruction.WorkflowBookmark;
             var workflowDefinitionId = workflowBookmark.WorkflowDefinitionId;
@@ -40,7 +37,7 @@ namespace Elsa.Runtime.Instructions
             if (workflow == null)
             {
                 _logger.LogWarning("Workflow bookmark {WorkflowBookmarkId} points to workflow definition ID {WorkflowDefinitionId}, but no such workflow definition was found", workflowBookmark.Id, workflowBookmark.WorkflowDefinitionId);
-                return NullInstructionResult.Instance;
+                return null;
             }
 
             var workflowInstance = await _workflowInstanceStore.GetByIdAsync(workflowInstanceId, cancellationToken);
@@ -51,7 +48,7 @@ namespace Elsa.Runtime.Instructions
                     .LogWarning(
                         "Workflow bookmark {WorkflowBookmarkId} for workflow definition {WorkflowDefinitionId} points to workflow instance ID {WorkflowInstanceId}, but no such workflow instance was found", workflowBookmark.Id, workflowBookmark.WorkflowDefinitionId, workflowBookmark.WorkflowInstanceId);
 
-                return NullInstructionResult.Instance;
+                return null;
             }
 
             // Resume workflow instance.
@@ -62,7 +59,7 @@ namespace Elsa.Runtime.Instructions
             // Update workflow instance with new workflow state.
             workflowInstance.WorkflowState = workflowExecutionResult.WorkflowState;
 
-            return new ResumeWorkflowExecutionResult(workflow, workflowInstance, workflowExecutionResult, workflowBookmark);
+            return new WorkflowInstructionResult(workflow, workflowExecutionResult);
         }
     }
 }

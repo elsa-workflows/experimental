@@ -4,6 +4,7 @@ using Elsa.Activities.Console;
 using Elsa.Activities.Containers;
 using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
+using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
@@ -22,8 +23,8 @@ namespace Elsa.Samples.Web1.Workflows
             // Create triggers.
             var httpEndpoint = new HttpEndpoint
             {
-                Path = new Literal<string>("/hello-world"),
-                SupportedMethods = new Literal<ICollection<string>>(new[] { HttpMethods.Get })
+                Path = new Input<string>("/hello-world"),
+                SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Get })
             };
 
             // Register triggers.
@@ -34,13 +35,13 @@ namespace Elsa.Samples.Web1.Workflows
                 httpEndpoint,
                 new If
                 {
-                    Condition = new Literal<bool>(true),
+                    Condition = new Input<bool>(true),
                     Then = new Sequence(
                         new WriteLine("It's true!"),
                         new HttpEndpoint
                         {
-                            Path = new Literal<string>("/hello-world/true"),
-                            SupportedMethods = new Literal<ICollection<string>>(new[] { HttpMethods.Post })
+                            Path = new Input<string>("/hello-world/true"),
+                            SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Post })
                         },
                         new WriteLine("Let's continue")
                     ),

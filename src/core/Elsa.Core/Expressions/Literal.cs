@@ -4,19 +4,26 @@ using Elsa.Models;
 
 namespace Elsa.Expressions
 {
-    public class Literal<T> : IExpression<T>
+    public class Literal : IExpression
     {
-        public Literal(T value) => Value = value;
-        public T Value { get; }   
+        public Literal(object? value) => Value = value;
+        public object? Value { get; }
     }
-    
+
+    public class Literal<T> : Literal
+    {
+        public Literal(T? value) : base(value)
+        {
+        }
+    }
+
     public class LiteralHandler : IExpressionHandler
     {
-        public ValueTask<T> EvaluateAsync<T>(IExpression<T> expression, ExpressionExecutionContext context)
+        public ValueTask<T?> EvaluateAsync<T>(IExpression input, ExpressionExecutionContext context)
         {
-            var literalExpression = (Literal<T>)expression;
-            var value = literalExpression.Value;
-            return new ValueTask<T>(value);
+            var literal = (Literal)input;
+            var value = (T?)literal.Value;
+            return ValueTask.FromResult(value);
         }
     }
 }

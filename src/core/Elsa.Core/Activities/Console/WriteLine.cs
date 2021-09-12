@@ -1,13 +1,12 @@
 using System;
-using System.Threading.Tasks;
-using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Services;
+using Delegate = Elsa.Expressions.Delegate;
 
 namespace Elsa.Activities.Console
 {
-    public class WriteLine : CodeActivity
+    public class WriteLine : Activity
     {
         public WriteLine()
         {
@@ -16,31 +15,23 @@ namespace Elsa.Activities.Console
         public WriteLine(string text) : this(new Literal<string>(text))
         {
         }
-
-        public WriteLine(Func<string> text) : this(new Delegate<string>(text))
-        {
-        }
         
-        public WriteLine(Func<ExpressionExecutionContext, string> text) : this(new Delegate<string>(text))
+        public WriteLine(Func<string> text) : this(new Delegate(text))
         {
         }
 
-        public WriteLine(IExpression<string> text) => Text = text;
-        public IExpression<string> Text { get; set; } = default!;
+        public WriteLine(Variable<string> variable) => Text = new Input<string>(variable);
+        public WriteLine(Literal<string> literal) => Text = new Input<string>(literal);
+        public WriteLine(Delegate @delegate) => Text = new Input<string>(@delegate);
+        public WriteLine(Input<string> text) => Text = text;
+        public Input<string> Text { get; set; } = default!;
     }
 
     public class WriteLineDriver : ActivityDriver<WriteLine>
     {
-        private readonly IExpressionEvaluator _expressionEvaluator;
-
-        public WriteLineDriver(IExpressionEvaluator expressionEvaluator)
+        protected override void Execute(WriteLine activity, ActivityExecutionContext context)
         {
-            _expressionEvaluator = expressionEvaluator;
-        }
-
-        protected override async ValueTask ExecuteAsync(WriteLine activity, ActivityExecutionContext context)
-        {
-            var text = await _expressionEvaluator.EvaluateAsync(activity.Text, new ExpressionExecutionContext());
+            var text = context.Get(activity.Text);
             System.Console.WriteLine(text);
         }
     }

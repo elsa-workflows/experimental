@@ -4,7 +4,7 @@ using Elsa.Services;
 
 namespace Elsa.Activities.Console
 {
-    public class ReadLine : CodeActivity
+    public class ReadLine : Activity
     {
         [Output] public string? Output { get; set; }
     }
