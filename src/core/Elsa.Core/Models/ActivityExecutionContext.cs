@@ -59,17 +59,10 @@ namespace Elsa.Models
 
         public Register Register { get; }
 
-        public object Get(RegisterLocationReference locationReference) => locationReference.GetLocation(Register);
-
+        public RegisterLocation GetLocation(RegisterLocationReference locationReference) => locationReference.GetLocation(Register);
+        public object Get(RegisterLocationReference locationReference) => GetLocation(locationReference).Value!;
         public T Get<T>(RegisterLocationReference locationReference) => (T)Get(locationReference);
-
-        public T? Get<T>(Input<T> input)
-        {
-            if (input.LocationReference == null)
-                return default;
-
-            return (T?)input.LocationReference.GetLocation(Register).Value;
-        }
+        public T? Get<T>(Input<T> input) => (T?)input.LocationReference.GetLocation(Register).Value;
 
         public void Set(RegisterLocationReference locationReference, object? value)
         {

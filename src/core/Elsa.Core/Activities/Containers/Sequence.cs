@@ -18,11 +18,8 @@ namespace Elsa.Activities.Containers
 
     public class SequenceDriver : ContainerActivityDriver<Sequence>
     {
-        protected override void Execute(Sequence activity, ActivityExecutionContext context)
+        protected override void ScheduleChildren(Sequence activity, ActivityExecutionContext context)
         {
-            // Register variables.
-            context.Register.Declare(activity.Variables);
-            
             // Schedule first child.
             var childActivities = activity.Activities.ToList();
             var firstActivity = childActivities.FirstOrDefault();

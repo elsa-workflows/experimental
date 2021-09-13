@@ -1,6 +1,7 @@
 using Elsa.Activities.Console;
 using Elsa.Activities.Containers;
 using Elsa.Contracts;
+using Elsa.Expressions;
 using Elsa.Models;
 
 namespace Elsa.Samples.Console1.Workflows
@@ -16,7 +17,10 @@ namespace Elsa.Samples.Console1.Workflows
                 Variables = { message },
                 Activities =
                 {
-                    new WriteLine(message)
+                    new WriteLine
+                    {
+                        Text = new Input<string>(new Elsa.Models.DelegateReference(context => $"Message: {message.Get(context)}"))
+                    }
                 }
             };
         }

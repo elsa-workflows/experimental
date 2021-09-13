@@ -7,16 +7,18 @@ namespace Elsa.Extensions
 {
     public static class ActivityExtensions
     {
-        public static IEnumerable<IExpression> GetInputExpressions(this IActivity activity)
+        public static IEnumerable<Input> GetInputs(this IActivity activity)
         {
             var inputProps = activity.GetType().GetProperties().Where(x => typeof(Input).IsAssignableFrom(x.PropertyType)).ToList();
 
-            return
+            var query =
                 from inputProp in inputProps
                 select (Input?)inputProp.GetValue(activity)
                 into input
                 where input != null
-                select input.Expression;
+                select input;
+
+            return query.Select(x => x!).ToList();
         }
     }
 }

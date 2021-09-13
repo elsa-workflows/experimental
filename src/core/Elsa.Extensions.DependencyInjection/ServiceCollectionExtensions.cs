@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddElsaCore()
             .AddElsaRuntime()
             .AddDefaultActivities()
-        //.AddDefaultExpressionHandlers()
+            .AddDefaultExpressionHandlers()
         ;
 
         public static IServiceCollection AddElsaCore(this IServiceCollection services)
@@ -97,9 +97,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IServiceCollection AddDefaultExpressionHandlers(this IServiceCollection services) =>
             services
-                .AddExpressionHandler<LiteralHandler>(typeof(Literal<>))
-                .AddExpressionHandler<DelegateHandler>(typeof(Delegate<>))
-                .AddExpressionHandler<VariableExpressionHandler>(typeof(VariableExpression<>));
+                .AddExpressionHandler<LiteralHandler>(typeof(LiteralExpression))
+                .AddExpressionHandler<DelegateExpressionHandler>(typeof(Elsa.Expressions.DelegateExpression))
+                .AddExpressionHandler<VariableExpressionHandler>(typeof(VariableExpression));
 
         public static IServiceCollection AddActivityDriver<TDriver, TActivity>(this IServiceCollection services) where TDriver : class, IActivityDriver => services.AddActivityDriver<TDriver>(typeof(TActivity).Name);
 

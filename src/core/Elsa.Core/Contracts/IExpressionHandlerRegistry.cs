@@ -5,6 +5,6 @@ namespace Elsa.Contracts
     public interface IExpressionHandlerRegistry
     {
         void Register(Type expression, Type handler);
-        IExpressionHandler? GetHandler<T>(IExpression input);
+        IExpressionHandler? GetHandler(IExpression input);
     }
 }

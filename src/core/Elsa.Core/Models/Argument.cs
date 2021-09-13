@@ -2,6 +2,7 @@ namespace Elsa.Models
 {
     public abstract class Argument
     {
-        public RegisterLocationReference? LocationReference { get; set; }
+        protected Argument(RegisterLocationReference locationReference) => LocationReference = locationReference;
+        public RegisterLocationReference LocationReference { get; set; }
     }
 }

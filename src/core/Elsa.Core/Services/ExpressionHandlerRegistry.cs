@@ -21,9 +21,9 @@ namespace Elsa.Services
 
         public void Register(Type expression, Type handler) => Dictionary.Add(expression, handler);
 
-        public IExpressionHandler? GetHandler<T>(IExpression input)
+        public IExpressionHandler? GetHandler(IExpression input)
         {
-            var expressionType = input.GetType().GetGenericTypeDefinition();
+            var expressionType = input.GetType();
 
             if (!Dictionary.TryGetValue(expressionType, out var handlerType))
                 return null;

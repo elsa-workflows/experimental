@@ -1,44 +1,41 @@
 using System;
 using Elsa.Contracts;
 using Elsa.Expressions;
-using Delegate = Elsa.Expressions.Delegate;
 
 namespace Elsa.Models
 {
     public abstract class Input : Argument
     {
-        protected Input(IExpression expression) => Expression = expression;
+        protected Input(IExpression expression, RegisterLocationReference locationReference, Type targetType) : base(locationReference)
+        {
+            Expression = expression;
+            TargetType = targetType;
+        }
+
         public IExpression Expression { get; }
+        public Type TargetType { get; set; }
     }
 
 
     public class Input<T> : Input
     {
-        public Input(Variable<T> variable) : base(new VariableExpression(variable))
-        {
-        }
-
-        public Input(Literal<T> literal) : base(literal)
-        {
-        }
-
         public Input(T literal) : this(new Literal<T>(literal))
         {
         }
-        
-        public Input(Delegate<T> @delegate) : base(@delegate)
+
+        public Input(Func<T> @delegate) : this(new DelegateReference<T>(@delegate))
         {
         }
         
-        public Input(Delegate @delegate) : base(@delegate)
-        {
-        }
-        
-        public Input(Func<T?> func) : base(new Delegate<T>(func))
+        public Input(Variable<T> variable) : base(new VariableExpression<T>(variable), variable, typeof(T))
         {
         }
 
-        public Input(IExpression expression) : base(expression)
+        public Input(Literal<T> literal) : base(new LiteralExpression(literal.Value), literal, typeof(T))
+        {
+        }
+
+        public Input(DelegateReference delegateReference) : base(new DelegateExpression(delegateReference), delegateReference, typeof(T))
         {
         }
     }

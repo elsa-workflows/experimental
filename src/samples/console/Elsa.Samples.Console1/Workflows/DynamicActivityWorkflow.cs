@@ -10,7 +10,7 @@ namespace Elsa.Samples.Console1.Workflows
 {
     public static class DynamicActivityWorkflow
     {
-        public static IActivity Create() => new DynamicActivity("MyWriteLine", new Dictionary<string, object?> { ["Text"] = new Literal<string>("Hello World!") });
+        public static IActivity Create() => new DynamicActivity("MyWriteLine", new Dictionary<string, object?> { ["Text"] = new LiteralExpression<string>("Hello World!") });
     }
     
     public class MyWriteLineDriver : DynamicActivityDriver

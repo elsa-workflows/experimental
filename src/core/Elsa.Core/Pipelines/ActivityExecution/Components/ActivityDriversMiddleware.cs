@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Extensions;
 using Elsa.Models;
 using Microsoft.Extensions.Logging;
 using Delegate = System.Delegate;
@@ -25,12 +26,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
         public async ValueTask InvokeAsync(ActivityExecutionContext context)
         {
-            var activity = context.Activity;
-            
             // Evaluate input properties.
             await EvaluateInputPropertiesAsync(context);
 
             // Get driver.
+            var activity = context.Activity;
             var driverActivator = context.WorkflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
             var driver = driverActivator.ActivateDriver(activity);
 
@@ -54,6 +54,24 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
             // Complete parent chain.
             await CompleteParentsAsync(context, driverActivator);
+        }
+
+        private async Task EvaluateInputPropertiesAsync(ActivityExecutionContext context)
+        {
+            var activity = context.Activity;
+            var inputs = activity.GetInputs();
+            var assignedInputs = inputs.Where(x => x.LocationReference != null!).ToList();
+            var locationReferences = assignedInputs.Select(x => x.LocationReference).ToList();
+            var evaluator = context.WorkflowExecutionContext.GetRequiredService<IExpressionEvaluator>();
+
+            context.Register.Declare(locationReferences);
+            
+            foreach (var input in assignedInputs)
+            {
+                var locationReference = input.LocationReference;
+                var value = await evaluator.EvaluateAsync(input.Expression, new ExpressionExecutionContext(context));
+                locationReference.Set(context, value);
+            }
         }
 
         private static async Task CompleteParentsAsync(ActivityExecutionContext context, IActivityDriverActivator driverActivator)

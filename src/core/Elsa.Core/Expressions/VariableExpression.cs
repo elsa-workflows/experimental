@@ -27,11 +27,11 @@ namespace Elsa.Expressions
 
     public class VariableExpressionHandler : IExpressionHandler
     {
-        public ValueTask<T?> EvaluateAsync<T>(IExpression input, ExpressionExecutionContext context)
+        public ValueTask<object?> EvaluateAsync(IExpression input, ExpressionExecutionContext context)
         {
             var variableReference = (VariableExpression)input;
             var variable = variableReference.Variable;
-            var value = (T?)variable.Get(context.ActivityExecutionContext);
+            var value = variable.Get(context.ActivityExecutionContext);
             return ValueTask.FromResult(value);
         }
     }

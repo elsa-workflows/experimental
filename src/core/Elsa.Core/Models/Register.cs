@@ -23,7 +23,7 @@ namespace Elsa.Models
 
             while (current != null)
             {
-                if (Locations.TryGetValue(id, out location!))
+                if (current.Locations.TryGetValue(id, out location!))
                     return true;
 
                 current = current.ParentRegister;

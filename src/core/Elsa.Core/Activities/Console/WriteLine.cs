@@ -2,7 +2,6 @@ using System;
 using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Services;
-using Delegate = Elsa.Expressions.Delegate;
 
 namespace Elsa.Activities.Console
 {
@@ -16,13 +15,13 @@ namespace Elsa.Activities.Console
         {
         }
         
-        public WriteLine(Func<string> text) : this(new Delegate(text))
+        public WriteLine(Func<string> text) : this(new DelegateReference<string>(text))
         {
         }
 
         public WriteLine(Variable<string> variable) => Text = new Input<string>(variable);
         public WriteLine(Literal<string> literal) => Text = new Input<string>(literal);
-        public WriteLine(Delegate @delegate) => Text = new Input<string>(@delegate);
+        public WriteLine(DelegateReference delegateExpression) => Text = new Input<string>(delegateExpression);
         public WriteLine(Input<string> text) => Text = text;
         public Input<string> Text { get; set; } = default!;
     }
