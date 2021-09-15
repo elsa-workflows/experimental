@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elsa.Contracts;
-using Elsa.Extensions;
 using Elsa.Models;
 
 namespace Elsa.Services

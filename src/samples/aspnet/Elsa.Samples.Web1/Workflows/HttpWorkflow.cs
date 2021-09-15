@@ -4,8 +4,6 @@ using Elsa.Activities.Console;
 using Elsa.Activities.Containers;
 using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
-using Elsa.Contracts;
-using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
 

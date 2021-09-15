@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Models;

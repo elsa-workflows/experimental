@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using Elsa.Attributes;
-using Elsa.Contracts;
-using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
 
