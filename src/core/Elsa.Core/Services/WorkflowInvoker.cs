@@ -16,7 +16,7 @@ namespace Elsa.Services
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IActivityWalker _activityWalker;
         private readonly IWorkflowExecutionPipeline _pipeline;
-        private readonly IWorkflowStateService _workflowStateService;
+        private readonly IWorkflowStateSerializer _workflowStateSerializer;
         private readonly IIdentityGraphService _identityGraphService;
         private readonly IActivitySchedulerFactory _schedulerFactory;
 
@@ -24,14 +24,14 @@ namespace Elsa.Services
             IServiceScopeFactory serviceScopeFactory,
             IActivityWalker activityWalker,
             IWorkflowExecutionPipeline pipeline,
-            IWorkflowStateService workflowStateService,
+            IWorkflowStateSerializer workflowStateSerializer,
             IIdentityGraphService identityGraphService,
             IActivitySchedulerFactory schedulerFactory)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _activityWalker = activityWalker;
             _pipeline = pipeline;
-            _workflowStateService = workflowStateService;
+            _workflowStateSerializer = workflowStateSerializer;
             _identityGraphService = identityGraphService;
             _schedulerFactory = schedulerFactory;
         }
@@ -98,7 +98,7 @@ namespace Elsa.Services
             await _pipeline.ExecuteAsync(workflowExecutionContext);
 
             // Extract workflow state.
-            var workflowState = _workflowStateService.ReadState(workflowExecutionContext);
+            var workflowState = _workflowStateSerializer.ReadState(workflowExecutionContext);
 
             // Return workflow execution result containing state + bookmarks.
             return new WorkflowExecutionResult(workflowState, workflowExecutionContext.Bookmarks);
@@ -130,7 +130,7 @@ namespace Elsa.Services
             // Restore workflow execution context from state, if provided.
             if (workflowState != null)
             {
-                var workflowStateService = serviceProvider.GetRequiredService<IWorkflowStateService>();
+                var workflowStateService = serviceProvider.GetRequiredService<IWorkflowStateSerializer>();
                 workflowStateService.WriteState(workflowExecutionContext, workflowState);
             }
 

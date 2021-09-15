@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IActivityDriverRegistry, ActivityDriverRegistry>()
                 .AddSingleton<IActivityWalker, ActivityWalker>()
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
-                .AddSingleton<IWorkflowStateService, WorkflowStateService>()
+                .AddSingleton<IWorkflowStateSerializer, WorkflowStateSerializer>()
                 .AddSingleton<IActivitySchedulerFactory, ActivitySchedulerFactory>()
                 .AddSingleton<IActivityPortResolver, CodeActivityPortResolver>()
                 .AddSingleton<IActivityPortResolver, DynamicActivityPortResolver>()

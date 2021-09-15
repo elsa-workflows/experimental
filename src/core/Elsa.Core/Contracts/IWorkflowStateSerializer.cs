@@ -3,7 +3,7 @@ using Elsa.State;
 
 namespace Elsa.Contracts
 {
-    public interface IWorkflowStateService
+    public interface IWorkflowStateSerializer
     {
         WorkflowState ReadState(WorkflowExecutionContext workflowExecutionContext);
         void WriteState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state);

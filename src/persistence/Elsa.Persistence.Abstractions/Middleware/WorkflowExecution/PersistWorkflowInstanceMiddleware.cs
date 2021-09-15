@@ -17,14 +17,14 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
     {
         private readonly WorkflowMiddlewareDelegate _next;
         private readonly IWorkflowInstanceStore _workflowInstanceStore;
-        private readonly IWorkflowStateService _workflowStateService;
+        private readonly IWorkflowStateSerializer _workflowStateSerializer;
         private readonly IWorkflowBookmarkStore _workflowBookmarkStore;
 
-        public PersistWorkflowInstanceMiddleware(WorkflowMiddlewareDelegate next, IWorkflowInstanceStore workflowInstanceStore, IWorkflowStateService workflowStateService, IWorkflowBookmarkStore workflowBookmarkStore)
+        public PersistWorkflowInstanceMiddleware(WorkflowMiddlewareDelegate next, IWorkflowInstanceStore workflowInstanceStore, IWorkflowStateSerializer workflowStateSerializer, IWorkflowBookmarkStore workflowBookmarkStore)
         {
             _next = next;
             _workflowInstanceStore = workflowInstanceStore;
-            _workflowStateService = workflowStateService;
+            _workflowStateSerializer = workflowStateSerializer;
             _workflowBookmarkStore = workflowBookmarkStore;
         }
 
@@ -36,7 +36,7 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
                 Id = context.Id,
                 DefinitionId = context.Workflow.Id,
                 Version = context.Workflow.Version,
-                WorkflowState = _workflowStateService.ReadState(context)
+                WorkflowState = _workflowStateSerializer.ReadState(context)
             };
             
             // Persist workflow instance.
@@ -46,7 +46,7 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
             await _next(context);
             
             // Update workflow instance.
-            workflowInstance.WorkflowState = _workflowStateService.ReadState(context);
+            workflowInstance.WorkflowState = _workflowStateSerializer.ReadState(context);
             
             // Persist workflow instance.
             await _workflowInstanceStore.SaveAsync(workflowInstance, context.CancellationToken);

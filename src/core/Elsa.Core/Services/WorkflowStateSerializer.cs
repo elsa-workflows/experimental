@@ -10,11 +10,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Elsa.Services
 {
-    public class WorkflowStateService : IWorkflowStateService
+    public class WorkflowStateSerializer : IWorkflowStateSerializer
     {
         private readonly ILogger _logger;
 
-        public WorkflowStateService(ILogger<WorkflowStateService> logger)
+        public WorkflowStateSerializer(ILogger<WorkflowStateSerializer> logger)
         {
             _logger = logger;
         }
@@ -26,8 +26,8 @@ namespace Elsa.Services
                 Id = workflowExecutionContext.Id
             };
 
-            AddOutput(state, workflowExecutionContext);
-            AddCompletionCallbacks(state, workflowExecutionContext);
+            GetOutput(state, workflowExecutionContext);
+            GetCompletionCallbacks(state, workflowExecutionContext);
 
             return state;
         }
@@ -35,17 +35,17 @@ namespace Elsa.Services
         public void WriteState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state)
         {
             workflowExecutionContext.Id = state.Id;
-            ApplyOutput(state, workflowExecutionContext);
-            ApplyCompletionCallbacks(state, workflowExecutionContext);
+            SetOutput(state, workflowExecutionContext);
+            SetCompletionCallbacks(state, workflowExecutionContext);
         }
 
-        private void AddOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        private void GetOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
             foreach (var node in workflowExecutionContext.Nodes)
-                AddOutput(state, node);
+                GetOutput(state, node);
         }
 
-        private void AddOutput(WorkflowState state, Node node)
+        private void GetOutput(WorkflowState state, Node node)
         {
             var output = GetOutputFrom(node);
 
@@ -53,7 +53,7 @@ namespace Elsa.Services
                 state.ActivityOutput.Add(node.NodeId, output);
         }
 
-        private void ApplyOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        private void SetOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
             foreach (var nodeEntry in state.ActivityOutput)
             {
@@ -71,7 +71,7 @@ namespace Elsa.Services
             }
         }
         
-        private void ApplyCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        private void SetCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
             var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
 
@@ -94,7 +94,7 @@ namespace Elsa.Services
             }
         }
         
-        private void AddCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        private void GetCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
             var completionCallbacks = workflowExecutionContext.CompletionCallbacks;
 

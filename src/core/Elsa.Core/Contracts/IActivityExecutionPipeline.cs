@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Elsa.Models;
+using Elsa.Pipelines.ActivityExecution;
 
 namespace Elsa.Contracts
 {
