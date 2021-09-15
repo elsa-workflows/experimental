@@ -15,7 +15,6 @@ namespace Elsa.Models
 
         public Func<ActivityExecutionContext, ValueTask<object?>>? Delegate { get; set; }
         public override RegisterLocation Declare() => new();
-        public override RegisterLocation GetLocation(Register register) => register.TryGetLocation(Id, out var location) ? location : throw new InvalidOperationException("Delegate does not exist");
     }
 
     public class DelegateReference<T> : DelegateReference

@@ -1,5 +1,4 @@
 using System;
-using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Services;
 
@@ -16,6 +15,10 @@ namespace Elsa.Activities.Console
         }
         
         public WriteLine(Func<string> text) : this(new DelegateReference<string>(text))
+        {
+        }
+        
+        public WriteLine(Func<ActivityExecutionContext, string> text) : this(new DelegateReference<string>(text))
         {
         }
 

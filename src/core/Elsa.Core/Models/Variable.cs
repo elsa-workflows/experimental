@@ -22,7 +22,6 @@ namespace Elsa.Models
         public string? Name { get; set; }
         public IExpression? DefaultValue { get; }
         public override RegisterLocation Declare() => new();
-        public override RegisterLocation GetLocation(Register register) => register.TryGetLocation(Id, out var location) ? location : throw new InvalidOperationException("Variable does not exist");
     }
 
     public class Variable<T> : Variable

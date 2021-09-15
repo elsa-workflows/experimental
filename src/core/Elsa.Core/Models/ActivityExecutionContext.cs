@@ -75,7 +75,8 @@ namespace Elsa.Models
             if(output?.LocationReference == null)
                 return;
 
-            Set(output.LocationReference, value);
+            var convertedValue = output.ValueConverter?.Invoke(value) ?? value;
+            Set(output.LocationReference, convertedValue);
         }
 
         public void Cleanup()

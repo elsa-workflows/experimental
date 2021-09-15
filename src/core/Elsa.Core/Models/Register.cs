@@ -13,7 +13,7 @@ namespace Elsa.Models
         {
             ParentRegister = parentRegister;
         }
-        
+
         public Register? ParentRegister { get; }
         public IReadOnlyDictionary<string, RegisterLocation> Locations => (IReadOnlyDictionary<string, RegisterLocation>)_locations;
 
@@ -40,6 +40,13 @@ namespace Elsa.Models
                 var location = reference.Declare();
                 _locations[reference.Id] = location;
             }
+        }
+
+        public RegisterLocation Declare(RegisterLocationReference reference)
+        {
+            var location = reference.Declare();
+            _locations[reference.Id] = location;
+            return location;
         }
     }
 }

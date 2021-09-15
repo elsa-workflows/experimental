@@ -61,11 +61,8 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             var activity = context.Activity;
             var inputs = activity.GetInputs();
             var assignedInputs = inputs.Where(x => x.LocationReference != null!).ToList();
-            var locationReferences = assignedInputs.Select(x => x.LocationReference).ToList();
             var evaluator = context.WorkflowExecutionContext.GetRequiredService<IExpressionEvaluator>();
 
-            context.Register.Declare(locationReferences);
-            
             foreach (var input in assignedInputs)
             {
                 var locationReference = input.LocationReference;
