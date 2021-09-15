@@ -16,12 +16,13 @@ namespace Elsa.Samples.Console1.Workflows
                 Next = new WriteLine("Done.")
             };
 
-            for1.Iterate = new WriteLine(() => for1.CurrentValue.ToString()!);
+            for1.Iterate = new WriteLine(context => $"Current value: {for1.CurrentValue.Get<int>(context)}");
 
             return new Sequence
             (
                 new WriteLine(() => $"Counting numbers from {for1.Start} to {for1.End}:"),
-                for1
+                for1,
+                new WriteLine("End of workflow")
             );
         }
     }

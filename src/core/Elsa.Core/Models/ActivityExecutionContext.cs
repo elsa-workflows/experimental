@@ -7,9 +7,15 @@ namespace Elsa.Models
 {
     public class ActivityExecutionContext
     {
-        public ActivityExecutionContext(WorkflowExecutionContext workflowExecutionContext, ScheduledActivity scheduledActivity, ExecuteActivityDelegate? executeDelegate, CancellationToken cancellationToken)
+        public ActivityExecutionContext(
+            WorkflowExecutionContext workflowExecutionContext,
+            ActivityExecutionContext? parentActivityExecutionContext,
+            ScheduledActivity scheduledActivity,
+            ExecuteActivityDelegate? executeDelegate,
+            CancellationToken cancellationToken)
         {
             WorkflowExecutionContext = workflowExecutionContext;
+            ParentActivityExecutionContext = parentActivityExecutionContext;
             ScheduledActivity = scheduledActivity;
             ExecuteDelegate = executeDelegate;
             CancellationToken = cancellationToken;
@@ -17,6 +23,7 @@ namespace Elsa.Models
         }
 
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
+        public ActivityExecutionContext? ParentActivityExecutionContext { get; set; }
         public ScheduledActivity ScheduledActivity { get; set; }
         public ExecuteActivityDelegate? ExecuteDelegate { get; }
         public CancellationToken CancellationToken { get; }
@@ -72,7 +79,7 @@ namespace Elsa.Models
 
         public void Set(Output? output, object? value)
         {
-            if(output?.LocationReference == null)
+            if (output?.LocationReference == null)
                 return;
 
             var convertedValue = output.ValueConverter?.Invoke(value) ?? value;
@@ -83,6 +90,9 @@ namespace Elsa.Models
         {
             // Delete register.
             WorkflowExecutionContext.RemoveRegister(Activity);
+            
+            // Pop out of workflow context.
+            WorkflowExecutionContext.ActivityExecutionContexts.Pop();
         }
     }
 }

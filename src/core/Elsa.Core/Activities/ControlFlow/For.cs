@@ -23,7 +23,7 @@ namespace Elsa.Activities.ControlFlow
         [Input] public ForOperator Operator { get; set; } = ForOperator.LessThanOrEqual;
         [Port] public IActivity? Iterate { get; set; }
         [Port] public IActivity? Next { get; set; }
-        public int? CurrentValue { get; set; }
+        public Variable<int?> CurrentValue { get; set; } = new();
     }
 
     public class ForDriver : ActivityDriver<For>
@@ -35,6 +35,7 @@ namespace Elsa.Activities.ControlFlow
             if (iterateNode == null)
                 return;
 
+            context.Register.Declare(activity.CurrentValue);
             HandleIteration(context, activity);
         }
 
@@ -42,7 +43,10 @@ namespace Elsa.Activities.ControlFlow
         {
             var iterateNode = activity.Iterate!;
             var end = activity.End;
-            var currentValue = activity.CurrentValue != null ? activity.CurrentValue + activity.Step : activity.Start;
+            var currentValue = activity.CurrentValue.Get<int?>(context);
+
+            // Initialize or increment.
+            currentValue = currentValue == null ? activity.Start : currentValue + activity.Step;
 
             var loop = activity.Operator switch
             {
@@ -55,24 +59,21 @@ namespace Elsa.Activities.ControlFlow
 
             if (loop)
             {
-                activity.CurrentValue = currentValue;
-                
-                // Important: this method can execute in either the For activity context or one of its "child" activities' context.
-                // We need to always schedule the `For` activity as the owner, never the child.
                 context.ScheduleActivity(iterateNode, activity, OnChildComplete);
+
+                // Update loop variable.
+                activity.CurrentValue.Set(context, currentValue);
                 return;
             }
-
-            activity.CurrentValue = null;
 
             if (activity.Next != null)
                 context.ScheduleActivity(activity.Next);
         }
-        
-        private ValueTask OnChildComplete(ActivityExecutionContext childContext, IActivity owner)
+
+        private ValueTask OnChildComplete(ActivityExecutionContext completedActivityExecutionContext, ActivityExecutionContext ownerActivityExecutionContext)
         {
-            var activity = (For)owner;
-            HandleIteration(childContext, activity);
+            var activity = (For)ownerActivityExecutionContext.Activity;
+            HandleIteration(ownerActivityExecutionContext, activity);
             return ValueTask.CompletedTask;
         }
     }

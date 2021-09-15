@@ -82,7 +82,8 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             {
                 var scheduledNodes = context.WorkflowExecutionContext.Scheduler.List().Select(x => context.WorkflowExecutionContext.FindNodeByActivity(x.Activity)).ToList();
                 var hasScheduledChildren = scheduledNodes.Any(x => x.Parent?.Activity == activity);
-
+                var parentContext = currentChildContext.ParentActivityExecutionContext!;
+                
                 if (!hasScheduledChildren)
                 {
                     // Notify the parent activity about the child's completion.
@@ -95,18 +96,18 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                     // Invoke any completion callback.
                     var completionCallback = currentChildContext.WorkflowExecutionContext.PopCompletionCallback(parentNode.Activity);
 
-                    if (completionCallback != null)
-                        await completionCallback.Invoke(currentChildContext, parentNode.Activity);
-                    
+                    if (completionCallback != null) 
+                        await completionCallback.Invoke(currentChildContext, parentContext);
+
                     // Handle activity completion.
-                    CompleteActivity(context);
+                    CompleteActivity(currentChildContext);
                 }
 
                 // Do not continue completion callbacks of parents while there are scheduled nodes.
                 if (context.WorkflowExecutionContext.Scheduler.HasAny)
                     break;
 
-                currentChildContext = new ActivityExecutionContext(currentChildContext.WorkflowExecutionContext, new ScheduledActivity(currentParent.Activity), default, currentChildContext.CancellationToken);
+                currentChildContext = parentContext;
                 currentParent = currentParent.Parent;
             }
         }

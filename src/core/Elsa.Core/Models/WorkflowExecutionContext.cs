@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -54,6 +55,8 @@ namespace Elsa.Models
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyDictionary<IActivity, ActivityCompletionCallback> CompletionCallbacks => new ReadOnlyDictionary<IActivity, ActivityCompletionCallback>(_completionCallbacks);
         public IDictionary<IActivity, Register> Registers { get; } = new Dictionary<IActivity, Register>();
+        public Stack<ActivityExecutionContext> ActivityExecutionContexts { get; } = new();
+        public IActivity? CurrentActivity { get; set; }
 
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
         public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
