@@ -3,7 +3,7 @@ using System;
 namespace Elsa.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class PortAttribute : Attribute
+    public class OutboundAttribute : Attribute
     {
     }
 }

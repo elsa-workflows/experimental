@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,7 +14,6 @@ namespace Elsa.Services
 
         public IEnumerable<IActivity> GetPorts(IActivity activity) =>
             GetSinglePorts(activity)
-                .Concat(GetManyPorts(activity))
                 .Where(x => x != null)
                 .Select(x => x!)
                 .ToHashSet();
@@ -24,26 +24,16 @@ namespace Elsa.Services
 
             var ports =
                 from prop in nodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                where typeof(IActivity).IsAssignableFrom(prop.PropertyType)
-                let portAttr = prop.GetCustomAttribute<PortAttribute>()
+                where typeof(IActivity).IsAssignableFrom(prop.PropertyType) || typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
+                let portAttr = prop.GetCustomAttribute<OutboundAttribute>()
                 where portAttr != null
-                select (IActivity)prop.GetValue(activity)!;
-
-            return ports;
-        }
-
-        private static IEnumerable<IActivity?> GetManyPorts(IActivity activity)
-        {
-            var nodeType = activity.GetType();
-
-            var ports =
-                from prop in nodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                where typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
-                let portsAttr = prop.GetCustomAttribute<PortsAttribute>()
-                where portsAttr != null
-                select (IEnumerable<IActivity>)prop.GetValue(activity)!;
+                let value = prop.GetValue(activity)
+                let isCollection = GetPropertyIsCollection(prop.PropertyType)
+                select isCollection ? (IEnumerable<IActivity>)value : new[] { (IActivity)value };
 
             return ports.SelectMany(x => x);
         }
+
+        private static bool GetPropertyIsCollection(Type propertyType) => typeof(IEnumerable<IActivity>).IsAssignableFrom(propertyType);
     }
 }

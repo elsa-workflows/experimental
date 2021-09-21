@@ -20,8 +20,8 @@ namespace Elsa.Activities.ControlFlow
         [Input] public int End { get; set; }
         [Input] public int Step { get; set; } = 1;
         [Input] public ForOperator Operator { get; set; } = ForOperator.LessThanOrEqual;
-        [Port] public IActivity? Iterate { get; set; }
-        [Port] public IActivity? Next { get; set; }
+        [Outbound] public IActivity? Iterate { get; set; }
+        [Outbound] public IActivity? Next { get; set; }
         public Variable<int?> CurrentValue { get; set; } = new();
 
         protected override void Execute(ActivityExecutionContext context)

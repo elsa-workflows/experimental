@@ -19,7 +19,7 @@ namespace Elsa.Activities.Containers
             Activities = activities;
         }
 
-        [Ports] public ICollection<IActivity> Activities { get; set; } = new List<IActivity>();
+        [Outbound] public ICollection<IActivity> Activities { get; set; } = new List<IActivity>();
         public ICollection<Variable> Variables { get; set; } = new Collection<Variable>();
 
         public override async ValueTask ExecuteAsync(ActivityExecutionContext context)
