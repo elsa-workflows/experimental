@@ -1,35 +1,27 @@
 using System.Net;
 using System.Threading.Tasks;
 using Elsa.Models;
-using Elsa.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Activities.Http
 {
     public class HttpResponse : Activity
     {
-        public HttpStatusCode StatusCode { get; set; }
-        public string? Content { get; set; }
-    }
+        public Input<HttpStatusCode> StatusCode { get; set; } = new(HttpStatusCode.OK);
+        public Input<string?> Content { get; set; } = new("");
 
-    public class HttpResponseDriver : ActivityDriver<HttpResponse>
-    {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public HttpResponseDriver(IHttpContextAccessor httpContextAccessor)
+        public override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        protected override async ValueTask ExecuteAsync(HttpResponse activity, ActivityExecutionContext context)
-        {
-            var httpContext = _httpContextAccessor.HttpContext;
+            var httpContextAccessor = context.GetRequiredService<IHttpContextAccessor>();
+            var httpContext = httpContextAccessor.HttpContext;
             var response = httpContext.Response;
 
-            response.StatusCode = (int)activity.StatusCode;
+            response.StatusCode = (int)context.Get(StatusCode);
 
-            if (activity.Content != null)
-                await response.WriteAsync(activity.Content, context.CancellationToken);
+            var content = context.Get(Content);
+
+            if (content != null)
+                await response.WriteAsync(content, context.CancellationToken);
         }
     }
 }

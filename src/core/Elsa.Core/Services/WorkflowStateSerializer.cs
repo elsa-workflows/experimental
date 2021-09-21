@@ -12,12 +12,10 @@ namespace Elsa.Services
 {
     public class WorkflowStateSerializer : IWorkflowStateSerializer
     {
-        private readonly IActivityDriverActivator _activityDriverActivator;
         private readonly ILogger _logger;
 
-        public WorkflowStateSerializer(IActivityDriverActivator activityDriverActivator, ILogger<WorkflowStateSerializer> logger)
+        public WorkflowStateSerializer(ILogger<WorkflowStateSerializer> logger)
         {
-            _activityDriverActivator = activityDriverActivator;
             _logger = logger;
         }
 
@@ -79,23 +77,13 @@ namespace Elsa.Services
 
         private void SetCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
-            var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
-
             foreach (var completionCallbackEntry in state.CompletionCallbacks)
             {
                 var nodeId = completionCallbackEntry.Key;
                 var node = workflowExecutionContext.FindNodeById(nodeId);
                 var activity = node.Activity;
-                var driver = activityDriverActivator.ActivateDriver(activity);
-
-                if (driver == null)
-                {
-                    _logger.LogWarning("No driver found for node {ActivityType}", activity.GetType());
-                    continue;
-                }
-
                 var callbackName = completionCallbackEntry.Value;
-                var callbackDelegate = driver.GetActivityCompletionCallback(callbackName);
+                var callbackDelegate = activity.GetActivityCompletionCallback(callbackName);
                 workflowExecutionContext.AddCompletionCallback(activity, callbackDelegate);
             }
         }
@@ -169,7 +157,7 @@ namespace Elsa.Services
                 var activityExecutionContextState = tuple.activityExecutionContextState;
 
                 activityExecutionContextState.ParentActivityExecutionContext = activityExecutionContext.ParentActivityExecutionContext != null
-                    ? tuples.First(x => x.activityExecutionContext == tuple.activityExecutionContext).activityExecutionContextState
+                    ? tuples.First(x => x.activityExecutionContext == activityExecutionContext.ParentActivityExecutionContext).activityExecutionContextState
                     : default;
             }
 
@@ -184,11 +172,9 @@ namespace Elsa.Services
             var tuplesQuery =
                 from activityExecutionContextState in activityExecutionContextStates
                 let activity = workflowExecutionContext.FindActivityById(activityExecutionContextState.ScheduledActivityId)
-                let driver = _activityDriverActivator.ActivateDriver(activity)
-                where driver != null
                 let scheduledActivity = new ScheduledActivity(activity)
                 let executeDelegateMethodName = activityExecutionContextState.ExecuteDelegateMethodName
-                let executeDelegate = executeDelegateMethodName != null ? driver.GetResumeActivityDelegate(executeDelegateMethodName) : default
+                let executeDelegate = executeDelegateMethodName != null ? activity.GetResumeActivityDelegate(executeDelegateMethodName) : default
                 let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, null, scheduledActivity, executeDelegate, workflowExecutionContext.CancellationToken)
                 select (activityExecutionContextState, activityExecutionContext);
 

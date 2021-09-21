@@ -27,13 +27,10 @@ namespace Elsa.Activities.Console
         public WriteLine(DelegateReference delegateExpression) => Text = new Input<string>(delegateExpression);
         public WriteLine(Input<string> text) => Text = text;
         public Input<string> Text { get; set; } = default!;
-    }
-
-    public class WriteLineDriver : ActivityDriver<WriteLine>
-    {
-        protected override void Execute(WriteLine activity, ActivityExecutionContext context)
+        
+        protected override void Execute(ActivityExecutionContext context)
         {
-            var text = context.Get(activity.Text);
+            var text = context.Get(Text);
             System.Console.WriteLine(text);
         }
     }

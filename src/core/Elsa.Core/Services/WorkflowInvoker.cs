@@ -45,10 +45,10 @@ namespace Elsa.Services
             var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, default, bookmark, default, cancellationToken);
 
             // Construct bookmark.
-            var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
+            //var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
             var bookmarkedActivity = workflowExecutionContext.FindActivityById(bookmark.ActivityId);
-            var bookmarkedActivityDriver = activityDriverActivator.ActivateDriver(bookmarkedActivity);
-            var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivityDriver?.GetResumeActivityDelegate(bookmark.CallbackMethodName) : default;
+            //var bookmarkedActivityDriver = activityDriverActivator.ActivateDriver(bookmarkedActivity);
+            var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : default;
 
             // Schedule the activity to resume.
             workflowExecutionContext.Scheduler.Push(new ScheduledActivity(bookmarkedActivity));

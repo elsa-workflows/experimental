@@ -10,10 +10,7 @@ namespace Elsa.Activities.ControlFlow
     public class Fork : Activity
     {
         [Ports] public ICollection<IActivity> Branches { get; set; } = new List<IActivity>();
-    }
 
-    public class ForkDriver : ActivityDriver<Fork>
-    {
-        protected override void Execute(Fork activity, ActivityExecutionContext context) => context.ScheduleActivities(activity.Branches.Reverse());
+        protected override void Execute(ActivityExecutionContext context) => context.ScheduleActivities(Branches.Reverse());
     }
 }

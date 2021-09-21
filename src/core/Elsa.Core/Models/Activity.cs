@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Elsa.Contracts;
 
 namespace Elsa.Models
@@ -6,6 +7,16 @@ namespace Elsa.Models
     {
         public string ActivityId { get; set; } = default!;
         public string ActivityType => GetType().Name;
+
+        public virtual ValueTask ExecuteAsync(ActivityExecutionContext context)
+        {
+            Execute(context);
+            return ValueTask.CompletedTask;
+        }
+
+        protected virtual void Execute(ActivityExecutionContext context)
+        {
+        }
     }
     
     public abstract class ActivityWithResult : Activity

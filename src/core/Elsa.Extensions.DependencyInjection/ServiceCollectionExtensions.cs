@@ -26,7 +26,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddElsa(this IServiceCollection services) => services
             .AddElsaCore()
             .AddElsaRuntime()
-            .AddDefaultActivities()
             .AddDefaultExpressionHandlers()
         ;
 
@@ -39,15 +38,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Core.
                 .AddSingleton<IActivityInvoker, ActivityInvoker>()
                 .AddSingleton<IWorkflowInvoker, WorkflowInvoker>()
-                .AddSingleton<IActivityDriverRegistry, ActivityDriverRegistry>()
                 .AddSingleton<IActivityWalker, ActivityWalker>()
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
                 .AddSingleton<IWorkflowStateSerializer, WorkflowStateSerializer>()
                 .AddSingleton<IActivitySchedulerFactory, ActivitySchedulerFactory>()
                 .AddSingleton<IActivityPortResolver, CodeActivityPortResolver>()
-                .AddSingleton<IActivityPortResolver, DynamicActivityPortResolver>()
                 .AddSingleton<IHasher, Hasher>()
-                .AddScoped<IActivityDriverActivator, ActivityDriverActivator>()
 
                 // Expressions.
                 .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
@@ -85,45 +81,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 ;
         }
 
-        private static IServiceCollection AddDefaultActivities(this IServiceCollection services) =>
-            services
-                .AddActivityDriver<SequenceDriver>()
-                .AddActivityDriver<WriteLineDriver>()
-                .AddActivityDriver<ReadLineDriver>()
-                .AddActivityDriver<IfDriver>()
-                .AddActivityDriver<ForDriver>()
-                .AddActivityDriver<EventDriver>()
-                .AddActivityDriver<ForkDriver>();
-
         private static IServiceCollection AddDefaultExpressionHandlers(this IServiceCollection services) =>
             services
                 .AddExpressionHandler<LiteralHandler>(typeof(LiteralExpression))
                 .AddExpressionHandler<DelegateExpressionHandler>(typeof(Elsa.Expressions.DelegateExpression))
                 .AddExpressionHandler<VariableExpressionHandler>(typeof(VariableExpression));
-
-        public static IServiceCollection AddActivityDriver<TDriver, TActivity>(this IServiceCollection services) where TDriver : class, IActivityDriver => services.AddActivityDriver<TDriver>(typeof(TActivity).Name);
-
-        public static IServiceCollection AddActivityDriver<TDriver>(this IServiceCollection services, string? activityTypeName = default) where TDriver : class, IActivityDriver
-        {
-            var driverType = typeof(TDriver);
-            var activityType = driverType.BaseType!.GetGenericArguments().FirstOrDefault();
-            activityTypeName ??= activityType?.Name;
-
-            if (activityTypeName == null)
-                // Check if the activity type implements the driver.
-                if (typeof(IActivity).IsAssignableFrom(driverType))
-                    activityTypeName = typeof(TDriver).Name;
-                else
-                    throw new Exception("Failed to determine the activity type name. Please provide the activity type name explicitly via the activityTypeName parameter");
-
-            // Register driver with DI.
-            services.AddScoped<TDriver>();
-
-            // Register driver with options.
-            services.Configure<WorkflowEngineOptions>(elsa => elsa.RegisterNodeDriver(activityTypeName, driverType));
-
-            return services;
-        }
 
         public static IServiceCollection AddExpressionHandler<THandler>(this IServiceCollection services, Type expression) where THandler : class, IExpressionHandler
         {

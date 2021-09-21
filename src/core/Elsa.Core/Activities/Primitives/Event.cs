@@ -16,20 +16,11 @@ namespace Elsa.Activities.Primitives
 
         [Input] public string EventName { get; set; } = default!;
         [Output] public object? Payload { get; set; }
-    }
-
-    public class EventDriver : ActivityDriver<Event>
-    {
-        private readonly IHasher _hasher;
-
-        public EventDriver(IHasher hasher)
-        {
-            _hasher = hasher;
-        }
         
-        protected override void Execute(Event activity, ActivityExecutionContext context)
+        protected override void Execute(ActivityExecutionContext context)
         {
-            var hash = _hasher.Hash(activity.EventName);
+            var hasher = context.GetRequiredService<IHasher>();
+            var hash = hasher.Hash(EventName);
             context.SetBookmark(hash, callback: Resume);
         }
 

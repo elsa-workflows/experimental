@@ -85,6 +85,8 @@ namespace Elsa.Models
             var convertedValue = output.ValueConverter?.Invoke(value) ?? value;
             Set(output.LocationReference, convertedValue);
         }
+        
+        public T GetRequiredService<T>() where T : notnull => WorkflowExecutionContext.GetRequiredService<T>();
 
         public void Cleanup()
         {

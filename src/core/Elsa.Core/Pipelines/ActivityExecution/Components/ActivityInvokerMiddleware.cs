@@ -10,15 +10,15 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 {
     public static class InvokeDriversMiddlewareExtensions
     {
-        public static IActivityExecutionBuilder UseActivityDrivers(this IActivityExecutionBuilder builder) => builder.UseMiddleware<ActivityDriversMiddleware>();
+        public static IActivityExecutionBuilder UseActivityDrivers(this IActivityExecutionBuilder builder) => builder.UseMiddleware<ActivityInvokerMiddleware>();
     }
     
-    public class ActivityDriversMiddleware : IActivityExecutionMiddleware
+    public class ActivityInvokerMiddleware : IActivityExecutionMiddleware
     {
         private readonly ActivityMiddlewareDelegate _next;
         private readonly ILogger _logger;
 
-        public ActivityDriversMiddleware(ActivityMiddlewareDelegate next, ILogger<ActivityDriversMiddleware> logger)
+        public ActivityInvokerMiddleware(ActivityMiddlewareDelegate next, ILogger<ActivityInvokerMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -28,21 +28,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
         {
             // Evaluate input properties.
             await EvaluateInputPropertiesAsync(context);
-
-            // Get driver.
             var activity = context.Activity;
-            var driverActivator = context.WorkflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
-            var driver = driverActivator.ActivateDriver(activity);
 
-            if (driver == null)
-            {
-                _logger.LogWarning("No driver found for activity {ActivityType}", activity.GetType());
-                return;
-            }
-            
-            // Execute driver.
-            var methodInfo = typeof(IActivityDriver).GetMethod(nameof(IActivityDriver.ExecuteAsync))!;
-            var executeDelegate = context.ExecuteDelegate ?? (ExecuteActivityDelegate)Delegate.CreateDelegate(typeof(ExecuteActivityDelegate), driver, methodInfo);
+            // Execute activity.
+            var methodInfo = typeof(IActivity).GetMethod(nameof(IActivity.ExecuteAsync))!;
+            var executeDelegate = context.ExecuteDelegate ?? (ExecuteActivityDelegate)Delegate.CreateDelegate(typeof(ExecuteActivityDelegate), activity, methodInfo);
             await executeDelegate(context);
 
             // Invoke next middleware.
@@ -53,7 +43,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 return;
 
             // Complete parent chain.
-            await CompleteParentsAsync(context, driverActivator);
+            await CompleteParentsAsync(context);
         }
 
         private async Task EvaluateInputPropertiesAsync(ActivityExecutionContext context)
@@ -71,7 +61,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             }
         }
 
-        private static async Task CompleteParentsAsync(ActivityExecutionContext context, IActivityDriverActivator driverActivator)
+        private static async Task CompleteParentsAsync(ActivityExecutionContext context)
         {
             var activity = context.Activity;
             var node = context.WorkflowExecutionContext.FindNodeByActivity(activity);
@@ -89,9 +79,9 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                     // Notify the parent activity about the child's completion.
                     var parentNode = currentParent;
                  
-                    // If the driver implements IContainerDriver, invoke it.
-                    if (driverActivator.ActivateDriver(parentNode.Activity) is IContainerDriver containerDriver) 
-                        await containerDriver.OnChildCompleteAsync(currentChildContext, parentNode.Activity);
+                    // If the activity implements IContainer, notify one of its child activities completed.
+                    if (parentNode.Activity is IContainer container && currentChildContext.Node.Parent == currentParent) 
+                        await container.CompleteChildAsync(currentChildContext, parentNode.Activity);
                     
                     // Invoke any completion callback.
                     var completionCallback = currentChildContext.WorkflowExecutionContext.PopCompletionCallback(parentNode.Activity);

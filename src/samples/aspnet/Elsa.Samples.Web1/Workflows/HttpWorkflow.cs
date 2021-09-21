@@ -47,8 +47,8 @@ namespace Elsa.Samples.Web1.Workflows
                 },
                 new Elsa.Activities.Http.HttpResponse
                 {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = "Hello World!"
+                    StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
+                    Content = new Input<string?>("Hello World!")
                 });
         }
     }

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Services;
 
 namespace Elsa.Activities.ControlFlow
 {
@@ -24,31 +23,28 @@ namespace Elsa.Activities.ControlFlow
         [Port] public IActivity? Iterate { get; set; }
         [Port] public IActivity? Next { get; set; }
         public Variable<int?> CurrentValue { get; set; } = new();
-    }
 
-    public class ForDriver : ActivityDriver<For>
-    {
-        protected override void Execute(For activity, ActivityExecutionContext context)
+        protected override void Execute(ActivityExecutionContext context)
         {
-            var iterateNode = activity.Iterate;
+            var iterateNode = Iterate;
 
             if (iterateNode == null)
                 return;
 
-            context.Register.Declare(activity.CurrentValue);
-            HandleIteration(context, activity);
+            context.Register.Declare(CurrentValue);
+            HandleIteration(context);
         }
-
-        private void HandleIteration(ActivityExecutionContext context, For activity)
+        
+        private void HandleIteration(ActivityExecutionContext context)
         {
-            var iterateNode = activity.Iterate!;
-            var end = activity.End;
-            var currentValue = activity.CurrentValue.Get<int?>(context);
+            var iterateNode = Iterate!;
+            var end = End;
+            var currentValue = CurrentValue.Get<int?>(context);
 
             // Initialize or increment.
-            currentValue = currentValue == null ? activity.Start : currentValue + activity.Step;
+            currentValue = currentValue == null ? Start : currentValue + Step;
 
-            var loop = activity.Operator switch
+            var loop = Operator switch
             {
                 ForOperator.LessThan => currentValue < end,
                 ForOperator.LessThanOrEqual => currentValue <= end,
@@ -59,21 +55,20 @@ namespace Elsa.Activities.ControlFlow
 
             if (loop)
             {
-                context.ScheduleActivity(iterateNode, activity, OnChildComplete);
+                context.ScheduleActivity(iterateNode, this, OnChildComplete);
 
                 // Update loop variable.
-                activity.CurrentValue.Set(context, currentValue);
+                CurrentValue.Set(context, currentValue);
                 return;
             }
 
-            if (activity.Next != null)
-                context.ScheduleActivity(activity.Next);
+            if (Next != null)
+                context.ScheduleActivity(Next);
         }
 
         private ValueTask OnChildComplete(ActivityExecutionContext completedActivityExecutionContext, ActivityExecutionContext ownerActivityExecutionContext)
         {
-            var activity = (For)ownerActivityExecutionContext.Activity;
-            HandleIteration(ownerActivityExecutionContext, activity);
+            HandleIteration(ownerActivityExecutionContext);
             return ValueTask.CompletedTask;
         }
     }

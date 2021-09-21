@@ -10,18 +10,15 @@ namespace Elsa.Activities.Console
         public ReadLine()
         {
         }
-        
+
         public ReadLine(Variable variable, Func<object?, object?>? valueConverter = default) => Output = new Output<string?>(variable, valueConverter);
 
         [Output] public Output<string?>? Output { get; set; }
-    }
 
-    public class ReadLineDriver : ActivityDriver<ReadLine>
-    {
-        protected override void Execute(ReadLine activity, ActivityExecutionContext context)
+        protected override void Execute(ActivityExecutionContext context)
         {
             var text = System.Console.ReadLine();
-            context.Set(activity.Output, text);
+            context.Set(Output, text);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Elsa.Samples.Console1
                     .PersistWorkflows()
                     .UseActivityScheduler()
                 );
-            
+
             var workflow1 = new Func<IActivity>(HelloWorldWorkflow.Create);
             var workflow2 = new Func<IActivity>(HelloGoodbyeWorkflow.Create);
             var workflow3 = new Func<IActivity>(GreetingWorkflow.Create);
@@ -39,11 +39,10 @@ namespace Elsa.Samples.Console1
             var workflow5 = new Func<IActivity>(ForWorkflow.Create);
             var workflow6 = new Func<IActivity>(BlockingWorkflow.Create);
             var workflow7 = new Func<IActivity>(ForkedWorkflow.Create);
-            var workflow8 = new Func<IActivity>(DynamicActivityWorkflow.Create);
             var workflow9 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
             var workflow10 = new Func<IActivity>(VariablesWorkflow.Create);
 
-            var workflowFactory = workflow6;
+            var workflowFactory = workflow7;
             var workflowGraph = workflowFactory();
             var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph, new List<TriggerSource>());
             var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);
@@ -69,9 +68,7 @@ namespace Elsa.Samples.Console1
                 .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
                 .AddInMemoryWorkflowInstanceStore()
                 .AddInMemoryBookmarkStore()
-                .AddInMemoryTriggerStore()
-                .AddActivityDriver<MyWriteLineDriver>("MyWriteLine")
-                .AddActivityDriver<WriteLineDriver, CustomWriteLine>();
+                .AddInMemoryTriggerStore();
 
             return builder.BuildWorkflowEngine();
         }
