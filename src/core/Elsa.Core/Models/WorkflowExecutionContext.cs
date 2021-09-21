@@ -55,7 +55,7 @@ namespace Elsa.Models
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyDictionary<IActivity, ActivityCompletionCallback> CompletionCallbacks => new ReadOnlyDictionary<IActivity, ActivityCompletionCallback>(_completionCallbacks);
         public IDictionary<IActivity, Register> Registers { get; } = new Dictionary<IActivity, Register>();
-        public Stack<ActivityExecutionContext> ActivityExecutionContexts { get; } = new();
+        public Stack<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new();
         public IActivity? CurrentActivity { get; set; }
 
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();

@@ -7,14 +7,15 @@ namespace Elsa.Models
     /// </summary>
     public class Register
     {
-        private readonly IDictionary<string, RegisterLocation> _locations = new Dictionary<string, RegisterLocation>();
+        private readonly IDictionary<string, RegisterLocation> _locations;
 
-        public Register(Register? parentRegister)
+        public Register(Register? parentRegister, IDictionary<string, RegisterLocation>? locations = default)
         {
             ParentRegister = parentRegister;
+            _locations = locations ?? new Dictionary<string, RegisterLocation>();
         }
 
-        public Register? ParentRegister { get; }
+        public Register? ParentRegister { get; set; }
         public IReadOnlyDictionary<string, RegisterLocation> Locations => (IReadOnlyDictionary<string, RegisterLocation>)_locations;
 
         public bool TryGetLocation(string id, out RegisterLocation location)

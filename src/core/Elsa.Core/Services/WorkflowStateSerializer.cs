@@ -12,10 +12,12 @@ namespace Elsa.Services
 {
     public class WorkflowStateSerializer : IWorkflowStateSerializer
     {
+        private readonly IActivityDriverActivator _activityDriverActivator;
         private readonly ILogger _logger;
 
-        public WorkflowStateSerializer(ILogger<WorkflowStateSerializer> logger)
+        public WorkflowStateSerializer(IActivityDriverActivator activityDriverActivator, ILogger<WorkflowStateSerializer> logger)
         {
+            _activityDriverActivator = activityDriverActivator;
             _logger = logger;
         }
 
@@ -28,6 +30,8 @@ namespace Elsa.Services
 
             GetOutput(state, workflowExecutionContext);
             GetCompletionCallbacks(state, workflowExecutionContext);
+            GetRegisters(state, workflowExecutionContext);
+            GetActivityExecutionContexts(state, workflowExecutionContext);
 
             return state;
         }
@@ -37,6 +41,8 @@ namespace Elsa.Services
             workflowExecutionContext.Id = state.Id;
             SetOutput(state, workflowExecutionContext);
             SetCompletionCallbacks(state, workflowExecutionContext);
+            SetRegisters(state, workflowExecutionContext);
+            SetActivityExecutionContexts(state, workflowExecutionContext);
         }
 
         private void GetOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
@@ -70,7 +76,7 @@ namespace Elsa.Services
                 }
             }
         }
-        
+
         private void SetCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
             var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
@@ -93,7 +99,7 @@ namespace Elsa.Services
                 workflowExecutionContext.AddCompletionCallback(activity, callbackDelegate);
             }
         }
-        
+
         private void GetCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
             var completionCallbacks = workflowExecutionContext.CompletionCallbacks;
@@ -103,6 +109,103 @@ namespace Elsa.Services
                 var activity = entry.Key;
                 state.CompletionCallbacks[activity.ActivityId] = entry.Value.Method.Name;
             }
+        }
+
+        private void GetRegisters(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        {
+            var registers = workflowExecutionContext.Registers;
+            var tuples = registers.Select(r => (r.Key, r.Value, new RegisterState(r.Value.Locations.ToDictionary(x => x.Key, x => x.Value)))).ToList();
+
+            foreach (var tuple in tuples)
+            {
+                var activity = tuple.Key;
+                var register = tuple.Value;
+                var registerState = tuple.Item3;
+                var activityId = activity.ActivityId;
+                var parentRegisterState = register.ParentRegister != null ? tuples.First(x => x.Value == register.ParentRegister).Item3 : default;
+
+                registerState.ParentRegister = parentRegisterState;
+                state.Registers[activityId] = registerState;
+            }
+        }
+
+        private void SetRegisters(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        {
+            var registerStateDictionary = state.Registers;
+            var tuples = registerStateDictionary.Select(x => (x.Key, x.Value, new Register(null, x.Value.Locations))).ToList();
+
+            foreach (var tuple in tuples)
+            {
+                var activityId = tuple.Key;
+                var activity = workflowExecutionContext.FindActivityById(activityId);
+                var registerState = tuple.Value;
+                var register = tuple.Item3;
+                var parentRegister = registerState.ParentRegister != null ? tuples.First(x => x.Value == registerState.ParentRegister).Item3 : default;
+
+                register.ParentRegister = parentRegister;
+                workflowExecutionContext.Registers[activity] = register;
+            }
+        }
+
+        private void GetActivityExecutionContexts(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        {
+            var activityExecutionContexts = workflowExecutionContext.ActivityExecutionContexts;
+
+            var tuplesQuery =
+                from activityExecutionContext in activityExecutionContexts
+                let activityExecutionContextState = new ActivityExecutionContextState
+                {
+                    ScheduledActivityId = activityExecutionContext.ScheduledActivity.Activity.ActivityId,
+                    Properties = activityExecutionContext.Properties,
+                    ExecuteDelegateMethodName = activityExecutionContext.ExecuteDelegate?.Method.Name
+                }
+                select (activityExecutionContext, activityExecutionContextState);
+
+            var tuples = tuplesQuery.ToList();
+
+            foreach (var tuple in tuples)
+            {
+                var activityExecutionContext = tuple.activityExecutionContext;
+                var activityExecutionContextState = tuple.activityExecutionContextState;
+
+                activityExecutionContextState.ParentActivityExecutionContext = activityExecutionContext.ParentActivityExecutionContext != null
+                    ? tuples.First(x => x.activityExecutionContext == tuple.activityExecutionContext).activityExecutionContextState
+                    : default;
+            }
+
+            var activityExecutionContextStates = tuples.Select(x => x.activityExecutionContextState).ToList();
+            state.ActivityExecutionContexts = new Stack<ActivityExecutionContextState>(activityExecutionContextStates);
+        }
+
+        private void SetActivityExecutionContexts(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        {
+            var activityExecutionContextStates = state.ActivityExecutionContexts;
+
+            var tuplesQuery =
+                from activityExecutionContextState in activityExecutionContextStates
+                let activity = workflowExecutionContext.FindActivityById(activityExecutionContextState.ScheduledActivityId)
+                let driver = _activityDriverActivator.ActivateDriver(activity)
+                where driver != null
+                let scheduledActivity = new ScheduledActivity(activity)
+                let executeDelegateMethodName = activityExecutionContextState.ExecuteDelegateMethodName
+                let executeDelegate = executeDelegateMethodName != null ? driver.GetResumeActivityDelegate(executeDelegateMethodName) : default
+                let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, null, scheduledActivity, executeDelegate, workflowExecutionContext.CancellationToken)
+                select (activityExecutionContextState, activityExecutionContext);
+
+            var tuples = tuplesQuery.ToList();
+
+            foreach (var tuple in tuples)
+            {
+                var activityExecutionContext = tuple.activityExecutionContext;
+                var activityExecutionContextState = tuple.activityExecutionContextState;
+
+                activityExecutionContext.ParentActivityExecutionContext = activityExecutionContextState.ParentActivityExecutionContext != null
+                    ? tuples.First(x => x.activityExecutionContextState == tuple.activityExecutionContextState).activityExecutionContext
+                    : default;
+            }
+
+            var activityExecutionContexts = tuples.Select(x => x.activityExecutionContext);
+            workflowExecutionContext.ActivityExecutionContexts = new Stack<ActivityExecutionContext>(activityExecutionContexts);
         }
 
         private IDictionary<string, object?> GetOutputFrom(Node node) =>
