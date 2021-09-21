@@ -99,6 +99,9 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
                 currentChildContext = parentContext;
                 currentParent = currentParent.Parent;
+                
+                // Finalize parent.
+                CompleteActivity(parentContext);
             }
         }
         

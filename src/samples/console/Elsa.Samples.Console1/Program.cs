@@ -39,10 +39,10 @@ namespace Elsa.Samples.Console1
             var workflow5 = new Func<IActivity>(ForWorkflow.Create);
             var workflow6 = new Func<IActivity>(BlockingWorkflow.Create);
             var workflow7 = new Func<IActivity>(ForkedWorkflow.Create);
-            var workflow9 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
-            var workflow10 = new Func<IActivity>(VariablesWorkflow.Create);
+            var workflow8 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
+            var workflow9 = new Func<IActivity>(VariablesWorkflow.Create);
 
-            var workflowFactory = workflow7;
+            var workflowFactory = workflow1;
             var workflowGraph = workflowFactory();
             var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph, new List<TriggerSource>());
             var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);
@@ -56,7 +56,9 @@ namespace Elsa.Samples.Console1
 
                 workflow = workflow with { Root = workflowFactory() };
                 foreach (var bookmark in bookmarks)
-                    await workflowEngine.ResumeAsync(workflow, bookmark, workflowState);
+                {
+                    var resumeResult = await workflowEngine.ResumeAsync(workflow, bookmark, workflowState);
+                }
             }
         }
 
