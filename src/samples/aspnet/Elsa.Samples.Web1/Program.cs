@@ -19,11 +19,12 @@ builder.Services
     .AddInMemoryBookmarkStore()
     .AddInMemoryTriggerStore()
     .IndexWorkflowTriggers()
-    .AddHttpActivities()
+    .AddHttpWorkflowServices()
     .ConfigureWorkflowRuntime(options =>
     {
         options.Workflows.Add("HelloWorldWorkflow", new HelloWorldWorkflow());
         options.Workflows.Add("HttpWorkflow", new HttpWorkflow());
+        options.Workflows.Add("ForkedHttpWorkflow", new ForkedHttpWorkflow());
     });
 
 // Configure middleware pipeline.

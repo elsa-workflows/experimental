@@ -33,7 +33,7 @@ namespace Elsa.Activities.Containers
 
             foreach (var variable in variablesWithDefaultValues)
             {
-                var value = await evaluator.EvaluateAsync(variable.DefaultValue!, new ExpressionExecutionContext(context));
+                var value = await evaluator.EvaluateAsync(variable.DefaultValue!, context.ExpressionExecutionContext);
                 variable.Set(context, value);
             }
 

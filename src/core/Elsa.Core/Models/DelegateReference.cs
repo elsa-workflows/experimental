@@ -10,10 +10,10 @@ namespace Elsa.Models
         }
 
         public DelegateReference(Func<object?> @delegate) => Delegate = _ => ValueTask.FromResult(@delegate());
-        public DelegateReference(Func<ActivityExecutionContext, object?> @delegate) => Delegate = x => ValueTask.FromResult(@delegate(x));
-        public DelegateReference(Func<ActivityExecutionContext, ValueTask<object?>> @delegate) => Delegate = @delegate;
+        public DelegateReference(Func<ExpressionExecutionContext, object?> @delegate) => Delegate = x => ValueTask.FromResult(@delegate(x));
+        public DelegateReference(Func<ExpressionExecutionContext, ValueTask<object?>> @delegate) => Delegate = @delegate;
 
-        public Func<ActivityExecutionContext, ValueTask<object?>>? Delegate { get; set; }
+        public Func<ExpressionExecutionContext, ValueTask<object?>>? Delegate { get; set; }
         public override RegisterLocation Declare() => new();
     }
 
@@ -27,11 +27,11 @@ namespace Elsa.Models
         {
         }
         
-        public DelegateReference(Func<ActivityExecutionContext, T?> @delegate) : base(x => @delegate(x))
+        public DelegateReference(Func<ExpressionExecutionContext, T?> @delegate) : base(x => @delegate(x))
         {
         }
         
-        public DelegateReference(Func<ActivityExecutionContext, ValueTask<T?>> @delegate) : base(x => @delegate(x))
+        public DelegateReference(Func<ExpressionExecutionContext, ValueTask<T?>> @delegate) : base(x => @delegate(x))
         {
         }
     }

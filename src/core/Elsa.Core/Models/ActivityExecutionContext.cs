@@ -9,20 +9,22 @@ namespace Elsa.Models
     {
         public ActivityExecutionContext(
             WorkflowExecutionContext workflowExecutionContext,
+            ExpressionExecutionContext expressionExecutionContext,
             ActivityExecutionContext? parentActivityExecutionContext,
             ScheduledActivity scheduledActivity,
             ExecuteActivityDelegate? executeDelegate,
             CancellationToken cancellationToken)
         {
             WorkflowExecutionContext = workflowExecutionContext;
+            ExpressionExecutionContext = expressionExecutionContext;
             ParentActivityExecutionContext = parentActivityExecutionContext;
             ScheduledActivity = scheduledActivity;
             ExecuteDelegate = executeDelegate;
             CancellationToken = cancellationToken;
-            Register = workflowExecutionContext.GetOrCreateRegister(scheduledActivity.Activity);
         }
 
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
+        public ExpressionExecutionContext ExpressionExecutionContext { get; }
         public ActivityExecutionContext? ParentActivityExecutionContext { get; set; }
         public ScheduledActivity ScheduledActivity { get; set; }
         public ExecuteActivityDelegate? ExecuteDelegate { get; }
@@ -31,6 +33,8 @@ namespace Elsa.Models
         public Node Node => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
         public IActivity Activity => ScheduledActivity.Activity;
         public IEnumerable<Bookmark> Bookmarks => WorkflowExecutionContext.Bookmarks;
+        public Register Register => ExpressionExecutionContext.Register;
+
         public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, Activity, completionCallback);
         public void ScheduleActivity(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, owner, completionCallback);
         public void ScheduleActivities(params IActivity[] activities) => ScheduleActivities((IEnumerable<IActivity>)activities);
@@ -64,28 +68,6 @@ namespace Elsa.Models
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
 
-        public Register Register { get; }
-
-        public RegisterLocation GetLocation(RegisterLocationReference locationReference) => locationReference.GetLocation(Register);
-        public object Get(RegisterLocationReference locationReference) => GetLocation(locationReference).Value!;
-        public T Get<T>(RegisterLocationReference locationReference) => (T)Get(locationReference);
-        public T? Get<T>(Input<T> input) => (T?)input.LocationReference.GetLocation(Register).Value;
-
-        public void Set(RegisterLocationReference locationReference, object? value)
-        {
-            var location = locationReference.GetLocation(Register);
-            location.Value = value;
-        }
-
-        public void Set(Output? output, object? value)
-        {
-            if (output?.LocationReference == null)
-                return;
-
-            var convertedValue = output.ValueConverter?.Invoke(value) ?? value;
-            Set(output.LocationReference, convertedValue);
-        }
-        
         public T GetRequiredService<T>() where T : notnull => WorkflowExecutionContext.GetRequiredService<T>();
 
         public void Cleanup()
@@ -94,7 +76,13 @@ namespace Elsa.Models
             WorkflowExecutionContext.RemoveRegister(Activity);
             
             // Pop out of workflow context.
-            WorkflowExecutionContext.ActivityExecutionContexts.Pop();
+            WorkflowExecutionContext.ActivityExecutionContexts.Remove(this);
         }
+
+        public T? Get<T>(Input<T> input) => ExpressionExecutionContext.Get(input);
+        public object Get(RegisterLocationReference locationReference) => ExpressionExecutionContext.GetLocation(locationReference);
+        public T Get<T>(RegisterLocationReference locationReference) => ExpressionExecutionContext.Get<T>(locationReference);
+        public void Set(RegisterLocationReference locationReference, object? value) => ExpressionExecutionContext.Set(locationReference, value);
+        public void Set(Output? output, object? value) => ExpressionExecutionContext.Set(output, value);
     }
 }

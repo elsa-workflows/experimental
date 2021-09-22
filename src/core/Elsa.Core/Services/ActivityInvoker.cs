@@ -21,17 +21,27 @@ namespace Elsa.Services
             ExecuteActivityDelegate? executeActivityDelegate = default,
             CancellationToken cancellationToken = default)
         {
-            // Get a reference to the current activity.
-            var currentActivityExecutionContext = workflowExecutionContext.ActivityExecutionContexts.Any() ? workflowExecutionContext.ActivityExecutionContexts.Peek() : default;
-            
             // Set current activity.
             workflowExecutionContext.CurrentActivity = activity;
             
-            // Setup an activity execution context.
-            var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivityExecutionContext, new ScheduledActivity(activity), executeActivityDelegate, cancellationToken);
-            
+            // Setup an expression execution context.
+            var register = workflowExecutionContext.GetOrCreateRegister(activity);
+            var expressionExecutionContext = new ExpressionExecutionContext(register);
+         
+            // Check if there is already an activity execution context for the activity.
+            var activityExecutionContext = workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Activity == activity);
+
+            if (activityExecutionContext == null)
+            {
+                // Get a reference to the current activity execution context to use as the parent.
+                var currentActivityExecutionContext = workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Activity == workflowExecutionContext.CurrentActivity);
+
+                // Setup an activity execution context.
+                activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, currentActivityExecutionContext, new ScheduledActivity(activity), executeActivityDelegate, cancellationToken);
+            }
+
             // Push the activity context into the workflow context.
-            workflowExecutionContext.ActivityExecutionContexts.Push(activityExecutionContext);
+            workflowExecutionContext.ActivityExecutionContexts.Add(activityExecutionContext);
 
             // Execute the activity execution pipeline.
             await _pipeline.ExecuteAsync(activityExecutionContext);

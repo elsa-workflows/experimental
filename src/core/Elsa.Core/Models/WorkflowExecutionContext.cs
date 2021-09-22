@@ -15,7 +15,7 @@ namespace Elsa.Models
         private readonly IServiceProvider _serviceProvider;
         private readonly IList<Node> _nodes;
         private readonly IDictionary<IActivity, ActivityCompletionCallback> _completionCallbacks = new Dictionary<IActivity, ActivityCompletionCallback>();
-        private IList<Bookmark> _bookmarks = new List<Bookmark>();
+        private readonly List<Bookmark> _bookmarks = new();
 
         public WorkflowExecutionContext(
             IServiceProvider serviceProvider,
@@ -55,7 +55,7 @@ namespace Elsa.Models
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyDictionary<IActivity, ActivityCompletionCallback> CompletionCallbacks => new ReadOnlyDictionary<IActivity, ActivityCompletionCallback>(_completionCallbacks);
         public IDictionary<IActivity, Register> Registers { get; } = new Dictionary<IActivity, Register>();
-        public Stack<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new();
+        public IList<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new List<ActivityExecutionContext>();
         public IActivity? CurrentActivity { get; set; }
 
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
@@ -83,7 +83,7 @@ namespace Elsa.Models
         public Node FindNodeById(string nodeId) => NodeIdLookup[nodeId];
         public Node FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
-        public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks = bookmarks.ToList();
+        public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
 

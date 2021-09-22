@@ -27,7 +27,7 @@ namespace Elsa.Expressions
         {
             var delegateExpression = (DelegateExpression)input;
             var @delegate = delegateExpression.DelegateReference.Delegate;
-            var value = @delegate != null ? await @delegate(context.ActivityExecutionContext) : default;
+            var value = @delegate != null ? await @delegate(context) : default;
             return value;
         }
     }

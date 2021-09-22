@@ -51,6 +51,7 @@ namespace Elsa.Services
             var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : default;
 
             // Schedule the activity to resume.
+            //workflowExecutionContext.ActivityExecutionContexts.Pop();
             workflowExecutionContext.Scheduler.Push(new ScheduledActivity(bookmarkedActivity));
 
             // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.

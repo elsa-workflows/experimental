@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddHttpActivities(this IServiceCollection services)
+        public static IServiceCollection AddHttpWorkflowServices(this IServiceCollection services)
         {
             return services
                 .AddHttpContextAccessor()

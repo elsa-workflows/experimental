@@ -39,7 +39,7 @@ namespace Elsa.Activities.ControlFlow
         {
             var iterateNode = Iterate!;
             var end = context.Get(End);
-            var currentValue = CurrentValue.Get<int?>(context);
+            var currentValue = CurrentValue.Get<int?>(context.ExpressionExecutionContext);
 
             // Initialize or increment.
             var start = context.Get(Start);
@@ -61,7 +61,7 @@ namespace Elsa.Activities.ControlFlow
                 context.ScheduleActivity(iterateNode, this, OnChildComplete);
 
                 // Update loop variable.
-                CurrentValue.Set(context, currentValue);
+                CurrentValue.Set(context.ExpressionExecutionContext, currentValue);
                 return;
             }
 

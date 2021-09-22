@@ -56,7 +56,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             foreach (var input in assignedInputs)
             {
                 var locationReference = input.LocationReference;
-                var value = await evaluator.EvaluateAsync(input.Expression, new ExpressionExecutionContext(context));
+                var value = await evaluator.EvaluateAsync(input.Expression, context.ExpressionExecutionContext);
                 locationReference.Set(context, value);
             }
         }
@@ -99,10 +99,6 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
                 currentChildContext = parentContext;
                 currentParent = currentParent.Parent;
-                
-                // Finalize parent.
-                if(parentContext != null)
-                    CompleteActivity(parentContext);
             }
         }
         

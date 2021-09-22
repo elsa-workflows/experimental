@@ -175,7 +175,9 @@ namespace Elsa.Services
                 let scheduledActivity = new ScheduledActivity(activity)
                 let executeDelegateMethodName = activityExecutionContextState.ExecuteDelegateMethodName
                 let executeDelegate = executeDelegateMethodName != null ? activity.GetResumeActivityDelegate(executeDelegateMethodName) : default
-                let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, null, scheduledActivity, executeDelegate, workflowExecutionContext.CancellationToken)
+                let register = workflowExecutionContext.GetOrCreateRegister(activity)
+                let expressionExecutionContext = new ExpressionExecutionContext(register)
+                let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, null, scheduledActivity, executeDelegate, workflowExecutionContext.CancellationToken)
                 select (activityExecutionContextState, activityExecutionContext);
 
             var tuples = tuplesQuery.ToList();
@@ -186,12 +188,12 @@ namespace Elsa.Services
                 var activityExecutionContextState = tuple.activityExecutionContextState;
 
                 activityExecutionContext.ParentActivityExecutionContext = activityExecutionContextState.ParentActivityExecutionContext != null
-                    ? tuples.First(x => x.activityExecutionContextState == tuple.activityExecutionContextState).activityExecutionContext
+                    ? tuples.First(x => x.activityExecutionContextState == activityExecutionContextState.ParentActivityExecutionContext).activityExecutionContext
                     : default;
             }
 
             var activityExecutionContexts = tuples.Select(x => x.activityExecutionContext);
-            workflowExecutionContext.ActivityExecutionContexts = new Stack<ActivityExecutionContext>(activityExecutionContexts);
+            workflowExecutionContext.ActivityExecutionContexts = new List<ActivityExecutionContext>(activityExecutionContexts);
         }
 
         private IDictionary<string, object?> GetOutputFrom(Node node) =>

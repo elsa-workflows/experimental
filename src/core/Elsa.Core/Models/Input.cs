@@ -27,7 +27,7 @@ namespace Elsa.Models
         {
         }
         
-        public Input(Func<ActivityExecutionContext, T> @delegate) : this(new DelegateReference<T>(@delegate))
+        public Input(Func<ExpressionExecutionContext, T> @delegate) : this(new DelegateReference<T>(@delegate))
         {
         }
         

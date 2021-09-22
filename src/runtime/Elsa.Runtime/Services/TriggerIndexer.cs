@@ -5,10 +5,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Extensions;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Services
@@ -16,13 +18,23 @@ namespace Elsa.Runtime.Services
     public class TriggerIndexer : ITriggerIndexer
     {
         private readonly IEnumerable<ITriggerProvider> _triggerProviders;
+        private readonly IActivityWalker _activityWalker;
+        private readonly IExpressionEvaluator _expressionEvaluator;
         private readonly IHasher _hasher;
         private readonly IWorkflowTriggerStore _workflowTriggerStore;
         private readonly ILogger _logger;
 
-        public TriggerIndexer(IEnumerable<ITriggerProvider> triggerProviders, IHasher hasher, IWorkflowTriggerStore workflowTriggerStore, ILogger<TriggerIndexer> logger)
+        public TriggerIndexer(
+            IEnumerable<ITriggerProvider> triggerProviders, 
+            IActivityWalker activityWalker,
+            IExpressionEvaluator expressionEvaluator,
+            IHasher hasher, 
+            IWorkflowTriggerStore workflowTriggerStore, 
+            ILogger<TriggerIndexer> logger)
         {
             _triggerProviders = triggerProviders;
+            _activityWalker = activityWalker;
+            _expressionEvaluator = expressionEvaluator;
             _hasher = hasher;
             _workflowTriggerStore = workflowTriggerStore;
             _logger = logger;
@@ -39,18 +51,20 @@ namespace Elsa.Runtime.Services
 
         private async IAsyncEnumerable<WorkflowTrigger> GetTriggersAsync(Workflow workflow, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
+            var graph = _activityWalker.Walk(workflow.Root);
+            var context = new WorkflowIndexingContext(workflow, graph, cancellationToken);
             var triggerSources = workflow.Triggers;
 
             foreach (var triggerSource in triggerSources)
             {
-                var triggers = await GetTriggersAsync(workflow, triggerSource, cancellationToken);
+                var triggers = await GetTriggersAsync(context, triggerSource, cancellationToken);
 
                 foreach (var trigger in triggers)
                     yield return trigger;
             }
         }
 
-        private async Task<IEnumerable<WorkflowTrigger>> GetTriggersAsync(Workflow workflow, TriggerSource triggerSource, CancellationToken cancellationToken)
+        private async Task<IEnumerable<WorkflowTrigger>> GetTriggersAsync(WorkflowIndexingContext context, TriggerSource triggerSource, CancellationToken cancellationToken)
         {
             var activity = triggerSource.Activity;
             var triggerProvider = _triggerProviders.FirstOrDefault(x => x.GetSupportsActivity(activity));
@@ -60,13 +74,28 @@ namespace Elsa.Runtime.Services
                 _logger.LogWarning("No trigger provider found for trigger source {ActivityType}", activity.ActivityType);
                 return ArraySegment<WorkflowTrigger>.Empty;
             }
+            
+            // Evaluate activity inputs.
+            var inputs = activity.GetInputs();
+            var assignedInputs = inputs.Where(x => x.LocationReference != null!).ToList();
+            var register = context.GetOrCreateRegister(activity);
+            var expressionExecutionContext = new ExpressionExecutionContext(register);
+            
+            foreach (var input in assignedInputs)
+            {
+                var locationReference = input.LocationReference;
+                
+                var value = await _expressionEvaluator.EvaluateAsync(input.Expression, expressionExecutionContext);
+                locationReference.Set(expressionExecutionContext, value);
+            }
 
-            var hashInputs = await triggerProvider.GetHashInputsAsync(activity, cancellationToken);
+            var triggerIndexingContext = new TriggerIndexingContext(context, expressionExecutionContext, activity);
+            var hashInputs = await triggerProvider.GetHashInputsAsync(triggerIndexingContext, cancellationToken);
 
             var triggers = hashInputs.Select(x => new WorkflowTrigger
             {
                 Id = Guid.NewGuid().ToString(),
-                WorkflowDefinitionId = workflow.Id,
+                WorkflowDefinitionId = context.Workflow.Id,
                 Name = triggerSource.Activity.ActivityType,
                 ActivityId = triggerSource.Activity.ActivityId,
                 Hash = _hasher.Hash(x)

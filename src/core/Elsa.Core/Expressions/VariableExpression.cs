@@ -31,7 +31,7 @@ namespace Elsa.Expressions
         {
             var variableReference = (VariableExpression)input;
             var variable = variableReference.Variable;
-            var value = variable.Get(context.ActivityExecutionContext);
+            var value = variable.Get(context);
             return ValueTask.FromResult(value);
         }
     }

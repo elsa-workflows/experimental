@@ -1,32 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 
 namespace Elsa.Activities.Http
 {
     public class HttpEndpointTriggerProvider : ITriggerProvider
     {
-        private readonly IExpressionEvaluator _expressionEvaluator;
-
-        public HttpEndpointTriggerProvider(IExpressionEvaluator expressionEvaluator)
-        {
-            _expressionEvaluator = expressionEvaluator;
-        }
-
         public bool GetSupportsActivity(object activity) => activity is HttpEndpoint;
 
-        public async ValueTask<IEnumerable<object>> GetHashInputsAsync(object activity, CancellationToken cancellationToken = default)
+        public ValueTask<IEnumerable<object>> GetHashInputsAsync(TriggerIndexingContext context, CancellationToken cancellationToken = default)
         {
-            // var httpEndpoint = (HttpEndpoint)activity;
-            // var path = await _expressionEvaluator.EvaluateAsync<string>(httpEndpoint.Path.Expression, new ExpressionExecutionContext(default!));
-            // var methods = await _expressionEvaluator.EvaluateAsync<ICollection<string>>(httpEndpoint.SupportedMethods.Expression, default!);
-            // var hashInputs = methods!.Select(x => (path!.ToLowerInvariant(), x.ToLowerInvariant())).Cast<object>().ToArray();
+            var httpEndpoint = (HttpEndpoint)context.Activity;
+            var path = context.ExpressionExecutionContext.Get(httpEndpoint.Path);
+            var methods = context.ExpressionExecutionContext.Get(httpEndpoint.SupportedMethods);
+            var hashInputs = methods!.Select(x => (path!.ToLowerInvariant(), x.ToLowerInvariant())).Cast<object>().ToArray();
 
-            //return hashInputs;
-            throw new NotImplementedException();
+            return ValueTask.FromResult<IEnumerable<object>>(hashInputs);
         }
     }
 }
