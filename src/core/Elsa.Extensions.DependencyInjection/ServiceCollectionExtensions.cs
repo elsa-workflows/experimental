@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
         private static IServiceCollection AddDefaultExpressionHandlers(this IServiceCollection services) =>
             services
                 .AddExpressionHandler<LiteralHandler>(typeof(LiteralExpression))
-                .AddExpressionHandler<DelegateExpressionHandler>(typeof(Elsa.Expressions.DelegateExpression))
+                .AddExpressionHandler<DelegateExpressionHandler>(typeof(DelegateExpression))
                 .AddExpressionHandler<VariableExpressionHandler>(typeof(VariableExpression));
 
         public static IServiceCollection AddExpressionHandler<THandler>(this IServiceCollection services, Type expression) where THandler : class, IExpressionHandler

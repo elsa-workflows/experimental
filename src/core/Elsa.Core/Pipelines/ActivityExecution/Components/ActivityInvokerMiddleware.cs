@@ -68,11 +68,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             var currentParent = node.Parent;
             var currentChildContext = context;
 
-            while (currentParent != null)
+            while (currentParent != null && currentChildContext != null)
             {
                 var scheduledNodes = context.WorkflowExecutionContext.Scheduler.List().Select(x => context.WorkflowExecutionContext.FindNodeByActivity(x.Activity)).ToList();
                 var hasScheduledChildren = scheduledNodes.Any(x => x.Parent?.Activity == activity);
-                var parentContext = currentChildContext.ParentActivityExecutionContext!;
+                var parentContext = currentChildContext.ParentActivityExecutionContext;
                 
                 if (!hasScheduledChildren)
                 {
@@ -101,7 +101,8 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 currentParent = currentParent.Parent;
                 
                 // Finalize parent.
-                CompleteActivity(parentContext);
+                if(parentContext != null)
+                    CompleteActivity(parentContext);
             }
         }
         

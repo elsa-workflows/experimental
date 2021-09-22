@@ -16,10 +16,10 @@ namespace Elsa.Activities.ControlFlow
 
     public class For : Activity
     {
-        [Input] public int Start { get; set; } = 0;
-        [Input] public int End { get; set; }
-        [Input] public int Step { get; set; } = 1;
-        [Input] public ForOperator Operator { get; set; } = ForOperator.LessThanOrEqual;
+        [Input] public Input<int> Start { get; set; } = new(0);
+        [Input] public Input<int> End { get; set; } = new(0);
+        [Input] public Input<int> Step { get; set; } = new(1);
+        [Input] public Input<ForOperator> Operator { get; set; } = new(ForOperator.LessThanOrEqual);
         [Outbound] public IActivity? Iterate { get; set; }
         [Outbound] public IActivity? Next { get; set; }
         public Variable<int?> CurrentValue { get; set; } = new();
@@ -38,13 +38,16 @@ namespace Elsa.Activities.ControlFlow
         private void HandleIteration(ActivityExecutionContext context)
         {
             var iterateNode = Iterate!;
-            var end = End;
+            var end = context.Get(End);
             var currentValue = CurrentValue.Get<int?>(context);
 
             // Initialize or increment.
-            currentValue = currentValue == null ? Start : currentValue + Step;
+            var start = context.Get(Start);
+            var step = context.Get(Step);
+            var op = context.Get(Operator); 
+            currentValue = currentValue == null ? start : currentValue + step;
 
-            var loop = Operator switch
+            var loop = op switch
             {
                 ForOperator.LessThan => currentValue < end,
                 ForOperator.LessThanOrEqual => currentValue <= end,

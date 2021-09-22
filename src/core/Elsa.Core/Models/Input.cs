@@ -23,7 +23,7 @@ namespace Elsa.Models
         {
         }
 
-        public Input(Func<T> @delegate) : this(new DelegateReference<T>(@delegate))
+        public Input(Func<T> @delegate) : this(new DelegateReference(() => @delegate()))
         {
         }
         
@@ -31,7 +31,7 @@ namespace Elsa.Models
         {
         }
         
-        public Input(Variable<T> variable) : base(new VariableExpression<T>(variable), variable, typeof(T))
+        public Input(Variable<T> variable) : base(new VariableExpression(variable), variable, typeof(T))
         {
         }
 
