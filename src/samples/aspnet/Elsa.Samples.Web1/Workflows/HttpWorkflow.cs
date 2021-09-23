@@ -21,7 +21,7 @@ namespace Elsa.Samples.Web1.Workflows
         public void Build(IWorkflowBuilder builder)
         {
             // Create triggers.
-            var httpEndpoint = new HttpTrigger
+            var httpTrigger = new HttpTrigger
             {
                 Path = new Input<string>("/hello-world"),
                 SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Get })
@@ -30,7 +30,7 @@ namespace Elsa.Samples.Web1.Workflows
             // Register triggers.
             builder.Triggers = new List<ITrigger>
             {
-                httpEndpoint
+                httpTrigger
             };
 
             // Setup workflow graph.

@@ -49,12 +49,12 @@ namespace Elsa.Services
                 GetOutput(state, node);
         }
 
-        private void GetOutput(WorkflowState state, Node node)
+        private void GetOutput(WorkflowState state, ActivityNode activityNode)
         {
-            var output = GetOutputFrom(node);
+            var output = GetOutputFrom(activityNode);
 
             if (output.Any())
-                state.ActivityOutput.Add(node.NodeId, output);
+                state.ActivityOutput.Add(activityNode.NodeId, output);
         }
 
         private void SetOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
@@ -168,7 +168,7 @@ namespace Elsa.Services
             workflowExecutionContext.ActivityExecutionContexts = new List<ActivityExecutionContext>(activityExecutionContexts);
         }
 
-        private IDictionary<string, object?> GetOutputFrom(Node node) =>
-            node.GetType().GetProperties(BindingFlags.Public).Where(x => x.GetCustomAttribute<OutputAttribute>() != null).ToDictionary(x => x.Name, x => (object?)x.GetValue(node));
+        private IDictionary<string, object?> GetOutputFrom(ActivityNode activityNode) =>
+            activityNode.GetType().GetProperties(BindingFlags.Public).Where(x => x.GetCustomAttribute<OutputAttribute>() != null).ToDictionary(x => x.Name, x => (object?)x.GetValue(activityNode));
     }
 }

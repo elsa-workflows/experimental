@@ -5,7 +5,6 @@ using System.Net.Http;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Runtime.Models;
 
 namespace Elsa.Activities.Http
 {
@@ -17,9 +16,8 @@ namespace Elsa.Activities.Http
         
         protected override IEnumerable<object> GetHashInputs(TriggerIndexingContext context)
         {
-            var httpEndpoint = (HttpTrigger)context.Activity;
-            var path = context.ExpressionExecutionContext.Get(httpEndpoint.Path);
-            var methods = context.ExpressionExecutionContext.Get(httpEndpoint.SupportedMethods);
+            var path = context.ExpressionExecutionContext.Get(Path);
+            var methods = context.ExpressionExecutionContext.Get(SupportedMethods);
             return methods!.Select(x => (path!.ToLowerInvariant(), x.ToLowerInvariant())).Cast<object>().ToArray();
         }
 

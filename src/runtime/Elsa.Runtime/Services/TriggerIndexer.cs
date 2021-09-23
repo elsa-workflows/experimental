@@ -48,8 +48,7 @@ namespace Elsa.Runtime.Services
 
         private async IAsyncEnumerable<WorkflowTrigger> GetTriggersAsync(Workflow workflow, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var graph = _activityWalker.Walk(workflow.Root);
-            var context = new WorkflowIndexingContext(workflow, graph, cancellationToken);
+            var context = new WorkflowIndexingContext(workflow);
             var triggerSources = workflow.Triggers ?? Enumerable.Empty<ITrigger>();
 
             foreach (var triggerSource in triggerSources)
@@ -63,16 +62,15 @@ namespace Elsa.Runtime.Services
 
         private async Task<IEnumerable<WorkflowTrigger>> GetTriggersAsync(WorkflowIndexingContext context, ITrigger trigger, CancellationToken cancellationToken)
         {
-            // Evaluate activity inputs.
             var inputs = trigger.GetInputs();
             var assignedInputs = inputs.Where(x => x.LocationReference != null!).ToList();
             var register = context.GetOrCreateRegister(trigger);
             var expressionExecutionContext = new ExpressionExecutionContext(register);
 
+            // Evaluate trigger inputs.
             foreach (var input in assignedInputs)
             {
                 var locationReference = input.LocationReference;
-
                 var value = await _expressionEvaluator.EvaluateAsync(input.Expression, expressionExecutionContext);
                 locationReference.Set(expressionExecutionContext, value);
             }
@@ -84,8 +82,7 @@ namespace Elsa.Runtime.Services
             {
                 Id = Guid.NewGuid().ToString(),
                 WorkflowDefinitionId = context.Workflow.Id,
-                Name = trigger.ActivityType,
-                ActivityId = trigger.ActivityId,
+                Name = trigger.GetType().Name,
                 Hash = _hasher.Hash(x)
             });
 

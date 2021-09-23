@@ -7,6 +7,6 @@ namespace Elsa.Contracts
     /// </summary>
     public interface IActivityWalker
     {
-        Node Walk(IActivity activity);
+        ActivityNode Walk(IActivity activity);
     }
 }

@@ -3,14 +3,14 @@ using Elsa.Contracts;
 
 namespace Elsa.Models
 {
-    public class Node
+    public class ActivityNode
     {
-        public Node(IActivity activity)
+        public ActivityNode(IActivity activity)
         {
             Activity = activity;
         }
         
-        public Node(IActivity activity, Node? parent = default)
+        public ActivityNode(IActivity activity, ActivityNode? parent = default)
         {
             Activity = activity;
             Parent = parent;
@@ -18,7 +18,7 @@ namespace Elsa.Models
 
         public string NodeId => Activity.ActivityId;
         public IActivity Activity { get; }
-        public Node? Parent { get; }
-        public ICollection<Node> Children { get; set; } = new List<Node>();
+        public ActivityNode? Parent { get; }
+        public ICollection<ActivityNode> Children { get; set; } = new List<ActivityNode>();
     }
 }

@@ -12,13 +12,13 @@ namespace Elsa.Models
     public class WorkflowExecutionContext
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IList<Node> _nodes;
+        private readonly IList<ActivityNode> _nodes;
         private readonly IDictionary<IActivity, ActivityCompletionCallback> _completionCallbacks = new Dictionary<IActivity, ActivityCompletionCallback>();
         private readonly List<Bookmark> _bookmarks = new();
 
         public WorkflowExecutionContext(
             IServiceProvider serviceProvider,
-            Workflow workflow, Node graph,
+            Workflow workflow, ActivityNode graph,
             IActivityScheduler scheduler,
             Bookmark? bookmark,
             ExecuteActivityDelegate? executeDelegate,
@@ -38,11 +38,11 @@ namespace Elsa.Models
         }
 
         public Workflow Workflow { get; }
-        public Node Graph { get; set; }
+        public ActivityNode Graph { get; set; }
         public string Id { get; set; }
-        public IReadOnlyCollection<Node> Nodes => new ReadOnlyCollection<Node>(_nodes);
-        public IDictionary<string, Node> NodeIdLookup { get; }
-        public IDictionary<IActivity, Node> NodeActivityLookup { get; }
+        public IReadOnlyCollection<ActivityNode> Nodes => new ReadOnlyCollection<ActivityNode>(_nodes);
+        public IDictionary<string, ActivityNode> NodeIdLookup { get; }
+        public IDictionary<IActivity, ActivityNode> NodeActivityLookup { get; }
         public IActivityScheduler Scheduler { get; }
         public Bookmark? Bookmark { get; }
         public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
@@ -75,8 +75,8 @@ namespace Elsa.Models
             return callback;
         }
 
-        public Node FindNodeById(string nodeId) => NodeIdLookup[nodeId];
-        public Node FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
+        public ActivityNode FindNodeById(string nodeId) => NodeIdLookup[nodeId];
+        public ActivityNode FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;

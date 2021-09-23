@@ -1,4 +1,4 @@
 namespace Elsa.Models
 {
-    public record NodeIdentity(Node Node, string NodeName);
+    //public record NodeIdentity(ActivityNode ActivityNode, string NodeName);
 }

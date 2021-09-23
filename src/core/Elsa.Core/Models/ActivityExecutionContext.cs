@@ -31,7 +31,7 @@ namespace Elsa.Models
         public ExecuteActivityDelegate? ExecuteDelegate { get; set; }
         public CancellationToken CancellationToken { get; }
         public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
-        public Node Node => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
+        public ActivityNode ActivityNode => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
         public IActivity Activity => ScheduledActivity.Activity;
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public Register Register => ExpressionExecutionContext.Register;

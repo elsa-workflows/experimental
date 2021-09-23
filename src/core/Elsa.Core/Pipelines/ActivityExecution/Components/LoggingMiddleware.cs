@@ -21,7 +21,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
         public async ValueTask InvokeAsync(ActivityExecutionContext context)
         {
-            var node = context.Node;
+            var node = context.ActivityNode;
             _logger.LogDebug("Executing node {Node}", node.GetType().Name);
             _stopwatch.Restart();
             await _next(context);

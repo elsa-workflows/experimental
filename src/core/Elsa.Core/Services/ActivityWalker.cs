@@ -14,20 +14,20 @@ namespace Elsa.Services
             _portResolvers = portResolvers;
         }
         
-        public Node Walk(IActivity activity)
+        public ActivityNode Walk(IActivity activity)
         {
             var collectedActivities = new HashSet<IActivity>(new[] { activity });
-            var graph = new Node(activity);
+            var graph = new ActivityNode(activity);
             WalkRecursive((graph, activity), collectedActivities);
             return graph;
         }
         
-        private void WalkRecursive((Node Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities)
+        private void WalkRecursive((ActivityNode Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities)
         {
             WalkPortsRecursive(pair, collectedActivities);
         }
 
-        private void WalkPortsRecursive((Node Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities)
+        private void WalkPortsRecursive((ActivityNode Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities)
         {
             var resolver = _portResolvers.FirstOrDefault(x => x.GetSupportsActivity(pair.Activity));
             
@@ -38,7 +38,7 @@ namespace Elsa.Services
 
             foreach (var port in ports)
             {
-                var childNode = new Node(port, pair.Node);
+                var childNode = new ActivityNode(port, pair.Node);
                 collectedActivities.Add(port);
                 pair.Node.Children.Add(childNode);
                 WalkRecursive((childNode, port), collectedActivities);

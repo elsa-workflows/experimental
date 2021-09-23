@@ -1,6 +1,6 @@
 namespace Elsa.Contracts
 {
-    public interface IReference
+    public interface INode
     {
     }
 }

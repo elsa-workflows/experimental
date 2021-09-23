@@ -3,7 +3,7 @@ using Elsa.Models;
 
 namespace Elsa.Contracts
 {
-    public interface IActivity
+    public interface IActivity : INode
     {
         string ActivityId { get; set; }
         string ActivityType { get; }
