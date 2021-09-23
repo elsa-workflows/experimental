@@ -40,7 +40,7 @@ namespace Elsa.Samples.Console1
             var workflow8 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
             var workflow9 = new Func<IActivity>(VariablesWorkflow.Create);
 
-            var workflowFactory = workflow5;
+            var workflowFactory = workflow9;
             var workflowGraph = workflowFactory();
             var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph);
             var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);

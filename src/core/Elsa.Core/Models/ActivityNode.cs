@@ -20,5 +20,10 @@ namespace Elsa.Models
         public IActivity Activity { get; }
         public ActivityNode? Parent { get; }
         public ICollection<ActivityNode> Children { get; set; } = new List<ActivityNode>();
+
+        public object Descendants()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

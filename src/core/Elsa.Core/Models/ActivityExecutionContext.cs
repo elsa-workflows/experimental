@@ -30,7 +30,7 @@ namespace Elsa.Models
         public ScheduledActivity ScheduledActivity { get; set; }
         public ExecuteActivityDelegate? ExecuteDelegate { get; set; }
         public CancellationToken CancellationToken { get; }
-        public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
+        public IDictionary<string, object?> Properties { get; set; } = new Dictionary<string, object?>();
         public ActivityNode ActivityNode => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
         public IActivity Activity => ScheduledActivity.Activity;
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
@@ -67,6 +67,14 @@ namespace Elsa.Models
         
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
+        
+        public T UpdateProperty<T>(string key, Func<T?, T> updater)
+        {
+            var value = GetProperty<T?>(key);
+            value = updater(value);
+            Properties[key] = value;
+            return value;
+        }
 
         public T GetRequiredService<T>() where T : notnull => WorkflowExecutionContext.GetRequiredService<T>();
 

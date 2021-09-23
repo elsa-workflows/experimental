@@ -148,7 +148,7 @@ namespace Elsa.Services
                     ExecuteDelegateMethodName = activityExecutionContext.ExecuteDelegate?.Method.Name
                 }
                 select activityExecutionContextState;
-            
+
             state.ActivityExecutionContexts = new Stack<ActivityExecutionContextState>(activityExecutionContextStates);
         }
 
@@ -162,7 +162,11 @@ namespace Elsa.Services
                 let scheduledActivity = new ScheduledActivity(activity)
                 let register = workflowExecutionContext.GetOrCreateRegister(activity)
                 let expressionExecutionContext = new ExpressionExecutionContext(register)
+                let properties = activityExecutionContextState.Properties
                 let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, scheduledActivity, workflowExecutionContext.CancellationToken)
+                {
+                    Properties = properties
+                }
                 select activityExecutionContext;
 
             workflowExecutionContext.ActivityExecutionContexts = new List<ActivityExecutionContext>(activityExecutionContexts);

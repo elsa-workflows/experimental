@@ -38,9 +38,18 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
                 Version = context.Workflow.Version,
                 WorkflowState = _workflowStateSerializer.ReadState(context)
             };
+
+            var cancellationToken = context.CancellationToken;
+            
+            // Get a copy of current bookmarks.
+            var existingBookmarks = await _workflowBookmarkStore.FindManyByWorkflowInstanceAsync(workflowInstance.Id, cancellationToken);
+            var bookmarksSnapshot = existingBookmarks.Select(x => new Bookmark(x.Id, x.Name, x.Hash, x.ActivityId, x.Data, x.CallbackMethodName)).ToList();
+            
+            // Apply bookmarks to workflow context.
+            context.RegisterBookmarks(bookmarksSnapshot);
             
             // Persist workflow instance.
-            await _workflowInstanceStore.SaveAsync(workflowInstance, context.CancellationToken);
+            await _workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
 
             // Invoke next middleware.
             await _next(context);
@@ -49,13 +58,17 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
             workflowInstance.WorkflowState = _workflowStateSerializer.ReadState(context);
             
             // Persist workflow instance.
-            await _workflowInstanceStore.SaveAsync(workflowInstance, context.CancellationToken);
+            await _workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
             
-            // Delete any bookmark that was used to resume the workflow.
-            if (context.Bookmark != null) 
-                await _workflowBookmarkStore.DeleteAsync(context.Bookmark.Id, context.CancellationToken);
+            // // Delete any bookmark that was used to resume the workflow.
+            // if (context.Bookmark != null) 
+            //     await _workflowBookmarkStore.DeleteAsync(context.Bookmark.Id, cancellationToken);
+            
+            // Remove bookmarks that were in the snapshot but no longer present in context.
+            var removedBookmarks = bookmarksSnapshot.Except(context.Bookmarks).Select(x => x.Id).ToList();
+            await _workflowBookmarkStore.DeleteManyAsync(removedBookmarks, cancellationToken);
 
-            // Persist bookmarks.
+            // Persist bookmarks, if any.
             var workflowBookmarks = context.Bookmarks.Select(x => new WorkflowBookmark
             {
                 Id = x.Id,

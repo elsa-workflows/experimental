@@ -99,5 +99,10 @@ namespace Elsa.Models
         public void RemoveRegister(IActivity activity) => Registers.Remove(activity);
 
         public void RegisterBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
+
+        public void UnregisterBookmarks(IEnumerable<Bookmark> bookmarks)
+        {
+            foreach (var bookmark in bookmarks) _bookmarks.Remove(bookmark);
+        }
     }
 }

@@ -30,6 +30,12 @@ namespace Elsa.Persistence.InMemory.Services
             return Task.FromResult(results);
         }
 
+        public Task<IEnumerable<WorkflowBookmark>> FindManyByWorkflowInstanceAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
+        {
+            var results = _records.Values.Where(x => x.WorkflowInstanceId == workflowInstanceId);
+            return Task.FromResult(results);
+        }
+
         public Task DeleteAsync(string id, CancellationToken cancellationToken = default)
         {
             _records.TryRemove(id, out _);

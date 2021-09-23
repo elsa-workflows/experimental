@@ -34,34 +34,40 @@ namespace Elsa.Samples.Web1.Workflows
             };
 
             // Setup workflow graph.
-            builder.Root = new Sequence(
-                new Fork
+            builder.Root = new Sequence
+            {
+                Activities =
                 {
-                    Branches =
+                    new Fork
                     {
-                        new Sequence
+                        JoinMode = new Input<JoinMode>(JoinMode.WaitAny),
+                        Branches =
                         {
-                            Activities =
+                            new Sequence
                             {
-                                new HttpTrigger { Path = new Input<string>("/fork/branch-1"), },
-                                new WriteLine("Branch 1 continues!")
+                                Activities =
+                                {
+                                    new HttpTrigger { Path = new Input<string>("/fork/branch-1"), },
+                                    new WriteLine("Branch 1 continues!")
+                                }
+                            },
+                            new Sequence
+                            {
+                                Activities =
+                                {
+                                    new HttpTrigger { Path = new Input<string>("/fork/branch-2"), },
+                                    new WriteLine("Branch 2 continues!")
+                                }
                             }
                         },
-                        new Sequence
+                        Next = new HttpResponse
                         {
-                            Activities =
-                            {
-                                new HttpTrigger { Path = new Input<string>("/fork/branch-2"), },
-                                new WriteLine("Branch 2 continues!")
-                            }
-                        },
+                            StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
+                            Content = new Input<string?>("Done!")
+                        }
                     }
-                },
-                new HttpResponse
-                {
-                    StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
-                    Content = new Input<string?>("Done!")
-                });
+                }
+            };
         }
     }
 }
