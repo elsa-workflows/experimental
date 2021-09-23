@@ -4,6 +4,7 @@ using Elsa.Activities.Console;
 using Elsa.Activities.Containers;
 using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
+using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
 
@@ -19,26 +20,24 @@ namespace Elsa.Samples.Web1.Workflows
 
         public void Build(IWorkflowBuilder builder)
         {
-            // Variables.
-            var pathVariable = new Variable<string>("/hello-world");
-
             // Create triggers.
             var httpEndpoint = new HttpEndpoint
             {
-                Path = new Input<string>(pathVariable),
+                Path = new Input<string>("/hello-world"),
                 SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Get })
             };
 
             // Register triggers.
-            builder.Triggers.Add(new TriggerSource(httpEndpoint));
+            builder.Triggers = new List<ITrigger>
+            {
+                httpEndpoint
+            };
 
             // Setup workflow graph.
             builder.Root = new Sequence
             {
-                Variables = { pathVariable },
                 Activities =
                 {
-                    httpEndpoint,
                     new If
                     {
                         Condition = new Input<bool>(true),

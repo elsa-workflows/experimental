@@ -21,7 +21,6 @@ namespace Elsa.Models
             IServiceProvider serviceProvider,
             Workflow workflow, Node graph,
             IActivityScheduler scheduler,
-            Trigger? trigger,
             Bookmark? bookmark,
             ExecuteActivityDelegate? executeDelegate,
             CancellationToken cancellationToken)
@@ -32,7 +31,6 @@ namespace Elsa.Models
             Id = Guid.NewGuid().ToString("N");
             _nodes = graph.Flatten().ToList();
             Scheduler = scheduler;
-            Trigger = trigger;
             Bookmark = bookmark;
             ExecuteDelegate = executeDelegate;
             CancellationToken = cancellationToken;
@@ -47,7 +45,6 @@ namespace Elsa.Models
         public IDictionary<string, Node> NodeIdLookup { get; }
         public IDictionary<IActivity, Node> NodeActivityLookup { get; }
         public IActivityScheduler Scheduler { get; }
-        public Trigger? Trigger { get; }
         public Bookmark? Bookmark { get; }
         public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
         public ExecuteActivityDelegate? ExecuteDelegate { get; set; }

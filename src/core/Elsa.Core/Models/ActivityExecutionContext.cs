@@ -64,8 +64,7 @@ namespace Elsa.Models
                 ScheduledActivity.Activity.ActivityId,
                 data ?? new Dictionary<string, object?>(),
                 callback?.Method.Name));
-
-        public bool GetActivityIsCurrentTrigger(IActivity activity) => WorkflowExecutionContext.Trigger?.ActivityId == activity.ActivityId;
+        
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
 

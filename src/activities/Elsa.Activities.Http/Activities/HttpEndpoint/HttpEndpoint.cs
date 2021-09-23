@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -18,10 +17,6 @@ namespace Elsa.Activities.Http
 
         protected override void Execute(ActivityExecutionContext context)
         {
-            // If the activity triggered the workflow, do nothing.
-            if (context.GetActivityIsCurrentTrigger(this))
-                return;
-
             // Create bookmarks.
             var bookmarks = CreateBookmarks(context).ToList();
             context.SetBookmarks(bookmarks);

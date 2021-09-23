@@ -9,7 +9,6 @@ namespace Elsa.Contracts
     public interface IWorkflowInvoker
     {
         Task<WorkflowExecutionResult> ResumeAsync(Workflow workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default);
-        Task<WorkflowExecutionResult> TriggerAsync(Workflow workflow, Trigger trigger, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionResult> InvokeAsync(Workflow workflow, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext);
 
@@ -17,7 +16,6 @@ namespace Elsa.Contracts
             IServiceProvider serviceProvider,
             Workflow workflow,
             WorkflowState? workflowState = default,
-            Trigger? trigger = default,
             Bookmark? bookmark = default,
             ExecuteActivityDelegate? executeActivityDelegate = default,
             CancellationToken cancellationToken = default);

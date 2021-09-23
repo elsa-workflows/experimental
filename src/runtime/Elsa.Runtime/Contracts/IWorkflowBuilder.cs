@@ -7,6 +7,6 @@ namespace Elsa.Runtime.Contracts
     public interface IWorkflowBuilder
     {
         IActivity Root { get; set; }
-        ICollection<TriggerSource> Triggers { get; }
+        ICollection<ITrigger> Triggers { get; set; }
     }
 }

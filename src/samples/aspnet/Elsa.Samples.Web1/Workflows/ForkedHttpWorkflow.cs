@@ -4,6 +4,7 @@ using Elsa.Activities.Console;
 using Elsa.Activities.Containers;
 using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
+using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
 
@@ -27,11 +28,13 @@ namespace Elsa.Samples.Web1.Workflows
             };
 
             // Register triggers.
-            builder.Triggers.Add(new TriggerSource(httpEndpoint));
+            builder.Triggers = new List<ITrigger>
+            {
+                httpEndpoint
+            };
 
             // Setup workflow graph.
             builder.Root = new Sequence(
-                httpEndpoint,
                 new Fork
                 {
                     Branches =

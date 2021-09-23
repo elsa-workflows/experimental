@@ -44,7 +44,7 @@ namespace Elsa.Samples.Console1
 
             var workflowFactory = workflow5;
             var workflowGraph = workflowFactory();
-            var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph, new List<TriggerSource>());
+            var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph);
             var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);
             var workflowState = workflowExecutionResult.WorkflowState;
             var bookmarks = workflowExecutionResult.Bookmarks;

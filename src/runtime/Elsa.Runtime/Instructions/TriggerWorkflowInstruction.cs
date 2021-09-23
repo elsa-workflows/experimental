@@ -27,7 +27,6 @@ namespace Elsa.Runtime.Instructions
         protected override async ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(TriggerWorkflowInstruction instruction, CancellationToken cancellationToken = default)
         {
             var workflowTrigger = instruction.WorkflowTrigger;
-            var trigger = new Trigger(workflowTrigger.Name, workflowTrigger.Hash, workflowTrigger.ActivityId, workflowTrigger.Data);
             var workflowDefinitionId = workflowTrigger.WorkflowDefinitionId;
 
             // Get workflow to execute.
@@ -40,7 +39,7 @@ namespace Elsa.Runtime.Instructions
             }
 
             // Execute workflow.
-            var workflowExecutionResult = await _workflowInvoker.TriggerAsync(workflow, trigger, cancellationToken);
+            var workflowExecutionResult = await _workflowInvoker.InvokeAsync(workflow, cancellationToken);
             
             return new WorkflowInstructionResult(workflow, workflowExecutionResult);
         }

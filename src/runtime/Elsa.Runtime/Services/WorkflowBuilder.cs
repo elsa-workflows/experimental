@@ -8,6 +8,6 @@ namespace Elsa.Runtime.Services
     public class WorkflowBuilder : IWorkflowBuilder
     {
         public IActivity Root { get; set; } = default!;
-        public ICollection<TriggerSource> Triggers { get; } = new List<TriggerSource>();
+        public ICollection<ITrigger> Triggers { get; set; } = new List<ITrigger>();
     }
 }

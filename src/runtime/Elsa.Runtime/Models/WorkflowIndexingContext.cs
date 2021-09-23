@@ -41,11 +41,7 @@ namespace Elsa.Runtime.Models
         {
             if (!Registers.TryGetValue(activity, out var register))
             {
-                var activityNode = FindNodeById(activity.ActivityId);
-                var parentActivityNode = activityNode.Parent;
-                var parentRegister = parentActivityNode != null ? Registers.TryGetValue(parentActivityNode.Activity, out var parent) ? parent : default : default;
-                register = new Register(parentRegister);
-
+                register = new Register();
                 Registers[activity] = register;
             }
 

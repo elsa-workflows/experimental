@@ -9,7 +9,7 @@ namespace Elsa.Models
     {
         private readonly IDictionary<string, RegisterLocation> _locations;
 
-        public Register(Register? parentRegister, IDictionary<string, RegisterLocation>? locations = default)
+        public Register(Register? parentRegister = default, IDictionary<string, RegisterLocation>? locations = default)
         {
             ParentRegister = parentRegister;
             _locations = locations ?? new Dictionary<string, RegisterLocation>();

@@ -53,7 +53,7 @@ namespace Elsa.Runtime.Services
         {
             var graph = _activityWalker.Walk(workflow.Root);
             var context = new WorkflowIndexingContext(workflow, graph, cancellationToken);
-            var triggerSources = workflow.Triggers;
+            var triggerSources = workflow.Triggers ?? Enumerable.Empty<ITrigger>();
 
             foreach (var triggerSource in triggerSources)
             {
@@ -64,9 +64,9 @@ namespace Elsa.Runtime.Services
             }
         }
 
-        private async Task<IEnumerable<WorkflowTrigger>> GetTriggersAsync(WorkflowIndexingContext context, TriggerSource triggerSource, CancellationToken cancellationToken)
+        private async Task<IEnumerable<WorkflowTrigger>> GetTriggersAsync(WorkflowIndexingContext context, ITrigger trigger, CancellationToken cancellationToken)
         {
-            var activity = triggerSource.Activity;
+            var activity = trigger;
             var triggerProvider = _triggerProviders.FirstOrDefault(x => x.GetSupportsActivity(activity));
 
             if (triggerProvider == null)
@@ -96,8 +96,8 @@ namespace Elsa.Runtime.Services
             {
                 Id = Guid.NewGuid().ToString(),
                 WorkflowDefinitionId = context.Workflow.Id,
-                Name = triggerSource.Activity.ActivityType,
-                ActivityId = triggerSource.Activity.ActivityId,
+                Name = trigger.ActivityType,
+                ActivityId = trigger.ActivityId,
                 Hash = _hasher.Hash(x)
             });
 
