@@ -59,7 +59,6 @@ namespace Elsa.Models
         public IActivity? CurrentActivity { get; set; }
 
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
-        public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
 
         public void Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
         {
@@ -83,7 +82,6 @@ namespace Elsa.Models
         public Node FindNodeById(string nodeId) => NodeIdLookup[nodeId];
         public Node FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
-        public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
 
@@ -103,5 +101,7 @@ namespace Elsa.Models
         }
 
         public void RemoveRegister(IActivity activity) => Registers.Remove(activity);
+
+        public void RegisterBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
     }
 }

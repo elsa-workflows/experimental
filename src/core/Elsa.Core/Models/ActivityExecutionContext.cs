@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using Elsa.Contracts;
 
@@ -7,19 +8,19 @@ namespace Elsa.Models
 {
     public class ActivityExecutionContext
     {
+        private readonly List<Bookmark> _bookmarks = new();
+        
         public ActivityExecutionContext(
             WorkflowExecutionContext workflowExecutionContext,
             ExpressionExecutionContext expressionExecutionContext,
             ActivityExecutionContext? parentActivityExecutionContext,
             ScheduledActivity scheduledActivity,
-            ExecuteActivityDelegate? executeDelegate,
             CancellationToken cancellationToken)
         {
             WorkflowExecutionContext = workflowExecutionContext;
             ExpressionExecutionContext = expressionExecutionContext;
             ParentActivityExecutionContext = parentActivityExecutionContext;
             ScheduledActivity = scheduledActivity;
-            ExecuteDelegate = executeDelegate;
             CancellationToken = cancellationToken;
         }
 
@@ -27,12 +28,12 @@ namespace Elsa.Models
         public ExpressionExecutionContext ExpressionExecutionContext { get; }
         public ActivityExecutionContext? ParentActivityExecutionContext { get; set; }
         public ScheduledActivity ScheduledActivity { get; set; }
-        public ExecuteActivityDelegate? ExecuteDelegate { get; }
+        public ExecuteActivityDelegate? ExecuteDelegate { get; set; }
         public CancellationToken CancellationToken { get; }
         public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
         public Node Node => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
         public IActivity Activity => ScheduledActivity.Activity;
-        public IEnumerable<Bookmark> Bookmarks => WorkflowExecutionContext.Bookmarks;
+        public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public Register Register => ExpressionExecutionContext.Register;
 
         public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, Activity, completionCallback);
@@ -52,8 +53,8 @@ namespace Elsa.Models
             return default;
         }
 
-        public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => WorkflowExecutionContext.SetBookmarks(bookmarks);
-        public void SetBookmark(Bookmark bookmark) => WorkflowExecutionContext.SetBookmark(bookmark);
+        public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
+        public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
 
         public void SetBookmark(string? hash, IDictionary<string, object?>? data = default, ExecuteActivityDelegate? callback = default) =>
             SetBookmark(new Bookmark(

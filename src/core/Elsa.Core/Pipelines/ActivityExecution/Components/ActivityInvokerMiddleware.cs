@@ -12,7 +12,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
     {
         public static IActivityExecutionBuilder UseActivityDrivers(this IActivityExecutionBuilder builder) => builder.UseMiddleware<ActivityInvokerMiddleware>();
     }
-    
+
     public class ActivityInvokerMiddleware : IActivityExecutionMiddleware
     {
         private readonly ActivityMiddlewareDelegate _next;
@@ -40,7 +40,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
             // Exit if any bookmarks were created.
             if (context.Bookmarks.Any())
+            {
+                // Store bookmarks.
+                context.WorkflowExecutionContext.RegisterBookmarks(context.Bookmarks);
                 return;
+            }
 
             // Complete parent chain.
             await CompleteParentsAsync(context);
@@ -73,20 +77,20 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 var scheduledNodes = context.WorkflowExecutionContext.Scheduler.List().Select(x => context.WorkflowExecutionContext.FindNodeByActivity(x.Activity)).ToList();
                 var hasScheduledChildren = scheduledNodes.Any(x => x.Parent?.Activity == activity);
                 var parentContext = currentChildContext.ParentActivityExecutionContext;
-                
+
                 if (!hasScheduledChildren)
                 {
                     // Notify the parent activity about the child's completion.
                     var parentNode = currentParent;
-                 
+
                     // If the activity implements IContainer, notify one of its child activities completed.
-                    if (parentNode.Activity is IContainer container && currentChildContext.Node.Parent == currentParent) 
+                    if (parentNode.Activity is IContainer container && currentChildContext.Node.Parent == currentParent)
                         await container.CompleteChildAsync(currentChildContext, parentNode.Activity);
-                    
+
                     // Invoke any completion callback.
                     var completionCallback = currentChildContext.WorkflowExecutionContext.PopCompletionCallback(parentNode.Activity);
 
-                    if (completionCallback != null) 
+                    if (completionCallback != null)
                         await completionCallback.Invoke(currentChildContext, parentContext);
 
                     // Handle activity completion.
@@ -101,7 +105,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 currentParent = currentParent.Parent;
             }
         }
-        
+
         private static void CompleteActivity(ActivityExecutionContext context) => context.Cleanup();
     }
 }

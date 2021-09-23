@@ -11,7 +11,7 @@ namespace Elsa.Services
 {
     public class WorkflowInvoker : IWorkflowInvoker
     {
-        private static ValueTask Noop(ActivityExecutionContext context) => new();
+        public static ValueTask Noop(ActivityExecutionContext context) => new();
 
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IActivityWalker _activityWalker;
@@ -45,13 +45,10 @@ namespace Elsa.Services
             var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, default, bookmark, default, cancellationToken);
 
             // Construct bookmark.
-            //var activityDriverActivator = workflowExecutionContext.GetRequiredService<IActivityDriverActivator>();
             var bookmarkedActivity = workflowExecutionContext.FindActivityById(bookmark.ActivityId);
-            //var bookmarkedActivityDriver = activityDriverActivator.ActivateDriver(bookmarkedActivity);
             var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : default;
 
             // Schedule the activity to resume.
-            //workflowExecutionContext.ActivityExecutionContexts.Pop();
             workflowExecutionContext.Scheduler.Push(new ScheduledActivity(bookmarkedActivity));
 
             // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.

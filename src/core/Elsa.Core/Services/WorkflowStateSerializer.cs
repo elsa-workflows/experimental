@@ -173,11 +173,9 @@ namespace Elsa.Services
                 from activityExecutionContextState in activityExecutionContextStates
                 let activity = workflowExecutionContext.FindActivityById(activityExecutionContextState.ScheduledActivityId)
                 let scheduledActivity = new ScheduledActivity(activity)
-                let executeDelegateMethodName = activityExecutionContextState.ExecuteDelegateMethodName
-                let executeDelegate = executeDelegateMethodName != null ? activity.GetResumeActivityDelegate(executeDelegateMethodName) : default
                 let register = workflowExecutionContext.GetOrCreateRegister(activity)
                 let expressionExecutionContext = new ExpressionExecutionContext(register)
-                let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, null, scheduledActivity, executeDelegate, workflowExecutionContext.CancellationToken)
+                let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, null, scheduledActivity, workflowExecutionContext.CancellationToken)
                 select (activityExecutionContextState, activityExecutionContext);
 
             var tuples = tuplesQuery.ToList();

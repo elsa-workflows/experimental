@@ -37,11 +37,14 @@ namespace Elsa.Services
                 var currentActivityExecutionContext = workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Activity == workflowExecutionContext.CurrentActivity);
 
                 // Setup an activity execution context.
-                activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, currentActivityExecutionContext, new ScheduledActivity(activity), executeActivityDelegate, cancellationToken);
+                activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, currentActivityExecutionContext, new ScheduledActivity(activity), cancellationToken);
+                
+                // Push the activity context into the workflow context.
+                workflowExecutionContext.ActivityExecutionContexts.Add(activityExecutionContext);
             }
-
-            // Push the activity context into the workflow context.
-            workflowExecutionContext.ActivityExecutionContexts.Add(activityExecutionContext);
+            
+            // Apply execution delegate.
+            activityExecutionContext.ExecuteDelegate = executeActivityDelegate;
 
             // Execute the activity execution pipeline.
             await _pipeline.ExecuteAsync(activityExecutionContext);
