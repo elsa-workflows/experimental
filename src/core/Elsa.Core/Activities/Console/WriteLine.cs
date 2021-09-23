@@ -17,7 +17,7 @@ namespace Elsa.Activities.Console
         {
         }
         
-        public WriteLine(Func<ExpressionExecutionContext, string> text) : this(new DelegateReference<string>(text))
+        public WriteLine(Func<ExpressionExecutionContext, string?> text) : this(new DelegateReference<string?>(text))
         {
         }
 

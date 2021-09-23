@@ -6,13 +6,14 @@ using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
 
-namespace Elsa.Services
+namespace Elsa.ActivityNodeResolvers
 {
-    public class CodeActivityPortResolver : IActivityPortResolver
+    public class OutboundActivityNodeResolver : IActivityNodeResolver
     {
+        public int Priority => -1;
         public bool GetSupportsActivity(IActivity activity) => activity is Activity;
 
-        public IEnumerable<IActivity> GetPorts(IActivity activity) =>
+        public IEnumerable<IActivity> GetNodes(IActivity activity) =>
             GetSinglePorts(activity)
                 .Where(x => x != null)
                 .Select(x => x!)

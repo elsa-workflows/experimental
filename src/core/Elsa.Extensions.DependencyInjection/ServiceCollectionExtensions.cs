@@ -1,4 +1,5 @@
 using System;
+using Elsa.ActivityNodeResolvers;
 using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Options;
@@ -37,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
                 .AddSingleton<IWorkflowStateSerializer, WorkflowStateSerializer>()
                 .AddSingleton<IActivitySchedulerFactory, ActivitySchedulerFactory>()
-                .AddSingleton<IActivityPortResolver, CodeActivityPortResolver>()
+                .AddSingleton<IActivityNodeResolver, OutboundActivityNodeResolver>()
                 .AddSingleton<IHasher, Hasher>()
 
                 // Expressions.

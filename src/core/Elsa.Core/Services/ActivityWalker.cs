@@ -7,11 +7,11 @@ namespace Elsa.Services
 {
     public class ActivityWalker : IActivityWalker
     {
-        private readonly IEnumerable<IActivityPortResolver> _portResolvers;
+        private readonly IEnumerable<IActivityNodeResolver> _portResolvers;
 
-        public ActivityWalker(IEnumerable<IActivityPortResolver> portResolvers)
+        public ActivityWalker(IEnumerable<IActivityNodeResolver> portResolvers)
         {
-            _portResolvers = portResolvers;
+            _portResolvers = portResolvers.OrderByDescending(x => x.Priority).ToList();
         }
         
         public ActivityNode Walk(IActivity activity)
@@ -34,7 +34,7 @@ namespace Elsa.Services
             if(resolver == null)
                 return;
 
-            var ports = resolver.GetPorts(pair.Activity);
+            var ports = resolver.GetNodes(pair.Activity);
 
             foreach (var port in ports)
             {
