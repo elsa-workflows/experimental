@@ -5,6 +5,6 @@ namespace Elsa.Contracts
 {
     public interface IContainer : IActivity
     {
-        ValueTask CompleteChildAsync(ActivityExecutionContext childContext, IActivity owner);
+        ValueTask CompleteChildAsync(ActivityExecutionContext context, ActivityExecutionContext childContext);
     }
 }

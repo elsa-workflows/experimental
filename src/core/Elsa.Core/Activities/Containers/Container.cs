@@ -8,7 +8,7 @@ using Elsa.Models;
 
 namespace Elsa.Activities.Containers
 {
-    public abstract class Container<TActivity> : Activity, IContainer where TActivity : IActivity
+    public abstract class Container : Activity, IContainer
     {
         public Container()
         {
@@ -41,17 +41,17 @@ namespace Elsa.Activities.Containers
             ScheduleChildren(context);
         }
 
-        public virtual async ValueTask CompleteChildAsync(ActivityExecutionContext childContext, IActivity owner) => await OnChildCompleteAsync(childContext, (TActivity)owner);
+        public virtual async ValueTask CompleteChildAsync(ActivityExecutionContext context, ActivityExecutionContext childContext) => await OnChildCompleteAsync(context, childContext);
 
         protected abstract void ScheduleChildren(ActivityExecutionContext context);
 
-        protected virtual ValueTask OnChildCompleteAsync(ActivityExecutionContext childContext, TActivity owner)
+        protected virtual ValueTask OnChildCompleteAsync(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
-            OnChildComplete(childContext, owner);
+            OnChildComplete(context, childContext);
             return ValueTask.CompletedTask;
         }
 
-        protected virtual void OnChildComplete(ActivityExecutionContext childContext, TActivity owner)
+        protected virtual void OnChildComplete(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
         }
     }

@@ -139,7 +139,7 @@ namespace Elsa.Services
         {
             var activityExecutionContexts = workflowExecutionContext.ActivityExecutionContexts;
 
-            var tuplesQuery =
+            var activityExecutionContextStates =
                 from activityExecutionContext in activityExecutionContexts
                 let activityExecutionContextState = new ActivityExecutionContextState
                 {
@@ -147,21 +147,8 @@ namespace Elsa.Services
                     Properties = activityExecutionContext.Properties,
                     ExecuteDelegateMethodName = activityExecutionContext.ExecuteDelegate?.Method.Name
                 }
-                select (activityExecutionContext, activityExecutionContextState);
-
-            var tuples = tuplesQuery.ToList();
-
-            foreach (var tuple in tuples)
-            {
-                var activityExecutionContext = tuple.activityExecutionContext;
-                var activityExecutionContextState = tuple.activityExecutionContextState;
-
-                activityExecutionContextState.ParentActivityExecutionContext = activityExecutionContext.ParentActivityExecutionContext != null
-                    ? tuples.First(x => x.activityExecutionContext == activityExecutionContext.ParentActivityExecutionContext).activityExecutionContextState
-                    : default;
-            }
-
-            var activityExecutionContextStates = tuples.Select(x => x.activityExecutionContextState).ToList();
+                select activityExecutionContextState;
+            
             state.ActivityExecutionContexts = new Stack<ActivityExecutionContextState>(activityExecutionContextStates);
         }
 
@@ -169,28 +156,15 @@ namespace Elsa.Services
         {
             var activityExecutionContextStates = state.ActivityExecutionContexts;
 
-            var tuplesQuery =
+            var activityExecutionContexts =
                 from activityExecutionContextState in activityExecutionContextStates
                 let activity = workflowExecutionContext.FindActivityById(activityExecutionContextState.ScheduledActivityId)
                 let scheduledActivity = new ScheduledActivity(activity)
                 let register = workflowExecutionContext.GetOrCreateRegister(activity)
                 let expressionExecutionContext = new ExpressionExecutionContext(register)
-                let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, null, scheduledActivity, workflowExecutionContext.CancellationToken)
-                select (activityExecutionContextState, activityExecutionContext);
+                let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, scheduledActivity, workflowExecutionContext.CancellationToken)
+                select activityExecutionContext;
 
-            var tuples = tuplesQuery.ToList();
-
-            foreach (var tuple in tuples)
-            {
-                var activityExecutionContext = tuple.activityExecutionContext;
-                var activityExecutionContextState = tuple.activityExecutionContextState;
-
-                activityExecutionContext.ParentActivityExecutionContext = activityExecutionContextState.ParentActivityExecutionContext != null
-                    ? tuples.First(x => x.activityExecutionContextState == activityExecutionContextState.ParentActivityExecutionContext).activityExecutionContext
-                    : default;
-            }
-
-            var activityExecutionContexts = tuples.Select(x => x.activityExecutionContext);
             workflowExecutionContext.ActivityExecutionContexts = new List<ActivityExecutionContext>(activityExecutionContexts);
         }
 

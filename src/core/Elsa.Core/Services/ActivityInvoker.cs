@@ -33,11 +33,8 @@ namespace Elsa.Services
 
             if (activityExecutionContext == null)
             {
-                // Get a reference to the current activity execution context to use as the parent.
-                var currentActivityExecutionContext = workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Activity == workflowExecutionContext.CurrentActivity);
-
                 // Setup an activity execution context.
-                activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, currentActivityExecutionContext, new ScheduledActivity(activity), cancellationToken);
+                activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, new ScheduledActivity(activity), cancellationToken);
                 
                 // Push the activity context into the workflow context.
                 workflowExecutionContext.ActivityExecutionContexts.Add(activityExecutionContext);

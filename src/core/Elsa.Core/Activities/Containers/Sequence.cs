@@ -5,7 +5,7 @@ using Elsa.Services;
 
 namespace Elsa.Activities.Containers
 {
-    public class Sequence : Container<Sequence>
+    public class Sequence : Container
     {
         public Sequence()
         {
@@ -25,10 +25,9 @@ namespace Elsa.Activities.Containers
                 context.ScheduleActivity(firstActivity);
         }
         
-        protected override void OnChildComplete(ActivityExecutionContext childContext, Sequence owner)
+        protected override void OnChildComplete(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
-            var sequence = owner;
-            var childActivities = sequence.Activities.ToList();
+            var childActivities = Activities.ToList();
             var completedActivity = childContext.Activity;
             var nextIndex = childActivities.IndexOf(completedActivity) + 1;
 

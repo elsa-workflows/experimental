@@ -10,6 +10,7 @@ using Elsa.Runtime.Contracts;
 namespace Elsa.Samples.Web1.Workflows
 {
     using HttpMethods = Microsoft.AspNetCore.Http.HttpMethods;
+    using HttpResponse = Elsa.Activities.Http.HttpResponse;
 
     public class HttpWorkflow : IWorkflow
     {
@@ -18,10 +19,13 @@ namespace Elsa.Samples.Web1.Workflows
 
         public void Build(IWorkflowBuilder builder)
         {
+            // Variables.
+            var pathVariable = new Variable<string>("/hello-world");
+
             // Create triggers.
             var httpEndpoint = new HttpEndpoint
             {
-                Path = new Input<string>("/hello-world"),
+                Path = new Input<string>(pathVariable),
                 SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Get })
             };
 
@@ -29,27 +33,33 @@ namespace Elsa.Samples.Web1.Workflows
             builder.Triggers.Add(new TriggerSource(httpEndpoint));
 
             // Setup workflow graph.
-            builder.Root = new Sequence(
-                httpEndpoint,
-                new If
+            builder.Root = new Sequence
+            {
+                Variables = { pathVariable },
+                Activities =
                 {
-                    Condition = new Input<bool>(true),
-                    Then = new Sequence(
-                        new WriteLine("It's true!"),
-                        new HttpEndpoint
-                        {
-                            Path = new Input<string>("/hello-world/true"),
-                            SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Post })
-                        },
-                        new WriteLine("Let's continue")
-                    ),
-                    Else = new WriteLine("It's not true!")
-                },
-                new Elsa.Activities.Http.HttpResponse
-                {
-                    StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
-                    Content = new Input<string?>("Hello World!")
-                });
+                    httpEndpoint,
+                    new If
+                    {
+                        Condition = new Input<bool>(true),
+                        Then = new Sequence(
+                            new WriteLine("It's true!"),
+                            new HttpEndpoint
+                            {
+                                Path = new Input<string>("/hello-world/true"),
+                                SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Post })
+                            },
+                            new WriteLine("Let's continue")
+                        ),
+                        Else = new WriteLine("It's not true!")
+                    },
+                    new HttpResponse
+                    {
+                        StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
+                        Content = new Input<string?>("Hello World!")
+                    }
+                }
+            };
         }
     }
 }

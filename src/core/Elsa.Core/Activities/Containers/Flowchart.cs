@@ -6,7 +6,7 @@ namespace Elsa.Activities.Containers
 {
     public record Connection(IActivity Source, IActivity Target);
     
-    public class Flowchart : Container<Flowchart>
+    public class Flowchart : Container
     {
         public ICollection<Connection> Connections { get; set; } = new List<Connection>();
         

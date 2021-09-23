@@ -13,20 +13,20 @@ namespace Elsa.Models
         public ActivityExecutionContext(
             WorkflowExecutionContext workflowExecutionContext,
             ExpressionExecutionContext expressionExecutionContext,
-            ActivityExecutionContext? parentActivityExecutionContext,
+            //ActivityExecutionContext? parentActivityExecutionContext,
             ScheduledActivity scheduledActivity,
             CancellationToken cancellationToken)
         {
             WorkflowExecutionContext = workflowExecutionContext;
             ExpressionExecutionContext = expressionExecutionContext;
-            ParentActivityExecutionContext = parentActivityExecutionContext;
+            //ParentActivityExecutionContext = parentActivityExecutionContext;
             ScheduledActivity = scheduledActivity;
             CancellationToken = cancellationToken;
         }
 
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
         public ExpressionExecutionContext ExpressionExecutionContext { get; }
-        public ActivityExecutionContext? ParentActivityExecutionContext { get; set; }
+        //public ActivityExecutionContext? ParentActivityExecutionContext { get; set; }
         public ScheduledActivity ScheduledActivity { get; set; }
         public ExecuteActivityDelegate? ExecuteDelegate { get; set; }
         public CancellationToken CancellationToken { get; }

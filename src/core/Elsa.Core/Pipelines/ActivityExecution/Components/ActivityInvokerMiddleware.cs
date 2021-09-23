@@ -43,9 +43,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             {
                 // Store bookmarks.
                 context.WorkflowExecutionContext.RegisterBookmarks(context.Bookmarks);
+                
+                // Block current path of execution.
                 return;
             }
-
+            
             // Complete parent chain.
             await CompleteParentsAsync(context);
         }
@@ -67,42 +69,50 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
         private static async Task CompleteParentsAsync(ActivityExecutionContext context)
         {
+            var workflowExecutionContext = context.WorkflowExecutionContext;
             var activity = context.Activity;
             var node = context.WorkflowExecutionContext.FindNodeByActivity(activity);
             var currentParent = node.Parent;
-            var currentChildContext = context;
+            var currentContext = context;
 
-            while (currentParent != null && currentChildContext != null)
+            while (currentParent != null)
             {
-                var scheduledNodes = context.WorkflowExecutionContext.Scheduler.List().Select(x => context.WorkflowExecutionContext.FindNodeByActivity(x.Activity)).ToList();
+                var parentActivity = currentParent.Activity;
+                var scheduledNodes = workflowExecutionContext.Scheduler.List().Select(x => workflowExecutionContext.FindNodeByActivity(x.Activity)).ToList();
                 var hasScheduledChildren = scheduledNodes.Any(x => x.Parent?.Activity == activity);
-                var parentContext = currentChildContext.ParentActivityExecutionContext;
 
+                // Establish context for parent.
+                var parentContext = workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Activity == parentActivity);
+
+                if (parentContext == null)
+                {
+                    var register = workflowExecutionContext.GetOrCreateRegister(activity);
+                    var expressionExecutionContext = new ExpressionExecutionContext(register);
+                    parentContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, currentContext.ScheduledActivity, workflowExecutionContext.CancellationToken);
+                }
+                
                 if (!hasScheduledChildren)
                 {
-                    // Notify the parent activity about the child's completion.
-                    var parentNode = currentParent;
-
-                    // If the activity implements IContainer, notify one of its child activities completed.
-                    if (parentNode.Activity is IContainer container && currentChildContext.Node.Parent == currentParent)
-                        await container.CompleteChildAsync(currentChildContext, parentNode.Activity);
+                    // If the activity implements IContainer, notify that one of its child activities completed.
+                    if (parentActivity is IContainer container)
+                    {
+                        await container.CompleteChildAsync(parentContext, currentContext);
+                    }
 
                     // Invoke any completion callback.
-                    var completionCallback = currentChildContext.WorkflowExecutionContext.PopCompletionCallback(parentNode.Activity);
+                    var completionCallback = workflowExecutionContext.PopCompletionCallback(currentParent.Activity);
 
                     if (completionCallback != null)
-                        await completionCallback.Invoke(currentChildContext, parentContext);
+                        await completionCallback.Invoke(currentContext, currentContext);
 
-                    // Handle activity completion.
-                    CompleteActivity(currentChildContext);
                 }
 
                 // Do not continue completion callbacks of parents while there are scheduled nodes.
-                if (context.WorkflowExecutionContext.Scheduler.HasAny)
+                if (workflowExecutionContext.Scheduler.HasAny)
                     break;
 
-                currentChildContext = parentContext;
                 currentParent = currentParent.Parent;
+                currentContext = parentContext;
             }
         }
 
