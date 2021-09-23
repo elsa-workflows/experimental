@@ -21,7 +21,7 @@ namespace Elsa.Samples.Web1.Workflows
         public void Build(IWorkflowBuilder builder)
         {
             // Create triggers.
-            var httpEndpoint = new HttpEndpoint
+            var httpEndpoint = new HttpTrigger
             {
                 Path = new Input<string>("/fork"),
                 SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Get })
@@ -43,7 +43,7 @@ namespace Elsa.Samples.Web1.Workflows
                         {
                             Activities =
                             {
-                                new HttpEndpoint { Path = new Input<string>("/fork/branch-1"), },
+                                new HttpTrigger { Path = new Input<string>("/fork/branch-1"), },
                                 new WriteLine("Branch 1 continues!")
                             }
                         },
@@ -51,7 +51,7 @@ namespace Elsa.Samples.Web1.Workflows
                         {
                             Activities =
                             {
-                                new HttpEndpoint { Path = new Input<string>("/fork/branch-2"), },
+                                new HttpTrigger { Path = new Input<string>("/fork/branch-2"), },
                                 new WriteLine("Branch 2 continues!")
                             }
                         },

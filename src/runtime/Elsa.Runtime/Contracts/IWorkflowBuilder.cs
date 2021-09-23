@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Elsa.Contracts;
-using Elsa.Models;
 
 namespace Elsa.Runtime.Contracts
 {

@@ -1,13 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using Elsa.Contracts;
 using Elsa.Extensions;
-using Elsa.Models;
 
-namespace Elsa.Runtime.Models
+namespace Elsa.Models
 {
     public class WorkflowIndexingContext
     {
@@ -37,7 +35,7 @@ namespace Elsa.Runtime.Models
         public Node FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
         
-        public Register GetOrCreateRegister(IActivity activity)
+        public Register GetOrCreateRegister(ITrigger activity)
         {
             if (!Registers.TryGetValue(activity, out var register))
             {

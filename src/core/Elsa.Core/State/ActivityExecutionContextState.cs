@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Elsa.Models;
 
 namespace Elsa.State
 {

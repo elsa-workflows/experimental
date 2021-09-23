@@ -21,7 +21,7 @@ namespace Elsa.Samples.Web1.Workflows
         public void Build(IWorkflowBuilder builder)
         {
             // Create triggers.
-            var httpEndpoint = new HttpEndpoint
+            var httpEndpoint = new HttpTrigger
             {
                 Path = new Input<string>("/hello-world"),
                 SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Get })
@@ -43,7 +43,7 @@ namespace Elsa.Samples.Web1.Workflows
                         Condition = new Input<bool>(true),
                         Then = new Sequence(
                             new WriteLine("It's true!"),
-                            new HttpEndpoint
+                            new HttpTrigger
                             {
                                 Path = new Input<string>("/hello-world/true"),
                                 SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Post })

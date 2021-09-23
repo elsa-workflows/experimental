@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
-using Elsa.Models;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;

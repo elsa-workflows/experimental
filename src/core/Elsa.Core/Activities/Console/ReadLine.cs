@@ -1,7 +1,6 @@
 using System;
 using Elsa.Attributes;
 using Elsa.Models;
-using Elsa.Services;
 
 namespace Elsa.Activities.Console
 {

@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Activities.Http
 {
-    public class HttpEndpointMiddleware
+    public class HttpTriggerMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IHasher _hasher;
 
-        public HttpEndpointMiddleware(RequestDelegate next, IHasher hasher)
+        public HttpTriggerMiddleware(RequestDelegate next, IHasher hasher)
         {
             _next = next;
             _hasher = hasher;
@@ -26,7 +26,7 @@ namespace Elsa.Activities.Http
             var method = httpContext.Request.Method!.ToLowerInvariant();
             var abortToken = httpContext.RequestAborted;
             var hash = _hasher.Hash((path.ToLowerInvariant(), method.ToLowerInvariant()));
-            var activityTypeName = nameof(HttpEndpoint);
+            var activityTypeName = nameof(HttpTrigger);
             var stimulus = Stimuli.Standard(activityTypeName, hash);
             var instructions = await stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, abortToken);
             var executionResults = (await instructionExecutor.ExecuteInstructionsAsync(instructions, CancellationToken.None)).ToList();

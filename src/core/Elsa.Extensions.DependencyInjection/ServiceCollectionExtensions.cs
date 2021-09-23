@@ -1,9 +1,4 @@
 using System;
-using System.Linq;
-using Elsa.Activities.Console;
-using Elsa.Activities.Containers;
-using Elsa.Activities.ControlFlow;
-using Elsa.Activities.Primitives;
 using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Options;
@@ -97,8 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
-
-        public static IServiceCollection AddTriggerProvider<T>(this IServiceCollection services) where T : class, ITriggerProvider => services.AddSingleton<ITriggerProvider, T>();
+        
         public static IServiceCollection AddWorkflowProvider<T>(this IServiceCollection services) where T : class, IWorkflowProvider => services.AddSingleton<IWorkflowProvider, T>();
         public static IServiceCollection AddStimulusHandler<T>(this IServiceCollection services) where T : class, IStimulusHandler => services.AddSingleton<IStimulusHandler, T>();
         public static IServiceCollection AddInstructionHandler<T>(this IServiceCollection services) where T : class, IWorkflowInstructionHandler => services.AddSingleton<IWorkflowInstructionHandler, T>();

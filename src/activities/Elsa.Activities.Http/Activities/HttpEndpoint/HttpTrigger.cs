@@ -5,19 +5,26 @@ using System.Net.Http;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 
 namespace Elsa.Activities.Http
 {
-    public class HttpEndpoint : Activity, ITrigger
+    public class HttpTrigger : Trigger
     {
         [Input] public Input<string> Path { get; set; } = default!;
         [Input] public Input<ICollection<string>> SupportedMethods { get; set; } = new(new[] { HttpMethod.Get.Method });
         [Output] public Output<HttpRequestModel>? Result { get; set; }
+        
+        protected override IEnumerable<object> GetHashInputs(TriggerIndexingContext context)
+        {
+            var httpEndpoint = (HttpTrigger)context.Activity;
+            var path = context.ExpressionExecutionContext.Get(httpEndpoint.Path);
+            var methods = context.ExpressionExecutionContext.Get(httpEndpoint.SupportedMethods);
+            return methods!.Select(x => (path!.ToLowerInvariant(), x.ToLowerInvariant())).Cast<object>().ToArray();
+        }
 
         protected override void Execute(ActivityExecutionContext context)
         {
-            // Create bookmarks.
             var bookmarks = CreateBookmarks(context).ToList();
             context.SetBookmarks(bookmarks);
         }
