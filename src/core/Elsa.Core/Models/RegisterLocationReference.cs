@@ -7,7 +7,7 @@ namespace Elsa.Models
         protected RegisterLocationReference() => Id = Guid.NewGuid().ToString("N");
         protected RegisterLocationReference(string id) => Id = id;
 
-        public string Id { get; }
+        public string Id { get; set; }
 
         public abstract RegisterLocation Declare();
         public object? Get(ExpressionExecutionContext context) => context.Get(this);

@@ -43,11 +43,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             {
                 // Store bookmarks.
                 context.WorkflowExecutionContext.RegisterBookmarks(context.Bookmarks);
-                
+
                 // Block current path of execution.
                 return;
             }
-            
+
             // Complete parent chain.
             await CompleteParentsAsync(context);
         }
@@ -57,12 +57,13 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             var activity = context.Activity;
             var inputs = activity.GetInputs();
             var assignedInputs = inputs.Where(x => x.LocationReference != null!).ToList();
-            var evaluator = context.WorkflowExecutionContext.GetRequiredService<IExpressionEvaluator>();
+            var evaluator = context.GetRequiredService<IExpressionEvaluator>();
+            var expressionExecutionContext = context.ExpressionExecutionContext;
 
             foreach (var input in assignedInputs)
             {
                 var locationReference = input.LocationReference;
-                var value = await evaluator.EvaluateAsync(input.Expression, context.ExpressionExecutionContext);
+                var value = await evaluator.EvaluateAsync(input.Expression, expressionExecutionContext);
                 locationReference.Set(context, value);
             }
         }
@@ -70,52 +71,36 @@ namespace Elsa.Pipelines.ActivityExecution.Components
         private static async Task CompleteParentsAsync(ActivityExecutionContext context)
         {
             var workflowExecutionContext = context.WorkflowExecutionContext;
-            var activity = context.Activity;
-            var node = context.WorkflowExecutionContext.FindNodeByActivity(activity);
-            var currentParent = node.Parent;
             var currentContext = context;
-
-            while (currentParent != null)
+            var currentParentContext = context.ParentActivityExecutionContext;
+        
+            while (currentParentContext != null)
             {
-                var parentActivity = currentParent.Activity;
-                var scheduledNodes = workflowExecutionContext.Scheduler.List().Select(x => workflowExecutionContext.FindNodeByActivity(x.Activity)).ToList();
-                var hasScheduledChildren = scheduledNodes.Any(x => x.Parent?.Activity == activity);
+                var currentParentActivity = currentParentContext.Activity;
+                var scheduledNodes = workflowExecutionContext.Scheduler.List().Select(x => x.Activity.ActivityId).ToList();
+                var descendantNodes = currentParentContext.ActivityNode.Descendants().Select(x => x.Activity.ActivityId).Distinct().ToList();
+                var hasScheduledChildren = scheduledNodes.Intersect(descendantNodes).Any();
+                var hasBookmarkedChildren = workflowExecutionContext.Bookmarks.Select(x => x.ActivityId).Intersect(descendantNodes).Any();
 
-                // Establish context for parent.
-                var parentContext = workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Activity == parentActivity);
-
-                if (parentContext == null)
+                if (!hasScheduledChildren && !hasBookmarkedChildren)
                 {
-                    var register = workflowExecutionContext.GetOrCreateRegister(activity);
-                    var expressionExecutionContext = new ExpressionExecutionContext(register);
-                    parentContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, currentContext.ScheduledActivity, workflowExecutionContext.CancellationToken);
-                }
-                
-                if (!hasScheduledChildren)
-                {
-                    // If the activity implements IContainer, notify that one of its child activities completed.
-                    if (parentActivity is IContainer container)
-                    {
-                        await container.CompleteChildAsync(parentContext, currentContext);
-                    }
-
-                    // Invoke any completion callback.
-                    var completionCallback = workflowExecutionContext.PopCompletionCallback(currentParent.Activity);
-
+                    // Invoke completion callbacks.
+                    var completionCallback = workflowExecutionContext.PopCompletionCallback(currentParentActivity, currentContext.Activity);
+    
                     if (completionCallback != null)
-                        await completionCallback.Invoke(currentContext, currentContext);
+                        await completionCallback.Invoke(currentParentContext, currentContext);
 
+                    // Remove current activity context from stack.
+                    workflowExecutionContext.PopActivityExecutionContext();
                 }
-
+    
                 // Do not continue completion callbacks of parents while there are scheduled nodes.
                 if (workflowExecutionContext.Scheduler.HasAny)
-                    break;
-
-                currentParent = currentParent.Parent;
-                currentContext = parentContext;
+                    return;
+                
+                currentContext = currentParentContext;
+                currentParentContext = currentContext.ParentActivityExecutionContext;
             }
         }
-
-        private static void CompleteActivity(ActivityExecutionContext context) => context.Cleanup();
     }
 }

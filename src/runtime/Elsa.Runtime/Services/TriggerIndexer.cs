@@ -65,7 +65,7 @@ namespace Elsa.Runtime.Services
             var inputs = trigger.GetInputs();
             var assignedInputs = inputs.Where(x => x.LocationReference != null!).ToList();
             var register = context.GetOrCreateRegister(trigger);
-            var expressionExecutionContext = new ExpressionExecutionContext(register);
+            var expressionExecutionContext = new ExpressionExecutionContext(register, default);
 
             // Evaluate trigger inputs.
             foreach (var input in assignedInputs)

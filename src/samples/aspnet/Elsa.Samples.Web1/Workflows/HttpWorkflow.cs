@@ -11,7 +11,6 @@ using Elsa.Runtime.Contracts;
 namespace Elsa.Samples.Web1.Workflows
 {
     using HttpMethods = Microsoft.AspNetCore.Http.HttpMethods;
-    using HttpResponse = Elsa.Activities.Http.HttpResponse;
 
     public class HttpWorkflow : IWorkflow
     {
@@ -52,7 +51,7 @@ namespace Elsa.Samples.Web1.Workflows
                         ),
                         Else = new WriteLine("It's not true!")
                     },
-                    new HttpResponse
+                    new WriteHttpResponse
                     {
                         StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
                         Content = new Input<string?>("Hello World!")

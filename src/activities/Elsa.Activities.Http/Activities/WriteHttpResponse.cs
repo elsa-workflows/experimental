@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Activities.Http
 {
-    public class HttpResponse : Activity
+    public class WriteHttpResponse : Activity
     {
         public Input<HttpStatusCode> StatusCode { get; set; } = new(HttpStatusCode.OK);
         public Input<string?> Content { get; set; } = new("");

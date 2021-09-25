@@ -31,7 +31,7 @@ namespace Elsa.Activities.ControlFlow
             if (iterateNode == null)
                 return;
 
-            context.Register.Declare(CurrentValue);
+            context.ExpressionExecutionContext.Register.Declare(CurrentValue);
             HandleIteration(context);
         }
         

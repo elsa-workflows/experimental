@@ -25,15 +25,14 @@ namespace Elsa.Models
 
     public class Variable<T> : Variable
     {
-        public Variable()
+        public Variable() : base(default(T))
         {
         }
 
-        public Variable(T value) : base(value!)
+        public Variable(T value) : base(value ?? default)
         {
         }
-
-        public new T? Get(ActivityExecutionContext context) => (T?)base.Get(context);
+        
         public new T? Get(ExpressionExecutionContext context) => (T?)base.Get(context);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Contracts;
@@ -39,23 +40,26 @@ namespace Elsa.Samples.Console1
             var workflow7 = new Func<IActivity>(ForkedWorkflow.Create);
             var workflow8 = new Func<IActivity>(CustomizedActivityWorkflow.Create);
             var workflow9 = new Func<IActivity>(VariablesWorkflow.Create);
+            var workflow10 = new Func<IActivity>(WhileWorkflow.Create);
 
-            var workflowFactory = workflow9;
+            var workflowFactory = workflow10;
             var workflowGraph = workflowFactory();
             var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph);
             var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);
             var workflowState = workflowExecutionResult.WorkflowState;
-            var bookmarks = workflowExecutionResult.Bookmarks;
+            var bookmarks = new List<Bookmark>(workflowExecutionResult.Bookmarks);
 
-            if (bookmarks.Any())
+            while (bookmarks.Any())
             {
                 Console.WriteLine("Press enter to resume workflow.");
                 Console.ReadLine();
 
                 workflow = workflow with { Root = workflowFactory() };
-                foreach (var bookmark in bookmarks)
+                foreach (var bookmark in bookmarks.ToList())
                 {
+                    bookmarks.Remove(bookmark);
                     var resumeResult = await workflowEngine.ResumeAsync(workflow, bookmark, workflowState);
+                    bookmarks.AddRange(resumeResult.Bookmarks);
                 }
             }
         }

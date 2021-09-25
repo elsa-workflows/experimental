@@ -98,7 +98,7 @@ namespace Elsa.Services
             var graph = _activityWalker.Walk(root);
 
             // Assign identities.
-            _identityGraphService.AssignIdentities(root);
+            _identityGraphService.AssignIdentities(graph);
 
             // Create scheduler.
             var scheduler = _schedulerFactory.CreateScheduler();

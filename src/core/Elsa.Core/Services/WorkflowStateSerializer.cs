@@ -28,7 +28,6 @@ namespace Elsa.Services
 
             GetOutput(state, workflowExecutionContext);
             GetCompletionCallbacks(state, workflowExecutionContext);
-            GetRegisters(state, workflowExecutionContext);
             GetActivityExecutionContexts(state, workflowExecutionContext);
 
             return state;
@@ -39,7 +38,6 @@ namespace Elsa.Services
             workflowExecutionContext.Id = state.Id;
             SetOutput(state, workflowExecutionContext);
             SetCompletionCallbacks(state, workflowExecutionContext);
-            SetRegisters(state, workflowExecutionContext);
             SetActivityExecutionContexts(state, workflowExecutionContext);
         }
 
@@ -79,97 +77,73 @@ namespace Elsa.Services
         {
             foreach (var completionCallbackEntry in state.CompletionCallbacks)
             {
-                var nodeId = completionCallbackEntry.Key;
-                var node = workflowExecutionContext.FindNodeById(nodeId);
-                var activity = node.Activity;
-                var callbackName = completionCallbackEntry.Value;
-                var callbackDelegate = activity.GetActivityCompletionCallback(callbackName);
-                workflowExecutionContext.AddCompletionCallback(activity, callbackDelegate);
+                var owner = workflowExecutionContext.FindNodeById(completionCallbackEntry.OwnerId).Activity;
+                var child = workflowExecutionContext.FindNodeById(completionCallbackEntry.ChildId).Activity;
+                var callbackName = completionCallbackEntry.MethodName;
+                var callbackDelegate = owner.GetActivityCompletionCallback(callbackName);
+                workflowExecutionContext.AddCompletionCallback(owner, child, callbackDelegate);
             }
         }
 
         private void GetCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
-            var completionCallbacks = workflowExecutionContext.CompletionCallbacks;
-
-            foreach (var entry in completionCallbacks)
-            {
-                var activity = entry.Key;
-                state.CompletionCallbacks[activity.ActivityId] = entry.Value.Method.Name;
-            }
-        }
-
-        private void GetRegisters(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
-        {
-            var registers = workflowExecutionContext.Registers;
-            var tuples = registers.Select(r => (r.Key, r.Value, new RegisterState(r.Value.Locations.ToDictionary(x => x.Key, x => x.Value)))).ToList();
-
-            foreach (var tuple in tuples)
-            {
-                var activity = tuple.Key;
-                var register = tuple.Value;
-                var registerState = tuple.Item3;
-                var activityId = activity.ActivityId;
-                var parentRegisterState = register.ParentRegister != null ? tuples.First(x => x.Value == register.ParentRegister).Item3 : default;
-
-                registerState.ParentRegister = parentRegisterState;
-                state.Registers[activityId] = registerState;
-            }
-        }
-
-        private void SetRegisters(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
-        {
-            var registerStateDictionary = state.Registers;
-            var tuples = registerStateDictionary.Select(x => (x.Key, x.Value, new Register(null, x.Value.Locations))).ToList();
-
-            foreach (var tuple in tuples)
-            {
-                var activityId = tuple.Key;
-                var activity = workflowExecutionContext.FindActivityById(activityId);
-                var registerState = tuple.Value;
-                var register = tuple.Item3;
-                var parentRegister = registerState.ParentRegister != null ? tuples.First(x => x.Value == registerState.ParentRegister).Item3 : default;
-
-                register.ParentRegister = parentRegister;
-                workflowExecutionContext.Registers[activity] = register;
-            }
+            var completionCallbacks = workflowExecutionContext.CompletionCallbacks.Select(x => new CompletionCallbackState(x.Owner.ActivityId, x.Child.ActivityId, x.CompletionCallback.Method.Name));
+            state.CompletionCallbacks = completionCallbacks.ToList();
         }
 
         private void GetActivityExecutionContexts(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
-            var activityExecutionContexts = workflowExecutionContext.ActivityExecutionContexts;
-
-            var activityExecutionContextStates =
-                from activityExecutionContext in activityExecutionContexts
-                let activityExecutionContextState = new ActivityExecutionContextState
+            ActivityExecutionContextState CreateActivityExecutionContextState(ActivityExecutionContext activityExecutionContext)
+            {
+                var registerState = new RegisterState(activityExecutionContext.ExpressionExecutionContext.Register.Locations);
+                var activityExecutionContextState = new ActivityExecutionContextState
                 {
                     ScheduledActivityId = activityExecutionContext.ScheduledActivity.Activity.ActivityId,
                     Properties = activityExecutionContext.Properties,
-                    ExecuteDelegateMethodName = activityExecutionContext.ExecuteDelegate?.Method.Name
-                }
-                select activityExecutionContextState;
+                    ExecuteDelegateMethodName = activityExecutionContext.ExecuteDelegate?.Method.Name,
+                    Register = registerState
+                };
+                return activityExecutionContextState;
+            }
 
-            state.ActivityExecutionContexts = new Stack<ActivityExecutionContextState>(activityExecutionContextStates);
+            // Create a tupled list of contexts and states.
+            var tuples = workflowExecutionContext.ActivityExecutionContexts.Reverse().Select(x => (x, CreateActivityExecutionContextState(x))).ToList();
+
+            // Construct hierarchy.
+            foreach (var tuple in tuples) 
+                tuple.Item2.ParentActivityExecutionContext = tuples.FirstOrDefault(x => tuple.x.ParentActivityExecutionContext == x.x).Item2;
+
+            state.ActivityExecutionContexts = tuples.Select(x => x.Item2).ToList();
         }
 
         private void SetActivityExecutionContexts(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
-            var activityExecutionContextStates = state.ActivityExecutionContexts;
-
-            var activityExecutionContexts =
-                from activityExecutionContextState in activityExecutionContextStates
-                let activity = workflowExecutionContext.FindActivityById(activityExecutionContextState.ScheduledActivityId)
-                let scheduledActivity = new ScheduledActivity(activity)
-                let register = workflowExecutionContext.GetOrCreateRegister(activity)
-                let expressionExecutionContext = new ExpressionExecutionContext(register)
-                let properties = activityExecutionContextState.Properties
-                let activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, expressionExecutionContext, scheduledActivity, workflowExecutionContext.CancellationToken)
+            ActivityExecutionContext CreateActivityExecutionContext(ActivityExecutionContextState activityExecutionContextState)
+            {
+                var activity = workflowExecutionContext.FindActivityById(activityExecutionContextState.ScheduledActivityId);
+                var scheduledActivity = new ScheduledActivity(activity);
+                var register = new Register(activityExecutionContextState.Register.Locations);
+                var expressionExecutionContext = new ExpressionExecutionContext(register, default);
+                var properties = activityExecutionContextState.Properties;
+                var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, default, expressionExecutionContext, scheduledActivity, workflowExecutionContext.CancellationToken)
                 {
                     Properties = properties
-                }
-                select activityExecutionContext;
+                };
+                return activityExecutionContext;
+            }
 
-            workflowExecutionContext.ActivityExecutionContexts = new List<ActivityExecutionContext>(activityExecutionContexts);
+            // Create a tupled list of states and contexts.
+            var tuples = state.ActivityExecutionContexts.Select(x => (x, CreateActivityExecutionContext(x))).ToList();
+
+            // Reconstruct hierarchy.
+            foreach (var tuple in tuples)
+            {
+                var activityExecutionContext = tuple.Item2;
+                activityExecutionContext.ParentActivityExecutionContext = tuples.FirstOrDefault(x => tuple.x.ParentActivityExecutionContext == x.x).Item2;
+                activityExecutionContext.ExpressionExecutionContext.ParentContext = activityExecutionContext.ParentActivityExecutionContext?.ExpressionExecutionContext;
+            }
+
+            workflowExecutionContext.ActivityExecutionContexts = new Stack<ActivityExecutionContext>(tuples.Select(x => x.Item2));
         }
 
         private IDictionary<string, object?> GetOutputFrom(ActivityNode activityNode) =>

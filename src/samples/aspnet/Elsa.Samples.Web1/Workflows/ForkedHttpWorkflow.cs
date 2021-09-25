@@ -7,12 +7,10 @@ using Elsa.Activities.Http;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
+using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Samples.Web1.Workflows
 {
-    using HttpMethods = Microsoft.AspNetCore.Http.HttpMethods;
-    using HttpResponse = Elsa.Activities.Http.HttpResponse;
-
     public class ForkedHttpWorkflow : IWorkflow
     {
         public string Id => nameof(ForkedHttpWorkflow);
@@ -60,7 +58,7 @@ namespace Elsa.Samples.Web1.Workflows
                                 }
                             }
                         },
-                        Next = new HttpResponse
+                        Next = new WriteHttpResponse
                         {
                             StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
                             Content = new Input<string?>("Done!")

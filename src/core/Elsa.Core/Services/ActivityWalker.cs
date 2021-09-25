@@ -13,35 +13,44 @@ namespace Elsa.Services
         {
             _portResolvers = portResolvers.OrderByDescending(x => x.Priority).ToList();
         }
-        
+
         public ActivityNode Walk(IActivity activity)
         {
             var collectedActivities = new HashSet<IActivity>(new[] { activity });
             var graph = new ActivityNode(activity);
-            WalkRecursive((graph, activity), collectedActivities);
+            var collectedNodes = new HashSet<ActivityNode>(new[] { graph });
+            WalkRecursive((graph, activity), collectedActivities, collectedNodes);
             return graph;
         }
-        
-        private void WalkRecursive((ActivityNode Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities)
+
+        private void WalkRecursive((ActivityNode Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities, HashSet<ActivityNode> collectedNodes)
         {
-            WalkPortsRecursive(pair, collectedActivities);
+            WalkPortsRecursive(pair, collectedActivities, collectedNodes);
         }
 
-        private void WalkPortsRecursive((ActivityNode Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities)
+        private void WalkPortsRecursive((ActivityNode Node, IActivity Activity) pair, HashSet<IActivity> collectedActivities, HashSet<ActivityNode> collectedNodes)
         {
             var resolver = _portResolvers.FirstOrDefault(x => x.GetSupportsActivity(pair.Activity));
-            
-            if(resolver == null)
+
+            if (resolver == null)
                 return;
 
             var ports = resolver.GetNodes(pair.Activity);
 
             foreach (var port in ports)
             {
-                var childNode = new ActivityNode(port, pair.Node);
+                var childNode = collectedNodes.FirstOrDefault(x => x.Activity == port);
+
+                if (childNode == null)
+                {
+                    childNode = new ActivityNode(port);
+                    childNode.Parents.Add(pair.Node);
+                    collectedNodes.Add(childNode);
+                }
+
                 collectedActivities.Add(port);
                 pair.Node.Children.Add(childNode);
-                WalkRecursive((childNode, port), collectedActivities);
+                WalkRecursive((childNode, port), collectedActivities, collectedNodes);
             }
         }
     }

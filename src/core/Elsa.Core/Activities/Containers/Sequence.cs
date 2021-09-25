@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
 
@@ -21,20 +22,22 @@ namespace Elsa.Activities.Containers
             var firstActivity = childActivities.FirstOrDefault();
 
             if (firstActivity != null)
-                context.ScheduleActivity(firstActivity);
+                context.ScheduleActivity(firstActivity, OnChildCompleted);
         }
-        
-        protected override void OnChildComplete(ActivityExecutionContext context, ActivityExecutionContext childContext)
+
+        private ValueTask OnChildCompleted(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
             var childActivities = Activities.ToList();
             var completedActivity = childContext.Activity;
             var nextIndex = childActivities.IndexOf(completedActivity) + 1;
 
-            if (nextIndex >= childActivities.Count) 
-                return;
-            
+            if (nextIndex >= childActivities.Count)
+                return ValueTask.CompletedTask;
+
             var nextActivity = childActivities.ElementAt(nextIndex);
-            childContext.ScheduleActivity(nextActivity);
+            context.ScheduleActivity(nextActivity, OnChildCompleted);
+            
+            return ValueTask.CompletedTask;
         }
     }
 }

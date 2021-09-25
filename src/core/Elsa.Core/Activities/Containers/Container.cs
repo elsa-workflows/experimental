@@ -25,7 +25,7 @@ namespace Elsa.Activities.Containers
         public override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
             // Register variables.
-            context.Register.Declare(Variables);
+            context.ExpressionExecutionContext.Register.Declare(Variables);
 
             // Initialize variables.
             var evaluator = context.WorkflowExecutionContext.GetRequiredService<IExpressionEvaluator>();
@@ -33,26 +33,15 @@ namespace Elsa.Activities.Containers
 
             foreach (var variable in variablesWithDefaultValues)
             {
-                var value = await evaluator.EvaluateAsync(variable.DefaultValue!, context.ExpressionExecutionContext);
-                variable.Set(context, value);
+                var expressionExecutionContext = context.ExpressionExecutionContext;
+                var value = await evaluator.EvaluateAsync(variable.DefaultValue!, expressionExecutionContext);
+                variable.Set(expressionExecutionContext, value);
             }
 
             // Schedule children.
             ScheduleChildren(context);
         }
 
-        public virtual async ValueTask CompleteChildAsync(ActivityExecutionContext context, ActivityExecutionContext childContext) => await OnChildCompleteAsync(context, childContext);
-
         protected abstract void ScheduleChildren(ActivityExecutionContext context);
-
-        protected virtual ValueTask OnChildCompleteAsync(ActivityExecutionContext context, ActivityExecutionContext childContext)
-        {
-            OnChildComplete(context, childContext);
-            return ValueTask.CompletedTask;
-        }
-
-        protected virtual void OnChildComplete(ActivityExecutionContext context, ActivityExecutionContext childContext)
-        {
-        }
     }
 }

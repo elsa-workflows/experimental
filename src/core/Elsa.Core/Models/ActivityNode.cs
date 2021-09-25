@@ -9,21 +9,23 @@ namespace Elsa.Models
         {
             Activity = activity;
         }
-        
-        public ActivityNode(IActivity activity, ActivityNode? parent = default)
-        {
-            Activity = activity;
-            Parent = parent;
-        }
 
         public string NodeId => Activity.ActivityId;
         public IActivity Activity { get; }
-        public ActivityNode? Parent { get; }
+        public ICollection<ActivityNode> Parents { get; set; } = new List<ActivityNode>();
         public ICollection<ActivityNode> Children { get; set; } = new List<ActivityNode>();
 
-        public object Descendants()
+        public IEnumerable<ActivityNode> Descendants()
         {
-            throw new System.NotImplementedException();
+            foreach (var child in Children)
+            {
+                yield return child;
+                
+                var descendants = child.Descendants();
+
+                foreach (var descendant in descendants)
+                    yield return descendant;
+            }
         }
     }
 }

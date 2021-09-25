@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -10,21 +9,15 @@ using Elsa.Models;
 
 namespace Elsa.Activities.ControlFlow
 {
-    public enum JoinMode
-    {
-        WaitAny,
-        WaitAll
-    }
-    
     public class Fork : Activity, IContainer
     {
         [Input] public Input<JoinMode> JoinMode { get; set; } = new(ControlFlow.JoinMode.WaitAny);
         [Outbound] public ICollection<IActivity> Branches { get; set; } = new List<IActivity>();
         [Outbound] public IActivity? Next { get; set; }
 
-        protected override void Execute(ActivityExecutionContext context) => context.ScheduleActivities(Branches.Reverse());
+        protected override void Execute(ActivityExecutionContext context) => context.ScheduleActivities(Branches.Reverse(), CompleteChildAsync);
 
-        public ValueTask CompleteChildAsync(ActivityExecutionContext context, ActivityExecutionContext childContext)
+        private ValueTask CompleteChildAsync(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
             OnChildCompleted(context, childContext);
             return ValueTask.CompletedTask;

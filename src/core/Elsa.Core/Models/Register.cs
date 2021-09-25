@@ -7,31 +7,17 @@ namespace Elsa.Models
     /// </summary>
     public class Register
     {
-        private readonly IDictionary<string, RegisterLocation> _locations;
-
-        public Register(Register? parentRegister = default, IDictionary<string, RegisterLocation>? locations = default)
+        public Register(IDictionary<string, RegisterLocation>? locations = default)
         {
-            ParentRegister = parentRegister;
-            _locations = locations ?? new Dictionary<string, RegisterLocation>();
+            Locations = locations ?? new Dictionary<string, RegisterLocation>();
         }
-
-        public Register? ParentRegister { get; set; }
-        public IReadOnlyDictionary<string, RegisterLocation> Locations => (IReadOnlyDictionary<string, RegisterLocation>)_locations;
+        
+        public IDictionary<string, RegisterLocation> Locations { get; }
 
         public bool TryGetLocation(string id, out RegisterLocation location)
         {
-            var current = this;
-
-            while (current != null)
-            {
-                if (current.Locations.TryGetValue(id, out location!))
-                    return true;
-
-                current = current.ParentRegister;
-            }
-
             location = null!;
-            return false;
+            return Locations.TryGetValue(id, out location!);
         }
 
         public void Declare(IEnumerable<RegisterLocationReference> references)
@@ -39,14 +25,14 @@ namespace Elsa.Models
             foreach (var reference in references)
             {
                 var location = reference.Declare();
-                _locations[reference.Id] = location;
+                Locations[reference.Id] = location;
             }
         }
 
         public RegisterLocation Declare(RegisterLocationReference reference)
         {
             var location = reference.Declare();
-            _locations[reference.Id] = location;
+            Locations[reference.Id] = location;
             return location;
         }
     }

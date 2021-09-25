@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
+using System.Threading.Tasks;
 using Elsa.Contracts;
 
 namespace Elsa.Models
@@ -9,32 +10,32 @@ namespace Elsa.Models
     public class ActivityExecutionContext
     {
         private readonly List<Bookmark> _bookmarks = new();
-        
+
         public ActivityExecutionContext(
             WorkflowExecutionContext workflowExecutionContext,
+            ActivityExecutionContext? parentActivityExecutionContext,
             ExpressionExecutionContext expressionExecutionContext,
-            //ActivityExecutionContext? parentActivityExecutionContext,
             ScheduledActivity scheduledActivity,
             CancellationToken cancellationToken)
         {
             WorkflowExecutionContext = workflowExecutionContext;
+            ParentActivityExecutionContext = parentActivityExecutionContext;
             ExpressionExecutionContext = expressionExecutionContext;
-            //ParentActivityExecutionContext = parentActivityExecutionContext;
             ScheduledActivity = scheduledActivity;
             CancellationToken = cancellationToken;
         }
 
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
+        public ActivityExecutionContext? ParentActivityExecutionContext { get; internal set; }
         public ExpressionExecutionContext ExpressionExecutionContext { get; }
-        //public ActivityExecutionContext? ParentActivityExecutionContext { get; set; }
         public ScheduledActivity ScheduledActivity { get; set; }
         public ExecuteActivityDelegate? ExecuteDelegate { get; set; }
         public CancellationToken CancellationToken { get; }
         public IDictionary<string, object?> Properties { get; set; } = new Dictionary<string, object?>();
         public ActivityNode ActivityNode => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
         public IActivity Activity => ScheduledActivity.Activity;
+
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
-        public Register Register => ExpressionExecutionContext.Register;
 
         public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, Activity, completionCallback);
         public void ScheduleActivity(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, owner, completionCallback);
@@ -44,13 +45,6 @@ namespace Elsa.Models
         {
             foreach (var activity in activities)
                 ScheduleActivity(activity, completionCallback);
-        }
-
-        public T? GetVariable<T>(string name) => (T?)GetVariable(name);
-
-        public object? GetVariable(string name)
-        {
-            return default;
         }
 
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
@@ -64,10 +58,10 @@ namespace Elsa.Models
                 ScheduledActivity.Activity.ActivityId,
                 data ?? new Dictionary<string, object?>(),
                 callback?.Method.Name));
-        
+
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
-        
+
         public T UpdateProperty<T>(string key, Func<T?, T> updater)
         {
             var value = GetProperty<T?>(key);
@@ -77,20 +71,21 @@ namespace Elsa.Models
         }
 
         public T GetRequiredService<T>() where T : notnull => WorkflowExecutionContext.GetRequiredService<T>();
-
-        public void Cleanup()
-        {
-            // Delete register.
-            WorkflowExecutionContext.RemoveRegister(Activity);
-            
-            // Pop out of workflow context.
-            WorkflowExecutionContext.ActivityExecutionContexts.Remove(this);
-        }
-
-        public T? Get<T>(Input<T> input) => ExpressionExecutionContext.Get(input);
-        public object Get(RegisterLocationReference locationReference) => ExpressionExecutionContext.GetLocation(locationReference);
-        public T Get<T>(RegisterLocationReference locationReference) => ExpressionExecutionContext.Get<T>(locationReference);
+        public T? Get<T>(Input<T> input) => Get<T>(input.LocationReference);
+        public object Get(RegisterLocationReference locationReference) => GetLocation(locationReference)?.Value ?? throw new InvalidOperationException($"No location found with ID {locationReference.Id}. Did you forget to declare a variable with a container?");
+        public T Get<T>(RegisterLocationReference locationReference) => (T)Get(locationReference);
         public void Set(RegisterLocationReference locationReference, object? value) => ExpressionExecutionContext.Set(locationReference, value);
         public void Set(Output? output, object? value) => ExpressionExecutionContext.Set(output, value);
+        
+        public async Task<T?> EvaluateAsync<T>(Input<T> input)
+        {
+            var evaluator = GetRequiredService<IExpressionEvaluator>();
+            var locationReference = input.LocationReference;
+            var value = await evaluator.EvaluateAsync(input.Expression, ExpressionExecutionContext);
+            locationReference.Set(this, value);
+            return (T?)value;
+        }
+
+        private RegisterLocation? GetLocation(RegisterLocationReference locationReference) => ExpressionExecutionContext.Register.TryGetLocation(locationReference.Id, out var location) ? location : ParentActivityExecutionContext?.GetLocation(locationReference);
     }
 }
