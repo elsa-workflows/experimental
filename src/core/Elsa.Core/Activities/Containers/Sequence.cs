@@ -7,6 +7,8 @@ namespace Elsa.Activities.Containers
 {
     public class Sequence : Container
     {
+        private const string CurrentIndexProperty = "CurrentIndex";
+        
         public Sequence()
         {
         }
@@ -17,26 +19,25 @@ namespace Elsa.Activities.Containers
 
         protected override void ScheduleChildren(ActivityExecutionContext context)
         {
-            // Schedule first child.
-            var childActivities = Activities.ToList();
-            var firstActivity = childActivities.FirstOrDefault();
+            HandleItem(context);
+        }
 
-            if (firstActivity != null)
-                context.ScheduleActivity(firstActivity, OnChildCompleted);
+        private void HandleItem(ActivityExecutionContext context)
+        {
+            var currentIndex = context.GetProperty<int>(CurrentIndexProperty);
+            var childActivities = Activities.ToList();
+            
+            if (currentIndex >= childActivities.Count)
+                return;
+            
+            var nextActivity = childActivities.ElementAt(currentIndex);
+            context.ScheduleActivity(nextActivity, OnChildCompleted);
+            context.UpdateProperty<int>(CurrentIndexProperty, x => x + 1);
         }
 
         private ValueTask OnChildCompleted(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
-            var childActivities = Activities.ToList();
-            var completedActivity = childContext.Activity;
-            var nextIndex = childActivities.IndexOf(completedActivity) + 1;
-
-            if (nextIndex >= childActivities.Count)
-                return ValueTask.CompletedTask;
-
-            var nextActivity = childActivities.ElementAt(nextIndex);
-            context.ScheduleActivity(nextActivity, OnChildCompleted);
-            
+            HandleItem(context);
             return ValueTask.CompletedTask;
         }
     }

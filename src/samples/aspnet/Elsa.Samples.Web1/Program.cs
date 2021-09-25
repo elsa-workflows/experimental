@@ -41,7 +41,12 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
 app.MapGet("/", (Delegate)(() => "Hello World!"));
+
+// Map Elsa API endpoints.
 app.MapWorkflows(workflows => workflows.MapExecute());
+app.MapEvents(events => events.MapTrigger());
+
+// Register Elsa HTTP activity middleware.
 app.UseHttpActivities();
 
 // Run.

@@ -59,7 +59,7 @@ namespace Elsa.Models
                 data ?? new Dictionary<string, object?>(),
                 callback?.Method.Name));
 
-        public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
+        public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default;
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
 
         public T UpdateProperty<T>(string key, Func<T?, T> updater)

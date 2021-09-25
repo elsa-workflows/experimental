@@ -25,9 +25,6 @@ namespace Elsa.Activities.Primitives
 
         private ValueTask Resume(ActivityExecutionContext context)
         {
-            var eventActivity = (Event)context.Activity;
-            //eventActivity.Payload = context.wo
-            
             return ValueTask.CompletedTask;
         }
     }

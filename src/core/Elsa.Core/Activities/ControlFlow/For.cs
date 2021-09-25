@@ -20,13 +20,12 @@ namespace Elsa.Activities.ControlFlow
         [Input] public Input<int> End { get; set; } = new(0);
         [Input] public Input<int> Step { get; set; } = new(1);
         [Input] public Input<ForOperator> Operator { get; set; } = new(ForOperator.LessThanOrEqual);
-        [Outbound] public IActivity? Iterate { get; set; }
-        [Outbound] public IActivity? Next { get; set; }
+        [Outbound] public IActivity? Body { get; set; }
         public Variable<int?> CurrentValue { get; set; } = new();
 
         protected override void Execute(ActivityExecutionContext context)
         {
-            var iterateNode = Iterate;
+            var iterateNode = Body;
 
             if (iterateNode == null)
                 return;
@@ -37,7 +36,7 @@ namespace Elsa.Activities.ControlFlow
         
         private void HandleIteration(ActivityExecutionContext context)
         {
-            var iterateNode = Iterate!;
+            var iterateNode = Body!;
             var end = context.Get(End);
             var currentValue = CurrentValue.Get<int?>(context.ExpressionExecutionContext);
 
@@ -62,11 +61,7 @@ namespace Elsa.Activities.ControlFlow
 
                 // Update loop variable.
                 CurrentValue.Set(context.ExpressionExecutionContext, currentValue);
-                return;
             }
-
-            if (Next != null)
-                context.ScheduleActivity(Next);
         }
 
         private ValueTask OnChildComplete(ActivityExecutionContext completedActivityExecutionContext, ActivityExecutionContext ownerActivityExecutionContext)

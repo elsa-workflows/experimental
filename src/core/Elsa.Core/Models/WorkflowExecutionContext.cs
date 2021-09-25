@@ -30,7 +30,7 @@ namespace Elsa.Models
             Workflow = workflow;
             Graph = graph;
             Id = Guid.NewGuid().ToString("N");
-            _nodes = graph.Flatten().ToList();
+            _nodes = graph.Flatten().Distinct().ToList();
             Scheduler = scheduler;
             Bookmark = bookmark;
             ExecuteDelegate = executeDelegate;

@@ -18,9 +18,8 @@ namespace Elsa.Samples.Console1.Workflows
             {
                 Start = new Input<int>(start),
                 End = new Input<int>(end),
-                Next = new WriteLine("Done."),
                 CurrentValue = currentValue,
-                Iterate = new WriteLine(context => $"Current value: {currentValue.Get<int>(context)}")
+                Body = new WriteLine(context => $"Current value: {currentValue.Get<int>(context)}")
             };
 
             return new Sequence
