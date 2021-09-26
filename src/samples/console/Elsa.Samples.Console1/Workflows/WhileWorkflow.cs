@@ -11,17 +11,8 @@ namespace Elsa.Samples.Console1.Workflows
     {
         public static IActivity Create()
         {
-            var counter = new Variable<int>
-            {
-                Id = "counter",
-                Name = "counter"
-            };
-            
-            var localVariable = new Variable<string>("Foo")
-            {
-                Id = "localVariable",
-                Name = "localVariable"
-            };
+            var counter = new Variable<int>();
+            var localVariable = new Variable<string>("Foo");
 
             return new Sequence
             {

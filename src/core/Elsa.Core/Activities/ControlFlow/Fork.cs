@@ -13,7 +13,6 @@ namespace Elsa.Activities.ControlFlow
     {
         [Input] public Input<JoinMode> JoinMode { get; set; } = new(ControlFlow.JoinMode.WaitAny);
         [Outbound] public ICollection<IActivity> Branches { get; set; } = new List<IActivity>();
-        [Outbound] public IActivity? Next { get; set; }
 
         protected override void Execute(ActivityExecutionContext context) => context.ScheduleActivities(Branches.Reverse(), CompleteChildAsync);
 
@@ -25,14 +24,7 @@ namespace Elsa.Activities.ControlFlow
 
         private void OnChildCompleted(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
-            if (Next == null)
-                return;
-            
             var completedChildActivityId = childContext.Activity.ActivityId;
-            
-            // Ignore Next activity.
-            if(completedChildActivityId == Next.ActivityId)
-                return;
 
             // Append activity to set of completed activities.
             var completedActivityIds = context.UpdateProperty<HashSet<string>>("Completed", set =>
@@ -51,15 +43,14 @@ namespace Elsa.Activities.ControlFlow
                 {
                     // Remove any and all bookmarks from other branches.
                     RemoveBookmarks(context);
-                    context.ScheduleActivity(Next);
                 }
                     break;
                 case ControlFlow.JoinMode.WaitAll:
                 {
                     var allSet = allChildActivityIds.All(x => completedActivityIds.Contains(x));
 
-                    if (allSet)
-                        context.ScheduleActivity(Next);
+                    if (!allSet)
+                        context.PreventContinuation();
                 }
                     break;
             }
@@ -67,11 +58,10 @@ namespace Elsa.Activities.ControlFlow
 
         private void RemoveBookmarks(ActivityExecutionContext context)
         {
-            // Find all descendants for each branch.
+            // Find all descendants for each branch and remove any associated bookmarks.
             var workflowExecutionContext = context.WorkflowExecutionContext;
             var forkNode = context.ActivityNode;
-            var nextNode = forkNode.Children.FirstOrDefault(x => x.Activity == Next);
-            var branchNodes = forkNode.Children.Where(x => x != nextNode).ToList();
+            var branchNodes = forkNode.Children;
             var branchDescendantActivityIds = branchNodes.SelectMany(x => x.Flatten()).Select(x => x.Activity.ActivityId).ToHashSet();
             var bookmarksToRemove = workflowExecutionContext.Bookmarks.Where(x => branchDescendantActivityIds.Contains(x.ActivityId)).ToList();
 

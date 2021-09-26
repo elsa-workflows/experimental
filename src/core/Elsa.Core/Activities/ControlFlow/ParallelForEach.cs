@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -9,6 +10,7 @@ namespace Elsa.Activities.ControlFlow
 {
     public class ParallelForEach<T> : Activity
     {
+        private const string CollectedCountProperty = nameof(CollectedCountProperty);
         [Input] public Input<ICollection<T>> Items { get; set; } = new(Array.Empty<T>());
         [Outbound] public IActivity Body { get; set; } = default!;
         public Variable<T> CurrentValue { get; set; } = new();
@@ -28,8 +30,20 @@ namespace Elsa.Activities.ControlFlow
                 };
             
                 // Schedule a body of work for each item.
-                context.ScheduleActivity(Body, default, localVariable);
+                context.ScheduleActivity(Body, OnChildCompleted, new[]{localVariable});
             }
+        }
+
+        private ValueTask OnChildCompleted(ActivityExecutionContext context, ActivityExecutionContext childContext)
+        {
+            var itemCount = context.Get(Items)!.Count;
+            var collectedCount = context.UpdateProperty<int>(CollectedCountProperty, count => count + 1);
+            
+            // Prevent next sibling from executing while not all scheduled activities have completed.
+            if(collectedCount < itemCount)
+                context.PreventContinuation();
+            
+            return ValueTask.CompletedTask;
         }
     }
 }

@@ -43,8 +43,9 @@ namespace Elsa.Samples.Console1
             var workflow10 = new Func<IActivity>(WhileWorkflow.Create);
             var workflow11 = new Func<IActivity>(ForEachWorkflow.Create);
             var workflow12 = new Func<IActivity>(ParallelForEachWorkflow.Create);
+            var workflow13 = new Func<IActivity>(BlockingParallelForEachWorkflow.Create);
 
-            var workflowFactory = workflow11;
+            var workflowFactory = workflow13;
             var workflowGraph = workflowFactory();
             var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph);
             var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);
@@ -53,12 +54,12 @@ namespace Elsa.Samples.Console1
 
             while (bookmarks.Any())
             {
-                Console.WriteLine("Press enter to resume workflow.");
-                Console.ReadLine();
-
                 workflow = workflow with { Root = workflowFactory() };
                 foreach (var bookmark in bookmarks.ToList())
                 {
+                    Console.WriteLine("Press enter to resume workflow with bookmark {0}.", bookmark);
+                    Console.ReadLine();
+                    
                     bookmarks.Remove(bookmark);
                     var resumeResult = await workflowEngine.ResumeAsync(workflow, bookmark, workflowState);
                     workflowState = resumeResult.WorkflowState;

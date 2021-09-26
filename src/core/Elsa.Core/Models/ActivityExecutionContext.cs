@@ -38,11 +38,11 @@ namespace Elsa.Models
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public bool Continue { get; set; } = true;
 
-        public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default, params RegisterLocationReference[] locationReferences) =>
-            WorkflowExecutionContext.Schedule(activity, this, completionCallback, locationReferences);
+        public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default, IEnumerable<RegisterLocationReference>? locationReferences = default, object? tag = default) =>
+            WorkflowExecutionContext.Schedule(activity, this, completionCallback, locationReferences, tag);
 
-        public void ScheduleActivity(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, params RegisterLocationReference[] locationReferences) =>
-            WorkflowExecutionContext.Schedule(activity, owner, completionCallback, locationReferences);
+        public void ScheduleActivity(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, IEnumerable<RegisterLocationReference>? locationReferences = default, object? tag = default) =>
+            WorkflowExecutionContext.Schedule(activity, owner, completionCallback, locationReferences, tag);
 
         public void ScheduleActivities(params IActivity[] activities) => ScheduleActivities((IEnumerable<IActivity>)activities);
 

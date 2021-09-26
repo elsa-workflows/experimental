@@ -3,6 +3,7 @@ using Elsa.Activities.Containers;
 using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Primitives;
 using Elsa.Contracts;
+using Elsa.Models;
 
 namespace Elsa.Samples.Console1.Workflows
 {
@@ -14,6 +15,7 @@ namespace Elsa.Samples.Console1.Workflows
                 new WriteLine("Forking..."),
                 new Fork
                 {
+                    JoinMode = new Input<JoinMode>(JoinMode.WaitAll),
                     Branches =
                     {
                         new Sequence(

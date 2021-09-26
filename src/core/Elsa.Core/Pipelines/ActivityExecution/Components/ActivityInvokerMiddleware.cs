@@ -81,20 +81,19 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             var workflowExecutionContext = context.WorkflowExecutionContext;
             var currentContext = context;
             var currentParentContext = context.ParentActivityExecutionContext;
-            var @continue = currentContext.Continue;
-
-            // Do not continue if the activity instructed not to.
-            if (!@continue)
-                return;
 
             while (currentParentContext != null)
             {
                 var scheduledNodes = workflowExecutionContext.Scheduler.List().Select(x => x.ActivityId).ToList();
                 var descendantNodes = currentParentContext.ActivityNode.Descendants().Select(x => x.Activity.ActivityId).Distinct().ToList();
                 var hasScheduledChildren = scheduledNodes.Intersect(descendantNodes).Any();
-                var hasBookmarkedChildren = workflowExecutionContext.Bookmarks.Select(x => x.ActivityId).Intersect(descendantNodes).Any();
+                var @continue = currentContext.Continue;
 
-                if (!hasScheduledChildren && !hasBookmarkedChildren)
+                // Do not continue if the activity instructed not to.
+                if (!@continue)
+                    return;
+
+                if (!hasScheduledChildren)
                 {
                     // Invoke completion callbacks.
                     var completionCallback = workflowExecutionContext.PopCompletionCallback(currentParentContext, currentContext.Activity);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Elsa.Contracts;
 using Elsa.Extensions;
 using Elsa.Models;
@@ -13,22 +14,58 @@ namespace Elsa.Services
         {
             _activityWalker = activityWalker;
         }
-        
+
         public void AssignIdentities(IActivity root)
         {
             var graph = _activityWalker.Walk(root);
             AssignIdentities(graph);
         }
-        
+
         public void AssignIdentities(ActivityNode root)
         {
             var identityCounters = new Dictionary<string, int>();
             var list = root.Flatten();
 
             foreach (var node in list)
+            {
                 node.Activity.ActivityId = CreateId(node, identityCounters);
+                AssignInputOutputs(node.Activity);
+                AssignVariables(node.Activity);
+            }
         }
-        
+
+        private void AssignInputOutputs(IActivity activity)
+        {
+            var inputs = activity.GetInputs();
+            var assignedInputs = inputs.Where(x => x.LocationReference != null! && x.LocationReference.Id == null!).ToList();
+            var seed = 0;
+
+            foreach (var input in assignedInputs)
+            {
+                var locationReference = input.LocationReference;
+                locationReference.Id = $"{activity.ActivityId}:input-{++seed}";
+            }
+
+            seed = 0;
+            var outputs = activity.GetOutputs();
+            var assignedOutputs = outputs.Where(x => x.LocationReference != null! && x.LocationReference.Id == null!).ToList();
+
+            foreach (var output in assignedOutputs)
+            {
+                var locationReference = output.LocationReference;
+                locationReference.Id = $"{activity.ActivityId}:output-{++seed}";
+            }
+        }
+
+        private void AssignVariables(IActivity activity)
+        {
+            var variables = activity.GetVariables();
+            var seed = 0;
+
+            foreach (var variable in variables) 
+                variable.Id = variable.Name != null! ? variable.Name : $"{activity.ActivityId}:variable-{++seed}";
+        }
+
         private string CreateId(ActivityNode activityNode, IDictionary<string, int> identityCounters)
         {
             if (!string.IsNullOrWhiteSpace(activityNode.NodeId))

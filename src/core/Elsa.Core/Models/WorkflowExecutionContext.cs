@@ -61,10 +61,10 @@ namespace Elsa.Models
 
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
 
-        public void Schedule(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, params RegisterLocationReference[] locationReferences)
+        public void Schedule(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, IEnumerable<RegisterLocationReference>? locationReferences = default, object? tag = default)
         {
             var activityInvoker = GetRequiredService<IActivityInvoker>();
-            var workItem = new ActivityWorkItem(activity.ActivityId, async () => await activityInvoker.InvokeAsync(this, activity, owner, locationReferences)); 
+            var workItem = new ActivityWorkItem(activity.ActivityId, async () => await activityInvoker.InvokeAsync(this, activity, owner, locationReferences), tag); 
             Scheduler.Push(workItem);
 
             if (completionCallback != null)

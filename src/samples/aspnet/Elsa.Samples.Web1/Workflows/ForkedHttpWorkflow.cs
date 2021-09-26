@@ -58,11 +58,11 @@ namespace Elsa.Samples.Web1.Workflows
                                 }
                             }
                         },
-                        Next = new WriteHttpResponse
-                        {
-                            StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
-                            Content = new Input<string?>("Done!")
-                        }
+                    },
+                    new WriteHttpResponse
+                    {
+                        StatusCode = new Input<HttpStatusCode>(HttpStatusCode.OK),
+                        Content = new Input<string?>("Done!")
                     }
                 }
             };
