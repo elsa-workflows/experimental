@@ -27,7 +27,7 @@ namespace Elsa.Activities.ControlFlow
         private void HandleIteration(ActivityExecutionContext context)
         {
             var currentIndex = context.GetProperty<int>(CurrentIndexProperty);
-            var items = context.Get(Items)!.Reverse().ToList();
+            var items = context.Get(Items)!.ToList();
 
             if (currentIndex >= items.Count)
                 return;

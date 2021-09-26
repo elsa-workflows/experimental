@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Elsa.Pipelines.WorkflowExecution.Components
 {
@@ -13,32 +12,20 @@ namespace Elsa.Pipelines.WorkflowExecution.Components
     public class ActivitySchedulerMiddleware : IWorkflowExecutionMiddleware
     {
         private readonly WorkflowMiddlewareDelegate _next;
-        private readonly ILogger _logger;
-
-        public ActivitySchedulerMiddleware(WorkflowMiddlewareDelegate next, ILogger<ActivitySchedulerMiddleware> logger)
-        {
-            _next = next;
-            _logger = logger;
-        }
+        public ActivitySchedulerMiddleware(WorkflowMiddlewareDelegate next) => _next = next;
 
         public async ValueTask InvokeAsync(WorkflowExecutionContext context)
         {
             var scheduler = context.Scheduler;
-            var executeActivityDelegate = context.ExecuteDelegate;
-            var cancellationToken = context.CancellationToken;
-            var activityInvoker = context.GetRequiredService<IActivityInvoker>();
 
             // As long as there are activities scheduled, keep executing them.
             while (scheduler.HasAny)
             {
-                // Pop next activity for execution.
-                var currentActivity = scheduler.Pop();
+                // Pop next work item for execution.
+                var currentWorkItem = scheduler.Pop();
 
-                // Execute activity.
-                await activityInvoker.InvokeAsync(context, currentActivity.Activity, currentActivity.Owner, currentActivity.LocationReferences, executeActivityDelegate, cancellationToken);
-                
-                // Reset custom activity execution delegate. This is used only once for the initial activity being executed.
-                executeActivityDelegate = null;
+                // Execute work item.
+                await currentWorkItem.Execute();
             }
 
             // Invoke next middleware.

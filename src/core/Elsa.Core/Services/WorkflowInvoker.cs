@@ -48,17 +48,19 @@ namespace Elsa.Services
             // Construct bookmark.
             var bookmarkedActivityContext = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
             var bookmarkedActivity = bookmarkedActivityContext.Activity;
-            var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : default;
+            var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : Noop;
 
             // Schedule the activity to resume.
-            workflowExecutionContext.Scheduler.Push(new ScheduledActivity(bookmarkedActivity));
+            var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
+            var workItem = new ActivityWorkItem(bookmarkedActivity.ActivityId, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
+            workflowExecutionContext.Scheduler.Push(workItem);
 
             // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
-            workflowExecutionContext.ExecuteDelegate = resumeDelegate ?? Noop;
+            workflowExecutionContext.ExecuteDelegate = resumeDelegate;
 
             return await InvokeAsync(workflowExecutionContext);
         }
-        
+
         public async Task<WorkflowExecutionResult> InvokeAsync(Workflow workflow, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
@@ -68,8 +70,9 @@ namespace Elsa.Services
             var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, default, default, default, cancellationToken);
 
             // Schedule the first node.
-            var scheduledActivity = new ScheduledActivity(workflow.Root);
-            workflowExecutionContext.Scheduler.Push(scheduledActivity);
+            var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
+            var workItem = new ActivityWorkItem(workflow.Root.ActivityId, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
+            workflowExecutionContext.Scheduler.Push(workItem);
 
             return await InvokeAsync(workflowExecutionContext);
         }

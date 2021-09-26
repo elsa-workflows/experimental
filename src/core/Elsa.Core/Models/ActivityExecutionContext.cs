@@ -16,13 +16,13 @@ namespace Elsa.Models
             WorkflowExecutionContext workflowExecutionContext,
             ActivityExecutionContext? parentActivityExecutionContext,
             ExpressionExecutionContext expressionExecutionContext,
-            ScheduledActivity scheduledActivity,
+            IActivity activity,
             CancellationToken cancellationToken)
         {
             WorkflowExecutionContext = workflowExecutionContext;
             ParentActivityExecutionContext = parentActivityExecutionContext;
             ExpressionExecutionContext = expressionExecutionContext;
-            ScheduledActivity = scheduledActivity;
+            Activity = activity;
             CancellationToken = cancellationToken;
             Id = Guid.NewGuid().ToString();
         }
@@ -31,21 +31,26 @@ namespace Elsa.Models
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
         public ActivityExecutionContext? ParentActivityExecutionContext { get; internal set; }
         public ExpressionExecutionContext ExpressionExecutionContext { get; }
-        public ScheduledActivity ScheduledActivity { get; set; }
-        public ExecuteActivityDelegate? ExecuteDelegate { get; set; }
+        public IActivity Activity { get; set; }
         public CancellationToken CancellationToken { get; }
         public IDictionary<string, object?> Properties { get; set; } = new Dictionary<string, object?>();
-        public ActivityNode ActivityNode => WorkflowExecutionContext.FindNodeByActivity(ScheduledActivity.Activity);
-        public IActivity Activity => ScheduledActivity.Activity;
+        public ActivityNode ActivityNode => WorkflowExecutionContext.FindNodeByActivity(Activity);
 
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
 
-        public ScheduledActivity ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, Activity, completionCallback);
-        public ScheduledActivity ScheduleActivity(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, owner, completionCallback);
-        public IEnumerable<ScheduledActivity> ScheduleActivities(params IActivity[] activities) => ScheduleActivities((IEnumerable<IActivity>)activities);
+        public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default, params RegisterLocationReference[] locationReferences) =>
+            WorkflowExecutionContext.Schedule(activity, this, completionCallback, locationReferences);
 
-        public IEnumerable<ScheduledActivity> ScheduleActivities(IEnumerable<IActivity> activities, ActivityCompletionCallback? completionCallback = default) => 
-            activities.Select(activity => ScheduleActivity(activity, completionCallback)).ToList(); // IMPORTANT: the projection needs to actually execute, otherwise no activities will be scheduled.
+        public void ScheduleActivity(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, params RegisterLocationReference[] locationReferences) =>
+            WorkflowExecutionContext.Schedule(activity, owner, completionCallback, locationReferences);
+
+        public void ScheduleActivities(params IActivity[] activities) => ScheduleActivities((IEnumerable<IActivity>)activities);
+
+        public void ScheduleActivities(IEnumerable<IActivity> activities, ActivityCompletionCallback? completionCallback = default)
+        {
+            foreach (var activity in activities)
+                ScheduleActivity(activity, completionCallback);
+        }
 
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
         public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);
@@ -53,9 +58,10 @@ namespace Elsa.Models
         public void SetBookmark(string? hash, IDictionary<string, object?>? data = default, ExecuteActivityDelegate? callback = default) =>
             SetBookmark(new Bookmark(
                 Guid.NewGuid().ToString(),
-                ScheduledActivity.Activity.ActivityType,
+                Activity.ActivityType,
                 hash,
-                ScheduledActivity.Activity.ActivityId,
+                Activity.ActivityId,
+                Id,
                 data ?? new Dictionary<string, object?>(),
                 callback?.Method.Name));
 
@@ -72,11 +78,14 @@ namespace Elsa.Models
 
         public T GetRequiredService<T>() where T : notnull => WorkflowExecutionContext.GetRequiredService<T>();
         public T? Get<T>(Input<T> input) => Get<T>(input.LocationReference);
-        public object Get(RegisterLocationReference locationReference) => GetLocation(locationReference)?.Value ?? throw new InvalidOperationException($"No location found with ID {locationReference.Id}. Did you forget to declare a variable with a container?");
+
+        public object Get(RegisterLocationReference locationReference) =>
+            GetLocation(locationReference)?.Value ?? throw new InvalidOperationException($"No location found with ID {locationReference.Id}. Did you forget to declare a variable with a container?");
+
         public T Get<T>(RegisterLocationReference locationReference) => (T)Get(locationReference);
         public void Set(RegisterLocationReference locationReference, object? value) => ExpressionExecutionContext.Set(locationReference, value);
         public void Set(Output? output, object? value) => ExpressionExecutionContext.Set(output, value);
-        
+
         public async Task<T?> EvaluateAsync<T>(Input<T> input)
         {
             var evaluator = GetRequiredService<IExpressionEvaluator>();
@@ -86,6 +95,9 @@ namespace Elsa.Models
             return (T?)value;
         }
 
-        private RegisterLocation? GetLocation(RegisterLocationReference locationReference) => ExpressionExecutionContext.Register.TryGetLocation(locationReference.Id, out var location) ? location : ParentActivityExecutionContext?.GetLocation(locationReference);
+        private RegisterLocation? GetLocation(RegisterLocationReference locationReference) => 
+            ExpressionExecutionContext.Register.TryGetLocation(locationReference.Id, out var location) 
+                ? location 
+                : ParentActivityExecutionContext?.GetLocation(locationReference);
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Models
 {
-    public record ActivityCompletionCallbackEntry(IActivity Owner, IActivity Child, ActivityCompletionCallback CompletionCallback);
+    public record ActivityCompletionCallbackEntry(ActivityExecutionContext Owner, IActivity Child, ActivityCompletionCallback CompletionCallback);
 
     public class WorkflowExecutionContext
     {
@@ -55,24 +55,23 @@ namespace Elsa.Models
         public ICollection<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new List<ActivityExecutionContext>();
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
 
-        public ScheduledActivity Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
+        public void Schedule(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, params RegisterLocationReference[] locationReferences)
         {
-            var scheduledActivity = new ScheduledActivity(activity, owner); 
-            Scheduler.Push(scheduledActivity);
+            var activityInvoker = GetRequiredService<IActivityInvoker>();
+            var workItem = new ActivityWorkItem(activity.ActivityId, async () => await activityInvoker.InvokeAsync(this, activity, owner, locationReferences)); 
+            Scheduler.Push(workItem);
 
             if (completionCallback != null)
                 AddCompletionCallback(owner, activity, completionCallback);
-
-            return scheduledActivity;
         }
 
-        public void AddCompletionCallback(IActivity owner, IActivity child, ActivityCompletionCallback completionCallback)
+        public void AddCompletionCallback(ActivityExecutionContext owner, IActivity child, ActivityCompletionCallback completionCallback)
         {
             var entry = new ActivityCompletionCallbackEntry(owner, child, completionCallback);
             _completionCallbackEntries.Add(entry);
         }
 
-        public ActivityCompletionCallback? PopCompletionCallback(IActivity owner, IActivity child)
+        public ActivityCompletionCallback? PopCompletionCallback(ActivityExecutionContext owner, IActivity child)
         {
             var entry = _completionCallbackEntries.FirstOrDefault(x => x.Owner == owner && x.Child == child);
 

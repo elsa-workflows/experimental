@@ -44,7 +44,7 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
             
             // Get a copy of current bookmarks.
             var existingBookmarks = await _workflowBookmarkStore.FindManyByWorkflowInstanceAsync(workflowInstance.Id, cancellationToken);
-            var bookmarksSnapshot = existingBookmarks.Select(x => new Bookmark(x.Id, x.Name, x.Hash, x.ActivityId, x.Data, x.CallbackMethodName)).ToList();
+            var bookmarksSnapshot = existingBookmarks.Select(x => new Bookmark(x.Id, x.Name, x.Hash, x.ActivityId, x.ActivityInstanceId, x.Data, x.CallbackMethodName)).ToList();
             
             // Exclude the current bookmark that initiated the creation of the workflow context, if any.
             var invokedBookmark = context.Bookmark;
@@ -86,6 +86,7 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
                 Data = x.Data,
                 Name = x.Name,
                 ActivityId = x.ActivityId,
+                ActivityInstanceId = x.ActivityInstanceId,
                 CallbackMethodName = x.CallbackMethodName
             }).ToList();
             

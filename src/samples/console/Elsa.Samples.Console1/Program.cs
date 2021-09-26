@@ -44,7 +44,7 @@ namespace Elsa.Samples.Console1
             var workflow11 = new Func<IActivity>(ForEachWorkflow.Create);
             var workflow12 = new Func<IActivity>(ParallelForEachWorkflow.Create);
 
-            var workflowFactory = workflow12;
+            var workflowFactory = workflow11;
             var workflowGraph = workflowFactory();
             var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph);
             var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);
@@ -61,6 +61,7 @@ namespace Elsa.Samples.Console1
                 {
                     bookmarks.Remove(bookmark);
                     var resumeResult = await workflowEngine.ResumeAsync(workflow, bookmark, workflowState);
+                    workflowState = resumeResult.WorkflowState;
                     bookmarks.AddRange(resumeResult.Bookmarks);
                 }
             }

@@ -32,8 +32,11 @@ namespace Elsa.Pipelines.ActivityExecution.Components
 
             // Execute activity.
             var methodInfo = typeof(IActivity).GetMethod(nameof(IActivity.ExecuteAsync))!;
-            var executeDelegate = context.ExecuteDelegate ?? (ExecuteActivityDelegate)Delegate.CreateDelegate(typeof(ExecuteActivityDelegate), activity, methodInfo);
+            var executeDelegate = context.WorkflowExecutionContext.ExecuteDelegate ?? (ExecuteActivityDelegate)Delegate.CreateDelegate(typeof(ExecuteActivityDelegate), activity, methodInfo);
             await executeDelegate(context);
+            
+            // Reset execute delegate.
+            context.WorkflowExecutionContext.ExecuteDelegate = null;
 
             // Invoke next middleware.
             await _next(context);
@@ -76,8 +79,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
         
             while (currentParentContext != null)
             {
-                var currentParentActivity = currentParentContext.Activity;
-                var scheduledNodes = workflowExecutionContext.Scheduler.List().Select(x => x.Activity.ActivityId).ToList();
+                var scheduledNodes = workflowExecutionContext.Scheduler.List().Select(x => x.ActivityId).ToList();
                 var descendantNodes = currentParentContext.ActivityNode.Descendants().Select(x => x.Activity.ActivityId).Distinct().ToList();
                 var hasScheduledChildren = scheduledNodes.Intersect(descendantNodes).Any();
                 var hasBookmarkedChildren = workflowExecutionContext.Bookmarks.Select(x => x.ActivityId).Intersect(descendantNodes).Any();
@@ -85,7 +87,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                 if (!hasScheduledChildren && !hasBookmarkedChildren)
                 {
                     // Invoke completion callbacks.
-                    var completionCallback = workflowExecutionContext.PopCompletionCallback(currentParentActivity, currentContext.Activity);
+                    var completionCallback = workflowExecutionContext.PopCompletionCallback(currentParentContext, currentContext.Activity);
     
                     if (completionCallback != null)
                         await completionCallback.Invoke(currentParentContext, currentContext);

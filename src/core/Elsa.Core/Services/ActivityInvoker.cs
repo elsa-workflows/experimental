@@ -19,18 +19,18 @@ namespace Elsa.Services
         public async Task InvokeAsync(
             WorkflowExecutionContext workflowExecutionContext,
             IActivity activity,
-            IActivity? ownerActivity,
-            IEnumerable<RegisterLocationReference>? locationReferences = default,
-            ExecuteActivityDelegate? executeActivityDelegate = default,
-            CancellationToken cancellationToken = default)
+            ActivityExecutionContext? owner,
+            IEnumerable<RegisterLocationReference>? locationReferences = default)
         {
+            var cancellationToken = workflowExecutionContext.CancellationToken;
+
             // Get a handle to the parent execution context.
-            var parentActivityExecutionContext = ownerActivity != null ? workflowExecutionContext.ActivityExecutionContexts.First(x => x.Activity == ownerActivity) : default;
+            var parentActivityExecutionContext = owner;
 
             // Setup an activity execution context.
             var register = new Register();
             var expressionExecutionContext = new ExpressionExecutionContext(register, parentActivityExecutionContext?.ExpressionExecutionContext);
-            var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, parentActivityExecutionContext, expressionExecutionContext, new ScheduledActivity(activity, ownerActivity), cancellationToken);
+            var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, parentActivityExecutionContext, expressionExecutionContext, activity, cancellationToken);
 
             // Declare locations.
             if (locationReferences != null)
@@ -39,13 +39,10 @@ namespace Elsa.Services
             // Push the activity context into the workflow context.
             workflowExecutionContext.ActivityExecutionContexts.Add(activityExecutionContext);
 
-            // Apply execution delegate.
-            activityExecutionContext.ExecuteDelegate = executeActivityDelegate;
-
             // Execute the activity execution pipeline.
             await InvokeAsync(activityExecutionContext);
         }
-        
+
         public async Task InvokeAsync(ActivityExecutionContext activityExecutionContext)
         {
             // Execute the activity execution pipeline.

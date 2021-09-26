@@ -37,8 +37,8 @@ namespace Elsa.Services
         {
             workflowExecutionContext.Id = state.Id;
             SetOutput(state, workflowExecutionContext);
-            SetCompletionCallbacks(state, workflowExecutionContext);
             SetActivityExecutionContexts(state, workflowExecutionContext);
+            SetCompletionCallbacks(state, workflowExecutionContext);
         }
 
         private void GetOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
@@ -77,17 +77,17 @@ namespace Elsa.Services
         {
             foreach (var completionCallbackEntry in state.CompletionCallbacks)
             {
-                var owner = workflowExecutionContext.FindNodeById(completionCallbackEntry.OwnerId).Activity;
+                var owner = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == completionCallbackEntry.OwnerId);
                 var child = workflowExecutionContext.FindNodeById(completionCallbackEntry.ChildId).Activity;
                 var callbackName = completionCallbackEntry.MethodName;
-                var callbackDelegate = owner.GetActivityCompletionCallback(callbackName);
+                var callbackDelegate = owner.Activity.GetActivityCompletionCallback(callbackName);
                 workflowExecutionContext.AddCompletionCallback(owner, child, callbackDelegate);
             }
         }
 
         private void GetCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
-            var completionCallbacks = workflowExecutionContext.CompletionCallbacks.Select(x => new CompletionCallbackState(x.Owner.ActivityId, x.Child.ActivityId, x.CompletionCallback.Method.Name));
+            var completionCallbacks = workflowExecutionContext.CompletionCallbacks.Select(x => new CompletionCallbackState(x.Owner.Id, x.Child.ActivityId, x.CompletionCallback.Method.Name));
             state.CompletionCallbacks = completionCallbacks.ToList();
         }
 
@@ -99,10 +99,9 @@ namespace Elsa.Services
                 var activityExecutionContextState = new ActivityExecutionContextState
                 {
                     Id = activityExecutionContext.Id,
-                    ScheduledActivityId = activityExecutionContext.ScheduledActivity.Activity.ActivityId,
-                    OwnerActivityId = activityExecutionContext.ScheduledActivity.Owner?.ActivityId,
+                    ScheduledActivityId = activityExecutionContext.Activity.ActivityId,
+                    OwnerActivityId = activityExecutionContext.ParentActivityExecutionContext?.Activity.ActivityId,
                     Properties = activityExecutionContext.Properties,
-                    ExecuteDelegateMethodName = activityExecutionContext.ExecuteDelegate?.Method.Name,
                     Register = registerState
                 };
                 return activityExecutionContextState;
@@ -123,12 +122,10 @@ namespace Elsa.Services
             ActivityExecutionContext CreateActivityExecutionContext(ActivityExecutionContextState activityExecutionContextState)
             {
                 var activity = workflowExecutionContext.FindActivityById(activityExecutionContextState.ScheduledActivityId);
-                var ownerActivity = activityExecutionContextState.OwnerActivityId != null ? workflowExecutionContext.FindActivityById(activityExecutionContextState.OwnerActivityId) : default;
-                var scheduledActivity = new ScheduledActivity(activity, ownerActivity);
                 var register = new Register(activityExecutionContextState.Register.Locations);
                 var expressionExecutionContext = new ExpressionExecutionContext(register, default);
                 var properties = activityExecutionContextState.Properties;
-                var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, default, expressionExecutionContext, scheduledActivity, workflowExecutionContext.CancellationToken)
+                var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, default, expressionExecutionContext, activity, workflowExecutionContext.CancellationToken)
                 {
                     Id = activityExecutionContextState.Id,
                     Properties = properties

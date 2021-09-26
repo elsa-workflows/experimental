@@ -57,7 +57,7 @@ namespace Elsa.Activities.ControlFlow
 
             if (loop)
             {
-                context.ScheduleActivity(iterateNode, this, OnChildComplete);
+                context.ScheduleActivity(iterateNode, OnChildComplete);
 
                 // Update loop variable.
                 CurrentValue.Set(context.ExpressionExecutionContext, currentValue);
