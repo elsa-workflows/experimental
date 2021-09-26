@@ -22,9 +22,9 @@ builder.Services
     .AddHttpWorkflowServices()
     .ConfigureWorkflowRuntime(options =>
     {
-        // options.Workflows.Add("HelloWorldWorkflow", new HelloWorldWorkflow());
-        // options.Workflows.Add("HttpWorkflow", new HttpWorkflow());
-        //options.Workflows.Add("ForkedHttpWorkflow", new ForkedHttpWorkflow());
+        options.Workflows.Add("HelloWorldWorkflow", new HelloWorldWorkflow());
+        options.Workflows.Add("HttpWorkflow", new HttpWorkflow());
+        options.Workflows.Add("ForkedHttpWorkflow", new ForkedHttpWorkflow());
         options.Workflows.Add(nameof(CompositeActivitiesWorkflow), new CompositeActivitiesWorkflow());
     });
 
