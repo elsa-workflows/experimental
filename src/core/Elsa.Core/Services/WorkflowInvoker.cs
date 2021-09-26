@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
@@ -45,7 +46,8 @@ namespace Elsa.Services
             var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, bookmark, default, cancellationToken);
 
             // Construct bookmark.
-            var bookmarkedActivity = workflowExecutionContext.FindActivityById(bookmark.ActivityId);
+            var bookmarkedActivityContext = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
+            var bookmarkedActivity = bookmarkedActivityContext.Activity;
             var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : default;
 
             // Schedule the activity to resume.

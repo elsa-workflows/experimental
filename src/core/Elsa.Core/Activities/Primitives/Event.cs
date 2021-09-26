@@ -20,12 +20,7 @@ namespace Elsa.Activities.Primitives
         {
             var hasher = context.GetRequiredService<IHasher>();
             var hash = hasher.Hash(EventName);
-            context.SetBookmark(hash, callback: Resume);
-        }
-
-        private ValueTask Resume(ActivityExecutionContext context)
-        {
-            return ValueTask.CompletedTask;
+            context.SetBookmark(hash);
         }
     }
 }

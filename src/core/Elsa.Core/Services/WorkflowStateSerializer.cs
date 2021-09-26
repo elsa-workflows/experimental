@@ -98,6 +98,7 @@ namespace Elsa.Services
                 var registerState = new RegisterState(activityExecutionContext.ExpressionExecutionContext.Register.Locations);
                 var activityExecutionContextState = new ActivityExecutionContextState
                 {
+                    Id = activityExecutionContext.Id,
                     ScheduledActivityId = activityExecutionContext.ScheduledActivity.Activity.ActivityId,
                     OwnerActivityId = activityExecutionContext.ScheduledActivity.Owner?.ActivityId,
                     Properties = activityExecutionContext.Properties,
@@ -129,6 +130,7 @@ namespace Elsa.Services
                 var properties = activityExecutionContextState.Properties;
                 var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, default, expressionExecutionContext, scheduledActivity, workflowExecutionContext.CancellationToken)
                 {
+                    Id = activityExecutionContextState.Id,
                     Properties = properties
                 };
                 return activityExecutionContext;

@@ -35,7 +35,7 @@ namespace Elsa.Pipelines.WorkflowExecution.Components
                 var currentActivity = scheduler.Pop();
 
                 // Execute activity.
-                await activityInvoker.InvokeAsync(context, currentActivity.Activity, currentActivity.Owner, executeActivityDelegate, cancellationToken);
+                await activityInvoker.InvokeAsync(context, currentActivity.Activity, currentActivity.Owner, currentActivity.LocationReferences, executeActivityDelegate, cancellationToken);
                 
                 // Reset custom activity execution delegate. This is used only once for the initial activity being executed.
                 executeActivityDelegate = null;

@@ -1,6 +1,3 @@
-using Elsa.Contracts;
-using Elsa.Expressions;
-
 namespace Elsa.Models
 {
     public class Variable : RegisterLocationReference
@@ -9,18 +6,14 @@ namespace Elsa.Models
         {
         }
 
-        public Variable(object? defaultValue) : this(new LiteralExpression(defaultValue))
-        {
-        }
-
-        public Variable(IExpression defaultValue)
+        public Variable(object? defaultValue)
         {
             DefaultValue = defaultValue;
         }
 
         public string? Name { get; set; }
-        public IExpression? DefaultValue { get; }
-        public override RegisterLocation Declare() => new();
+        public object? DefaultValue { get; }
+        public override RegisterLocation Declare() => new(DefaultValue);
     }
 
     public class Variable<T> : Variable

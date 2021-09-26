@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
@@ -23,8 +24,10 @@ namespace Elsa.Models
             ExpressionExecutionContext = expressionExecutionContext;
             ScheduledActivity = scheduledActivity;
             CancellationToken = cancellationToken;
+            Id = Guid.NewGuid().ToString();
         }
 
+        public string Id { get; set; }
         public WorkflowExecutionContext WorkflowExecutionContext { get; }
         public ActivityExecutionContext? ParentActivityExecutionContext { get; internal set; }
         public ExpressionExecutionContext ExpressionExecutionContext { get; }
@@ -37,15 +40,12 @@ namespace Elsa.Models
 
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
 
-        public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, Activity, completionCallback);
-        public void ScheduleActivity(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, owner, completionCallback);
-        public void ScheduleActivities(params IActivity[] activities) => ScheduleActivities((IEnumerable<IActivity>)activities);
+        public ScheduledActivity ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, Activity, completionCallback);
+        public ScheduledActivity ScheduleActivity(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default) => WorkflowExecutionContext.Schedule(activity, owner, completionCallback);
+        public IEnumerable<ScheduledActivity> ScheduleActivities(params IActivity[] activities) => ScheduleActivities((IEnumerable<IActivity>)activities);
 
-        public void ScheduleActivities(IEnumerable<IActivity> activities, ActivityCompletionCallback? completionCallback = default)
-        {
-            foreach (var activity in activities)
-                ScheduleActivity(activity, completionCallback);
-        }
+        public IEnumerable<ScheduledActivity> ScheduleActivities(IEnumerable<IActivity> activities, ActivityCompletionCallback? completionCallback = default) => 
+            activities.Select(activity => ScheduleActivity(activity, completionCallback)).ToList(); // IMPORTANT: the projection needs to actually execute, otherwise no activities will be scheduled.
 
         public void SetBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
         public void SetBookmark(Bookmark bookmark) => _bookmarks.Add(bookmark);

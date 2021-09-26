@@ -55,12 +55,15 @@ namespace Elsa.Models
         public ICollection<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new List<ActivityExecutionContext>();
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
 
-        public void Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
+        public ScheduledActivity Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
         {
-            Scheduler.Push(new ScheduledActivity(activity, owner));
+            var scheduledActivity = new ScheduledActivity(activity, owner); 
+            Scheduler.Push(scheduledActivity);
 
             if (completionCallback != null)
                 AddCompletionCallback(owner, activity, completionCallback);
+
+            return scheduledActivity;
         }
 
         public void AddCompletionCallback(IActivity owner, IActivity child, ActivityCompletionCallback completionCallback)

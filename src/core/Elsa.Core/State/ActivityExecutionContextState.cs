@@ -8,6 +8,7 @@ namespace Elsa.State
         {
         }
 
+        public string Id { get; set; } = default!;
         public ActivityExecutionContextState? ParentActivityExecutionContext { get; set; }
         public string ScheduledActivityId { get; set; } = default!;
         public string? OwnerActivityId { get; set; }
