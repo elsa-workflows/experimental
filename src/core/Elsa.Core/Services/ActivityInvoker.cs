@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
@@ -17,28 +18,25 @@ namespace Elsa.Services
         public async Task InvokeAsync(
             WorkflowExecutionContext workflowExecutionContext,
             IActivity activity,
+            IActivity? ownerActivity,
             ExecuteActivityDelegate? executeActivityDelegate = default,
             CancellationToken cancellationToken = default)
         {
             // Get a reference to the currently executing activity, if any.
-            var parentActivityExecutionContext = workflowExecutionContext.CurrentActivityExecutionContext;
+            var activityExecutionContext = workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Activity == activity);
+            var parentActivityExecutionContext = ownerActivity != null ? workflowExecutionContext.ActivityExecutionContexts.First(x => x.Activity == ownerActivity) : activityExecutionContext?.ParentActivityExecutionContext;
 
-            ActivityExecutionContext activityExecutionContext;
-
-            // If the activity to run is the same as the currently executing activity, it means we are resuming.
-            if (parentActivityExecutionContext?.Activity == activity)
-                activityExecutionContext = parentActivityExecutionContext;
-            else
+            if (activityExecutionContext == null)
             {
                 // Setup an activity execution context.
                 var register = new Register();
                 var expressionExecutionContext = new ExpressionExecutionContext(register, parentActivityExecutionContext?.ExpressionExecutionContext);
-                activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, parentActivityExecutionContext, expressionExecutionContext, new ScheduledActivity(activity), cancellationToken);
-                
+                activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, parentActivityExecutionContext, expressionExecutionContext, new ScheduledActivity(activity, ownerActivity), cancellationToken);
+
                 // Push the activity context into the workflow context.
-                workflowExecutionContext.ActivityExecutionContexts.Push(activityExecutionContext);
+                workflowExecutionContext.ActivityExecutionContexts.Add(activityExecutionContext);
             }
-            
+
             // Apply execution delegate.
             activityExecutionContext.ExecuteDelegate = executeActivityDelegate;
 

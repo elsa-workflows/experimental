@@ -52,14 +52,12 @@ namespace Elsa.Models
         public CancellationToken CancellationToken { get; }
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyCollection<ActivityCompletionCallbackEntry> CompletionCallbacks => new ReadOnlyCollection<ActivityCompletionCallbackEntry>(_completionCallbackEntries);
-        public Stack<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new();
-        public ActivityExecutionContext? CurrentActivityExecutionContext => ActivityExecutionContexts.TryPeek(out var context) ? context : default;
-
+        public ICollection<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new List<ActivityExecutionContext>();
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
 
         public void Schedule(IActivity activity, IActivity owner, ActivityCompletionCallback? completionCallback = default)
         {
-            Scheduler.Push(new ScheduledActivity(activity));
+            Scheduler.Push(new ScheduledActivity(activity, owner));
 
             if (completionCallback != null)
                 AddCompletionCallback(owner, activity, completionCallback);
@@ -89,7 +87,6 @@ namespace Elsa.Models
 
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
         
-        public ActivityExecutionContext PopActivityExecutionContext() => ActivityExecutionContexts.Pop();
         public void RegisterBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
 
         public void UnregisterBookmarks(IEnumerable<Bookmark> bookmarks)

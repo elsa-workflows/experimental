@@ -6,6 +6,6 @@ namespace Elsa.Contracts
 {
     public interface IActivityInvoker
     {
-        Task InvokeAsync(WorkflowExecutionContext workflowExecutionContext, IActivity activity, ExecuteActivityDelegate? executeActivityDelegate = default, CancellationToken cancellationToken = default);
+        Task InvokeAsync(WorkflowExecutionContext workflowExecutionContext, IActivity activity, IActivity? ownerActivity = default, ExecuteActivityDelegate? executeActivityDelegate = default, CancellationToken cancellationToken = default);
     }
 }

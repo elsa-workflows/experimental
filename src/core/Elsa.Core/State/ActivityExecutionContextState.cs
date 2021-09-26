@@ -10,6 +10,7 @@ namespace Elsa.State
 
         public ActivityExecutionContextState? ParentActivityExecutionContext { get; set; }
         public string ScheduledActivityId { get; set; } = default!;
+        public string? OwnerActivityId { get; set; }
         public string? ExecuteDelegateMethodName { get; set; }
         public IDictionary<string, object?> Properties { get; set; } = new Dictionary<string, object?>();
         public RegisterState Register { get; set; } = default!;

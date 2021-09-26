@@ -99,6 +99,7 @@ namespace Elsa.Services
                 var activityExecutionContextState = new ActivityExecutionContextState
                 {
                     ScheduledActivityId = activityExecutionContext.ScheduledActivity.Activity.ActivityId,
+                    OwnerActivityId = activityExecutionContext.ScheduledActivity.Owner?.ActivityId,
                     Properties = activityExecutionContext.Properties,
                     ExecuteDelegateMethodName = activityExecutionContext.ExecuteDelegate?.Method.Name,
                     Register = registerState
@@ -110,7 +111,7 @@ namespace Elsa.Services
             var tuples = workflowExecutionContext.ActivityExecutionContexts.Reverse().Select(x => (x, CreateActivityExecutionContextState(x))).ToList();
 
             // Construct hierarchy.
-            foreach (var tuple in tuples) 
+            foreach (var tuple in tuples)
                 tuple.Item2.ParentActivityExecutionContext = tuples.FirstOrDefault(x => tuple.x.ParentActivityExecutionContext == x.x).Item2;
 
             state.ActivityExecutionContexts = tuples.Select(x => x.Item2).ToList();
@@ -121,7 +122,8 @@ namespace Elsa.Services
             ActivityExecutionContext CreateActivityExecutionContext(ActivityExecutionContextState activityExecutionContextState)
             {
                 var activity = workflowExecutionContext.FindActivityById(activityExecutionContextState.ScheduledActivityId);
-                var scheduledActivity = new ScheduledActivity(activity);
+                var ownerActivity = activityExecutionContextState.OwnerActivityId != null ? workflowExecutionContext.FindActivityById(activityExecutionContextState.OwnerActivityId) : default;
+                var scheduledActivity = new ScheduledActivity(activity, ownerActivity);
                 var register = new Register(activityExecutionContextState.Register.Locations);
                 var expressionExecutionContext = new ExpressionExecutionContext(register, default);
                 var properties = activityExecutionContextState.Properties;
@@ -143,7 +145,7 @@ namespace Elsa.Services
                 activityExecutionContext.ExpressionExecutionContext.ParentContext = activityExecutionContext.ParentActivityExecutionContext?.ExpressionExecutionContext;
             }
 
-            workflowExecutionContext.ActivityExecutionContexts = new Stack<ActivityExecutionContext>(tuples.Select(x => x.Item2));
+            workflowExecutionContext.ActivityExecutionContexts = new List<ActivityExecutionContext>(tuples.Select(x => x.Item2));
         }
 
         private IDictionary<string, object?> GetOutputFrom(ActivityNode activityNode) =>

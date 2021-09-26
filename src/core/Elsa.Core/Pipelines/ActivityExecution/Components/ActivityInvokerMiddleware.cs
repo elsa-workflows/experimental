@@ -90,8 +90,8 @@ namespace Elsa.Pipelines.ActivityExecution.Components
                     if (completionCallback != null)
                         await completionCallback.Invoke(currentParentContext, currentContext);
 
-                    // Remove current activity context from stack.
-                    workflowExecutionContext.PopActivityExecutionContext();
+                    // Remove current activity context.
+                    workflowExecutionContext.ActivityExecutionContexts.Remove(currentContext);
                 }
     
                 // Do not continue completion callbacks of parents while there are scheduled nodes.
