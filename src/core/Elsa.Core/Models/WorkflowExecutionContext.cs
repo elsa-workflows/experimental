@@ -47,12 +47,18 @@ namespace Elsa.Models
         public IDictionary<IActivity, ActivityNode> NodeActivityLookup { get; }
         public IActivityScheduler Scheduler { get; }
         public Bookmark? Bookmark { get; }
-        public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
+        public IDictionary<string, object?> Properties { get; set; } = new Dictionary<string, object?>();
         public ExecuteActivityDelegate? ExecuteDelegate { get; set; }
         public CancellationToken CancellationToken { get; }
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyCollection<ActivityCompletionCallbackEntry> CompletionCallbacks => new ReadOnlyCollection<ActivityCompletionCallbackEntry>(_completionCallbackEntries);
         public ICollection<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new List<ActivityExecutionContext>();
+        
+        /// <summary>
+        /// A volatile collection of executed activity instance IDs. This collection is reset when workflow execution starts.
+        /// </summary>
+        public ICollection<WorkflowExecutionLogEntry> ExecutionLog { get; } = new List<WorkflowExecutionLogEntry>();
+
         public T GetRequiredService<T>() where T : notnull => _serviceProvider.GetRequiredService<T>();
 
         public void Schedule(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, params RegisterLocationReference[] locationReferences)
@@ -86,8 +92,15 @@ namespace Elsa.Models
         public ActivityNode FindNodeByActivity(IActivity activity) => NodeActivityLookup[activity];
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
-
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
+        
+        public T UpdateProperty<T>(string key, Func<T?, T> updater)
+        {
+            var value = GetProperty<T?>(key);
+            value = updater(value);
+            Properties[key] = value;
+            return value;
+        }
         
         public void RegisterBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
 

@@ -35,8 +35,8 @@ namespace Elsa.Models
         public CancellationToken CancellationToken { get; }
         public IDictionary<string, object?> Properties { get; set; } = new Dictionary<string, object?>();
         public ActivityNode ActivityNode => WorkflowExecutionContext.FindNodeByActivity(Activity);
-
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
+        public bool Continue { get; set; } = true;
 
         public void ScheduleActivity(IActivity activity, ActivityCompletionCallback? completionCallback = default, params RegisterLocationReference[] locationReferences) =>
             WorkflowExecutionContext.Schedule(activity, this, completionCallback, locationReferences);
@@ -99,5 +99,7 @@ namespace Elsa.Models
             ExpressionExecutionContext.Register.TryGetLocation(locationReference.Id, out var location) 
                 ? location 
                 : ParentActivityExecutionContext?.GetLocation(locationReference);
+
+        public void PreventContinuation() => Continue = false;
     }
 }

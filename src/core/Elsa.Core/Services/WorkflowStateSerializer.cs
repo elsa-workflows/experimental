@@ -26,7 +26,8 @@ namespace Elsa.Services
                 Id = workflowExecutionContext.Id
             };
 
-            GetOutput(state, workflowExecutionContext);
+            //GetOutput(state, workflowExecutionContext);
+            GetProperties(state, workflowExecutionContext);
             GetCompletionCallbacks(state, workflowExecutionContext);
             GetActivityExecutionContexts(state, workflowExecutionContext);
 
@@ -36,9 +37,20 @@ namespace Elsa.Services
         public void WriteState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state)
         {
             workflowExecutionContext.Id = state.Id;
-            SetOutput(state, workflowExecutionContext);
+            //SetOutput(state, workflowExecutionContext);
+            SetProperties(state, workflowExecutionContext);
             SetActivityExecutionContexts(state, workflowExecutionContext);
             SetCompletionCallbacks(state, workflowExecutionContext);
+        }
+
+        private void GetProperties(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        {
+            state.Properties = workflowExecutionContext.Properties;
+        }
+        
+        private void SetProperties(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
+        {
+            workflowExecutionContext.Properties = state.Properties;
         }
 
         private void GetOutput(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)

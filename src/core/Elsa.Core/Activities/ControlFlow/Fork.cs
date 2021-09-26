@@ -73,7 +73,7 @@ namespace Elsa.Activities.ControlFlow
             var nextNode = forkNode.Children.FirstOrDefault(x => x.Activity == Next);
             var branchNodes = forkNode.Children.Where(x => x != nextNode).ToList();
             var branchDescendantActivityIds = branchNodes.SelectMany(x => x.Flatten()).Select(x => x.Activity.ActivityId).ToHashSet();
-            var bookmarksToRemove = context.WorkflowExecutionContext.Bookmarks.Where(x => branchDescendantActivityIds.Contains(x.ActivityId)).ToList();
+            var bookmarksToRemove = workflowExecutionContext.Bookmarks.Where(x => branchDescendantActivityIds.Contains(x.ActivityId)).ToList();
 
             workflowExecutionContext.UnregisterBookmarks(bookmarksToRemove);
         }

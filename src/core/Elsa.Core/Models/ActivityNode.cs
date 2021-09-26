@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Elsa.Contracts;
 
 namespace Elsa.Models
@@ -27,5 +28,21 @@ namespace Elsa.Models
                     yield return descendant;
             }
         }
+        
+        public IEnumerable<ActivityNode> Ancestors()
+        {
+            foreach (var parent in Parents)
+            {
+                yield return parent;
+                
+                var ancestors = parent.Ancestors();
+
+                foreach (var ancestor in ancestors)
+                    yield return ancestor;
+            }
+        }
+        
+        public IEnumerable<ActivityNode> Siblings() => Parents.SelectMany(parent => parent.Children);
+        public IEnumerable<ActivityNode> SiblingsAndCousins() => Parents.SelectMany(parent => parent.Descendants());
     }
 }

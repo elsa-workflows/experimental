@@ -44,12 +44,12 @@ namespace Elsa.Services
                 if (childNode == null)
                 {
                     childNode = new ActivityNode(port);
-                    childNode.Parents.Add(pair.Node);
                     collectedNodes.Add(childNode);
                 }
 
-                collectedActivities.Add(port);
+                childNode.Parents.Add(pair.Node);
                 pair.Node.Children.Add(childNode);
+                collectedActivities.Add(port);
                 WalkRecursive((childNode, port), collectedActivities, collectedNodes);
             }
         }
