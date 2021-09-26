@@ -64,7 +64,7 @@ namespace Elsa.Models
         public void Schedule(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, IEnumerable<RegisterLocationReference>? locationReferences = default, object? tag = default)
         {
             var activityInvoker = GetRequiredService<IActivityInvoker>();
-            var workItem = new ActivityWorkItem(activity.ActivityId, async () => await activityInvoker.InvokeAsync(this, activity, owner, locationReferences), tag); 
+            var workItem = new ActivityWorkItem(activity.Id, async () => await activityInvoker.InvokeAsync(this, activity, owner, locationReferences), tag); 
             Scheduler.Push(workItem);
 
             if (completionCallback != null)

@@ -17,24 +17,18 @@ namespace Elsa.Runtime.Services
 {
     public class TriggerIndexer : ITriggerIndexer
     {
-        private readonly IActivityWalker _activityWalker;
         private readonly IExpressionEvaluator _expressionEvaluator;
         private readonly IHasher _hasher;
         private readonly IWorkflowTriggerStore _workflowTriggerStore;
-        private readonly ILogger _logger;
 
         public TriggerIndexer(
-            IActivityWalker activityWalker,
             IExpressionEvaluator expressionEvaluator,
             IHasher hasher,
-            IWorkflowTriggerStore workflowTriggerStore,
-            ILogger<TriggerIndexer> logger)
+            IWorkflowTriggerStore workflowTriggerStore)
         {
-            _activityWalker = activityWalker;
             _expressionEvaluator = expressionEvaluator;
             _hasher = hasher;
             _workflowTriggerStore = workflowTriggerStore;
-            _logger = logger;
         }
 
         public async Task IndexTriggersAsync(Workflow workflow, CancellationToken cancellationToken = default)
@@ -49,6 +43,7 @@ namespace Elsa.Runtime.Services
         private async IAsyncEnumerable<WorkflowTrigger> GetTriggersAsync(Workflow workflow, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var context = new WorkflowIndexingContext(workflow);
+
             var triggerSources = workflow.Triggers ?? Enumerable.Empty<ITrigger>();
 
             foreach (var triggerSource in triggerSources)

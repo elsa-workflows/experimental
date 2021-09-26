@@ -24,8 +24,8 @@ builder.Services
     {
         // options.Workflows.Add("HelloWorldWorkflow", new HelloWorldWorkflow());
         // options.Workflows.Add("HttpWorkflow", new HttpWorkflow());
-        options.Workflows.Add("ForkedHttpWorkflow", new ForkedHttpWorkflow());
-        //options.Workflows.Add("CustomActivitiesWorkflow", new CustomActivitiesWorkflow());
+        //options.Workflows.Add("ForkedHttpWorkflow", new ForkedHttpWorkflow());
+        options.Workflows.Add(nameof(CompositeActivitiesWorkflow), new CompositeActivitiesWorkflow());
     });
 
 // Configure middleware pipeline.

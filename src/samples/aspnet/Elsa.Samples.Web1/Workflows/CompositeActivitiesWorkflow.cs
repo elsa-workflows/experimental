@@ -6,9 +6,9 @@ using Elsa.Samples.Web1.Activities;
 
 namespace Elsa.Samples.Web1.Workflows
 {
-    public class CustomActivitiesWorkflow : IWorkflow
+    public class CompositeActivitiesWorkflow : IWorkflow
     {
-        public string Id => nameof(CustomActivitiesWorkflow);
+        public string Id => nameof(CompositeActivitiesWorkflow);
         public int Version => 1;
 
         public void Build(IWorkflowBuilder builder)

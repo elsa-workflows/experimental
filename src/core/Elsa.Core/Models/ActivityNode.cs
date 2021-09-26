@@ -11,7 +11,7 @@ namespace Elsa.Models
             Activity = activity;
         }
 
-        public string NodeId => Activity.ActivityId;
+        public string NodeId => Activity.Id;
         public IActivity Activity { get; }
         public ICollection<ActivityNode> Parents { get; set; } = new List<ActivityNode>();
         public ICollection<ActivityNode> Children { get; set; } = new List<ActivityNode>();

@@ -85,7 +85,7 @@ namespace Elsa.Pipelines.ActivityExecution.Components
             while (currentParentContext != null)
             {
                 var scheduledNodes = workflowExecutionContext.Scheduler.List().Select(x => x.ActivityId).ToList();
-                var descendantNodes = currentParentContext.ActivityNode.Descendants().Select(x => x.Activity.ActivityId).Distinct().ToList();
+                var descendantNodes = currentParentContext.ActivityNode.Descendants().Select(x => x.Activity.Id).Distinct().ToList();
                 var hasScheduledChildren = scheduledNodes.Intersect(descendantNodes).Any();
                 var @continue = currentContext.Continue;
 

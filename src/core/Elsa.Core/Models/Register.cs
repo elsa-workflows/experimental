@@ -23,10 +23,7 @@ namespace Elsa.Models
         public void Declare(IEnumerable<RegisterLocationReference> references)
         {
             foreach (var reference in references)
-            {
-                var location = reference.Declare();
-                Locations[reference.Id] = location;
-            }
+                Declare(reference);
         }
 
         public RegisterLocation Declare(RegisterLocationReference reference)

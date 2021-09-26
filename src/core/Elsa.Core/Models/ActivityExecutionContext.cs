@@ -60,7 +60,7 @@ namespace Elsa.Models
                 Guid.NewGuid().ToString(),
                 Activity.ActivityType,
                 hash,
-                Activity.ActivityId,
+                Activity.Id,
                 Id,
                 data ?? new Dictionary<string, object?>(),
                 callback?.Method.Name));

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Elsa.Activities.Containers;
 using Elsa.Attributes;
 using Elsa.Contracts;
@@ -10,7 +11,9 @@ namespace Elsa.Models
 
         protected override void Execute(ActivityExecutionContext context)
         {
-            context.ScheduleActivity(Root);
+            context.ScheduleActivity(Root, OnCompletedAsync);
         }
+
+        protected virtual ValueTask OnCompletedAsync(ActivityExecutionContext context, ActivityExecutionContext childContext) => ValueTask.CompletedTask;
     }
 }

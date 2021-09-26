@@ -8,9 +8,9 @@ namespace Elsa.Contracts
 {
     public interface IWorkflowInvoker
     {
-        Task<WorkflowExecutionResult> ResumeAsync(Workflow workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionResult> InvokeAsync(Workflow workflow, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext);
+        Task<WorkflowExecutionResult> ResumeAsync(Workflow workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default);
 
         WorkflowExecutionContext CreateWorkflowExecutionContext(
             IServiceProvider serviceProvider,

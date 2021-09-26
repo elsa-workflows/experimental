@@ -36,6 +36,22 @@ namespace Elsa.Services
             _identityGraphService = identityGraphService;
             _schedulerFactory = schedulerFactory;
         }
+        
+        public async Task<WorkflowExecutionResult> InvokeAsync(Workflow workflow, CancellationToken cancellationToken = default)
+        {
+            // Create a child scope.
+            using var scope = _serviceScopeFactory.CreateScope();
+
+            // Setup a workflow execution context.
+            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, default, default, default, cancellationToken);
+
+            // Schedule the first node.
+            var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
+            var workItem = new ActivityWorkItem(workflow.Root.Id, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
+            workflowExecutionContext.Scheduler.Push(workItem);
+
+            return await InvokeAsync(workflowExecutionContext);
+        }
 
         public async Task<WorkflowExecutionResult> ResumeAsync(Workflow workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default)
         {
@@ -52,27 +68,11 @@ namespace Elsa.Services
 
             // Schedule the activity to resume.
             var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
-            var workItem = new ActivityWorkItem(bookmarkedActivity.ActivityId, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
+            var workItem = new ActivityWorkItem(bookmarkedActivity.Id, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
             workflowExecutionContext.Scheduler.Push(workItem);
 
             // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
             workflowExecutionContext.ExecuteDelegate = resumeDelegate;
-
-            return await InvokeAsync(workflowExecutionContext);
-        }
-
-        public async Task<WorkflowExecutionResult> InvokeAsync(Workflow workflow, CancellationToken cancellationToken = default)
-        {
-            // Create a child scope.
-            using var scope = _serviceScopeFactory.CreateScope();
-
-            // Setup a workflow execution context.
-            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, default, default, default, cancellationToken);
-
-            // Schedule the first node.
-            var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
-            var workItem = new ActivityWorkItem(workflow.Root.ActivityId, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
-            workflowExecutionContext.Scheduler.Push(workItem);
 
             return await InvokeAsync(workflowExecutionContext);
         }

@@ -38,7 +38,7 @@ namespace Elsa.Samples.Web1.Workflows
                 {
                     new Fork
                     {
-                        JoinMode = new Input<JoinMode>(JoinMode.WaitAny),
+                        JoinMode = new Input<JoinMode>(JoinMode.WaitAll),
                         Branches =
                         {
                             new Sequence

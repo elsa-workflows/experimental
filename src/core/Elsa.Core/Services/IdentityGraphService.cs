@@ -15,6 +15,22 @@ namespace Elsa.Services
             _activityWalker = activityWalker;
         }
 
+        public void AssignIdentities(Workflow workflow)
+        {
+            AssignIdentities(workflow.Root);
+
+            var triggers = workflow.Triggers;
+
+            if (triggers == null)
+                return;
+
+            foreach (var trigger in triggers)
+            {
+                if(trigger is IActivity activity)
+                    AssignIdentities(activity);
+            }
+        }
+        
         public void AssignIdentities(IActivity root)
         {
             var graph = _activityWalker.Walk(root);
@@ -28,7 +44,7 @@ namespace Elsa.Services
 
             foreach (var node in list)
             {
-                node.Activity.ActivityId = CreateId(node, identityCounters);
+                node.Activity.Id = CreateId(node, identityCounters);
                 AssignInputOutputs(node.Activity);
                 AssignVariables(node.Activity);
             }
@@ -43,7 +59,7 @@ namespace Elsa.Services
             foreach (var input in assignedInputs)
             {
                 var locationReference = input.LocationReference;
-                locationReference.Id = $"{activity.ActivityId}:input-{++seed}";
+                locationReference.Id = $"{activity.Id}:input-{++seed}";
             }
 
             seed = 0;
@@ -53,7 +69,7 @@ namespace Elsa.Services
             foreach (var output in assignedOutputs)
             {
                 var locationReference = output.LocationReference;
-                locationReference.Id = $"{activity.ActivityId}:output-{++seed}";
+                locationReference.Id = $"{activity.Id}:output-{++seed}";
             }
         }
 
@@ -63,7 +79,7 @@ namespace Elsa.Services
             var seed = 0;
 
             foreach (var variable in variables) 
-                variable.Id = variable.Name != null! ? variable.Name : $"{activity.ActivityId}:variable-{++seed}";
+                variable.Id = variable.Name != null! ? variable.Name : $"{activity.Id}:variable-{++seed}";
         }
 
         private string CreateId(ActivityNode activityNode, IDictionary<string, int> identityCounters)

@@ -5,7 +5,7 @@ namespace Elsa.Models
 {
     public abstract class Activity : IActivity
     {
-        public string ActivityId { get; set; } = default!;
+        public string Id { get; set; } = default!;
         public string ActivityType => GetType().Name;
 
         public virtual ValueTask ExecuteAsync(ActivityExecutionContext context)

@@ -28,7 +28,7 @@ namespace Elsa.Samples.Web1.Activities
         [Input] public Input<string> Prompt { get; set; } = new("Hello! What's your name?");
         [Output] public Output<string?>? Name { get; set; }
 
-        public ValueTask CompleteChildAsync(ActivityExecutionContext context, ActivityExecutionContext childContext)
+        protected override ValueTask OnCompletedAsync(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
             context.Set(Name, _name.Get(childContext));
             return ValueTask.CompletedTask;

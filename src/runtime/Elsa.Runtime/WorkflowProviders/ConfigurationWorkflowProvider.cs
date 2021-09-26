@@ -60,8 +60,11 @@ namespace Elsa.Runtime.WorkflowProviders
         {
             var builder = new WorkflowBuilder();
             workflow.Build(builder);
-            _identityGraphService.AssignIdentities(builder.Root);
-            return new Workflow(workflow.Id, workflow.Version, DateTime.MinValue, builder.Root, builder.Triggers);
+            
+            var workflowModel = new Workflow(workflow.Id, workflow.Version, DateTime.MinValue, builder.Root, builder.Triggers);
+            _identityGraphService.AssignIdentities(workflowModel);
+            
+            return workflowModel;
         }
     }
 }

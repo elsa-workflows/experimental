@@ -24,7 +24,7 @@ namespace Elsa.Activities.ControlFlow
 
         private void OnChildCompleted(ActivityExecutionContext context, ActivityExecutionContext childContext)
         {
-            var completedChildActivityId = childContext.Activity.ActivityId;
+            var completedChildActivityId = childContext.Activity.Id;
 
             // Append activity to set of completed activities.
             var completedActivityIds = context.UpdateProperty<HashSet<string>>("Completed", set =>
@@ -34,7 +34,7 @@ namespace Elsa.Activities.ControlFlow
                 return set;
             });
 
-            var allChildActivityIds = Branches.Select(x => x.ActivityId).ToImmutableHashSet();
+            var allChildActivityIds = Branches.Select(x => x.Id).ToImmutableHashSet();
             var joinMode = context.Get(JoinMode);
 
             switch (joinMode)
@@ -62,7 +62,7 @@ namespace Elsa.Activities.ControlFlow
             var workflowExecutionContext = context.WorkflowExecutionContext;
             var forkNode = context.ActivityNode;
             var branchNodes = forkNode.Children;
-            var branchDescendantActivityIds = branchNodes.SelectMany(x => x.Flatten()).Select(x => x.Activity.ActivityId).ToHashSet();
+            var branchDescendantActivityIds = branchNodes.SelectMany(x => x.Flatten()).Select(x => x.Activity.Id).ToHashSet();
             var bookmarksToRemove = workflowExecutionContext.Bookmarks.Where(x => branchDescendantActivityIds.Contains(x.ActivityId)).ToList();
 
             workflowExecutionContext.UnregisterBookmarks(bookmarksToRemove);

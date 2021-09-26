@@ -99,7 +99,7 @@ namespace Elsa.Services
 
         private void GetCompletionCallbacks(WorkflowState state, WorkflowExecutionContext workflowExecutionContext)
         {
-            var completionCallbacks = workflowExecutionContext.CompletionCallbacks.Select(x => new CompletionCallbackState(x.Owner.Id, x.Child.ActivityId, x.CompletionCallback.Method.Name));
+            var completionCallbacks = workflowExecutionContext.CompletionCallbacks.Select(x => new CompletionCallbackState(x.Owner.Id, x.Child.Id, x.CompletionCallback.Method.Name));
             state.CompletionCallbacks = completionCallbacks.ToList();
         }
 
@@ -111,8 +111,8 @@ namespace Elsa.Services
                 var activityExecutionContextState = new ActivityExecutionContextState
                 {
                     Id = activityExecutionContext.Id,
-                    ScheduledActivityId = activityExecutionContext.Activity.ActivityId,
-                    OwnerActivityId = activityExecutionContext.ParentActivityExecutionContext?.Activity.ActivityId,
+                    ScheduledActivityId = activityExecutionContext.Activity.Id,
+                    OwnerActivityId = activityExecutionContext.ParentActivityExecutionContext?.Activity.Id,
                     Properties = activityExecutionContext.Properties,
                     Register = registerState
                 };

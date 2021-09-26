@@ -16,7 +16,7 @@ namespace Elsa.Models
         public RegisterLocation GetLocation(RegisterLocationReference locationReference) => GetLocationInternal(locationReference) ?? throw new InvalidOperationException();
         public object Get(RegisterLocationReference locationReference) => GetLocation(locationReference).Value!;
         public T Get<T>(RegisterLocationReference locationReference) => (T)Get(locationReference);
-        public T? Get<T>(Input<T> input) => (T?)input.LocationReference.GetLocation(Register).Value;
+        public T? Get<T>(Input<T> input) => (T?)GetLocation(input.LocationReference).Value;
 
         public void Set(RegisterLocationReference locationReference, object? value)
         {

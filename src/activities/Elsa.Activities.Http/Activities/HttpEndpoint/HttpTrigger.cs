@@ -37,7 +37,7 @@ namespace Elsa.Activities.Http
             {
                 var hashInput = (path.ToLowerInvariant(), method.ToLowerInvariant());
                 var hash = hasher.Hash(hashInput);
-                yield return new Bookmark(Guid.NewGuid().ToString(), ActivityType, hash, ActivityId, context.Id);
+                yield return new Bookmark(Guid.NewGuid().ToString(), ActivityType, hash, Id, context.Id);
             }
         }
     }

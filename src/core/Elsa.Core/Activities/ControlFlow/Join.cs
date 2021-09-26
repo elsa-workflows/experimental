@@ -39,11 +39,11 @@ namespace Elsa.Activities.ControlFlow
 
                     // Record last executed activity ID.
                     var lastActivityInstanceId = context.WorkflowExecutionContext.ExecutionLog.LastOrDefault()?.ActivityInstanceId;
-                    var lastActivityId = lastActivityInstanceId != null ? workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Id == lastActivityInstanceId)?.Activity.ActivityId : default;
+                    var lastActivityId = lastActivityInstanceId != null ? workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Id == lastActivityInstanceId)?.Activity.Id : default;
 
                     if (lastActivityId != null)
                     {
-                        var recordedActivitiesKey = $"{ActivityId}:RecordedActivities";
+                        var recordedActivitiesKey = $"{Id}:RecordedActivities";
                         var recordedActivityIds = workflowExecutionContext.UpdateProperty<HashSet<string>>(recordedActivitiesKey, set =>
                         {
                             set ??= new HashSet<string>();
@@ -51,7 +51,7 @@ namespace Elsa.Activities.ControlFlow
                             return set;
                         });
 
-                        var inboundActivityIds = context.ActivityNode.Parents.Select(x => x.Activity.ActivityId).ToHashSet();
+                        var inboundActivityIds = context.ActivityNode.Parents.Select(x => x.Activity.Id).ToHashSet();
                         var allSet = inboundActivityIds.All(x => recordedActivityIds.Contains(x));
 
                         if (!allSet)
@@ -77,8 +77,8 @@ namespace Elsa.Activities.ControlFlow
 
             // Remove all bookmarks of ancestors and siblings.
             var joinNode = context.ActivityNode;
-            var ancestors = joinNode.Ancestors().Select(x => x.Activity.ActivityId);
-            var siblingsAndCousins = joinNode.SiblingsAndCousins().Select(x => x.Activity.ActivityId);
+            var ancestors = joinNode.Ancestors().Select(x => x.Activity.Id);
+            var siblingsAndCousins = joinNode.SiblingsAndCousins().Select(x => x.Activity.Id);
             var activitiesInPath = ancestors.Concat(siblingsAndCousins).ToHashSet();
             var bookmarksToRemove = workflowExecutionContext.Bookmarks.Where(x => activitiesInPath.Contains(x.ActivityId)).ToList();
 
