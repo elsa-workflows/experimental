@@ -57,13 +57,21 @@ namespace Elsa.Samples.Console1
                 workflow = workflow with { Root = workflowFactory() };
                 foreach (var bookmark in bookmarks.ToList())
                 {
-                    Console.WriteLine("Press enter to resume workflow with bookmark {0}.", bookmark);
+                    Console.WriteLine("Press enter to resume workflow with bookmark {0}.", new
+                    {
+                        bookmark.Id,
+                        bookmark.Name,
+                        bookmark.Hash,
+                        bookmark.ActivityId,
+                        bookmark.ActivityInstanceId,
+                        bookmark.CallbackMethodName
+                    });
+                    
                     Console.ReadLine();
                     
-                    bookmarks.Remove(bookmark);
                     var resumeResult = await workflowEngine.ResumeAsync(workflow, bookmark, workflowState);
                     workflowState = resumeResult.WorkflowState;
-                    bookmarks.AddRange(resumeResult.Bookmarks);
+                    bookmarks = resumeResult.Bookmarks.ToList();
                 }
             }
         }

@@ -9,22 +9,18 @@ namespace Elsa.Samples.Console1.Workflows
     {
         public static IActivity Create()
         {
-            var message = new Variable<string>("Hello World!");
+            var greeting = new Variable<string>("Hello! What is your name?");
             var name = new Variable<string>();
-            
+
             return new Sequence
             {
-                Variables = { message, name },
+                Variables = { greeting, name },
                 Activities =
                 {
-                    new WriteLine
-                    {
-                        Text = new Input<string>(new DelegateReference(context => $"Message: {message.Get(context)}"))
-                    },
-                    new WriteLine("What is your name?"),
+                    new WriteLine(context => greeting.Get(context)),
                     new ReadLine
                     {
-                        Output = new Output<string?>(name) 
+                        Output = new Output<string?>(name)
                     },
                     new WriteLine(new DelegateReference(context => $"Nice to meet you, {name.Get(context)}!")),
                 }

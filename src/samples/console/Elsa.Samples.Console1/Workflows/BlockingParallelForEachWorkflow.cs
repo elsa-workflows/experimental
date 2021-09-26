@@ -28,8 +28,9 @@ namespace Elsa.Samples.Console1.Workflows
                         {
                             Activities =
                             {
-                                new WriteLine(context => currentItem.Get(context)),
-                                new Event(context => currentItem.Get(context))
+                                new WriteLine(context => $"Begin: {currentItem.Get(context)}"),
+                                new Event(context => currentItem.Get(context)),
+                                new WriteLine(context => $"Completed: {currentItem.Get(context)}")
                             }
                         }
                     },
