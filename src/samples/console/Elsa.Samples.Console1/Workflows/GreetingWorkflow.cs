@@ -10,7 +10,6 @@ namespace Elsa.Samples.Console1.Workflows
         public static IActivity Create()
         {
             var name = new Variable<string>();
-            var readLine1 = new ReadLine(name);
 
             return new Sequence
             {
@@ -18,7 +17,7 @@ namespace Elsa.Samples.Console1.Workflows
                 Activities =
                 {
                     new WriteLine("What's your name?"),
-                    readLine1,
+                    new ReadLine(name),
                     new WriteLine(context => $"Nice to meet you, {name.Get(context)}!")
                 }
             };

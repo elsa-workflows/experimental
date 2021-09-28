@@ -1,0 +1,12 @@
+Id: HttpTrigger
+Description: A sample workflow
+Version: 1
+
+Triggers
+    HttpTrigger
+        Path: "/hello-world"
+        SupportedMethods: ["GET"]
+
+Sequence
+    WriteLine
+        Text: "Hello World!"

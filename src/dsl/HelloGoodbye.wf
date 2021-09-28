@@ -1,0 +1,11 @@
+Id: HelloWorld
+Description: A sample workflow
+Version: 1
+
+Sequence
+   Activities
+      WriteLine
+         Text: "Hello World"
+
+      WriteLine
+         Text: "Goodbye cruel World"
