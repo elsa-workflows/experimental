@@ -1,0 +1,11 @@
+{
+    variable start: int = 1;
+    variable end: int = 3;
+
+    print /csharp/context => $"Counting numbers from {start.Get(context)} to {end.Get(context)}:"
+    
+    for(let i = start; i < end; i++)
+    {
+        print /js/context => `Current value: ${i}`
+    }
+}

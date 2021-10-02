@@ -1,0 +1,15 @@
+{
+    print "What's your age?"
+    let age = ReadLine
+    
+    if age > 16
+    {
+        print "Enjoy your driver's license!"
+        delay 5000
+        print "But be careful!"
+    }
+    else
+        print "Enjoy your bicycle!"
+                            
+    print "Goodbye."
+}
