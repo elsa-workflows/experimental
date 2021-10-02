@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Projects/Elsa/experimental/src/dsl\ElsaParser.g4 by ANTLR 4.9.1
+// Generated from C:/Projects/Elsa/experimental/src/dsl/Elsa.Dsl/Dsl\ElsaParser.g4 by ANTLR 4.9.1
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -251,18 +251,6 @@ public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExprList([NotNull] ElsaParser.ExprListContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.id"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterId([NotNull] ElsaParser.IdContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.id"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitId([NotNull] ElsaParser.IdContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

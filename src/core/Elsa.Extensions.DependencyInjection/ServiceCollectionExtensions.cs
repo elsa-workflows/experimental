@@ -1,6 +1,8 @@
 using System;
 using Elsa.ActivityNodeResolvers;
 using Elsa.Contracts;
+using Elsa.Dsl.Contracts;
+using Elsa.Dsl.Services;
 using Elsa.Expressions;
 using Elsa.Options;
 using Elsa.Persistence.Abstractions.Contracts;
@@ -39,7 +41,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IWorkflowStateSerializer, WorkflowStateSerializer>()
                 .AddSingleton<IActivitySchedulerFactory, ActivitySchedulerFactory>()
                 .AddSingleton<IActivityNodeResolver, OutboundActivityNodeResolver>()
+                .AddSingleton<IActivityTypeRegistry, ActivityTypeRegistry>()
+                .AddSingleton<ITriggerTypeRegistry, TriggerTypeRegistry>()
                 .AddSingleton<IHasher, Hasher>()
+                
+                // DSL.
+                .AddSingleton<IDslEngine, DslEngine>()
 
                 // Expressions.
                 .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()

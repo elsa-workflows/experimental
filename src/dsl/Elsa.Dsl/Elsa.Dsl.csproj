@@ -6,11 +6,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\core\Elsa.Core\Elsa.Core.csproj" />
+      <Folder Include="Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Middleware\ActivityExecution" />
+      <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\core\Elsa.Core\Elsa.Core.csproj" />
     </ItemGroup>
 
 </Project>

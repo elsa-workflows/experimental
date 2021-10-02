@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ANTLRGenerationPreferences">
+    <option name="perGrammarGenerationSettings">
+      <list>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/ElsaLexer.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="C:\Projects\Elsa\experimental\src\dsl\Elsa.Dsl.Parsers" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="" />
+          <option name="language" value="" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/ElsaParser.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="C:\Projects\Elsa\experimental\src\dsl\Elsa.Dsl.Parsers" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="" />
+          <option name="language" value="" />
+        </PerGrammarGenerationSettings>
+      </list>
+    </option>
+  </component>
+  <component name="com.jetbrains.rider.android.RiderAndroidMiscFileCreationComponent">
+    <option name="ENSURE_MISC_FILE_EXISTS" value="true" />
+  </component>
+</project>

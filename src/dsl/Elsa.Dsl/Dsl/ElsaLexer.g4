@@ -2,6 +2,8 @@ lexer grammar ElsaLexer;
 
 EQ                  :   '=';
 GREATER             :   '>';
+INCREMENT           :   '++';
+DECREMENT           :   '--';
 TRIGGER             :   'trigger';
 VARIABLE            :   'variable';
 LET                 :   'let';
@@ -30,8 +32,6 @@ NOT_EQUALS          :   '!=';
 GREATER_EQUALS      :   '>=';
 LESS                :   '<';
 LESS_EQUALS         :   '<=';
-DECREMENT           :   '--';
-INCREMENT           :   '++';
 PARENTHESES_OPEN    :   '(';
 PARENTHESES_CLOSE   :   ')';
 BRACKET_OPEN        :   '[';
@@ -43,9 +43,9 @@ LANGSPEC_BEGIN      :   '/' ~[/]+ '/' .*? '/';
 STRING_VAL          :   '"' ('\\"' | .)*? '"';
 
 LINE_COMMENT        :   '//' .*? '\r'? '\n' -> skip;
-TEXT                :   (LETTER|SYMBOL)+;
 CODE_VAL            :   '@' ('@' | .)*? '@' -> skip;
 WS                  :   [ \t\r\n] -> skip;
+//TEXT                :   (LETTER|SYMBOL)+;
 
 fragment LETTER     :   [a-zA-Z_];
 fragment DIGIT      :   [0-9];

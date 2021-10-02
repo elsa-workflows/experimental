@@ -2,7 +2,7 @@
 trigger HttpTrigger
 {
     Path: "/hello-world",
-    SupportMethods: ['GET']
+    SupportedMethods: ['GET']
 }
 
 // Triggers every 1 minute.
@@ -11,4 +11,4 @@ trigger Timer
     Timeout: "0:00:01:00"
 }
 
-WriteLine "Hello World!"
+WriteLine("Hello World!");

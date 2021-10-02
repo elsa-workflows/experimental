@@ -3,11 +3,11 @@ parser grammar ElsaParser;
 options { tokenVocab=ElsaLexer; }
 
 file                
-    :   LINE_COMMENT* trigger* root (stat | LINE_COMMENT)*
+    :   LINE_COMMENT* trigger* root? (stat | LINE_COMMENT)*
     ;
     
 trigger
-    :   TRIGGER id block_pairs
+    :   TRIGGER ID block_pairs
     ;
     
 root
@@ -16,7 +16,7 @@ root
     
 activity
     :   sequence
-    |   id
+    |   ID
     ;
     
 sequence
@@ -25,14 +25,14 @@ sequence
     ;
 
 varDecl             
-    :   VARIABLE id (':' type)? (EQ expr)? ';'
+    :   VARIABLE ID (':' type)? (EQ expr)? ';'
     ;
     
 localVarDecl
-    :   'let' id (':' type)? (EQ expr)? ';'
+    :   'let' ID (':' type)? (EQ expr)? ';'
     ;
 
-type                
+type
     :   VOID
     |   FLOAT
     |   INT
@@ -41,7 +41,7 @@ type
     ;
                 
 funcCall
-    :   id '(' args? ')' ';'
+    :   ID '(' args? ')' ';'
     ;
     
 args
@@ -66,7 +66,7 @@ pairList
     ;
     
 pair
-    :   id ':' expr
+    :   ID ':' expr
     ; 
     
 stat
@@ -83,8 +83,9 @@ stat
     
     
 expr
-    :   id exprList
-    |   expr ('++' | '--')
+    :   ID exprList
+    |   expr '++'
+    |   expr '--'
     |   '-' expr
     |   '!' expr
     |   expr '*' expr
@@ -94,13 +95,9 @@ expr
     |   STRING_VAL
     |   '(' expr ')'
     |   '[' expr ']'
-    |   id
+    |   ID
     ;
     
 exprList
     :   expr (',' expr)*
-    ;
-    
-id
-    :   ID
     ;

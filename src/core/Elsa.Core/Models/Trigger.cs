@@ -11,7 +11,7 @@ namespace Elsa.Models
         public virtual ValueTask<IEnumerable<object>> GetHashInputsAsync(TriggerIndexingContext context, CancellationToken cancellationToken = default)
         {
             var hashes = GetHashInputs(context);
-            return ValueTask.FromResult<IEnumerable<object>>(hashes);
+            return ValueTask.FromResult(hashes);
         }
 
         protected virtual IEnumerable<object> GetHashInputs(TriggerIndexingContext context) => Enumerable.Empty<object>();
