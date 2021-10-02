@@ -18,9 +18,8 @@ INT                 :   'int';
 STRING              :   'string';
 OBJECT              :   'object';
 SEQUENCE            :   'Sequence';
-ID                  :   LETTER (LETTER | DIGIT)*;
+CODE_VAL            :   '@' ('@' | .)*? '@';
 SYMBOL              :   [=>$+`];
-INTEGER_VAL         :   DIGIT+;
 COLON               :   ':';
 SEMICOLON           :   ';';
 COMMA               :   ',';
@@ -41,9 +40,9 @@ CURLYBRACE_CLOSE    :   '}';
 EXCLAMATION         :   '!';
 LANGSPEC_BEGIN      :   '/' ~[/]+ '/' .*? '/';
 STRING_VAL          :   '"' ('\\"' | .)*? '"';
-
 LINE_COMMENT        :   '//' .*? '\r'? '\n' -> skip;
-CODE_VAL            :   '@' ('@' | .)*? '@' -> skip;
+INTEGER_VAL         :   DIGIT+;
+ID                  :   LETTER (LETTER | DIGIT)*;
 WS                  :   [ \t\r\n] -> skip;
 //TEXT                :   (LETTER|SYMBOL)+;
 
