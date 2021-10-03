@@ -6,9 +6,9 @@ trigger HttpTrigger
 }
 
 // Triggers every 1 minute.
-trigger Timer
+trigger TimerTrigger
 {
-    Timeout: "0:00:01:00"
+    Interval: "0:00:01:00"
 }
 
 WriteLine("Hello World!");

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using Elsa.Activities.Http;
+using Elsa.Activities.Timers;
 using Elsa.Contracts;
 using Elsa.Dsl.Contracts;
 using Elsa.Extensions;
@@ -15,12 +16,13 @@ var triggerTypeRegistry = serviceProvider.GetRequiredService<ITriggerTypeRegistr
 var dslEngine = serviceProvider.GetRequiredService<IDslEngine>();
 
 triggerTypeRegistry.Register<HttpTrigger>();
+triggerTypeRegistry.Register<TimerTrigger>();
 
 var assembly = Assembly.GetExecutingAssembly();
 var resource = assembly.GetManifestResourceStream("Elsa.Samples.Console2.Sample1.elsa");
 
 var script = await new StreamReader(resource!).ReadToEndAsync();
-var workflow = dslEngine.Parse(script);
+var workflowDefinition = dslEngine.Parse(script);
 
 IWorkflowEngine CreateWorkflowEngine()
 {

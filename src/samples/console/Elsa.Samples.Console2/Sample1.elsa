@@ -1,5 +1,10 @@
 trigger HttpTrigger
 {
     Path: "/hello-world",
-    SupportedMethods: ["GET", "POST"]
+    SupportedMethods: ['GET']
+}
+
+trigger TimerTrigger
+{
+    Interval: "0:00:01:00"
 }

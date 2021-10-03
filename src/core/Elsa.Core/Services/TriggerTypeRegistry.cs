@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Elsa.Contracts;
@@ -10,6 +11,6 @@ namespace Elsa.Services
         private readonly IDictionary<string, TriggerType> _dictionary = new Dictionary<string, TriggerType>();
         public void Register(TriggerType triggerType) => _dictionary.Add(triggerType.TypeName, triggerType);
         public IEnumerable<TriggerType> List() => _dictionary.Values.ToList();
-        public TriggerType Get(string typeName) => _dictionary[typeName];
+        public TriggerType Get(string typeName) => _dictionary.TryGetValue(typeName, out var triggerType) ? triggerType : throw new Exception($"Could not find trigger with type name {typeName}.");
     }
 }

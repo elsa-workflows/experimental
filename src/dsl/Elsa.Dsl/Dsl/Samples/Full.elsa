@@ -2,11 +2,11 @@
 trigger HttpTrigger
 {
     Path: "/hello-world",
-    SupportedMethods: Literal.From(new []{ "GET" })
+    SupportedMethods: ["GET", "POST"]
 }
 
 // Triggers every 1 minute.
-trigger Timer
+trigger TimerTrigger
 {
     Timeout: "0:00:01:00"
 }

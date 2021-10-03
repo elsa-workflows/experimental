@@ -1,3 +1,4 @@
+using Elsa.Activities.Http.Middleware;
 using Microsoft.AspNetCore.Builder;
 
 namespace Elsa.Activities.Http.Extensions

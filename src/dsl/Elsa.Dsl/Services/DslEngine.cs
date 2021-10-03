@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
-using Elsa.Activities.Console;
 using Elsa.Contracts;
 using Elsa.Dsl.Contracts;
 using Elsa.Dsl.Interpreters;
@@ -28,7 +23,7 @@ namespace Elsa.Dsl.Services
             var parser = new ElsaParser(tokens);
             var tree = parser.file();
 
-            var interpreter = new WorkflowModelInterpreter(_triggerTypeRegistry);
+            var interpreter = new WorkflowDefinitionBuilderInterpreter(_triggerTypeRegistry);
             var workflowBuilder = interpreter.Visit(tree);
             var workflow = workflowBuilder.BuildWorkflow();
 

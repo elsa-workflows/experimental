@@ -5,11 +5,12 @@ using System.Reflection;
 using Antlr4.Runtime.Tree;
 using Elsa.Builders;
 using Elsa.Contracts;
+using Elsa.Dsl.Extensions;
 using Elsa.Models;
 
 namespace Elsa.Dsl.Interpreters
 {
-    public class WorkflowModelInterpreter : ElsaParserBaseVisitor<IWorkflowDefinitionBuilder>
+    public class WorkflowDefinitionBuilderInterpreter : ElsaParserBaseVisitor<IWorkflowDefinitionBuilder>
     {
         private readonly IWorkflowDefinitionBuilder _workflowDefinitionBuilder = new WorkflowDefinitionBuilder();
         private readonly ITriggerTypeRegistry _triggerTypeRegistry;
@@ -17,7 +18,7 @@ namespace Elsa.Dsl.Interpreters
         private readonly ParseTreeProperty<Type> _pairType = new();
         private readonly ParseTreeProperty<object?> _pairValue = new();
 
-        public WorkflowModelInterpreter(ITriggerTypeRegistry triggerTypeRegistry)
+        public WorkflowDefinitionBuilderInterpreter(ITriggerTypeRegistry triggerTypeRegistry)
         {
             _triggerTypeRegistry = triggerTypeRegistry;
         }
@@ -96,8 +97,8 @@ namespace Elsa.Dsl.Interpreters
         {
             var underlyingType = propertyInfo.PropertyType.GetGenericArguments().First();
             var inputType = typeof(Input<>).MakeGenericType(underlyingType);
-            //var parsedValue = StringConverter.ConvertFrom(rawPropertyValue, underlyingType);
-            var inputValue = (Input)Activator.CreateInstance(inputType, propertyValue)!;
+            var convertedValue = propertyValue.ConvertTo(underlyingType);
+            var inputValue = (Input)Activator.CreateInstance(inputType, convertedValue)!;
             return inputValue;
         }
 
