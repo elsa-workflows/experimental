@@ -22,7 +22,7 @@ namespace Elsa.Services
         
         private static string Hash(string input)
         {
-            using var sha = new SHA256Managed();
+            using var sha = HashAlgorithm.Create(HashAlgorithmName.SHA256.ToString())!;
             return Hash(sha, input);
         }
 

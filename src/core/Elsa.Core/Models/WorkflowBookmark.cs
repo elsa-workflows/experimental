@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Elsa.Persistence.Abstractions.Models
+namespace Elsa.Models
 {
     public class WorkflowBookmark
     {

@@ -111,6 +111,16 @@ public interface IElsaParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitType([NotNull] ElsaParser.TypeContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.methodCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMethodCall([NotNull] ElsaParser.MethodCallContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.methodCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMethodCall([NotNull] ElsaParser.MethodCallContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.funcCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -181,25 +191,281 @@ public interface IElsaParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitPair([NotNull] ElsaParser.PairContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.stat"/>.
+	/// Enter a parse tree produced by the <c>if</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterStat([NotNull] ElsaParser.StatContext context);
+	void EnterIf([NotNull] ElsaParser.IfContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.stat"/>.
+	/// Exit a parse tree produced by the <c>if</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitStat([NotNull] ElsaParser.StatContext context);
+	void ExitIf([NotNull] ElsaParser.IfContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.expr"/>.
+	/// Enter a parse tree produced by the <c>for</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExpr([NotNull] ElsaParser.ExprContext context);
+	void EnterFor([NotNull] ElsaParser.ForContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.expr"/>.
+	/// Exit a parse tree produced by the <c>for</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExpr([NotNull] ElsaParser.ExprContext context);
+	void ExitFor([NotNull] ElsaParser.ForContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>return</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterReturn([NotNull] ElsaParser.ReturnContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>return</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitReturn([NotNull] ElsaParser.ReturnContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>blockStatements</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBlockStatements([NotNull] ElsaParser.BlockStatementsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>blockStatements</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBlockStatements([NotNull] ElsaParser.BlockStatementsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>variableDeclaration</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterVariableDeclaration([NotNull] ElsaParser.VariableDeclarationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>variableDeclaration</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitVariableDeclaration([NotNull] ElsaParser.VariableDeclarationContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>localVariableDeclaration</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLocalVariableDeclaration([NotNull] ElsaParser.LocalVariableDeclarationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>localVariableDeclaration</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLocalVariableDeclaration([NotNull] ElsaParser.LocalVariableDeclarationContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>assignment</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAssignment([NotNull] ElsaParser.AssignmentContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>assignment</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAssignment([NotNull] ElsaParser.AssignmentContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>expression</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExpression([NotNull] ElsaParser.ExpressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>expression</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExpression([NotNull] ElsaParser.ExpressionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>add</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAdd([NotNull] ElsaParser.AddContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>add</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAdd([NotNull] ElsaParser.AddContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>parentheses</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterParentheses([NotNull] ElsaParser.ParenthesesContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>parentheses</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitParentheses([NotNull] ElsaParser.ParenthesesContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>compare</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCompare([NotNull] ElsaParser.CompareContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>compare</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCompare([NotNull] ElsaParser.CompareContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>methodInvocation</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMethodInvocation([NotNull] ElsaParser.MethodInvocationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>methodInvocation</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMethodInvocation([NotNull] ElsaParser.MethodInvocationContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>subtract</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSubtract([NotNull] ElsaParser.SubtractContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>subtract</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSubtract([NotNull] ElsaParser.SubtractContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>variableReference</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterVariableReference([NotNull] ElsaParser.VariableReferenceContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>variableReference</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitVariableReference([NotNull] ElsaParser.VariableReferenceContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>increment</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterIncrement([NotNull] ElsaParser.IncrementContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>increment</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitIncrement([NotNull] ElsaParser.IncrementContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>brackets</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBrackets([NotNull] ElsaParser.BracketsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>brackets</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBrackets([NotNull] ElsaParser.BracketsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>not</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterNot([NotNull] ElsaParser.NotContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>not</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitNot([NotNull] ElsaParser.NotContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>stringValue</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStringValue([NotNull] ElsaParser.StringValueContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>stringValue</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStringValue([NotNull] ElsaParser.StringValueContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>negate</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterNegate([NotNull] ElsaParser.NegateContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>negate</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitNegate([NotNull] ElsaParser.NegateContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>decrement</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDecrement([NotNull] ElsaParser.DecrementContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>decrement</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDecrement([NotNull] ElsaParser.DecrementContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>functionCall</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFunctionCall([NotNull] ElsaParser.FunctionCallContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>functionCall</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFunctionCall([NotNull] ElsaParser.FunctionCallContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>integerValue</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterIntegerValue([NotNull] ElsaParser.IntegerValueContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>integerValue</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitIntegerValue([NotNull] ElsaParser.IntegerValueContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>multiply</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMultiply([NotNull] ElsaParser.MultiplyContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>multiply</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMultiply([NotNull] ElsaParser.MultiplyContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.exprList"/>.
 	/// </summary>

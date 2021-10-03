@@ -2,7 +2,7 @@
 trigger HttpTrigger
 {
     Path: "/hello-world",
-    SupportMethods: ["GET"]
+    SupportedMethods: Literal.From(new []{ "GET" })
 }
 
 // Triggers every 1 minute.
@@ -31,10 +31,10 @@ trigger Timer
     variable start: int = 1;
     variable end: int = 3;
 
-    print(@context => $"Counting numbers from {start.Get(context)} to {end.Get(context)}:"@);
+    print(context => $"Counting numbers from {start.Get(context)} to {end.Get(context)}");
     
     for(i = start; i < end; i++)
     {
-        print(@context => `Current value: ${i}`@);
+        print(context => "Current value: ${i}");
     }
 }

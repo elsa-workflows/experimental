@@ -16,7 +16,7 @@ namespace Elsa.Runtime.Services
 
         public WorkflowRegistry(IEnumerable<IWorkflowProvider> workflowProviders) => _workflowProviders = workflowProviders;
 
-        public async Task<Workflow?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinition?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
         {
             foreach (var workflowProvider in _workflowProviders)
             {
@@ -29,17 +29,17 @@ namespace Elsa.Runtime.Services
             return default!;
         }
         
-        public async Task<IEnumerable<Workflow>> GetManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default) =>
+        public async Task<IEnumerable<WorkflowDefinition>> GetManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default) =>
             await GetManyByIdInternalAsync(ids, cancellationToken).ToListAsync(cancellationToken);
 
-        public async Task<PagedList<Workflow>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken)
+        public async Task<PagedList<WorkflowDefinition>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken)
         {
             var tasks = _workflowProviders.Select(x => x.ListAsync(pagerParameters, cancellationToken).AsTask());
             var workflows = (await Task.WhenAll(tasks)).SelectMany(x => x.Items);
             return workflows.Paginate(pagerParameters);
         }
 
-        private async IAsyncEnumerable<Workflow> GetManyByIdInternalAsync(IEnumerable<string> ids, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        private async IAsyncEnumerable<WorkflowDefinition> GetManyByIdInternalAsync(IEnumerable<string> ids, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var idList = ids as ICollection<string> ?? ids.ToHashSet();
 

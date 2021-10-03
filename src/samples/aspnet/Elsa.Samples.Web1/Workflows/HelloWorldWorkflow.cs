@@ -1,15 +1,14 @@
 using Elsa.Activities.Console;
+using Elsa.Contracts;
 using Elsa.Runtime.Contracts;
 
 namespace Elsa.Samples.Web1.Workflows
 {
     public class HelloWorldWorkflow : IWorkflow
     {
-        public string Id => nameof(HelloWorldWorkflow);
-        public int Version => 1;
-        public void Build(IWorkflowBuilder builder)
+        public void Build(IWorkflowDefinitionBuilder definitionBuilder)
         {
-            builder.Root = new WriteLine("Hello World!");
+            definitionBuilder.WithRoot(new WriteLine("Hello World!"));
         }
     }
 }

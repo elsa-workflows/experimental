@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
-using Elsa.Persistence.Abstractions.Models;
 
 namespace Elsa.Persistence.InMemory.Services
 {

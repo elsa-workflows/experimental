@@ -8,14 +8,14 @@ namespace Elsa.Api.ApiResults
 {
     public class ExecuteWorkflowResult : IResult
     {
-        public ExecuteWorkflowResult(Workflow workflow) => Workflow = workflow;
-        public Workflow Workflow { get; }
+        public ExecuteWorkflowResult(WorkflowDefinition workflowDefinition) => WorkflowDefinition = workflowDefinition;
+        public WorkflowDefinition WorkflowDefinition { get; }
         
         public async Task ExecuteAsync(HttpContext httpContext)
         {
             var response = httpContext.Response;
             var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowInvoker>();
-            var result = await workflowInvoker.InvokeAsync(Workflow);
+            var result = await workflowInvoker.InvokeAsync(WorkflowDefinition);
 
             if (!response.HasStarted) 
                 await response.WriteAsJsonAsync(result, httpContext.RequestAborted);

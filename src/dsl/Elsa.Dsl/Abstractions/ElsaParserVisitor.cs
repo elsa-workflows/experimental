@@ -80,6 +80,12 @@ public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitType([NotNull] ElsaParser.TypeContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.methodCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodCall([NotNull] ElsaParser.MethodCallContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.funcCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -122,17 +128,166 @@ public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitPair([NotNull] ElsaParser.PairContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.stat"/>.
+	/// Visit a parse tree produced by the <c>if</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStat([NotNull] ElsaParser.StatContext context);
+	Result VisitIf([NotNull] ElsaParser.IfContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.expr"/>.
+	/// Visit a parse tree produced by the <c>for</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitExpr([NotNull] ElsaParser.ExprContext context);
+	Result VisitFor([NotNull] ElsaParser.ForContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>return</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitReturn([NotNull] ElsaParser.ReturnContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>blockStatements</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBlockStatements([NotNull] ElsaParser.BlockStatementsContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>variableDeclaration</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitVariableDeclaration([NotNull] ElsaParser.VariableDeclarationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>localVariableDeclaration</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLocalVariableDeclaration([NotNull] ElsaParser.LocalVariableDeclarationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>assignment</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAssignment([NotNull] ElsaParser.AssignmentContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>expression</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpression([NotNull] ElsaParser.ExpressionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>add</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAdd([NotNull] ElsaParser.AddContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>parentheses</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitParentheses([NotNull] ElsaParser.ParenthesesContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>compare</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCompare([NotNull] ElsaParser.CompareContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>methodInvocation</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodInvocation([NotNull] ElsaParser.MethodInvocationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>subtract</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSubtract([NotNull] ElsaParser.SubtractContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>variableReference</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitVariableReference([NotNull] ElsaParser.VariableReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>increment</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIncrement([NotNull] ElsaParser.IncrementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>brackets</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBrackets([NotNull] ElsaParser.BracketsContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>not</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNot([NotNull] ElsaParser.NotContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>stringValue</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStringValue([NotNull] ElsaParser.StringValueContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>negate</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNegate([NotNull] ElsaParser.NegateContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>decrement</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDecrement([NotNull] ElsaParser.DecrementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>functionCall</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFunctionCall([NotNull] ElsaParser.FunctionCallContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>integerValue</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIntegerValue([NotNull] ElsaParser.IntegerValueContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>multiply</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMultiply([NotNull] ElsaParser.MultiplyContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.exprList"/>.
 	/// </summary>

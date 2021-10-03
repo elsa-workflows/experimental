@@ -35,7 +35,7 @@ namespace Elsa.Runtime.HostedServices
         private async Task IndexAsync(ITriggerIndexer triggerIndexer, IWorkflowRegistry workflowRegistry, CancellationToken cancellationToken)
         {
             const int limit = 100;
-            PagedList<Workflow> pagedList;
+            PagedList<WorkflowDefinition> pagedList;
             var stopwatch = new Stopwatch();
             var currentBatch = 1;
 

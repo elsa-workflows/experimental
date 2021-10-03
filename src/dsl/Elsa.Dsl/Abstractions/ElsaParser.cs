@@ -38,38 +38,40 @@ public partial class ElsaParser : Parser {
 	public const int
 		EQ=1, GREATER=2, INCREMENT=3, DECREMENT=4, TRIGGER=5, VARIABLE=6, LET=7, 
 		IF=8, THEN=9, ELSE=10, FOR=11, RETURN=12, VOID=13, FLOAT=14, INT=15, STRING=16, 
-		OBJECT=17, SEQUENCE=18, ID=19, SYMBOL=20, INTEGER_VAL=21, COLON=22, SEMICOLON=23, 
-		COMMA=24, PLUS=25, MINUS=26, STAR=27, EQUALS=28, NOT_EQUALS=29, GREATER_EQUALS=30, 
-		LESS=31, LESS_EQUALS=32, PARENTHESES_OPEN=33, PARENTHESES_CLOSE=34, BRACKET_OPEN=35, 
-		BRACKET_CLOSE=36, CURLYBRACE_OPEN=37, CURLYBRACE_CLOSE=38, EXCLAMATION=39, 
-		LANGSPEC_BEGIN=40, STRING_VAL=41, LINE_COMMENT=42, CODE_VAL=43, WS=44;
+		OBJECT=17, SEQUENCE=18, SYMBOL=19, COLON=20, SEMICOLON=21, COMMA=22, PLUS=23, 
+		MINUS=24, STAR=25, EQUALS=26, NOT_EQUALS=27, GREATER_EQUALS=28, LESS=29, 
+		LESS_EQUALS=30, PARENTHESES_OPEN=31, PARENTHESES_CLOSE=32, BRACKET_OPEN=33, 
+		BRACKET_CLOSE=34, CURLYBRACE_OPEN=35, CURLYBRACE_CLOSE=36, EXCLAMATION=37, 
+		PERIOD=38, LANGSPEC_BEGIN=39, STRING_VAL=40, LINE_COMMENT=41, INTEGER_VAL=42, 
+		ID=43, WS=44;
 	public const int
 		RULE_file = 0, RULE_trigger = 1, RULE_root = 2, RULE_activity = 3, RULE_sequence = 4, 
-		RULE_varDecl = 5, RULE_localVarDecl = 6, RULE_type = 7, RULE_funcCall = 8, 
-		RULE_args = 9, RULE_arg = 10, RULE_block_statements = 11, RULE_block_pairs = 12, 
-		RULE_pairList = 13, RULE_pair = 14, RULE_stat = 15, RULE_expr = 16, RULE_exprList = 17;
+		RULE_varDecl = 5, RULE_localVarDecl = 6, RULE_type = 7, RULE_methodCall = 8, 
+		RULE_funcCall = 9, RULE_args = 10, RULE_arg = 11, RULE_block_statements = 12, 
+		RULE_block_pairs = 13, RULE_pairList = 14, RULE_pair = 15, RULE_stat = 16, 
+		RULE_expr = 17, RULE_exprList = 18;
 	public static readonly string[] ruleNames = {
 		"file", "trigger", "root", "activity", "sequence", "varDecl", "localVarDecl", 
-		"type", "funcCall", "args", "arg", "block_statements", "block_pairs", 
+		"type", "methodCall", "funcCall", "args", "arg", "block_statements", "block_pairs", 
 		"pairList", "pair", "stat", "expr", "exprList"
 	};
 
 	private static readonly string[] _LiteralNames = {
 		null, "'='", "'>'", "'++'", "'--'", "'trigger'", "'variable'", "'let'", 
 		"'if'", "'then'", "'else'", "'for'", "'return'", "'void'", "'float'", 
-		"'int'", "'string'", "'object'", "'Sequence'", null, null, null, "':'", 
-		"';'", "','", "'+'", "'-'", "'*'", "'=='", "'!='", "'>='", "'<'", "'<='", 
-		"'('", "')'", "'['", "']'", "'{'", "'}'", "'!'"
+		"'int'", "'string'", "'object'", "'Sequence'", null, "':'", "';'", "','", 
+		"'+'", "'-'", "'*'", "'=='", "'!='", "'>='", "'<'", "'<='", "'('", "')'", 
+		"'['", "']'", "'{'", "'}'", "'!'", "'.'"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "EQ", "GREATER", "INCREMENT", "DECREMENT", "TRIGGER", "VARIABLE", 
 		"LET", "IF", "THEN", "ELSE", "FOR", "RETURN", "VOID", "FLOAT", "INT", 
-		"STRING", "OBJECT", "SEQUENCE", "ID", "SYMBOL", "INTEGER_VAL", "COLON", 
-		"SEMICOLON", "COMMA", "PLUS", "MINUS", "STAR", "EQUALS", "NOT_EQUALS", 
-		"GREATER_EQUALS", "LESS", "LESS_EQUALS", "PARENTHESES_OPEN", "PARENTHESES_CLOSE", 
-		"BRACKET_OPEN", "BRACKET_CLOSE", "CURLYBRACE_OPEN", "CURLYBRACE_CLOSE", 
-		"EXCLAMATION", "LANGSPEC_BEGIN", "STRING_VAL", "LINE_COMMENT", "CODE_VAL", 
-		"WS"
+		"STRING", "OBJECT", "SEQUENCE", "SYMBOL", "COLON", "SEMICOLON", "COMMA", 
+		"PLUS", "MINUS", "STAR", "EQUALS", "NOT_EQUALS", "GREATER_EQUALS", "LESS", 
+		"LESS_EQUALS", "PARENTHESES_OPEN", "PARENTHESES_CLOSE", "BRACKET_OPEN", 
+		"BRACKET_CLOSE", "CURLYBRACE_OPEN", "CURLYBRACE_CLOSE", "EXCLAMATION", 
+		"PERIOD", "LANGSPEC_BEGIN", "STRING_VAL", "LINE_COMMENT", "INTEGER_VAL", 
+		"ID", "WS"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -104,24 +106,27 @@ public partial class ElsaParser : Parser {
 	}
 
 	public partial class FileContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] LINE_COMMENT() { return GetTokens(ElsaParser.LINE_COMMENT); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode LINE_COMMENT(int i) {
-			return GetToken(ElsaParser.LINE_COMMENT, i);
-		}
 		[System.Diagnostics.DebuggerNonUserCode] public TriggerContext[] trigger() {
 			return GetRuleContexts<TriggerContext>();
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public TriggerContext trigger(int i) {
 			return GetRuleContext<TriggerContext>(i);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public RootContext root() {
-			return GetRuleContext<RootContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public RootContext[] root() {
+			return GetRuleContexts<RootContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public RootContext root(int i) {
+			return GetRuleContext<RootContext>(i);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public StatContext[] stat() {
 			return GetRuleContexts<StatContext>();
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public StatContext stat(int i) {
 			return GetRuleContext<StatContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] LINE_COMMENT() { return GetTokens(ElsaParser.LINE_COMMENT); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode LINE_COMMENT(int i) {
+			return GetToken(ElsaParser.LINE_COMMENT, i);
 		}
 		public FileContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -152,86 +157,43 @@ public partial class ElsaParser : Parser {
 		EnterRule(_localctx, 0, RULE_file);
 		int _la;
 		try {
-			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 39;
-			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,0,Context);
-			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					{
-					{
-					State = 36;
-					Match(LINE_COMMENT);
-					}
-					} 
-				}
-				State = 41;
-				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,0,Context);
-			}
-			State = 45;
+			State = 44;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while (_la==TRIGGER) {
-				{
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRIGGER) | (1L << VARIABLE) | (1L << LET) | (1L << IF) | (1L << FOR) | (1L << RETURN) | (1L << SEQUENCE) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << CURLYBRACE_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << LINE_COMMENT) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
 				{
 				State = 42;
-				trigger();
-				}
-				}
-				State = 47;
 				ErrorHandler.Sync(this);
-				_la = TokenStream.LA(1);
-			}
-			State = 49;
-			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,2,Context) ) {
-			case 1:
-				{
-				State = 48;
-				root();
-				}
-				break;
-			}
-			State = 55;
-			ErrorHandler.Sync(this);
-			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << VARIABLE) | (1L << LET) | (1L << IF) | (1L << FOR) | (1L << RETURN) | (1L << ID) | (1L << INTEGER_VAL) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << CURLYBRACE_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << LINE_COMMENT))) != 0)) {
-				{
-				State = 53;
-				ErrorHandler.Sync(this);
-				switch (TokenStream.LA(1)) {
-				case VARIABLE:
-				case LET:
-				case IF:
-				case FOR:
-				case RETURN:
-				case ID:
-				case INTEGER_VAL:
-				case MINUS:
-				case PARENTHESES_OPEN:
-				case BRACKET_OPEN:
-				case CURLYBRACE_OPEN:
-				case EXCLAMATION:
-				case STRING_VAL:
+				switch ( Interpreter.AdaptivePredict(TokenStream,0,Context) ) {
+				case 1:
 					{
-					State = 51;
+					State = 38;
+					trigger();
+					}
+					break;
+				case 2:
+					{
+					State = 39;
+					root();
+					}
+					break;
+				case 3:
+					{
+					State = 40;
 					stat();
 					}
 					break;
-				case LINE_COMMENT:
+				case 4:
 					{
-					State = 52;
+					State = 41;
 					Match(LINE_COMMENT);
 					}
 					break;
-				default:
-					throw new NoViableAltException(this);
 				}
 				}
-				State = 57;
+				State = 46;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -284,11 +246,11 @@ public partial class ElsaParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 58;
+			State = 47;
 			Match(TRIGGER);
-			State = 59;
+			State = 48;
 			Match(ID);
-			State = 60;
+			State = 49;
 			block_pairs();
 			}
 		}
@@ -337,7 +299,7 @@ public partial class ElsaParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 62;
+			State = 51;
 			activity();
 			}
 		}
@@ -385,21 +347,21 @@ public partial class ElsaParser : Parser {
 		ActivityContext _localctx = new ActivityContext(Context, State);
 		EnterRule(_localctx, 6, RULE_activity);
 		try {
-			State = 66;
+			State = 55;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case SEQUENCE:
 			case CURLYBRACE_OPEN:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 64;
+				State = 53;
 				sequence();
 				}
 				break;
 			case ID:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 65;
+				State = 54;
 				Match(ID);
 				}
 				break;
@@ -451,20 +413,20 @@ public partial class ElsaParser : Parser {
 		SequenceContext _localctx = new SequenceContext(Context, State);
 		EnterRule(_localctx, 8, RULE_sequence);
 		try {
-			State = 70;
+			State = 59;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case SEQUENCE:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 68;
+				State = 57;
 				Match(SEQUENCE);
 				}
 				break;
 			case CURLYBRACE_OPEN:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 69;
+				State = 58;
 				block_statements();
 				}
 				break;
@@ -486,7 +448,6 @@ public partial class ElsaParser : Parser {
 	public partial class VarDeclContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode VARIABLE() { return GetToken(ElsaParser.VARIABLE, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode COLON() { return GetToken(ElsaParser.COLON, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public TypeContext type() {
 			return GetRuleContext<TypeContext>(0);
@@ -526,36 +487,34 @@ public partial class ElsaParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 72;
+			State = 61;
 			Match(VARIABLE);
-			State = 73;
+			State = 62;
 			Match(ID);
-			State = 76;
+			State = 65;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==COLON) {
 				{
-				State = 74;
+				State = 63;
 				Match(COLON);
-				State = 75;
+				State = 64;
 				type();
 				}
 			}
 
-			State = 80;
+			State = 69;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==EQ) {
 				{
-				State = 78;
+				State = 67;
 				Match(EQ);
-				State = 79;
+				State = 68;
 				expr(0);
 				}
 			}
 
-			State = 82;
-			Match(SEMICOLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -572,7 +531,6 @@ public partial class ElsaParser : Parser {
 	public partial class LocalVarDeclContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode LET() { return GetToken(ElsaParser.LET, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode COLON() { return GetToken(ElsaParser.COLON, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public TypeContext type() {
 			return GetRuleContext<TypeContext>(0);
@@ -612,36 +570,34 @@ public partial class ElsaParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 84;
+			State = 71;
 			Match(LET);
-			State = 85;
+			State = 72;
 			Match(ID);
-			State = 88;
+			State = 75;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==COLON) {
 				{
-				State = 86;
+				State = 73;
 				Match(COLON);
-				State = 87;
+				State = 74;
 				type();
 				}
 			}
 
-			State = 92;
+			State = 79;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==EQ) {
 				{
-				State = 90;
+				State = 77;
 				Match(EQ);
-				State = 91;
+				State = 78;
 				expr(0);
 				}
 			}
 
-			State = 94;
-			Match(SEMICOLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -692,7 +648,7 @@ public partial class ElsaParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 96;
+			State = 81;
 			_la = TokenStream.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << VOID) | (1L << FLOAT) | (1L << INT) | (1L << STRING) | (1L << OBJECT))) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
@@ -714,11 +670,65 @@ public partial class ElsaParser : Parser {
 		return _localctx;
 	}
 
+	public partial class MethodCallContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PERIOD() { return GetToken(ElsaParser.PERIOD, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public FuncCallContext funcCall() {
+			return GetRuleContext<FuncCallContext>(0);
+		}
+		public MethodCallContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_methodCall; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterMethodCall(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitMethodCall(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitMethodCall(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public MethodCallContext methodCall() {
+		MethodCallContext _localctx = new MethodCallContext(Context, State);
+		EnterRule(_localctx, 16, RULE_methodCall);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 83;
+			Match(ID);
+			State = 84;
+			Match(PERIOD);
+			State = 85;
+			funcCall();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
 	public partial class FuncCallContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_OPEN() { return GetToken(ElsaParser.PARENTHESES_OPEN, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_CLOSE() { return GetToken(ElsaParser.PARENTHESES_CLOSE, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ArgsContext args() {
 			return GetRuleContext<ArgsContext>(0);
 		}
@@ -748,29 +758,27 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public FuncCallContext funcCall() {
 		FuncCallContext _localctx = new FuncCallContext(Context, State);
-		EnterRule(_localctx, 16, RULE_funcCall);
+		EnterRule(_localctx, 18, RULE_funcCall);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 98;
+			State = 87;
 			Match(ID);
-			State = 99;
+			State = 88;
 			Match(PARENTHESES_OPEN);
-			State = 101;
+			State = 90;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ID) | (1L << INTEGER_VAL) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << CODE_VAL))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
 				{
-				State = 100;
+				State = 89;
 				args();
 				}
 			}
 
-			State = 103;
+			State = 92;
 			Match(PARENTHESES_CLOSE);
-			State = 104;
-			Match(SEMICOLON);
 			}
 		}
 		catch (RecognitionException re) {
@@ -821,26 +829,26 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public ArgsContext args() {
 		ArgsContext _localctx = new ArgsContext(Context, State);
-		EnterRule(_localctx, 18, RULE_args);
+		EnterRule(_localctx, 20, RULE_args);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 106;
+			State = 94;
 			arg();
-			State = 111;
+			State = 99;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				State = 107;
+				State = 95;
 				Match(COMMA);
-				State = 108;
+				State = 96;
 				arg();
 				}
 				}
-				State = 113;
+				State = 101;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -858,7 +866,6 @@ public partial class ElsaParser : Parser {
 	}
 
 	public partial class ArgContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode CODE_VAL() { return GetToken(ElsaParser.CODE_VAL, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
 			return GetRuleContext<ExprContext>(0);
 		}
@@ -888,35 +895,12 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public ArgContext arg() {
 		ArgContext _localctx = new ArgContext(Context, State);
-		EnterRule(_localctx, 20, RULE_arg);
+		EnterRule(_localctx, 22, RULE_arg);
 		try {
-			State = 117;
-			ErrorHandler.Sync(this);
-			switch (TokenStream.LA(1)) {
-			case CODE_VAL:
-				EnterOuterAlt(_localctx, 1);
-				{
-				State = 114;
-				Match(CODE_VAL);
-				State = 115;
-				expr(0);
-				}
-				break;
-			case ID:
-			case INTEGER_VAL:
-			case MINUS:
-			case PARENTHESES_OPEN:
-			case BRACKET_OPEN:
-			case EXCLAMATION:
-			case STRING_VAL:
-				EnterOuterAlt(_localctx, 2);
-				{
-				State = 116;
-				expr(0);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 102;
+			expr(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -965,28 +949,28 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public Block_statementsContext block_statements() {
 		Block_statementsContext _localctx = new Block_statementsContext(Context, State);
-		EnterRule(_localctx, 22, RULE_block_statements);
+		EnterRule(_localctx, 24, RULE_block_statements);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 119;
+			State = 104;
 			Match(CURLYBRACE_OPEN);
-			State = 123;
+			State = 108;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << VARIABLE) | (1L << LET) | (1L << IF) | (1L << FOR) | (1L << RETURN) | (1L << ID) | (1L << INTEGER_VAL) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << CURLYBRACE_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << VARIABLE) | (1L << LET) | (1L << IF) | (1L << FOR) | (1L << RETURN) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << CURLYBRACE_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
 				{
 				{
-				State = 120;
+				State = 105;
 				stat();
 				}
 				}
-				State = 125;
+				State = 110;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 126;
+			State = 111;
 			Match(CURLYBRACE_CLOSE);
 			}
 		}
@@ -1033,15 +1017,15 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public Block_pairsContext block_pairs() {
 		Block_pairsContext _localctx = new Block_pairsContext(Context, State);
-		EnterRule(_localctx, 24, RULE_block_pairs);
+		EnterRule(_localctx, 26, RULE_block_pairs);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 128;
+			State = 113;
 			Match(CURLYBRACE_OPEN);
-			State = 129;
+			State = 114;
 			pairList();
-			State = 130;
+			State = 115;
 			Match(CURLYBRACE_CLOSE);
 			}
 		}
@@ -1093,26 +1077,26 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public PairListContext pairList() {
 		PairListContext _localctx = new PairListContext(Context, State);
-		EnterRule(_localctx, 26, RULE_pairList);
+		EnterRule(_localctx, 28, RULE_pairList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 132;
+			State = 117;
 			pair();
-			State = 137;
+			State = 122;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				State = 133;
+				State = 118;
 				Match(COMMA);
-				State = 134;
+				State = 119;
 				pair();
 				}
 				}
-				State = 139;
+				State = 124;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -1161,15 +1145,15 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public PairContext pair() {
 		PairContext _localctx = new PairContext(Context, State);
-		EnterRule(_localctx, 28, RULE_pair);
+		EnterRule(_localctx, 30, RULE_pair);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 140;
+			State = 125;
 			Match(ID);
-			State = 141;
+			State = 126;
 			Match(COLON);
-			State = 142;
+			State = 127;
 			expr(0);
 			}
 		}
@@ -1185,12 +1169,153 @@ public partial class ElsaParser : Parser {
 	}
 
 	public partial class StatContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode IF() { return GetToken(ElsaParser.IF, 0); }
+		public StatContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_stat; } }
+	 
+		public StatContext() { }
+		public virtual void CopyFrom(StatContext context) {
+			base.CopyFrom(context);
+		}
+	}
+	public partial class LocalVariableDeclarationContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public LocalVarDeclContext localVarDecl() {
+			return GetRuleContext<LocalVarDeclContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		public LocalVariableDeclarationContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterLocalVariableDeclaration(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitLocalVariableDeclaration(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitLocalVariableDeclaration(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ExpressionContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		public ExpressionContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterExpression(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitExpression(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitExpression(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class AssignmentContext : StatContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
 			return GetRuleContexts<ExprContext>();
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
 			return GetRuleContext<ExprContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EQ() { return GetToken(ElsaParser.EQ, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		public AssignmentContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterAssignment(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitAssignment(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitAssignment(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ForContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode FOR() { return GetToken(ElsaParser.FOR, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_OPEN() { return GetToken(ElsaParser.PARENTHESES_OPEN, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EQ() { return GetToken(ElsaParser.EQ, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
+			return GetRuleContexts<ExprContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
+			return GetRuleContext<ExprContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] SEMICOLON() { return GetTokens(ElsaParser.SEMICOLON); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON(int i) {
+			return GetToken(ElsaParser.SEMICOLON, i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_CLOSE() { return GetToken(ElsaParser.PARENTHESES_CLOSE, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public StatContext stat() {
+			return GetRuleContext<StatContext>(0);
+		}
+		public ForContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterFor(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitFor(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitFor(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class BlockStatementsContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public Block_statementsContext block_statements() {
+			return GetRuleContext<Block_statementsContext>(0);
+		}
+		public BlockStatementsContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterBlockStatements(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitBlockStatements(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitBlockStatements(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class IfContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode IF() { return GetToken(ElsaParser.IF, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode THEN() { return GetToken(ElsaParser.THEN, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public StatContext[] stat() {
@@ -1200,47 +1325,68 @@ public partial class ElsaParser : Parser {
 			return GetRuleContext<StatContext>(i);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ELSE() { return GetToken(ElsaParser.ELSE, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode FOR() { return GetToken(ElsaParser.FOR, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_OPEN() { return GetToken(ElsaParser.PARENTHESES_OPEN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EQ() { return GetToken(ElsaParser.EQ, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] SEMICOLON() { return GetTokens(ElsaParser.SEMICOLON); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON(int i) {
-			return GetToken(ElsaParser.SEMICOLON, i);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_CLOSE() { return GetToken(ElsaParser.PARENTHESES_CLOSE, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode RETURN() { return GetToken(ElsaParser.RETURN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public Block_statementsContext block_statements() {
-			return GetRuleContext<Block_statementsContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public VarDeclContext varDecl() {
-			return GetRuleContext<VarDeclContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public LocalVarDeclContext localVarDecl() {
-			return GetRuleContext<LocalVarDeclContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public FuncCallContext funcCall() {
-			return GetRuleContext<FuncCallContext>(0);
-		}
-		public StatContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int RuleIndex { get { return RULE_stat; } }
+		public IfContext(StatContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterStat(this);
+			if (typedListener != null) typedListener.EnterIf(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitStat(this);
+			if (typedListener != null) typedListener.ExitIf(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitStat(this);
+			if (typedVisitor != null) return typedVisitor.VisitIf(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ReturnContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode RETURN() { return GetToken(ElsaParser.RETURN, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		public ReturnContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterReturn(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitReturn(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitReturn(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class VariableDeclarationContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public VarDeclContext varDecl() {
+			return GetRuleContext<VarDeclContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		public VariableDeclarationContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterVariableDeclaration(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitVariableDeclaration(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitVariableDeclaration(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -1248,31 +1394,32 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public StatContext stat() {
 		StatContext _localctx = new StatContext(Context, State);
-		EnterRule(_localctx, 30, RULE_stat);
+		EnterRule(_localctx, 32, RULE_stat);
 		int _la;
 		try {
-			State = 181;
+			State = 169;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,18,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,14,Context) ) {
 			case 1:
+				_localctx = new IfContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 144;
+				State = 129;
 				Match(IF);
-				State = 145;
+				State = 130;
 				expr(0);
-				State = 146;
+				State = 131;
 				Match(THEN);
-				State = 147;
+				State = 132;
 				stat();
-				State = 150;
+				State = 135;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,16,Context) ) {
+				switch ( Interpreter.AdaptivePredict(TokenStream,12,Context) ) {
 				case 1:
 					{
-					State = 148;
+					State = 133;
 					Match(ELSE);
-					State = 149;
+					State = 134;
 					stat();
 					}
 					break;
@@ -1280,98 +1427,102 @@ public partial class ElsaParser : Parser {
 				}
 				break;
 			case 2:
+				_localctx = new ForContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 152;
+				State = 137;
 				Match(FOR);
-				State = 153;
+				State = 138;
 				Match(PARENTHESES_OPEN);
-				State = 154;
+				State = 139;
 				Match(ID);
-				State = 155;
+				State = 140;
 				Match(EQ);
-				State = 156;
+				State = 141;
 				expr(0);
-				State = 157;
+				State = 142;
 				Match(SEMICOLON);
-				State = 158;
+				State = 143;
 				expr(0);
-				State = 159;
+				State = 144;
 				Match(SEMICOLON);
-				State = 160;
+				State = 145;
 				expr(0);
-				State = 161;
+				State = 146;
 				Match(PARENTHESES_CLOSE);
-				State = 162;
+				State = 147;
 				stat();
 				}
 				break;
 			case 3:
+				_localctx = new ReturnContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 164;
+				State = 149;
 				Match(RETURN);
-				State = 166;
+				State = 151;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ID) | (1L << INTEGER_VAL) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
 					{
-					State = 165;
+					State = 150;
 					expr(0);
 					}
 				}
 
-				State = 168;
+				State = 153;
 				Match(SEMICOLON);
 				}
 				break;
 			case 4:
+				_localctx = new BlockStatementsContext(_localctx);
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 169;
+				State = 154;
 				block_statements();
 				}
 				break;
 			case 5:
+				_localctx = new VariableDeclarationContext(_localctx);
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 170;
+				State = 155;
 				varDecl();
-				}
-				break;
-			case 6:
-				EnterOuterAlt(_localctx, 6);
-				{
-				State = 171;
-				localVarDecl();
-				}
-				break;
-			case 7:
-				EnterOuterAlt(_localctx, 7);
-				{
-				State = 172;
-				funcCall();
-				}
-				break;
-			case 8:
-				EnterOuterAlt(_localctx, 8);
-				{
-				State = 173;
-				expr(0);
-				State = 174;
-				Match(EQ);
-				State = 175;
-				expr(0);
-				State = 176;
+				State = 156;
 				Match(SEMICOLON);
 				}
 				break;
-			case 9:
-				EnterOuterAlt(_localctx, 9);
+			case 6:
+				_localctx = new LocalVariableDeclarationContext(_localctx);
+				EnterOuterAlt(_localctx, 6);
 				{
-				State = 178;
+				State = 158;
+				localVarDecl();
+				State = 159;
+				Match(SEMICOLON);
+				}
+				break;
+			case 7:
+				_localctx = new AssignmentContext(_localctx);
+				EnterOuterAlt(_localctx, 7);
+				{
+				State = 161;
 				expr(0);
-				State = 179;
+				State = 162;
+				Match(EQ);
+				State = 163;
+				expr(0);
+				State = 164;
+				Match(SEMICOLON);
+				}
+				break;
+			case 8:
+				_localctx = new ExpressionContext(_localctx);
+				EnterOuterAlt(_localctx, 8);
+				{
+				State = 166;
+				expr(0);
+				State = 167;
 				Match(SEMICOLON);
 				}
 				break;
@@ -1389,50 +1540,364 @@ public partial class ElsaParser : Parser {
 	}
 
 	public partial class ExprContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ExprListContext exprList() {
-			return GetRuleContext<ExprListContext>(0);
+		public ExprContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MINUS() { return GetToken(ElsaParser.MINUS, 0); }
+		public override int RuleIndex { get { return RULE_expr; } }
+	 
+		public ExprContext() { }
+		public virtual void CopyFrom(ExprContext context) {
+			base.CopyFrom(context);
+		}
+	}
+	public partial class AddContext : ExprContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
 			return GetRuleContexts<ExprContext>();
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
 			return GetRuleContext<ExprContext>(i);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EXCLAMATION() { return GetToken(ElsaParser.EXCLAMATION, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INTEGER_VAL() { return GetToken(ElsaParser.INTEGER_VAL, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_VAL() { return GetToken(ElsaParser.STRING_VAL, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_OPEN() { return GetToken(ElsaParser.PARENTHESES_OPEN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_CLOSE() { return GetToken(ElsaParser.PARENTHESES_CLOSE, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BRACKET_OPEN() { return GetToken(ElsaParser.BRACKET_OPEN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BRACKET_CLOSE() { return GetToken(ElsaParser.BRACKET_CLOSE, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STAR() { return GetToken(ElsaParser.STAR, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PLUS() { return GetToken(ElsaParser.PLUS, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EQUALS() { return GetToken(ElsaParser.EQUALS, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode GREATER() { return GetToken(ElsaParser.GREATER, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode LESS() { return GetToken(ElsaParser.LESS, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INCREMENT() { return GetToken(ElsaParser.INCREMENT, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DECREMENT() { return GetToken(ElsaParser.DECREMENT, 0); }
-		public ExprContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int RuleIndex { get { return RULE_expr; } }
+		public AddContext(ExprContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterExpr(this);
+			if (typedListener != null) typedListener.EnterAdd(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitExpr(this);
+			if (typedListener != null) typedListener.ExitAdd(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitExpr(this);
+			if (typedVisitor != null) return typedVisitor.VisitAdd(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ParenthesesContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_OPEN() { return GetToken(ElsaParser.PARENTHESES_OPEN, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_CLOSE() { return GetToken(ElsaParser.PARENTHESES_CLOSE, 0); }
+		public ParenthesesContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterParentheses(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitParentheses(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitParentheses(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class CompareContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
+			return GetRuleContexts<ExprContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
+			return GetRuleContext<ExprContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EQUALS() { return GetToken(ElsaParser.EQUALS, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode GREATER() { return GetToken(ElsaParser.GREATER, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode LESS() { return GetToken(ElsaParser.LESS, 0); }
+		public CompareContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterCompare(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitCompare(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitCompare(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class MethodInvocationContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public MethodCallContext methodCall() {
+			return GetRuleContext<MethodCallContext>(0);
+		}
+		public MethodInvocationContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterMethodInvocation(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitMethodInvocation(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitMethodInvocation(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class SubtractContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
+			return GetRuleContexts<ExprContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
+			return GetRuleContext<ExprContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MINUS() { return GetToken(ElsaParser.MINUS, 0); }
+		public SubtractContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterSubtract(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitSubtract(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitSubtract(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class VariableReferenceContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
+		public VariableReferenceContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterVariableReference(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitVariableReference(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitVariableReference(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class IncrementContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INCREMENT() { return GetToken(ElsaParser.INCREMENT, 0); }
+		public IncrementContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterIncrement(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitIncrement(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitIncrement(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class BracketsContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BRACKET_OPEN() { return GetToken(ElsaParser.BRACKET_OPEN, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprListContext exprList() {
+			return GetRuleContext<ExprListContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BRACKET_CLOSE() { return GetToken(ElsaParser.BRACKET_CLOSE, 0); }
+		public BracketsContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterBrackets(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitBrackets(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitBrackets(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class NotContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EXCLAMATION() { return GetToken(ElsaParser.EXCLAMATION, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		public NotContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterNot(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitNot(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNot(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class StringValueContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_VAL() { return GetToken(ElsaParser.STRING_VAL, 0); }
+		public StringValueContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterStringValue(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitStringValue(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitStringValue(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class NegateContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MINUS() { return GetToken(ElsaParser.MINUS, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		public NegateContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterNegate(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitNegate(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNegate(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class DecrementContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DECREMENT() { return GetToken(ElsaParser.DECREMENT, 0); }
+		public DecrementContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterDecrement(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitDecrement(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDecrement(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class FunctionCallContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public FuncCallContext funcCall() {
+			return GetRuleContext<FuncCallContext>(0);
+		}
+		public FunctionCallContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterFunctionCall(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitFunctionCall(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitFunctionCall(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class IntegerValueContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INTEGER_VAL() { return GetToken(ElsaParser.INTEGER_VAL, 0); }
+		public IntegerValueContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterIntegerValue(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitIntegerValue(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitIntegerValue(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class MultiplyContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
+			return GetRuleContexts<ExprContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
+			return GetRuleContext<ExprContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STAR() { return GetToken(ElsaParser.STAR, 0); }
+		public MultiplyContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterMultiply(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitMultiply(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitMultiply(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -1447,130 +1912,167 @@ public partial class ElsaParser : Parser {
 		int _parentState = State;
 		ExprContext _localctx = new ExprContext(Context, _parentState);
 		ExprContext _prevctx = _localctx;
-		int _startState = 32;
-		EnterRecursionRule(_localctx, 32, RULE_expr, _p);
+		int _startState = 34;
+		EnterRecursionRule(_localctx, 34, RULE_expr, _p);
 		int _la;
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 201;
+			State = 189;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,19,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,15,Context) ) {
 			case 1:
 				{
-				State = 184;
-				Match(ID);
-				State = 185;
-				exprList();
+				_localctx = new FunctionCallContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+
+				State = 172;
+				funcCall();
 				}
 				break;
 			case 2:
 				{
-				State = 186;
+				_localctx = new NegateContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 173;
 				Match(MINUS);
-				State = 187;
-				expr(10);
+				State = 174;
+				expr(12);
 				}
 				break;
 			case 3:
 				{
-				State = 188;
+				_localctx = new NotContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 175;
 				Match(EXCLAMATION);
-				State = 189;
-				expr(9);
+				State = 176;
+				expr(11);
 				}
 				break;
 			case 4:
 				{
-				State = 190;
+				_localctx = new IntegerValueContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 177;
 				Match(INTEGER_VAL);
 				}
 				break;
 			case 5:
 				{
-				State = 191;
+				_localctx = new StringValueContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 178;
 				Match(STRING_VAL);
 				}
 				break;
 			case 6:
 				{
-				State = 192;
+				_localctx = new ParenthesesContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 179;
 				Match(PARENTHESES_OPEN);
-				State = 193;
+				State = 180;
 				expr(0);
-				State = 194;
+				State = 181;
 				Match(PARENTHESES_CLOSE);
 				}
 				break;
 			case 7:
 				{
-				State = 196;
+				_localctx = new BracketsContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 183;
 				Match(BRACKET_OPEN);
-				State = 197;
-				expr(0);
-				State = 198;
+				State = 184;
+				exprList();
+				State = 185;
 				Match(BRACKET_CLOSE);
 				}
 				break;
 			case 8:
 				{
-				State = 200;
+				_localctx = new MethodInvocationContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 187;
+				methodCall();
+				}
+				break;
+			case 9:
+				{
+				_localctx = new VariableReferenceContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 188;
 				Match(ID);
 				}
 				break;
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 218;
+			State = 209;
 			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,21,Context);
+			_alt = Interpreter.AdaptivePredict(TokenStream,17,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( ParseListeners!=null )
 						TriggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					State = 216;
+					State = 207;
 					ErrorHandler.Sync(this);
-					switch ( Interpreter.AdaptivePredict(TokenStream,20,Context) ) {
+					switch ( Interpreter.AdaptivePredict(TokenStream,16,Context) ) {
 					case 1:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new MultiplyContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 203;
-						if (!(Precpred(Context, 8))) throw new FailedPredicateException(this, "Precpred(Context, 8)");
-						State = 204;
+						State = 191;
+						if (!(Precpred(Context, 10))) throw new FailedPredicateException(this, "Precpred(Context, 10)");
+						State = 192;
 						Match(STAR);
-						State = 205;
-						expr(9);
+						State = 193;
+						expr(11);
 						}
 						break;
 					case 2:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new AddContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 206;
-						if (!(Precpred(Context, 7))) throw new FailedPredicateException(this, "Precpred(Context, 7)");
-						State = 207;
-						_la = TokenStream.LA(1);
-						if ( !(_la==PLUS || _la==MINUS) ) {
-						ErrorHandler.RecoverInline(this);
-						}
-						else {
-							ErrorHandler.ReportMatch(this);
-						    Consume();
-						}
-						State = 208;
-						expr(8);
+						State = 194;
+						if (!(Precpred(Context, 9))) throw new FailedPredicateException(this, "Precpred(Context, 9)");
+						State = 195;
+						Match(PLUS);
+						State = 196;
+						expr(10);
 						}
 						break;
 					case 3:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new SubtractContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 209;
-						if (!(Precpred(Context, 6))) throw new FailedPredicateException(this, "Precpred(Context, 6)");
-						State = 210;
+						State = 197;
+						if (!(Precpred(Context, 8))) throw new FailedPredicateException(this, "Precpred(Context, 8)");
+						State = 198;
+						Match(MINUS);
+						State = 199;
+						expr(9);
+						}
+						break;
+					case 4:
+						{
+						_localctx = new CompareContext(new ExprContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_expr);
+						State = 200;
+						if (!(Precpred(Context, 7))) throw new FailedPredicateException(this, "Precpred(Context, 7)");
+						State = 201;
 						_la = TokenStream.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GREATER) | (1L << EQUALS) | (1L << LESS))) != 0)) ) {
 						ErrorHandler.RecoverInline(this);
@@ -1579,36 +2081,36 @@ public partial class ElsaParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 211;
-						expr(7);
-						}
-						break;
-					case 4:
-						{
-						_localctx = new ExprContext(_parentctx, _parentState);
-						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 212;
-						if (!(Precpred(Context, 12))) throw new FailedPredicateException(this, "Precpred(Context, 12)");
-						State = 213;
-						Match(INCREMENT);
+						State = 202;
+						expr(8);
 						}
 						break;
 					case 5:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new IncrementContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 214;
-						if (!(Precpred(Context, 11))) throw new FailedPredicateException(this, "Precpred(Context, 11)");
-						State = 215;
+						State = 203;
+						if (!(Precpred(Context, 14))) throw new FailedPredicateException(this, "Precpred(Context, 14)");
+						State = 204;
+						Match(INCREMENT);
+						}
+						break;
+					case 6:
+						{
+						_localctx = new DecrementContext(new ExprContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_expr);
+						State = 205;
+						if (!(Precpred(Context, 13))) throw new FailedPredicateException(this, "Precpred(Context, 13)");
+						State = 206;
 						Match(DECREMENT);
 						}
 						break;
 					}
 					} 
 				}
-				State = 220;
+				State = 211;
 				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,21,Context);
+				_alt = Interpreter.AdaptivePredict(TokenStream,17,Context);
 			}
 			}
 		}
@@ -1660,30 +2162,28 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public ExprListContext exprList() {
 		ExprListContext _localctx = new ExprListContext(Context, State);
-		EnterRule(_localctx, 34, RULE_exprList);
+		EnterRule(_localctx, 36, RULE_exprList);
+		int _la;
 		try {
-			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 221;
+			State = 212;
 			expr(0);
-			State = 226;
+			State = 217;
 			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,22,Context);
-			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					{
-					{
-					State = 222;
-					Match(COMMA);
-					State = 223;
-					expr(0);
-					}
-					} 
+			_la = TokenStream.LA(1);
+			while (_la==COMMA) {
+				{
+				{
+				State = 213;
+				Match(COMMA);
+				State = 214;
+				expr(0);
 				}
-				State = 228;
+				}
+				State = 219;
 				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,22,Context);
+				_la = TokenStream.LA(1);
 			}
 			}
 		}
@@ -1700,218 +2200,210 @@ public partial class ElsaParser : Parser {
 
 	public override bool Sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 16: return expr_sempred((ExprContext)_localctx, predIndex);
+		case 17: return expr_sempred((ExprContext)_localctx, predIndex);
 		}
 		return true;
 	}
 	private bool expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 0: return Precpred(Context, 8);
-		case 1: return Precpred(Context, 7);
-		case 2: return Precpred(Context, 6);
-		case 3: return Precpred(Context, 12);
-		case 4: return Precpred(Context, 11);
+		case 0: return Precpred(Context, 10);
+		case 1: return Precpred(Context, 9);
+		case 2: return Precpred(Context, 8);
+		case 3: return Precpred(Context, 7);
+		case 4: return Precpred(Context, 14);
+		case 5: return Precpred(Context, 13);
 		}
 		return true;
 	}
 
 	private static char[] _serializedATN = {
 		'\x3', '\x608B', '\xA72A', '\x8133', '\xB9ED', '\x417C', '\x3BE7', '\x7786', 
-		'\x5964', '\x3', '.', '\xE8', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
+		'\x5964', '\x3', '.', '\xDF', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
 		'\t', '\x3', '\x4', '\x4', '\t', '\x4', '\x4', '\x5', '\t', '\x5', '\x4', 
 		'\x6', '\t', '\x6', '\x4', '\a', '\t', '\a', '\x4', '\b', '\t', '\b', 
 		'\x4', '\t', '\t', '\t', '\x4', '\n', '\t', '\n', '\x4', '\v', '\t', '\v', 
 		'\x4', '\f', '\t', '\f', '\x4', '\r', '\t', '\r', '\x4', '\xE', '\t', 
 		'\xE', '\x4', '\xF', '\t', '\xF', '\x4', '\x10', '\t', '\x10', '\x4', 
 		'\x11', '\t', '\x11', '\x4', '\x12', '\t', '\x12', '\x4', '\x13', '\t', 
-		'\x13', '\x3', '\x2', '\a', '\x2', '(', '\n', '\x2', '\f', '\x2', '\xE', 
-		'\x2', '+', '\v', '\x2', '\x3', '\x2', '\a', '\x2', '.', '\n', '\x2', 
-		'\f', '\x2', '\xE', '\x2', '\x31', '\v', '\x2', '\x3', '\x2', '\x5', '\x2', 
-		'\x34', '\n', '\x2', '\x3', '\x2', '\x3', '\x2', '\a', '\x2', '\x38', 
-		'\n', '\x2', '\f', '\x2', '\xE', '\x2', ';', '\v', '\x2', '\x3', '\x3', 
-		'\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x4', '\x3', '\x4', 
-		'\x3', '\x5', '\x3', '\x5', '\x5', '\x5', '\x45', '\n', '\x5', '\x3', 
-		'\x6', '\x3', '\x6', '\x5', '\x6', 'I', '\n', '\x6', '\x3', '\a', '\x3', 
-		'\a', '\x3', '\a', '\x3', '\a', '\x5', '\a', 'O', '\n', '\a', '\x3', '\a', 
-		'\x3', '\a', '\x5', '\a', 'S', '\n', '\a', '\x3', '\a', '\x3', '\a', '\x3', 
-		'\b', '\x3', '\b', '\x3', '\b', '\x3', '\b', '\x5', '\b', '[', '\n', '\b', 
-		'\x3', '\b', '\x3', '\b', '\x5', '\b', '_', '\n', '\b', '\x3', '\b', '\x3', 
+		'\x13', '\x4', '\x14', '\t', '\x14', '\x3', '\x2', '\x3', '\x2', '\x3', 
+		'\x2', '\x3', '\x2', '\a', '\x2', '-', '\n', '\x2', '\f', '\x2', '\xE', 
+		'\x2', '\x30', '\v', '\x2', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', 
+		'\x3', '\x3', '\x3', '\x4', '\x3', '\x4', '\x3', '\x5', '\x3', '\x5', 
+		'\x5', '\x5', ':', '\n', '\x5', '\x3', '\x6', '\x3', '\x6', '\x5', '\x6', 
+		'>', '\n', '\x6', '\x3', '\a', '\x3', '\a', '\x3', '\a', '\x3', '\a', 
+		'\x5', '\a', '\x44', '\n', '\a', '\x3', '\a', '\x3', '\a', '\x5', '\a', 
+		'H', '\n', '\a', '\x3', '\b', '\x3', '\b', '\x3', '\b', '\x3', '\b', '\x5', 
+		'\b', 'N', '\n', '\b', '\x3', '\b', '\x3', '\b', '\x5', '\b', 'R', '\n', 
 		'\b', '\x3', '\t', '\x3', '\t', '\x3', '\n', '\x3', '\n', '\x3', '\n', 
-		'\x5', '\n', 'h', '\n', '\n', '\x3', '\n', '\x3', '\n', '\x3', '\n', '\x3', 
-		'\v', '\x3', '\v', '\x3', '\v', '\a', '\v', 'p', '\n', '\v', '\f', '\v', 
-		'\xE', '\v', 's', '\v', '\v', '\x3', '\f', '\x3', '\f', '\x3', '\f', '\x5', 
-		'\f', 'x', '\n', '\f', '\x3', '\r', '\x3', '\r', '\a', '\r', '|', '\n', 
-		'\r', '\f', '\r', '\xE', '\r', '\x7F', '\v', '\r', '\x3', '\r', '\x3', 
-		'\r', '\x3', '\xE', '\x3', '\xE', '\x3', '\xE', '\x3', '\xE', '\x3', '\xF', 
-		'\x3', '\xF', '\x3', '\xF', '\a', '\xF', '\x8A', '\n', '\xF', '\f', '\xF', 
-		'\xE', '\xF', '\x8D', '\v', '\xF', '\x3', '\x10', '\x3', '\x10', '\x3', 
-		'\x10', '\x3', '\x10', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', 
-		'\x11', '\x3', '\x11', '\x3', '\x11', '\x5', '\x11', '\x99', '\n', '\x11', 
-		'\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', 
-		'\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', 
-		'\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x5', '\x11', 
-		'\xA9', '\n', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', 
-		'\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', 
-		'\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x5', 
-		'\x11', '\xB8', '\n', '\x11', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', 
-		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', 
-		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', 
-		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', 
-		'\x5', '\x12', '\xCC', '\n', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', 
+		'\x3', '\n', '\x3', '\v', '\x3', '\v', '\x3', '\v', '\x5', '\v', ']', 
+		'\n', '\v', '\x3', '\v', '\x3', '\v', '\x3', '\f', '\x3', '\f', '\x3', 
+		'\f', '\a', '\f', '\x64', '\n', '\f', '\f', '\f', '\xE', '\f', 'g', '\v', 
+		'\f', '\x3', '\r', '\x3', '\r', '\x3', '\xE', '\x3', '\xE', '\a', '\xE', 
+		'm', '\n', '\xE', '\f', '\xE', '\xE', '\xE', 'p', '\v', '\xE', '\x3', 
+		'\xE', '\x3', '\xE', '\x3', '\xF', '\x3', '\xF', '\x3', '\xF', '\x3', 
+		'\xF', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\a', '\x10', '{', 
+		'\n', '\x10', '\f', '\x10', '\xE', '\x10', '~', '\v', '\x10', '\x3', '\x11', 
+		'\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x12', '\x3', '\x12', 
+		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x5', '\x12', 
+		'\x8A', '\n', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', 
 		'\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', 
 		'\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', 
-		'\x12', '\a', '\x12', '\xDB', '\n', '\x12', '\f', '\x12', '\xE', '\x12', 
-		'\xDE', '\v', '\x12', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\a', 
-		'\x13', '\xE3', '\n', '\x13', '\f', '\x13', '\xE', '\x13', '\xE6', '\v', 
-		'\x13', '\x3', '\x13', '\x2', '\x3', '\"', '\x14', '\x2', '\x4', '\x6', 
-		'\b', '\n', '\f', '\xE', '\x10', '\x12', '\x14', '\x16', '\x18', '\x1A', 
-		'\x1C', '\x1E', ' ', '\"', '$', '\x2', '\x5', '\x3', '\x2', '\xF', '\x13', 
-		'\x3', '\x2', '\x1B', '\x1C', '\x5', '\x2', '\x4', '\x4', '\x1E', '\x1E', 
-		'!', '!', '\x2', '\xFC', '\x2', ')', '\x3', '\x2', '\x2', '\x2', '\x4', 
-		'<', '\x3', '\x2', '\x2', '\x2', '\x6', '@', '\x3', '\x2', '\x2', '\x2', 
-		'\b', '\x44', '\x3', '\x2', '\x2', '\x2', '\n', 'H', '\x3', '\x2', '\x2', 
-		'\x2', '\f', 'J', '\x3', '\x2', '\x2', '\x2', '\xE', 'V', '\x3', '\x2', 
-		'\x2', '\x2', '\x10', '\x62', '\x3', '\x2', '\x2', '\x2', '\x12', '\x64', 
-		'\x3', '\x2', '\x2', '\x2', '\x14', 'l', '\x3', '\x2', '\x2', '\x2', '\x16', 
-		'w', '\x3', '\x2', '\x2', '\x2', '\x18', 'y', '\x3', '\x2', '\x2', '\x2', 
-		'\x1A', '\x82', '\x3', '\x2', '\x2', '\x2', '\x1C', '\x86', '\x3', '\x2', 
-		'\x2', '\x2', '\x1E', '\x8E', '\x3', '\x2', '\x2', '\x2', ' ', '\xB7', 
-		'\x3', '\x2', '\x2', '\x2', '\"', '\xCB', '\x3', '\x2', '\x2', '\x2', 
-		'$', '\xDF', '\x3', '\x2', '\x2', '\x2', '&', '(', '\a', ',', '\x2', '\x2', 
-		'\'', '&', '\x3', '\x2', '\x2', '\x2', '(', '+', '\x3', '\x2', '\x2', 
-		'\x2', ')', '\'', '\x3', '\x2', '\x2', '\x2', ')', '*', '\x3', '\x2', 
-		'\x2', '\x2', '*', '/', '\x3', '\x2', '\x2', '\x2', '+', ')', '\x3', '\x2', 
-		'\x2', '\x2', ',', '.', '\x5', '\x4', '\x3', '\x2', '-', ',', '\x3', '\x2', 
-		'\x2', '\x2', '.', '\x31', '\x3', '\x2', '\x2', '\x2', '/', '-', '\x3', 
-		'\x2', '\x2', '\x2', '/', '\x30', '\x3', '\x2', '\x2', '\x2', '\x30', 
-		'\x33', '\x3', '\x2', '\x2', '\x2', '\x31', '/', '\x3', '\x2', '\x2', 
-		'\x2', '\x32', '\x34', '\x5', '\x6', '\x4', '\x2', '\x33', '\x32', '\x3', 
-		'\x2', '\x2', '\x2', '\x33', '\x34', '\x3', '\x2', '\x2', '\x2', '\x34', 
-		'\x39', '\x3', '\x2', '\x2', '\x2', '\x35', '\x38', '\x5', ' ', '\x11', 
-		'\x2', '\x36', '\x38', '\a', ',', '\x2', '\x2', '\x37', '\x35', '\x3', 
-		'\x2', '\x2', '\x2', '\x37', '\x36', '\x3', '\x2', '\x2', '\x2', '\x38', 
-		';', '\x3', '\x2', '\x2', '\x2', '\x39', '\x37', '\x3', '\x2', '\x2', 
-		'\x2', '\x39', ':', '\x3', '\x2', '\x2', '\x2', ':', '\x3', '\x3', '\x2', 
-		'\x2', '\x2', ';', '\x39', '\x3', '\x2', '\x2', '\x2', '<', '=', '\a', 
-		'\a', '\x2', '\x2', '=', '>', '\a', '\x15', '\x2', '\x2', '>', '?', '\x5', 
-		'\x1A', '\xE', '\x2', '?', '\x5', '\x3', '\x2', '\x2', '\x2', '@', '\x41', 
-		'\x5', '\b', '\x5', '\x2', '\x41', '\a', '\x3', '\x2', '\x2', '\x2', '\x42', 
-		'\x45', '\x5', '\n', '\x6', '\x2', '\x43', '\x45', '\a', '\x15', '\x2', 
-		'\x2', '\x44', '\x42', '\x3', '\x2', '\x2', '\x2', '\x44', '\x43', '\x3', 
-		'\x2', '\x2', '\x2', '\x45', '\t', '\x3', '\x2', '\x2', '\x2', '\x46', 
-		'I', '\a', '\x14', '\x2', '\x2', 'G', 'I', '\x5', '\x18', '\r', '\x2', 
-		'H', '\x46', '\x3', '\x2', '\x2', '\x2', 'H', 'G', '\x3', '\x2', '\x2', 
-		'\x2', 'I', '\v', '\x3', '\x2', '\x2', '\x2', 'J', 'K', '\a', '\b', '\x2', 
-		'\x2', 'K', 'N', '\a', '\x15', '\x2', '\x2', 'L', 'M', '\a', '\x18', '\x2', 
-		'\x2', 'M', 'O', '\x5', '\x10', '\t', '\x2', 'N', 'L', '\x3', '\x2', '\x2', 
-		'\x2', 'N', 'O', '\x3', '\x2', '\x2', '\x2', 'O', 'R', '\x3', '\x2', '\x2', 
-		'\x2', 'P', 'Q', '\a', '\x3', '\x2', '\x2', 'Q', 'S', '\x5', '\"', '\x12', 
-		'\x2', 'R', 'P', '\x3', '\x2', '\x2', '\x2', 'R', 'S', '\x3', '\x2', '\x2', 
-		'\x2', 'S', 'T', '\x3', '\x2', '\x2', '\x2', 'T', 'U', '\a', '\x19', '\x2', 
-		'\x2', 'U', '\r', '\x3', '\x2', '\x2', '\x2', 'V', 'W', '\a', '\t', '\x2', 
-		'\x2', 'W', 'Z', '\a', '\x15', '\x2', '\x2', 'X', 'Y', '\a', '\x18', '\x2', 
-		'\x2', 'Y', '[', '\x5', '\x10', '\t', '\x2', 'Z', 'X', '\x3', '\x2', '\x2', 
-		'\x2', 'Z', '[', '\x3', '\x2', '\x2', '\x2', '[', '^', '\x3', '\x2', '\x2', 
-		'\x2', '\\', ']', '\a', '\x3', '\x2', '\x2', ']', '_', '\x5', '\"', '\x12', 
-		'\x2', '^', '\\', '\x3', '\x2', '\x2', '\x2', '^', '_', '\x3', '\x2', 
-		'\x2', '\x2', '_', '`', '\x3', '\x2', '\x2', '\x2', '`', '\x61', '\a', 
-		'\x19', '\x2', '\x2', '\x61', '\xF', '\x3', '\x2', '\x2', '\x2', '\x62', 
-		'\x63', '\t', '\x2', '\x2', '\x2', '\x63', '\x11', '\x3', '\x2', '\x2', 
-		'\x2', '\x64', '\x65', '\a', '\x15', '\x2', '\x2', '\x65', 'g', '\a', 
-		'#', '\x2', '\x2', '\x66', 'h', '\x5', '\x14', '\v', '\x2', 'g', '\x66', 
-		'\x3', '\x2', '\x2', '\x2', 'g', 'h', '\x3', '\x2', '\x2', '\x2', 'h', 
-		'i', '\x3', '\x2', '\x2', '\x2', 'i', 'j', '\a', '$', '\x2', '\x2', 'j', 
-		'k', '\a', '\x19', '\x2', '\x2', 'k', '\x13', '\x3', '\x2', '\x2', '\x2', 
-		'l', 'q', '\x5', '\x16', '\f', '\x2', 'm', 'n', '\a', '\x1A', '\x2', '\x2', 
-		'n', 'p', '\x5', '\x16', '\f', '\x2', 'o', 'm', '\x3', '\x2', '\x2', '\x2', 
-		'p', 's', '\x3', '\x2', '\x2', '\x2', 'q', 'o', '\x3', '\x2', '\x2', '\x2', 
-		'q', 'r', '\x3', '\x2', '\x2', '\x2', 'r', '\x15', '\x3', '\x2', '\x2', 
-		'\x2', 's', 'q', '\x3', '\x2', '\x2', '\x2', 't', 'u', '\a', '-', '\x2', 
-		'\x2', 'u', 'x', '\x5', '\"', '\x12', '\x2', 'v', 'x', '\x5', '\"', '\x12', 
-		'\x2', 'w', 't', '\x3', '\x2', '\x2', '\x2', 'w', 'v', '\x3', '\x2', '\x2', 
-		'\x2', 'x', '\x17', '\x3', '\x2', '\x2', '\x2', 'y', '}', '\a', '\'', 
-		'\x2', '\x2', 'z', '|', '\x5', ' ', '\x11', '\x2', '{', 'z', '\x3', '\x2', 
-		'\x2', '\x2', '|', '\x7F', '\x3', '\x2', '\x2', '\x2', '}', '{', '\x3', 
-		'\x2', '\x2', '\x2', '}', '~', '\x3', '\x2', '\x2', '\x2', '~', '\x80', 
-		'\x3', '\x2', '\x2', '\x2', '\x7F', '}', '\x3', '\x2', '\x2', '\x2', '\x80', 
-		'\x81', '\a', '(', '\x2', '\x2', '\x81', '\x19', '\x3', '\x2', '\x2', 
-		'\x2', '\x82', '\x83', '\a', '\'', '\x2', '\x2', '\x83', '\x84', '\x5', 
-		'\x1C', '\xF', '\x2', '\x84', '\x85', '\a', '(', '\x2', '\x2', '\x85', 
-		'\x1B', '\x3', '\x2', '\x2', '\x2', '\x86', '\x8B', '\x5', '\x1E', '\x10', 
-		'\x2', '\x87', '\x88', '\a', '\x1A', '\x2', '\x2', '\x88', '\x8A', '\x5', 
-		'\x1E', '\x10', '\x2', '\x89', '\x87', '\x3', '\x2', '\x2', '\x2', '\x8A', 
-		'\x8D', '\x3', '\x2', '\x2', '\x2', '\x8B', '\x89', '\x3', '\x2', '\x2', 
-		'\x2', '\x8B', '\x8C', '\x3', '\x2', '\x2', '\x2', '\x8C', '\x1D', '\x3', 
-		'\x2', '\x2', '\x2', '\x8D', '\x8B', '\x3', '\x2', '\x2', '\x2', '\x8E', 
-		'\x8F', '\a', '\x15', '\x2', '\x2', '\x8F', '\x90', '\a', '\x18', '\x2', 
-		'\x2', '\x90', '\x91', '\x5', '\"', '\x12', '\x2', '\x91', '\x1F', '\x3', 
-		'\x2', '\x2', '\x2', '\x92', '\x93', '\a', '\n', '\x2', '\x2', '\x93', 
-		'\x94', '\x5', '\"', '\x12', '\x2', '\x94', '\x95', '\a', '\v', '\x2', 
-		'\x2', '\x95', '\x98', '\x5', ' ', '\x11', '\x2', '\x96', '\x97', '\a', 
-		'\f', '\x2', '\x2', '\x97', '\x99', '\x5', ' ', '\x11', '\x2', '\x98', 
-		'\x96', '\x3', '\x2', '\x2', '\x2', '\x98', '\x99', '\x3', '\x2', '\x2', 
-		'\x2', '\x99', '\xB8', '\x3', '\x2', '\x2', '\x2', '\x9A', '\x9B', '\a', 
-		'\r', '\x2', '\x2', '\x9B', '\x9C', '\a', '#', '\x2', '\x2', '\x9C', '\x9D', 
-		'\a', '\x15', '\x2', '\x2', '\x9D', '\x9E', '\a', '\x3', '\x2', '\x2', 
-		'\x9E', '\x9F', '\x5', '\"', '\x12', '\x2', '\x9F', '\xA0', '\a', '\x19', 
-		'\x2', '\x2', '\xA0', '\xA1', '\x5', '\"', '\x12', '\x2', '\xA1', '\xA2', 
-		'\a', '\x19', '\x2', '\x2', '\xA2', '\xA3', '\x5', '\"', '\x12', '\x2', 
-		'\xA3', '\xA4', '\a', '$', '\x2', '\x2', '\xA4', '\xA5', '\x5', ' ', '\x11', 
-		'\x2', '\xA5', '\xB8', '\x3', '\x2', '\x2', '\x2', '\xA6', '\xA8', '\a', 
-		'\xE', '\x2', '\x2', '\xA7', '\xA9', '\x5', '\"', '\x12', '\x2', '\xA8', 
-		'\xA7', '\x3', '\x2', '\x2', '\x2', '\xA8', '\xA9', '\x3', '\x2', '\x2', 
-		'\x2', '\xA9', '\xAA', '\x3', '\x2', '\x2', '\x2', '\xAA', '\xB8', '\a', 
-		'\x19', '\x2', '\x2', '\xAB', '\xB8', '\x5', '\x18', '\r', '\x2', '\xAC', 
-		'\xB8', '\x5', '\f', '\a', '\x2', '\xAD', '\xB8', '\x5', '\xE', '\b', 
-		'\x2', '\xAE', '\xB8', '\x5', '\x12', '\n', '\x2', '\xAF', '\xB0', '\x5', 
-		'\"', '\x12', '\x2', '\xB0', '\xB1', '\a', '\x3', '\x2', '\x2', '\xB1', 
-		'\xB2', '\x5', '\"', '\x12', '\x2', '\xB2', '\xB3', '\a', '\x19', '\x2', 
-		'\x2', '\xB3', '\xB8', '\x3', '\x2', '\x2', '\x2', '\xB4', '\xB5', '\x5', 
-		'\"', '\x12', '\x2', '\xB5', '\xB6', '\a', '\x19', '\x2', '\x2', '\xB6', 
-		'\xB8', '\x3', '\x2', '\x2', '\x2', '\xB7', '\x92', '\x3', '\x2', '\x2', 
-		'\x2', '\xB7', '\x9A', '\x3', '\x2', '\x2', '\x2', '\xB7', '\xA6', '\x3', 
-		'\x2', '\x2', '\x2', '\xB7', '\xAB', '\x3', '\x2', '\x2', '\x2', '\xB7', 
-		'\xAC', '\x3', '\x2', '\x2', '\x2', '\xB7', '\xAD', '\x3', '\x2', '\x2', 
-		'\x2', '\xB7', '\xAE', '\x3', '\x2', '\x2', '\x2', '\xB7', '\xAF', '\x3', 
-		'\x2', '\x2', '\x2', '\xB7', '\xB4', '\x3', '\x2', '\x2', '\x2', '\xB8', 
-		'!', '\x3', '\x2', '\x2', '\x2', '\xB9', '\xBA', '\b', '\x12', '\x1', 
-		'\x2', '\xBA', '\xBB', '\a', '\x15', '\x2', '\x2', '\xBB', '\xCC', '\x5', 
-		'$', '\x13', '\x2', '\xBC', '\xBD', '\a', '\x1C', '\x2', '\x2', '\xBD', 
-		'\xCC', '\x5', '\"', '\x12', '\f', '\xBE', '\xBF', '\a', ')', '\x2', '\x2', 
-		'\xBF', '\xCC', '\x5', '\"', '\x12', '\v', '\xC0', '\xCC', '\a', '\x17', 
-		'\x2', '\x2', '\xC1', '\xCC', '\a', '+', '\x2', '\x2', '\xC2', '\xC3', 
-		'\a', '#', '\x2', '\x2', '\xC3', '\xC4', '\x5', '\"', '\x12', '\x2', '\xC4', 
-		'\xC5', '\a', '$', '\x2', '\x2', '\xC5', '\xCC', '\x3', '\x2', '\x2', 
-		'\x2', '\xC6', '\xC7', '\a', '%', '\x2', '\x2', '\xC7', '\xC8', '\x5', 
-		'\"', '\x12', '\x2', '\xC8', '\xC9', '\a', '&', '\x2', '\x2', '\xC9', 
-		'\xCC', '\x3', '\x2', '\x2', '\x2', '\xCA', '\xCC', '\a', '\x15', '\x2', 
-		'\x2', '\xCB', '\xB9', '\x3', '\x2', '\x2', '\x2', '\xCB', '\xBC', '\x3', 
-		'\x2', '\x2', '\x2', '\xCB', '\xBE', '\x3', '\x2', '\x2', '\x2', '\xCB', 
-		'\xC0', '\x3', '\x2', '\x2', '\x2', '\xCB', '\xC1', '\x3', '\x2', '\x2', 
-		'\x2', '\xCB', '\xC2', '\x3', '\x2', '\x2', '\x2', '\xCB', '\xC6', '\x3', 
-		'\x2', '\x2', '\x2', '\xCB', '\xCA', '\x3', '\x2', '\x2', '\x2', '\xCC', 
-		'\xDC', '\x3', '\x2', '\x2', '\x2', '\xCD', '\xCE', '\f', '\n', '\x2', 
-		'\x2', '\xCE', '\xCF', '\a', '\x1D', '\x2', '\x2', '\xCF', '\xDB', '\x5', 
-		'\"', '\x12', '\v', '\xD0', '\xD1', '\f', '\t', '\x2', '\x2', '\xD1', 
-		'\xD2', '\t', '\x3', '\x2', '\x2', '\xD2', '\xDB', '\x5', '\"', '\x12', 
-		'\n', '\xD3', '\xD4', '\f', '\b', '\x2', '\x2', '\xD4', '\xD5', '\t', 
-		'\x4', '\x2', '\x2', '\xD5', '\xDB', '\x5', '\"', '\x12', '\t', '\xD6', 
-		'\xD7', '\f', '\xE', '\x2', '\x2', '\xD7', '\xDB', '\a', '\x5', '\x2', 
-		'\x2', '\xD8', '\xD9', '\f', '\r', '\x2', '\x2', '\xD9', '\xDB', '\a', 
-		'\x6', '\x2', '\x2', '\xDA', '\xCD', '\x3', '\x2', '\x2', '\x2', '\xDA', 
-		'\xD0', '\x3', '\x2', '\x2', '\x2', '\xDA', '\xD3', '\x3', '\x2', '\x2', 
-		'\x2', '\xDA', '\xD6', '\x3', '\x2', '\x2', '\x2', '\xDA', '\xD8', '\x3', 
-		'\x2', '\x2', '\x2', '\xDB', '\xDE', '\x3', '\x2', '\x2', '\x2', '\xDC', 
-		'\xDA', '\x3', '\x2', '\x2', '\x2', '\xDC', '\xDD', '\x3', '\x2', '\x2', 
-		'\x2', '\xDD', '#', '\x3', '\x2', '\x2', '\x2', '\xDE', '\xDC', '\x3', 
-		'\x2', '\x2', '\x2', '\xDF', '\xE4', '\x5', '\"', '\x12', '\x2', '\xE0', 
-		'\xE1', '\a', '\x1A', '\x2', '\x2', '\xE1', '\xE3', '\x5', '\"', '\x12', 
-		'\x2', '\xE2', '\xE0', '\x3', '\x2', '\x2', '\x2', '\xE3', '\xE6', '\x3', 
-		'\x2', '\x2', '\x2', '\xE4', '\xE2', '\x3', '\x2', '\x2', '\x2', '\xE4', 
-		'\xE5', '\x3', '\x2', '\x2', '\x2', '\xE5', '%', '\x3', '\x2', '\x2', 
-		'\x2', '\xE6', '\xE4', '\x3', '\x2', '\x2', '\x2', '\x19', ')', '/', '\x33', 
-		'\x37', '\x39', '\x44', 'H', 'N', 'R', 'Z', '^', 'g', 'q', 'w', '}', '\x8B', 
-		'\x98', '\xA8', '\xB7', '\xCB', '\xDA', '\xDC', '\xE4',
+		'\x12', '\x5', '\x12', '\x9A', '\n', '\x12', '\x3', '\x12', '\x3', '\x12', 
+		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', 
+		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', 
+		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x5', '\x12', 
+		'\xAC', '\n', '\x12', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', 
+		'\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', 
+		'\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', 
+		'\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x5', 
+		'\x13', '\xC0', '\n', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', 
+		'\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', 
+		'\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', 
+		'\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\a', '\x13', '\xD2', '\n', 
+		'\x13', '\f', '\x13', '\xE', '\x13', '\xD5', '\v', '\x13', '\x3', '\x14', 
+		'\x3', '\x14', '\x3', '\x14', '\a', '\x14', '\xDA', '\n', '\x14', '\f', 
+		'\x14', '\xE', '\x14', '\xDD', '\v', '\x14', '\x3', '\x14', '\x2', '\x3', 
+		'$', '\x15', '\x2', '\x4', '\x6', '\b', '\n', '\f', '\xE', '\x10', '\x12', 
+		'\x14', '\x16', '\x18', '\x1A', '\x1C', '\x1E', ' ', '\"', '$', '&', '\x2', 
+		'\x4', '\x3', '\x2', '\xF', '\x13', '\x5', '\x2', '\x4', '\x4', '\x1C', 
+		'\x1C', '\x1F', '\x1F', '\x2', '\xF1', '\x2', '.', '\x3', '\x2', '\x2', 
+		'\x2', '\x4', '\x31', '\x3', '\x2', '\x2', '\x2', '\x6', '\x35', '\x3', 
+		'\x2', '\x2', '\x2', '\b', '\x39', '\x3', '\x2', '\x2', '\x2', '\n', '=', 
+		'\x3', '\x2', '\x2', '\x2', '\f', '?', '\x3', '\x2', '\x2', '\x2', '\xE', 
+		'I', '\x3', '\x2', '\x2', '\x2', '\x10', 'S', '\x3', '\x2', '\x2', '\x2', 
+		'\x12', 'U', '\x3', '\x2', '\x2', '\x2', '\x14', 'Y', '\x3', '\x2', '\x2', 
+		'\x2', '\x16', '`', '\x3', '\x2', '\x2', '\x2', '\x18', 'h', '\x3', '\x2', 
+		'\x2', '\x2', '\x1A', 'j', '\x3', '\x2', '\x2', '\x2', '\x1C', 's', '\x3', 
+		'\x2', '\x2', '\x2', '\x1E', 'w', '\x3', '\x2', '\x2', '\x2', ' ', '\x7F', 
+		'\x3', '\x2', '\x2', '\x2', '\"', '\xAB', '\x3', '\x2', '\x2', '\x2', 
+		'$', '\xBF', '\x3', '\x2', '\x2', '\x2', '&', '\xD6', '\x3', '\x2', '\x2', 
+		'\x2', '(', '-', '\x5', '\x4', '\x3', '\x2', ')', '-', '\x5', '\x6', '\x4', 
+		'\x2', '*', '-', '\x5', '\"', '\x12', '\x2', '+', '-', '\a', '+', '\x2', 
+		'\x2', ',', '(', '\x3', '\x2', '\x2', '\x2', ',', ')', '\x3', '\x2', '\x2', 
+		'\x2', ',', '*', '\x3', '\x2', '\x2', '\x2', ',', '+', '\x3', '\x2', '\x2', 
+		'\x2', '-', '\x30', '\x3', '\x2', '\x2', '\x2', '.', ',', '\x3', '\x2', 
+		'\x2', '\x2', '.', '/', '\x3', '\x2', '\x2', '\x2', '/', '\x3', '\x3', 
+		'\x2', '\x2', '\x2', '\x30', '.', '\x3', '\x2', '\x2', '\x2', '\x31', 
+		'\x32', '\a', '\a', '\x2', '\x2', '\x32', '\x33', '\a', '-', '\x2', '\x2', 
+		'\x33', '\x34', '\x5', '\x1C', '\xF', '\x2', '\x34', '\x5', '\x3', '\x2', 
+		'\x2', '\x2', '\x35', '\x36', '\x5', '\b', '\x5', '\x2', '\x36', '\a', 
+		'\x3', '\x2', '\x2', '\x2', '\x37', ':', '\x5', '\n', '\x6', '\x2', '\x38', 
+		':', '\a', '-', '\x2', '\x2', '\x39', '\x37', '\x3', '\x2', '\x2', '\x2', 
+		'\x39', '\x38', '\x3', '\x2', '\x2', '\x2', ':', '\t', '\x3', '\x2', '\x2', 
+		'\x2', ';', '>', '\a', '\x14', '\x2', '\x2', '<', '>', '\x5', '\x1A', 
+		'\xE', '\x2', '=', ';', '\x3', '\x2', '\x2', '\x2', '=', '<', '\x3', '\x2', 
+		'\x2', '\x2', '>', '\v', '\x3', '\x2', '\x2', '\x2', '?', '@', '\a', '\b', 
+		'\x2', '\x2', '@', '\x43', '\a', '-', '\x2', '\x2', '\x41', '\x42', '\a', 
+		'\x16', '\x2', '\x2', '\x42', '\x44', '\x5', '\x10', '\t', '\x2', '\x43', 
+		'\x41', '\x3', '\x2', '\x2', '\x2', '\x43', '\x44', '\x3', '\x2', '\x2', 
+		'\x2', '\x44', 'G', '\x3', '\x2', '\x2', '\x2', '\x45', '\x46', '\a', 
+		'\x3', '\x2', '\x2', '\x46', 'H', '\x5', '$', '\x13', '\x2', 'G', '\x45', 
+		'\x3', '\x2', '\x2', '\x2', 'G', 'H', '\x3', '\x2', '\x2', '\x2', 'H', 
+		'\r', '\x3', '\x2', '\x2', '\x2', 'I', 'J', '\a', '\t', '\x2', '\x2', 
+		'J', 'M', '\a', '-', '\x2', '\x2', 'K', 'L', '\a', '\x16', '\x2', '\x2', 
+		'L', 'N', '\x5', '\x10', '\t', '\x2', 'M', 'K', '\x3', '\x2', '\x2', '\x2', 
+		'M', 'N', '\x3', '\x2', '\x2', '\x2', 'N', 'Q', '\x3', '\x2', '\x2', '\x2', 
+		'O', 'P', '\a', '\x3', '\x2', '\x2', 'P', 'R', '\x5', '$', '\x13', '\x2', 
+		'Q', 'O', '\x3', '\x2', '\x2', '\x2', 'Q', 'R', '\x3', '\x2', '\x2', '\x2', 
+		'R', '\xF', '\x3', '\x2', '\x2', '\x2', 'S', 'T', '\t', '\x2', '\x2', 
+		'\x2', 'T', '\x11', '\x3', '\x2', '\x2', '\x2', 'U', 'V', '\a', '-', '\x2', 
+		'\x2', 'V', 'W', '\a', '(', '\x2', '\x2', 'W', 'X', '\x5', '\x14', '\v', 
+		'\x2', 'X', '\x13', '\x3', '\x2', '\x2', '\x2', 'Y', 'Z', '\a', '-', '\x2', 
+		'\x2', 'Z', '\\', '\a', '!', '\x2', '\x2', '[', ']', '\x5', '\x16', '\f', 
+		'\x2', '\\', '[', '\x3', '\x2', '\x2', '\x2', '\\', ']', '\x3', '\x2', 
+		'\x2', '\x2', ']', '^', '\x3', '\x2', '\x2', '\x2', '^', '_', '\a', '\"', 
+		'\x2', '\x2', '_', '\x15', '\x3', '\x2', '\x2', '\x2', '`', '\x65', '\x5', 
+		'\x18', '\r', '\x2', '\x61', '\x62', '\a', '\x18', '\x2', '\x2', '\x62', 
+		'\x64', '\x5', '\x18', '\r', '\x2', '\x63', '\x61', '\x3', '\x2', '\x2', 
+		'\x2', '\x64', 'g', '\x3', '\x2', '\x2', '\x2', '\x65', '\x63', '\x3', 
+		'\x2', '\x2', '\x2', '\x65', '\x66', '\x3', '\x2', '\x2', '\x2', '\x66', 
+		'\x17', '\x3', '\x2', '\x2', '\x2', 'g', '\x65', '\x3', '\x2', '\x2', 
+		'\x2', 'h', 'i', '\x5', '$', '\x13', '\x2', 'i', '\x19', '\x3', '\x2', 
+		'\x2', '\x2', 'j', 'n', '\a', '%', '\x2', '\x2', 'k', 'm', '\x5', '\"', 
+		'\x12', '\x2', 'l', 'k', '\x3', '\x2', '\x2', '\x2', 'm', 'p', '\x3', 
+		'\x2', '\x2', '\x2', 'n', 'l', '\x3', '\x2', '\x2', '\x2', 'n', 'o', '\x3', 
+		'\x2', '\x2', '\x2', 'o', 'q', '\x3', '\x2', '\x2', '\x2', 'p', 'n', '\x3', 
+		'\x2', '\x2', '\x2', 'q', 'r', '\a', '&', '\x2', '\x2', 'r', '\x1B', '\x3', 
+		'\x2', '\x2', '\x2', 's', 't', '\a', '%', '\x2', '\x2', 't', 'u', '\x5', 
+		'\x1E', '\x10', '\x2', 'u', 'v', '\a', '&', '\x2', '\x2', 'v', '\x1D', 
+		'\x3', '\x2', '\x2', '\x2', 'w', '|', '\x5', ' ', '\x11', '\x2', 'x', 
+		'y', '\a', '\x18', '\x2', '\x2', 'y', '{', '\x5', ' ', '\x11', '\x2', 
+		'z', 'x', '\x3', '\x2', '\x2', '\x2', '{', '~', '\x3', '\x2', '\x2', '\x2', 
+		'|', 'z', '\x3', '\x2', '\x2', '\x2', '|', '}', '\x3', '\x2', '\x2', '\x2', 
+		'}', '\x1F', '\x3', '\x2', '\x2', '\x2', '~', '|', '\x3', '\x2', '\x2', 
+		'\x2', '\x7F', '\x80', '\a', '-', '\x2', '\x2', '\x80', '\x81', '\a', 
+		'\x16', '\x2', '\x2', '\x81', '\x82', '\x5', '$', '\x13', '\x2', '\x82', 
+		'!', '\x3', '\x2', '\x2', '\x2', '\x83', '\x84', '\a', '\n', '\x2', '\x2', 
+		'\x84', '\x85', '\x5', '$', '\x13', '\x2', '\x85', '\x86', '\a', '\v', 
+		'\x2', '\x2', '\x86', '\x89', '\x5', '\"', '\x12', '\x2', '\x87', '\x88', 
+		'\a', '\f', '\x2', '\x2', '\x88', '\x8A', '\x5', '\"', '\x12', '\x2', 
+		'\x89', '\x87', '\x3', '\x2', '\x2', '\x2', '\x89', '\x8A', '\x3', '\x2', 
+		'\x2', '\x2', '\x8A', '\xAC', '\x3', '\x2', '\x2', '\x2', '\x8B', '\x8C', 
+		'\a', '\r', '\x2', '\x2', '\x8C', '\x8D', '\a', '!', '\x2', '\x2', '\x8D', 
+		'\x8E', '\a', '-', '\x2', '\x2', '\x8E', '\x8F', '\a', '\x3', '\x2', '\x2', 
+		'\x8F', '\x90', '\x5', '$', '\x13', '\x2', '\x90', '\x91', '\a', '\x17', 
+		'\x2', '\x2', '\x91', '\x92', '\x5', '$', '\x13', '\x2', '\x92', '\x93', 
+		'\a', '\x17', '\x2', '\x2', '\x93', '\x94', '\x5', '$', '\x13', '\x2', 
+		'\x94', '\x95', '\a', '\"', '\x2', '\x2', '\x95', '\x96', '\x5', '\"', 
+		'\x12', '\x2', '\x96', '\xAC', '\x3', '\x2', '\x2', '\x2', '\x97', '\x99', 
+		'\a', '\xE', '\x2', '\x2', '\x98', '\x9A', '\x5', '$', '\x13', '\x2', 
+		'\x99', '\x98', '\x3', '\x2', '\x2', '\x2', '\x99', '\x9A', '\x3', '\x2', 
+		'\x2', '\x2', '\x9A', '\x9B', '\x3', '\x2', '\x2', '\x2', '\x9B', '\xAC', 
+		'\a', '\x17', '\x2', '\x2', '\x9C', '\xAC', '\x5', '\x1A', '\xE', '\x2', 
+		'\x9D', '\x9E', '\x5', '\f', '\a', '\x2', '\x9E', '\x9F', '\a', '\x17', 
+		'\x2', '\x2', '\x9F', '\xAC', '\x3', '\x2', '\x2', '\x2', '\xA0', '\xA1', 
+		'\x5', '\xE', '\b', '\x2', '\xA1', '\xA2', '\a', '\x17', '\x2', '\x2', 
+		'\xA2', '\xAC', '\x3', '\x2', '\x2', '\x2', '\xA3', '\xA4', '\x5', '$', 
+		'\x13', '\x2', '\xA4', '\xA5', '\a', '\x3', '\x2', '\x2', '\xA5', '\xA6', 
+		'\x5', '$', '\x13', '\x2', '\xA6', '\xA7', '\a', '\x17', '\x2', '\x2', 
+		'\xA7', '\xAC', '\x3', '\x2', '\x2', '\x2', '\xA8', '\xA9', '\x5', '$', 
+		'\x13', '\x2', '\xA9', '\xAA', '\a', '\x17', '\x2', '\x2', '\xAA', '\xAC', 
+		'\x3', '\x2', '\x2', '\x2', '\xAB', '\x83', '\x3', '\x2', '\x2', '\x2', 
+		'\xAB', '\x8B', '\x3', '\x2', '\x2', '\x2', '\xAB', '\x97', '\x3', '\x2', 
+		'\x2', '\x2', '\xAB', '\x9C', '\x3', '\x2', '\x2', '\x2', '\xAB', '\x9D', 
+		'\x3', '\x2', '\x2', '\x2', '\xAB', '\xA0', '\x3', '\x2', '\x2', '\x2', 
+		'\xAB', '\xA3', '\x3', '\x2', '\x2', '\x2', '\xAB', '\xA8', '\x3', '\x2', 
+		'\x2', '\x2', '\xAC', '#', '\x3', '\x2', '\x2', '\x2', '\xAD', '\xAE', 
+		'\b', '\x13', '\x1', '\x2', '\xAE', '\xC0', '\x5', '\x14', '\v', '\x2', 
+		'\xAF', '\xB0', '\a', '\x1A', '\x2', '\x2', '\xB0', '\xC0', '\x5', '$', 
+		'\x13', '\xE', '\xB1', '\xB2', '\a', '\'', '\x2', '\x2', '\xB2', '\xC0', 
+		'\x5', '$', '\x13', '\r', '\xB3', '\xC0', '\a', ',', '\x2', '\x2', '\xB4', 
+		'\xC0', '\a', '*', '\x2', '\x2', '\xB5', '\xB6', '\a', '!', '\x2', '\x2', 
+		'\xB6', '\xB7', '\x5', '$', '\x13', '\x2', '\xB7', '\xB8', '\a', '\"', 
+		'\x2', '\x2', '\xB8', '\xC0', '\x3', '\x2', '\x2', '\x2', '\xB9', '\xBA', 
+		'\a', '#', '\x2', '\x2', '\xBA', '\xBB', '\x5', '&', '\x14', '\x2', '\xBB', 
+		'\xBC', '\a', '$', '\x2', '\x2', '\xBC', '\xC0', '\x3', '\x2', '\x2', 
+		'\x2', '\xBD', '\xC0', '\x5', '\x12', '\n', '\x2', '\xBE', '\xC0', '\a', 
+		'-', '\x2', '\x2', '\xBF', '\xAD', '\x3', '\x2', '\x2', '\x2', '\xBF', 
+		'\xAF', '\x3', '\x2', '\x2', '\x2', '\xBF', '\xB1', '\x3', '\x2', '\x2', 
+		'\x2', '\xBF', '\xB3', '\x3', '\x2', '\x2', '\x2', '\xBF', '\xB4', '\x3', 
+		'\x2', '\x2', '\x2', '\xBF', '\xB5', '\x3', '\x2', '\x2', '\x2', '\xBF', 
+		'\xB9', '\x3', '\x2', '\x2', '\x2', '\xBF', '\xBD', '\x3', '\x2', '\x2', 
+		'\x2', '\xBF', '\xBE', '\x3', '\x2', '\x2', '\x2', '\xC0', '\xD3', '\x3', 
+		'\x2', '\x2', '\x2', '\xC1', '\xC2', '\f', '\f', '\x2', '\x2', '\xC2', 
+		'\xC3', '\a', '\x1B', '\x2', '\x2', '\xC3', '\xD2', '\x5', '$', '\x13', 
+		'\r', '\xC4', '\xC5', '\f', '\v', '\x2', '\x2', '\xC5', '\xC6', '\a', 
+		'\x19', '\x2', '\x2', '\xC6', '\xD2', '\x5', '$', '\x13', '\f', '\xC7', 
+		'\xC8', '\f', '\n', '\x2', '\x2', '\xC8', '\xC9', '\a', '\x1A', '\x2', 
+		'\x2', '\xC9', '\xD2', '\x5', '$', '\x13', '\v', '\xCA', '\xCB', '\f', 
+		'\t', '\x2', '\x2', '\xCB', '\xCC', '\t', '\x3', '\x2', '\x2', '\xCC', 
+		'\xD2', '\x5', '$', '\x13', '\n', '\xCD', '\xCE', '\f', '\x10', '\x2', 
+		'\x2', '\xCE', '\xD2', '\a', '\x5', '\x2', '\x2', '\xCF', '\xD0', '\f', 
+		'\xF', '\x2', '\x2', '\xD0', '\xD2', '\a', '\x6', '\x2', '\x2', '\xD1', 
+		'\xC1', '\x3', '\x2', '\x2', '\x2', '\xD1', '\xC4', '\x3', '\x2', '\x2', 
+		'\x2', '\xD1', '\xC7', '\x3', '\x2', '\x2', '\x2', '\xD1', '\xCA', '\x3', 
+		'\x2', '\x2', '\x2', '\xD1', '\xCD', '\x3', '\x2', '\x2', '\x2', '\xD1', 
+		'\xCF', '\x3', '\x2', '\x2', '\x2', '\xD2', '\xD5', '\x3', '\x2', '\x2', 
+		'\x2', '\xD3', '\xD1', '\x3', '\x2', '\x2', '\x2', '\xD3', '\xD4', '\x3', 
+		'\x2', '\x2', '\x2', '\xD4', '%', '\x3', '\x2', '\x2', '\x2', '\xD5', 
+		'\xD3', '\x3', '\x2', '\x2', '\x2', '\xD6', '\xDB', '\x5', '$', '\x13', 
+		'\x2', '\xD7', '\xD8', '\a', '\x18', '\x2', '\x2', '\xD8', '\xDA', '\x5', 
+		'$', '\x13', '\x2', '\xD9', '\xD7', '\x3', '\x2', '\x2', '\x2', '\xDA', 
+		'\xDD', '\x3', '\x2', '\x2', '\x2', '\xDB', '\xD9', '\x3', '\x2', '\x2', 
+		'\x2', '\xDB', '\xDC', '\x3', '\x2', '\x2', '\x2', '\xDC', '\'', '\x3', 
+		'\x2', '\x2', '\x2', '\xDD', '\xDB', '\x3', '\x2', '\x2', '\x2', '\x15', 
+		',', '.', '\x39', '=', '\x43', 'G', 'M', 'Q', '\\', '\x65', 'n', '|', 
+		'\x89', '\x99', '\xAB', '\xBF', '\xD1', '\xD3', '\xDB',
 	};
 
 	public static readonly ATN _ATN =

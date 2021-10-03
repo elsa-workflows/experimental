@@ -7,7 +7,7 @@ namespace Elsa.Runtime.Contracts
 {
     public interface IWorkflowRegistry
     {
-        Task<Workflow?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
-        Task<PagedList<Workflow>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken);
+        Task<WorkflowDefinition?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
+        Task<PagedList<WorkflowDefinition>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken);
     }
 }

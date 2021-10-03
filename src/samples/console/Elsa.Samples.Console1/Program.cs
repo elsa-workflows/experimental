@@ -47,8 +47,14 @@ namespace Elsa.Samples.Console1
 
             var workflowFactory = workflow13;
             var workflowGraph = workflowFactory();
-            var workflow = new Workflow("MyWorkflow", 1, DateTime.Now, workflowGraph);
-            var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflow);
+            var workflow = new Workflow(workflowGraph);
+
+            var workflowDefinition = new WorkflowDefinition
+            {
+                Workflow = workflow,
+            };
+
+            var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflowDefinition);
             var workflowState = workflowExecutionResult.WorkflowState;
             var bookmarks = new List<Bookmark>(workflowExecutionResult.Bookmarks);
 
@@ -66,10 +72,10 @@ namespace Elsa.Samples.Console1
                         bookmark.ActivityInstanceId,
                         bookmark.CallbackMethodName
                     });
-                    
+
                     Console.ReadLine();
-                    
-                    var resumeResult = await workflowEngine.ResumeAsync(workflow, bookmark, workflowState);
+
+                    var resumeResult = await workflowEngine.ResumeAsync(workflowDefinition, bookmark, workflowState);
                     workflowState = resumeResult.WorkflowState;
                     bookmarks = resumeResult.Bookmarks.ToList();
                 }

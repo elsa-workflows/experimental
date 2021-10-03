@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elsa.Attributes;
-using Elsa.Contracts;
 using Elsa.Models;
 
 namespace Elsa.Activities.ControlFlow

@@ -11,8 +11,8 @@ namespace Elsa.Runtime.Contracts
     /// </summary>
     public interface IWorkflowProvider
     {
-        ValueTask<Workflow?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
-        ValueTask<IEnumerable<Workflow>> FindManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default);
-        ValueTask<PagedList<Workflow>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken = default);
+        ValueTask<WorkflowDefinition?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
+        ValueTask<IEnumerable<WorkflowDefinition>> FindManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default);
+        ValueTask<PagedList<WorkflowDefinition>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken = default);
     }
 }

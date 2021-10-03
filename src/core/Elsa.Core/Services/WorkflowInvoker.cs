@@ -12,7 +12,7 @@ namespace Elsa.Services
 {
     public class WorkflowInvoker : IWorkflowInvoker
     {
-        public static ValueTask Noop(ActivityExecutionContext context) => new();
+        private static ValueTask Noop(ActivityExecutionContext context) => new();
 
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IActivityWalker _activityWalker;
@@ -37,29 +37,30 @@ namespace Elsa.Services
             _schedulerFactory = schedulerFactory;
         }
         
-        public async Task<WorkflowExecutionResult> InvokeAsync(Workflow workflow, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionResult> InvokeAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
 
             // Setup a workflow execution context.
-            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, default, default, default, cancellationToken);
+            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflowDefinition, default, default, default, cancellationToken);
 
             // Schedule the first node.
             var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
+            var workflow = workflowDefinition.Workflow;
             var workItem = new ActivityWorkItem(workflow.Root.Id, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
             workflowExecutionContext.Scheduler.Push(workItem);
 
             return await InvokeAsync(workflowExecutionContext);
         }
 
-        public async Task<WorkflowExecutionResult> ResumeAsync(Workflow workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionResult> ResumeAsync(WorkflowDefinition workflowDefinition, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
 
             // Create workflow execution context.
-            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, bookmark, default, cancellationToken);
+            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflowDefinition, workflowState, bookmark, default, cancellationToken);
 
             // Construct bookmark.
             var bookmarkedActivityContext = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
@@ -91,13 +92,13 @@ namespace Elsa.Services
 
         public WorkflowExecutionContext CreateWorkflowExecutionContext(
             IServiceProvider serviceProvider,
-            Workflow workflow,
+            WorkflowDefinition workflowDefinition,
             WorkflowState? workflowState,
             Bookmark? bookmark,
             ExecuteActivityDelegate? executeActivityDelegate,
             CancellationToken cancellationToken)
         {
-            var root = workflow.Root;
+            var root = workflowDefinition.Workflow.Root;
 
             // Build graph.
             var graph = _activityWalker.Walk(root);
@@ -109,7 +110,7 @@ namespace Elsa.Services
             var scheduler = _schedulerFactory.CreateScheduler();
 
             // Setup a workflow execution context.
-            var workflowExecutionContext = new WorkflowExecutionContext(serviceProvider, workflow, graph, scheduler, bookmark, executeActivityDelegate, cancellationToken);
+            var workflowExecutionContext = new WorkflowExecutionContext(serviceProvider, workflowDefinition, graph, scheduler, bookmark, executeActivityDelegate, cancellationToken);
 
             // Restore workflow execution context from state, if provided.
             if (workflowState != null)

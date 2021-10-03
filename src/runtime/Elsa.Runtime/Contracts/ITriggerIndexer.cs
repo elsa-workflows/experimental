@@ -6,6 +6,6 @@ namespace Elsa.Runtime.Contracts
 {
     public interface ITriggerIndexer
     {
-        Task IndexTriggersAsync(Workflow workflow, CancellationToken cancellationToken = default);
+        Task IndexTriggersAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default);
     }
 }

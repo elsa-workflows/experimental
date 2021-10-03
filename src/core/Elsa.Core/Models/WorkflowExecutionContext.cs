@@ -20,7 +20,8 @@ namespace Elsa.Models
 
         public WorkflowExecutionContext(
             IServiceProvider serviceProvider,
-            Workflow workflow, ActivityNode graph,
+            WorkflowDefinition workflow,
+            ActivityNode graph,
             IActivityScheduler scheduler,
             Bookmark? bookmark,
             ExecuteActivityDelegate? executeDelegate,
@@ -39,7 +40,7 @@ namespace Elsa.Models
             NodeActivityLookup = _nodes.ToDictionary(x => x.Activity);
         }
 
-        public Workflow Workflow { get; }
+        public WorkflowDefinition Workflow { get; }
         public ActivityNode Graph { get; set; }
         public string Id { get; set; }
         public IReadOnlyCollection<ActivityNode> Nodes => new ReadOnlyCollection<ActivityNode>(_nodes);
@@ -53,7 +54,7 @@ namespace Elsa.Models
         public IReadOnlyCollection<Bookmark> Bookmarks => new ReadOnlyCollection<Bookmark>(_bookmarks);
         public IReadOnlyCollection<ActivityCompletionCallbackEntry> CompletionCallbacks => new ReadOnlyCollection<ActivityCompletionCallbackEntry>(_completionCallbackEntries);
         public ICollection<ActivityExecutionContext> ActivityExecutionContexts { get; set; } = new List<ActivityExecutionContext>();
-        
+
         /// <summary>
         /// A volatile collection of executed activity instance IDs. This collection is reset when workflow execution starts.
         /// </summary>
@@ -64,7 +65,7 @@ namespace Elsa.Models
         public void Schedule(IActivity activity, ActivityExecutionContext owner, ActivityCompletionCallback? completionCallback = default, IEnumerable<RegisterLocationReference>? locationReferences = default, object? tag = default)
         {
             var activityInvoker = GetRequiredService<IActivityInvoker>();
-            var workItem = new ActivityWorkItem(activity.Id, async () => await activityInvoker.InvokeAsync(this, activity, owner, locationReferences), tag); 
+            var workItem = new ActivityWorkItem(activity.Id, async () => await activityInvoker.InvokeAsync(this, activity, owner, locationReferences), tag);
             Scheduler.Push(workItem);
 
             if (completionCallback != null)
@@ -93,7 +94,7 @@ namespace Elsa.Models
         public IActivity FindActivityById(string activityId) => FindNodeById(activityId).Activity;
         public T? GetProperty<T>(string key) => Properties.TryGetValue(key, out var value) ? (T?)value : default(T);
         public void SetProperty<T>(string key, T value) => Properties[key] = value;
-        
+
         public T UpdateProperty<T>(string key, Func<T?, T> updater)
         {
             var value = GetProperty<T?>(key);
@@ -101,7 +102,7 @@ namespace Elsa.Models
             Properties[key] = value;
             return value;
         }
-        
+
         public void RegisterBookmarks(IEnumerable<Bookmark> bookmarks) => _bookmarks.AddRange(bookmarks);
 
         public void UnregisterBookmarks(IEnumerable<Bookmark> bookmarks)

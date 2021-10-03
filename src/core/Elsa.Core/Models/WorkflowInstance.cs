@@ -1,6 +1,6 @@
 using Elsa.State;
 
-namespace Elsa.Persistence.Abstractions.Models
+namespace Elsa.Models
 {
     public record WorkflowInstance
     {

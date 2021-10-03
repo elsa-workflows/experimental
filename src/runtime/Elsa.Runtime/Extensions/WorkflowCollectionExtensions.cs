@@ -7,7 +7,7 @@ namespace Elsa.Runtime.Extensions
 {
     public static class WorkflowCollectionExtensions
     {
-        public static PagedList<Workflow> Paginate(this IEnumerable<Workflow> workflows, PagerParameters pagerParameters)
+        public static PagedList<WorkflowDefinition> Paginate(this IEnumerable<WorkflowDefinition> workflows, PagerParameters pagerParameters)
         {
             var query = from workflowDefinition in workflows select workflowDefinition;
             var limit = pagerParameters.Limit;
@@ -31,7 +31,7 @@ namespace Elsa.Runtime.Extensions
             var selection = results.Take(limit).ToList();
             var next = results.Skip(limit).FirstOrDefault();
             var nextCursor = next != null ? new Cursor(next.Id, next.CreatedAt) : default;
-            return new PagedList<Workflow>(selection, limit, nextCursor);
+            return new PagedList<WorkflowDefinition>(selection, limit, nextCursor);
         }
     }
 }

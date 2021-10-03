@@ -1,5 +1,5 @@
 trigger HttpTrigger
 {
     Path: "/hello-world",
-    SupportedMethods: ["GET"]
+    SupportedMethods: ["GET", "POST"]
 }

@@ -3,7 +3,7 @@ parser grammar ElsaParser;
 options { tokenVocab=ElsaLexer; }
 
 file                
-    :   LINE_COMMENT* trigger* root? (stat | LINE_COMMENT)*
+    :   (trigger | root | stat | LINE_COMMENT)*
     ;
     
 trigger
@@ -25,11 +25,11 @@ sequence
     ;
 
 varDecl             
-    :   VARIABLE ID (':' type)? (EQ expr)? ';'
+    :   VARIABLE ID (':' type)? (EQ expr)?
     ;
     
 localVarDecl
-    :   'let' ID (':' type)? (EQ expr)? ';'
+    :   'let' ID (':' type)? (EQ expr)?
     ;
 
 type
@@ -39,9 +39,13 @@ type
     |   OBJECT
     |   STRING
     ;
+     
+methodCall
+    :   ID '.' funcCall
+    ;
                 
 funcCall
-    :   ID '(' args? ')' ';'
+    :   ID '(' args? ')'
     ;
     
 args
@@ -49,8 +53,7 @@ args
     ;
     
 arg
-    :   CODE_VAL expr
-    |   expr
+    :   expr
     ;
     
 block_statements
@@ -70,32 +73,33 @@ pair
     ; 
     
 stat
-    :   'if' expr 'then' stat ('else' stat)?
-    |   'for' '(' ID '=' expr ';' expr ';' expr ')' stat   
-    |   'return' expr? ';'
-    |   block_statements
-    |   varDecl
-    |   localVarDecl
-    |   funcCall
-    |   expr '=' expr ';'
-    |   expr ';'
+    :   'if' expr 'then' stat ('else' stat)?                #if
+    |   'for' '(' ID '=' expr ';' expr ';' expr ')' stat    #for
+    |   'return' expr? ';'                                  #return
+    |   block_statements                                    #blockStatements
+    |   varDecl ';'                                         #variableDeclaration
+    |   localVarDecl ';'                                    #localVariableDeclaration
+    |   expr '=' expr ';'                                   #assignment
+    |   expr ';'                                            #expression
     ;
     
     
 expr
-    :   ID exprList
-    |   expr '++'
-    |   expr '--'
-    |   '-' expr
-    |   '!' expr
-    |   expr '*' expr
-    |   expr ('+' | '-') expr
-    |   expr ('==' | '>' | '<') expr
-    |   INTEGER_VAL
-    |   STRING_VAL
-    |   '(' expr ')'
-    |   '[' expr ']'
-    |   ID
+    :   funcCall                         #functionCall
+    |   expr '++'                        #increment
+    |   expr '--'                        #decrement
+    |   '-' expr                         #negate
+    |   '!' expr                         #not
+    |   expr '*' expr                    #multiply
+    |   expr '+' expr                    #add
+    |   expr '-' expr                    #subtract
+    |   expr ('==' | '>' | '<') expr     #compare
+    |   INTEGER_VAL                      #integerValue
+    |   STRING_VAL                       #stringValue
+    |   '(' expr ')'                     #parentheses
+    |   '[' exprList ']'                 #brackets
+    |   methodCall                       #methodInvocation
+    |   ID                               #variableReference
     ;
     
 exprList

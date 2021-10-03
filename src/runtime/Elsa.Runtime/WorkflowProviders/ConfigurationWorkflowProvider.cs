@@ -1,15 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Elsa.Builders;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Extensions;
 using Elsa.Runtime.Options;
-using Elsa.Runtime.Services;
 using Microsoft.Extensions.Options;
 
 namespace Elsa.Runtime.WorkflowProviders
@@ -18,7 +17,7 @@ namespace Elsa.Runtime.WorkflowProviders
     {
         private readonly IIdentityGraphService _identityGraphService;
         private readonly WorkflowRuntimeOptions _options;
-        private readonly IDictionary<string, Workflow> _workflows;
+        private readonly IDictionary<string, WorkflowDefinition> _workflows;
         
         public ConfigurationWorkflowProvider(IOptions<WorkflowRuntimeOptions> options, IIdentityGraphService identityGraphService)
         {
@@ -27,25 +26,25 @@ namespace Elsa.Runtime.WorkflowProviders
             _workflows = CreateWorkflowDefinitions().ToDictionary(x => x.Id);
         }
 
-        public ValueTask<Workflow?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        public ValueTask<WorkflowDefinition?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
         {
             var result = _workflows.TryGetValue(id, out var workflowDefinition) ? workflowDefinition : default;
             return ValueTask.FromResult(result);
         }
 
-        public ValueTask<IEnumerable<Workflow>> FindManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken)
+        public ValueTask<IEnumerable<WorkflowDefinition>> FindManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken)
         {
             var workflowDefinitions = FindManyById(ids);
             return ValueTask.FromResult(workflowDefinitions);
         }
 
-        public ValueTask<PagedList<Workflow>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken = default)
+        public ValueTask<PagedList<WorkflowDefinition>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken = default)
         {
             var pagedList = _workflows.Values.Paginate(pagerParameters);
             return ValueTask.FromResult(pagedList);
         }
 
-        private IEnumerable<Workflow> FindManyById(IEnumerable<string> ids)
+        private IEnumerable<WorkflowDefinition> FindManyById(IEnumerable<string> ids)
         {
             var idList = ids as ICollection<string> ?? ids.ToHashSet();
             var keys = _workflows.Keys.Where(x => idList.Contains(x)).ToList();
@@ -54,15 +53,16 @@ namespace Elsa.Runtime.WorkflowProviders
                 yield return workflow;
         }
 
-        private IEnumerable<Workflow> CreateWorkflowDefinitions() => _options.Workflows.Values.Select(BuildWorkflowDefinition).ToList();
+        private IEnumerable<WorkflowDefinition> CreateWorkflowDefinitions() => _options.Workflows.Values.Select(BuildWorkflowDefinition).ToList();
 
-        private Workflow BuildWorkflowDefinition(IWorkflow workflow)
+        private WorkflowDefinition BuildWorkflowDefinition(IWorkflow workflow)
         {
-            var builder = new WorkflowBuilder();
+            var builder = new WorkflowDefinitionBuilder();
+            builder.WithId(workflow.GetType().Name);
             workflow.Build(builder);
             
-            var workflowModel = new Workflow(workflow.Id, workflow.Version, DateTime.MinValue, builder.Root, builder.Triggers);
-            _identityGraphService.AssignIdentities(workflowModel);
+            var workflowModel = builder.BuildWorkflow();
+            _identityGraphService.AssignIdentities(workflowModel.Workflow);
             
             return workflowModel;
         }

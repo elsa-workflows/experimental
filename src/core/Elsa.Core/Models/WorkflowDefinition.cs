@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using Elsa.Contracts;
 
-namespace Elsa.Persistence.Abstractions.Models
+namespace Elsa.Models
 {
     /// <summary>
     /// Represents a workflow definition.
@@ -13,7 +11,6 @@ namespace Elsa.Persistence.Abstractions.Models
         public string DefinitionId { get; set; } = default!;
         public DateTime CreatedAt { get; set; }
         public int Version { get; set; } = 1;
-        public IActivity Root { get; set; } = default!;
-        public ICollection<string> Triggers { get; set; } = new List<string>();
+        public Workflow Workflow { get; set; } = default!;
     }
 }

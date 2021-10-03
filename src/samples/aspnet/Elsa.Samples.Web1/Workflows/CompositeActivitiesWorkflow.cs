@@ -1,5 +1,6 @@
 using Elsa.Activities.Console;
 using Elsa.Activities.Containers;
+using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
 using Elsa.Samples.Web1.Activities;
@@ -8,14 +9,11 @@ namespace Elsa.Samples.Web1.Workflows
 {
     public class CompositeActivitiesWorkflow : IWorkflow
     {
-        public string Id => nameof(CompositeActivitiesWorkflow);
-        public int Version => 1;
-
-        public void Build(IWorkflowBuilder builder)
+        public void Build(IWorkflowDefinitionBuilder definitionBuilder)
         {
             var name = new Variable<string>();
 
-            builder.Root = new Sequence
+            definitionBuilder.WithRoot(new Sequence
             {
                 Variables = { name },
                 Activities =
@@ -26,7 +24,7 @@ namespace Elsa.Samples.Web1.Workflows
                     },
                     new WriteLine(context => $"Captured name: {name.Get(context)}")
                 }
-            };
+            });
         }
     }
 }

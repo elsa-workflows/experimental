@@ -13,6 +13,8 @@ namespace Elsa.Models
         
         public object? Value { get; }
         public override RegisterLocation Declare() => new();
+
+        public static Literal From<T>(T value) => new Literal<T>(value);
     }
 
     public class Literal<T> : Literal

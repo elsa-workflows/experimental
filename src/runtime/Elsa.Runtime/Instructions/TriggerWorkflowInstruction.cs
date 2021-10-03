@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Models;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
 using Microsoft.Extensions.Logging;
@@ -29,18 +29,18 @@ namespace Elsa.Runtime.Instructions
             var workflowDefinitionId = workflowTrigger.WorkflowDefinitionId;
 
             // Get workflow to execute.
-            var workflow = await _workflowRegistry.GetByIdAsync(workflowDefinitionId, cancellationToken);
+            var workflowDefinition = await _workflowRegistry.GetByIdAsync(workflowDefinitionId, cancellationToken);
 
-            if (workflow == null)
+            if (workflowDefinition == null)
             {
                 _logger.LogWarning("Could not trigger workflow definition {WorkflowDefinitionId} because it was not found", workflowDefinitionId);
                 return null;
             }
 
             // Execute workflow.
-            var workflowExecutionResult = await _workflowInvoker.InvokeAsync(workflow, cancellationToken);
+            var workflowExecutionResult = await _workflowInvoker.InvokeAsync(workflowDefinition, cancellationToken);
             
-            return new WorkflowInstructionResult(workflow, workflowExecutionResult);
+            return new WorkflowInstructionResult(workflowDefinition, workflowExecutionResult);
         }
     }
 }

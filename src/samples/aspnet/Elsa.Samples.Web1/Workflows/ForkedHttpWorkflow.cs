@@ -13,26 +13,17 @@ namespace Elsa.Samples.Web1.Workflows
 {
     public class ForkedHttpWorkflow : IWorkflow
     {
-        public string Id => nameof(ForkedHttpWorkflow);
-        public int Version => 1;
-
-        public void Build(IWorkflowBuilder builder)
+        public void Build(IWorkflowDefinitionBuilder definitionBuilder)
         {
-            // Create triggers.
-            var httpTrigger = new HttpTrigger
+            // Add triggers.
+            definitionBuilder.AddTrigger(new HttpTrigger
             {
                 Path = new Input<string>("/fork"),
                 SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Get })
-            };
-
-            // Register triggers.
-            builder.Triggers = new List<ITrigger>
-            {
-                httpTrigger
-            };
+            });
 
             // Setup workflow graph.
-            builder.Root = new Sequence
+            definitionBuilder.WithRoot(new Sequence
             {
                 Activities =
                 {
@@ -65,7 +56,7 @@ namespace Elsa.Samples.Web1.Workflows
                         Content = new Input<string?>("Done!")
                     }
                 }
-            };
+            });
         }
     }
 }

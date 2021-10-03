@@ -20,7 +20,7 @@ namespace Elsa.Dsl.Services
             _triggerTypeRegistry = triggerTypeRegistry;
         }
         
-        public Workflow Parse(string script)
+        public WorkflowDefinition Parse(string script)
         {
             var stream = CharStreams.fromString(script);
             var lexer = new ElsaLexer(stream);
@@ -29,10 +29,8 @@ namespace Elsa.Dsl.Services
             var tree = parser.file();
 
             var interpreter = new WorkflowModelInterpreter(_triggerTypeRegistry);
-            var result = interpreter.Visit(tree);
-            var triggers = new List<ITrigger>();
-            var root = new WriteLine();
-            var workflow = new Workflow("id", 1, DateTime.Now, root, triggers);
+            var workflowBuilder = interpreter.Visit(tree);
+            var workflow = workflowBuilder.BuildWorkflow();
 
             return workflow;
         }
