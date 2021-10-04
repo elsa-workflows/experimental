@@ -1,12 +1,9 @@
-using System.Collections.Generic;
 using Elsa.Models;
 
 namespace Elsa.Contracts
 {
-    public interface ITriggerTypeRegistry
+    public interface ITriggerTypeRegistry : IRegistry<TriggerType>
     {
-        void Register(TriggerType triggerType);
-        IEnumerable<TriggerType> List();
-        TriggerType Get(string typeName);
+        void Register(TriggerType value);
     }
 }

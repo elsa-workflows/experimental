@@ -3,13 +3,13 @@ trigger HttpTrigger
 {
     Path: "/hello-world",
     SupportedMethods: ["GET", "POST"]
-}
+};
 
 // Triggers every 1 minute.
 trigger TimerTrigger
 {
-    Timeout: "0:00:01:00"
-}
+    Interval: "0:00:01:00"
+};
 
 {
     // If

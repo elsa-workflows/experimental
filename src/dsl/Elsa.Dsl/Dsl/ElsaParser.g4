@@ -1,27 +1,17 @@
 parser grammar ElsaParser;
 
-options { tokenVocab=ElsaLexer; }
+options { tokenVocab = ElsaLexer; }
 
 file                
-    :   (trigger | root | stat | LINE_COMMENT)*
+    :   (stat | LINE_COMMENT)*
     ;
     
 trigger
-    :   TRIGGER ID block_pairs
+    :   TRIGGER object
     ;
     
-root
-    :   activity
-    ;
-    
-activity
-    :   sequence
-    |   ID
-    ;
-    
-sequence
-    :   SEQUENCE
-    |   block_statements
+object
+    :   ID objectInitializer?
     ;
 
 varDecl             
@@ -56,50 +46,52 @@ arg
     :   expr
     ;
     
-block_statements
+block
     :   '{' stat* '}'
     ;
     
-block_pairs
-    :   '{' pairList '}'
+objectInitializer
+    :   '{' propertyList? '}'
     ;
     
-pairList
-    :   pair (',' pair)*
+propertyList
+    :   property (',' property)*
     ;
     
-pair
+property
     :   ID ':' expr
-    ; 
+    ;
     
 stat
-    :   'if' expr 'then' stat ('else' stat)?                #if
-    |   'for' '(' ID '=' expr ';' expr ';' expr ')' stat    #for
-    |   'return' expr? ';'                                  #return
-    |   block_statements                                    #blockStatements
-    |   varDecl ';'                                         #variableDeclaration
-    |   localVarDecl ';'                                    #localVariableDeclaration
-    |   expr '=' expr ';'                                   #assignment
-    |   expr ';'                                            #expression
+    :   trigger ';'                                         #triggerStat
+    |   object ';'                                          #objectStat       
+    |   'if' expr 'then' stat ('else' stat)?                #ifStat
+    |   'for' '(' ID '=' expr ';' expr ';' expr ')' stat    #forStat
+    |   'return' expr? ';'                                  #returnStat                              
+    |   block                                               #blockStat
+    |   varDecl ';'                                         #variableDeclarationStat
+    |   localVarDecl ';'                                    #localVariableDeclarationStat
+    |   expr '=' expr ';'                                   #assignmentStat
+    |   expr ';'                                            #expressionStat
     ;
-    
-    
+
 expr
-    :   funcCall                         #functionCall
-    |   expr '++'                        #increment
-    |   expr '--'                        #decrement
-    |   '-' expr                         #negate
-    |   '!' expr                         #not
-    |   expr '*' expr                    #multiply
-    |   expr '+' expr                    #add
-    |   expr '-' expr                    #subtract
-    |   expr ('==' | '>' | '<') expr     #compare
-    |   INTEGER_VAL                      #integerValue
-    |   STRING_VAL                       #stringValue
-    |   '(' expr ')'                     #parentheses
-    |   '[' exprList ']'                 #brackets
-    |   methodCall                       #methodInvocation
-    |   ID                               #variableReference
+    :   funcCall                         #functionExpr
+    |   object                           #objectExpr
+    |   expr '++'                        #incrementExpr
+    |   expr '--'                        #decrementExpr
+    |   '-' expr                         #negateExpr
+    |   '!' expr                         #notExpr
+    |   expr '*' expr                    #multiplyExpr
+    |   expr '+' expr                    #addExpr
+    |   expr '-' expr                    #subtractExpr
+    |   expr ('==' | '>' | '<') expr     #compareExpr
+    |   INTEGER_VAL                      #integerValueExpr
+    |   STRING_VAL                       #stringValueExpr
+    |   '(' exprList? ')'                #parenthesesExpr
+    |   '[' exprList? ']'                #bracketsExpr
+    |   methodCall                       #methodCallExpr
+    |   ID                               #variableExpr
     ;
     
 exprList

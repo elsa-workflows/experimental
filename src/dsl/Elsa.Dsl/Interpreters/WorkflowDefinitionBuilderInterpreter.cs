@@ -14,37 +14,39 @@ namespace Elsa.Dsl.Interpreters
     {
         private readonly IWorkflowDefinitionBuilder _workflowDefinitionBuilder = new WorkflowDefinitionBuilder();
         private readonly ITriggerTypeRegistry _triggerTypeRegistry;
-        private readonly ParseTreeProperty<ITrigger> _trigger = new();
+        private readonly IActivityTypeRegistry _activityTypeRegistry;
+        private readonly ParseTreeProperty<object> _object = new();
         private readonly ParseTreeProperty<Type> _pairType = new();
         private readonly ParseTreeProperty<object?> _pairValue = new();
 
-        public WorkflowDefinitionBuilderInterpreter(ITriggerTypeRegistry triggerTypeRegistry)
+        public WorkflowDefinitionBuilderInterpreter(ITriggerTypeRegistry triggerTypeRegistry, IActivityTypeRegistry activityTypeRegistry)
         {
             _triggerTypeRegistry = triggerTypeRegistry;
+            _activityTypeRegistry = activityTypeRegistry;
         }
 
         protected override IWorkflowDefinitionBuilder DefaultResult => _workflowDefinitionBuilder;
 
         public override IWorkflowDefinitionBuilder VisitTrigger(ElsaParser.TriggerContext context)
         {
-            var triggerTypeName = context.ID().GetText();
+            var triggerTypeName = context.@object().ID().GetText();
             var triggerType = _triggerTypeRegistry.Get(triggerTypeName);
             var trigger = (ITrigger?)Activator.CreateInstance(triggerType.Type);
 
             if (trigger == null)
-                throw new Exception($"Could not create trigger of type {triggerTypeName}. The specified name does not exist. Did you forger to register it with the trigger registry?");
+                throw new Exception($"Could not create trigger of type {triggerTypeName}. The specified name does not exist in the trigger registry. Did you forget to register it?");
             
             _workflowDefinitionBuilder.AddTrigger(trigger);
-            _trigger.Put(context.block_pairs(), trigger);
+            _object.Put(context.@object(), trigger);
 
             return VisitChildren(context);
         }
 
-        public override IWorkflowDefinitionBuilder VisitBlock_pairs(ElsaParser.Block_pairsContext context)
+        public override IWorkflowDefinitionBuilder VisitObject(ElsaParser.ObjectContext context)
         {
-            var trigger = _trigger.Get(context);
-            var triggerType = trigger.GetType();
-            var pairs = context.pairList().pair();
+            var @object = _object.Get(context);
+            var triggerType = @object.GetType();
+            var pairs = context.objectInitializer().propertyList().property();
 
             foreach (var pair in pairs)
             {
@@ -59,13 +61,13 @@ namespace Elsa.Dsl.Interpreters
                 Visit(propertyValueExpr);
                 var propertyValue = _pairValue.Get(propertyValueExpr);
                 var propertyInputValue = CreateInputValue(property, propertyValue);
-                property.SetValue(trigger, propertyInputValue);
+                property.SetValue(@object, propertyInputValue);
             }
 
             return DefaultResult;
         }
-
-        public override IWorkflowDefinitionBuilder VisitBrackets(ElsaParser.BracketsContext context)
+        
+        public override IWorkflowDefinitionBuilder VisitBracketsExpr(ElsaParser.BracketsExprContext context)
         {
             var contents = context.exprList().expr();
             var targetCollectionType = GetUnderlyingTargetType(_pairType.Get(context));
@@ -76,17 +78,16 @@ namespace Elsa.Dsl.Interpreters
                 Visit(x);
                 return _pairValue.Get(x);
             }).ToList();
-
-            // Create strongly-typed list.
+            
             var stronglyTypedListType = typeof(ICollection<>).MakeGenericType(targetElementType);
-            var stronglyTypedList = ConvertList(items, stronglyTypedListType);
+            var stronglyTypedList = items.ConvertTo(stronglyTypedListType);
 
             _pairValue.Put(context, stronglyTypedList);
 
             return DefaultResult;
         }
 
-        public override IWorkflowDefinitionBuilder VisitStringValue(ElsaParser.StringValueContext context)
+        public override IWorkflowDefinitionBuilder VisitStringValueExpr(ElsaParser.StringValueExprContext context)
         {
             var value = context.GetText().Trim('\"');
             _pairValue.Put(context, value);
@@ -106,17 +107,6 @@ namespace Elsa.Dsl.Interpreters
         {
             var targetType = typeof(Input).IsAssignableFrom(type) ? type.GetGenericArguments().First() : type;
             return targetType;
-        }
-
-        public static object? ConvertList(IEnumerable<object?> items, Type type)
-        {
-            var containedType = type.GenericTypeArguments.First();
-            var enumerableType = typeof(Enumerable);
-            var castMethod = enumerableType.GetMethod(nameof(Enumerable.Cast))!.MakeGenericMethod(containedType);
-            var toListMethod = enumerableType.GetMethod(nameof(Enumerable.ToList))!.MakeGenericMethod(containedType);
-            var castedItems = castMethod.Invoke(null, new object?[] { items });
-
-            return toListMethod.Invoke(null!, new[] { castedItems });
         }
     }
 }

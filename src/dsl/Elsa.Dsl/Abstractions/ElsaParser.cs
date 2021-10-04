@@ -38,40 +38,37 @@ public partial class ElsaParser : Parser {
 	public const int
 		EQ=1, GREATER=2, INCREMENT=3, DECREMENT=4, TRIGGER=5, VARIABLE=6, LET=7, 
 		IF=8, THEN=9, ELSE=10, FOR=11, RETURN=12, VOID=13, FLOAT=14, INT=15, STRING=16, 
-		OBJECT=17, SEQUENCE=18, SYMBOL=19, COLON=20, SEMICOLON=21, COMMA=22, PLUS=23, 
-		MINUS=24, STAR=25, EQUALS=26, NOT_EQUALS=27, GREATER_EQUALS=28, LESS=29, 
-		LESS_EQUALS=30, PARENTHESES_OPEN=31, PARENTHESES_CLOSE=32, BRACKET_OPEN=33, 
-		BRACKET_CLOSE=34, CURLYBRACE_OPEN=35, CURLYBRACE_CLOSE=36, EXCLAMATION=37, 
-		PERIOD=38, LANGSPEC_BEGIN=39, STRING_VAL=40, LINE_COMMENT=41, INTEGER_VAL=42, 
-		ID=43, WS=44;
+		OBJECT=17, SYMBOL=18, COLON=19, SEMICOLON=20, COMMA=21, PLUS=22, MINUS=23, 
+		STAR=24, EQUALS=25, NOT_EQUALS=26, GREATER_EQUALS=27, LESS=28, LESS_EQUALS=29, 
+		PARENTHESES_OPEN=30, PARENTHESES_CLOSE=31, BRACKET_OPEN=32, BRACKET_CLOSE=33, 
+		CURLYBRACE_OPEN=34, CURLYBRACE_CLOSE=35, EXCLAMATION=36, PERIOD=37, LANGSPEC_BEGIN=38, 
+		STRING_VAL=39, LINE_COMMENT=40, INTEGER_VAL=41, ID=42, WS=43;
 	public const int
-		RULE_file = 0, RULE_trigger = 1, RULE_root = 2, RULE_activity = 3, RULE_sequence = 4, 
-		RULE_varDecl = 5, RULE_localVarDecl = 6, RULE_type = 7, RULE_methodCall = 8, 
-		RULE_funcCall = 9, RULE_args = 10, RULE_arg = 11, RULE_block_statements = 12, 
-		RULE_block_pairs = 13, RULE_pairList = 14, RULE_pair = 15, RULE_stat = 16, 
-		RULE_expr = 17, RULE_exprList = 18;
+		RULE_file = 0, RULE_trigger = 1, RULE_object = 2, RULE_varDecl = 3, RULE_localVarDecl = 4, 
+		RULE_type = 5, RULE_methodCall = 6, RULE_funcCall = 7, RULE_args = 8, 
+		RULE_arg = 9, RULE_block = 10, RULE_objectInitializer = 11, RULE_propertyList = 12, 
+		RULE_property = 13, RULE_stat = 14, RULE_expr = 15, RULE_exprList = 16;
 	public static readonly string[] ruleNames = {
-		"file", "trigger", "root", "activity", "sequence", "varDecl", "localVarDecl", 
-		"type", "methodCall", "funcCall", "args", "arg", "block_statements", "block_pairs", 
-		"pairList", "pair", "stat", "expr", "exprList"
+		"file", "trigger", "object", "varDecl", "localVarDecl", "type", "methodCall", 
+		"funcCall", "args", "arg", "block", "objectInitializer", "propertyList", 
+		"property", "stat", "expr", "exprList"
 	};
 
 	private static readonly string[] _LiteralNames = {
 		null, "'='", "'>'", "'++'", "'--'", "'trigger'", "'variable'", "'let'", 
 		"'if'", "'then'", "'else'", "'for'", "'return'", "'void'", "'float'", 
-		"'int'", "'string'", "'object'", "'Sequence'", null, "':'", "';'", "','", 
-		"'+'", "'-'", "'*'", "'=='", "'!='", "'>='", "'<'", "'<='", "'('", "')'", 
-		"'['", "']'", "'{'", "'}'", "'!'", "'.'"
+		"'int'", "'string'", "'object'", null, "':'", "';'", "','", "'+'", "'-'", 
+		"'*'", "'=='", "'!='", "'>='", "'<'", "'<='", "'('", "')'", "'['", "']'", 
+		"'{'", "'}'", "'!'", "'.'"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "EQ", "GREATER", "INCREMENT", "DECREMENT", "TRIGGER", "VARIABLE", 
 		"LET", "IF", "THEN", "ELSE", "FOR", "RETURN", "VOID", "FLOAT", "INT", 
-		"STRING", "OBJECT", "SEQUENCE", "SYMBOL", "COLON", "SEMICOLON", "COMMA", 
-		"PLUS", "MINUS", "STAR", "EQUALS", "NOT_EQUALS", "GREATER_EQUALS", "LESS", 
-		"LESS_EQUALS", "PARENTHESES_OPEN", "PARENTHESES_CLOSE", "BRACKET_OPEN", 
-		"BRACKET_CLOSE", "CURLYBRACE_OPEN", "CURLYBRACE_CLOSE", "EXCLAMATION", 
-		"PERIOD", "LANGSPEC_BEGIN", "STRING_VAL", "LINE_COMMENT", "INTEGER_VAL", 
-		"ID", "WS"
+		"STRING", "OBJECT", "SYMBOL", "COLON", "SEMICOLON", "COMMA", "PLUS", "MINUS", 
+		"STAR", "EQUALS", "NOT_EQUALS", "GREATER_EQUALS", "LESS", "LESS_EQUALS", 
+		"PARENTHESES_OPEN", "PARENTHESES_CLOSE", "BRACKET_OPEN", "BRACKET_CLOSE", 
+		"CURLYBRACE_OPEN", "CURLYBRACE_CLOSE", "EXCLAMATION", "PERIOD", "LANGSPEC_BEGIN", 
+		"STRING_VAL", "LINE_COMMENT", "INTEGER_VAL", "ID", "WS"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -106,18 +103,6 @@ public partial class ElsaParser : Parser {
 	}
 
 	public partial class FileContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public TriggerContext[] trigger() {
-			return GetRuleContexts<TriggerContext>();
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public TriggerContext trigger(int i) {
-			return GetRuleContext<TriggerContext>(i);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public RootContext[] root() {
-			return GetRuleContexts<RootContext>();
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public RootContext root(int i) {
-			return GetRuleContext<RootContext>(i);
-		}
 		[System.Diagnostics.DebuggerNonUserCode] public StatContext[] stat() {
 			return GetRuleContexts<StatContext>();
 		}
@@ -159,41 +144,44 @@ public partial class ElsaParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 44;
+			State = 38;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRIGGER) | (1L << VARIABLE) | (1L << LET) | (1L << IF) | (1L << FOR) | (1L << RETURN) | (1L << SEQUENCE) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << CURLYBRACE_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << LINE_COMMENT) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRIGGER) | (1L << VARIABLE) | (1L << LET) | (1L << IF) | (1L << FOR) | (1L << RETURN) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << CURLYBRACE_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << LINE_COMMENT) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
 				{
-				State = 42;
+				State = 36;
 				ErrorHandler.Sync(this);
-				switch ( Interpreter.AdaptivePredict(TokenStream,0,Context) ) {
-				case 1:
+				switch (TokenStream.LA(1)) {
+				case TRIGGER:
+				case VARIABLE:
+				case LET:
+				case IF:
+				case FOR:
+				case RETURN:
+				case MINUS:
+				case PARENTHESES_OPEN:
+				case BRACKET_OPEN:
+				case CURLYBRACE_OPEN:
+				case EXCLAMATION:
+				case STRING_VAL:
+				case INTEGER_VAL:
+				case ID:
 					{
-					State = 38;
-					trigger();
-					}
-					break;
-				case 2:
-					{
-					State = 39;
-					root();
-					}
-					break;
-				case 3:
-					{
-					State = 40;
+					State = 34;
 					stat();
 					}
 					break;
-				case 4:
+				case LINE_COMMENT:
 					{
-					State = 41;
+					State = 35;
 					Match(LINE_COMMENT);
 					}
 					break;
+				default:
+					throw new NoViableAltException(this);
 				}
 				}
-				State = 46;
+				State = 40;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -212,9 +200,8 @@ public partial class ElsaParser : Parser {
 
 	public partial class TriggerContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode TRIGGER() { return GetToken(ElsaParser.TRIGGER, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public Block_pairsContext block_pairs() {
-			return GetRuleContext<Block_pairsContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public ObjectContext @object() {
+			return GetRuleContext<ObjectContext>(0);
 		}
 		public TriggerContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -246,12 +233,10 @@ public partial class ElsaParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 47;
+			State = 41;
 			Match(TRIGGER);
-			State = 48;
-			Match(ID);
-			State = 49;
-			block_pairs();
+			State = 42;
+			@object();
 			}
 		}
 		catch (RecognitionException re) {
@@ -265,173 +250,53 @@ public partial class ElsaParser : Parser {
 		return _localctx;
 	}
 
-	public partial class RootContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ActivityContext activity() {
-			return GetRuleContext<ActivityContext>(0);
+	public partial class ObjectContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ObjectInitializerContext objectInitializer() {
+			return GetRuleContext<ObjectInitializerContext>(0);
 		}
-		public RootContext(ParserRuleContext parent, int invokingState)
+		public ObjectContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_root; } }
+		public override int RuleIndex { get { return RULE_object; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterRoot(this);
+			if (typedListener != null) typedListener.EnterObject(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitRoot(this);
+			if (typedListener != null) typedListener.ExitObject(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitRoot(this);
+			if (typedVisitor != null) return typedVisitor.VisitObject(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public RootContext root() {
-		RootContext _localctx = new RootContext(Context, State);
-		EnterRule(_localctx, 4, RULE_root);
+	public ObjectContext @object() {
+		ObjectContext _localctx = new ObjectContext(Context, State);
+		EnterRule(_localctx, 4, RULE_object);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 51;
-			activity();
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			ErrorHandler.ReportError(this, re);
-			ErrorHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
-
-	public partial class ActivityContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public SequenceContext sequence() {
-			return GetRuleContext<SequenceContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
-		public ActivityContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int RuleIndex { get { return RULE_activity; } }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterActivity(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitActivity(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitActivity(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-
-	[RuleVersion(0)]
-	public ActivityContext activity() {
-		ActivityContext _localctx = new ActivityContext(Context, State);
-		EnterRule(_localctx, 6, RULE_activity);
-		try {
-			State = 55;
+			State = 44;
+			Match(ID);
+			State = 46;
 			ErrorHandler.Sync(this);
-			switch (TokenStream.LA(1)) {
-			case SEQUENCE:
-			case CURLYBRACE_OPEN:
-				EnterOuterAlt(_localctx, 1);
+			switch ( Interpreter.AdaptivePredict(TokenStream,2,Context) ) {
+			case 1:
 				{
-				State = 53;
-				sequence();
+				State = 45;
+				objectInitializer();
 				}
 				break;
-			case ID:
-				EnterOuterAlt(_localctx, 2);
-				{
-				State = 54;
-				Match(ID);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
 			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			ErrorHandler.ReportError(this, re);
-			ErrorHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
-
-	public partial class SequenceContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEQUENCE() { return GetToken(ElsaParser.SEQUENCE, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public Block_statementsContext block_statements() {
-			return GetRuleContext<Block_statementsContext>(0);
-		}
-		public SequenceContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int RuleIndex { get { return RULE_sequence; } }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterSequence(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitSequence(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitSequence(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-
-	[RuleVersion(0)]
-	public SequenceContext sequence() {
-		SequenceContext _localctx = new SequenceContext(Context, State);
-		EnterRule(_localctx, 8, RULE_sequence);
-		try {
-			State = 59;
-			ErrorHandler.Sync(this);
-			switch (TokenStream.LA(1)) {
-			case SEQUENCE:
-				EnterOuterAlt(_localctx, 1);
-				{
-				State = 57;
-				Match(SEQUENCE);
-				}
-				break;
-			case CURLYBRACE_OPEN:
-				EnterOuterAlt(_localctx, 2);
-				{
-				State = 58;
-				block_statements();
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -482,35 +347,35 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public VarDeclContext varDecl() {
 		VarDeclContext _localctx = new VarDeclContext(Context, State);
-		EnterRule(_localctx, 10, RULE_varDecl);
+		EnterRule(_localctx, 6, RULE_varDecl);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 61;
+			State = 48;
 			Match(VARIABLE);
-			State = 62;
+			State = 49;
 			Match(ID);
-			State = 65;
+			State = 52;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==COLON) {
 				{
-				State = 63;
+				State = 50;
 				Match(COLON);
-				State = 64;
+				State = 51;
 				type();
 				}
 			}
 
-			State = 69;
+			State = 56;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==EQ) {
 				{
-				State = 67;
+				State = 54;
 				Match(EQ);
-				State = 68;
+				State = 55;
 				expr(0);
 				}
 			}
@@ -565,35 +430,35 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public LocalVarDeclContext localVarDecl() {
 		LocalVarDeclContext _localctx = new LocalVarDeclContext(Context, State);
-		EnterRule(_localctx, 12, RULE_localVarDecl);
+		EnterRule(_localctx, 8, RULE_localVarDecl);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 71;
+			State = 58;
 			Match(LET);
-			State = 72;
+			State = 59;
 			Match(ID);
-			State = 75;
+			State = 62;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==COLON) {
 				{
-				State = 73;
+				State = 60;
 				Match(COLON);
-				State = 74;
+				State = 61;
 				type();
 				}
 			}
 
-			State = 79;
+			State = 66;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==EQ) {
 				{
-				State = 77;
+				State = 64;
 				Match(EQ);
-				State = 78;
+				State = 65;
 				expr(0);
 				}
 			}
@@ -643,12 +508,12 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public TypeContext type() {
 		TypeContext _localctx = new TypeContext(Context, State);
-		EnterRule(_localctx, 14, RULE_type);
+		EnterRule(_localctx, 10, RULE_type);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 81;
+			State = 68;
 			_la = TokenStream.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << VOID) | (1L << FLOAT) | (1L << INT) | (1L << STRING) | (1L << OBJECT))) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
@@ -702,15 +567,15 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public MethodCallContext methodCall() {
 		MethodCallContext _localctx = new MethodCallContext(Context, State);
-		EnterRule(_localctx, 16, RULE_methodCall);
+		EnterRule(_localctx, 12, RULE_methodCall);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 83;
+			State = 70;
 			Match(ID);
-			State = 84;
+			State = 71;
 			Match(PERIOD);
-			State = 85;
+			State = 72;
 			funcCall();
 			}
 		}
@@ -758,26 +623,26 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public FuncCallContext funcCall() {
 		FuncCallContext _localctx = new FuncCallContext(Context, State);
-		EnterRule(_localctx, 18, RULE_funcCall);
+		EnterRule(_localctx, 14, RULE_funcCall);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 87;
+			State = 74;
 			Match(ID);
-			State = 88;
+			State = 75;
 			Match(PARENTHESES_OPEN);
-			State = 90;
+			State = 77;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
 				{
-				State = 89;
+				State = 76;
 				args();
 				}
 			}
 
-			State = 92;
+			State = 79;
 			Match(PARENTHESES_CLOSE);
 			}
 		}
@@ -829,26 +694,26 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public ArgsContext args() {
 		ArgsContext _localctx = new ArgsContext(Context, State);
-		EnterRule(_localctx, 20, RULE_args);
+		EnterRule(_localctx, 16, RULE_args);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 94;
+			State = 81;
 			arg();
-			State = 99;
+			State = 86;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				State = 95;
+				State = 82;
 				Match(COMMA);
-				State = 96;
+				State = 83;
 				arg();
 				}
 				}
-				State = 101;
+				State = 88;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -895,11 +760,11 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public ArgContext arg() {
 		ArgContext _localctx = new ArgContext(Context, State);
-		EnterRule(_localctx, 22, RULE_arg);
+		EnterRule(_localctx, 18, RULE_arg);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 102;
+			State = 89;
 			expr(0);
 			}
 		}
@@ -914,7 +779,7 @@ public partial class ElsaParser : Parser {
 		return _localctx;
 	}
 
-	public partial class Block_statementsContext : ParserRuleContext {
+	public partial class BlockContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode CURLYBRACE_OPEN() { return GetToken(ElsaParser.CURLYBRACE_OPEN, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode CURLYBRACE_CLOSE() { return GetToken(ElsaParser.CURLYBRACE_CLOSE, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public StatContext[] stat() {
@@ -923,54 +788,54 @@ public partial class ElsaParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public StatContext stat(int i) {
 			return GetRuleContext<StatContext>(i);
 		}
-		public Block_statementsContext(ParserRuleContext parent, int invokingState)
+		public BlockContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_block_statements; } }
+		public override int RuleIndex { get { return RULE_block; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterBlock_statements(this);
+			if (typedListener != null) typedListener.EnterBlock(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitBlock_statements(this);
+			if (typedListener != null) typedListener.ExitBlock(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitBlock_statements(this);
+			if (typedVisitor != null) return typedVisitor.VisitBlock(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public Block_statementsContext block_statements() {
-		Block_statementsContext _localctx = new Block_statementsContext(Context, State);
-		EnterRule(_localctx, 24, RULE_block_statements);
+	public BlockContext block() {
+		BlockContext _localctx = new BlockContext(Context, State);
+		EnterRule(_localctx, 20, RULE_block);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 104;
+			State = 91;
 			Match(CURLYBRACE_OPEN);
-			State = 108;
+			State = 95;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << VARIABLE) | (1L << LET) | (1L << IF) | (1L << FOR) | (1L << RETURN) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << CURLYBRACE_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRIGGER) | (1L << VARIABLE) | (1L << LET) | (1L << IF) | (1L << FOR) | (1L << RETURN) | (1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << CURLYBRACE_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
 				{
 				{
-				State = 105;
+				State = 92;
 				stat();
 				}
 				}
-				State = 110;
+				State = 97;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 111;
+			State = 98;
 			Match(CURLYBRACE_CLOSE);
 			}
 		}
@@ -985,47 +850,56 @@ public partial class ElsaParser : Parser {
 		return _localctx;
 	}
 
-	public partial class Block_pairsContext : ParserRuleContext {
+	public partial class ObjectInitializerContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode CURLYBRACE_OPEN() { return GetToken(ElsaParser.CURLYBRACE_OPEN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public PairListContext pairList() {
-			return GetRuleContext<PairListContext>(0);
-		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode CURLYBRACE_CLOSE() { return GetToken(ElsaParser.CURLYBRACE_CLOSE, 0); }
-		public Block_pairsContext(ParserRuleContext parent, int invokingState)
+		[System.Diagnostics.DebuggerNonUserCode] public PropertyListContext propertyList() {
+			return GetRuleContext<PropertyListContext>(0);
+		}
+		public ObjectInitializerContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_block_pairs; } }
+		public override int RuleIndex { get { return RULE_objectInitializer; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterBlock_pairs(this);
+			if (typedListener != null) typedListener.EnterObjectInitializer(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitBlock_pairs(this);
+			if (typedListener != null) typedListener.ExitObjectInitializer(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitBlock_pairs(this);
+			if (typedVisitor != null) return typedVisitor.VisitObjectInitializer(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public Block_pairsContext block_pairs() {
-		Block_pairsContext _localctx = new Block_pairsContext(Context, State);
-		EnterRule(_localctx, 26, RULE_block_pairs);
+	public ObjectInitializerContext objectInitializer() {
+		ObjectInitializerContext _localctx = new ObjectInitializerContext(Context, State);
+		EnterRule(_localctx, 22, RULE_objectInitializer);
+		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 113;
+			State = 100;
 			Match(CURLYBRACE_OPEN);
-			State = 114;
-			pairList();
-			State = 115;
+			State = 102;
+			ErrorHandler.Sync(this);
+			_la = TokenStream.LA(1);
+			if (_la==ID) {
+				{
+				State = 101;
+				propertyList();
+				}
+			}
+
+			State = 104;
 			Match(CURLYBRACE_CLOSE);
 			}
 		}
@@ -1040,63 +914,63 @@ public partial class ElsaParser : Parser {
 		return _localctx;
 	}
 
-	public partial class PairListContext : ParserRuleContext {
-		[System.Diagnostics.DebuggerNonUserCode] public PairContext[] pair() {
-			return GetRuleContexts<PairContext>();
+	public partial class PropertyListContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public PropertyContext[] property() {
+			return GetRuleContexts<PropertyContext>();
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public PairContext pair(int i) {
-			return GetRuleContext<PairContext>(i);
+		[System.Diagnostics.DebuggerNonUserCode] public PropertyContext property(int i) {
+			return GetRuleContext<PropertyContext>(i);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] COMMA() { return GetTokens(ElsaParser.COMMA); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode COMMA(int i) {
 			return GetToken(ElsaParser.COMMA, i);
 		}
-		public PairListContext(ParserRuleContext parent, int invokingState)
+		public PropertyListContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_pairList; } }
+		public override int RuleIndex { get { return RULE_propertyList; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterPairList(this);
+			if (typedListener != null) typedListener.EnterPropertyList(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitPairList(this);
+			if (typedListener != null) typedListener.ExitPropertyList(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitPairList(this);
+			if (typedVisitor != null) return typedVisitor.VisitPropertyList(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public PairListContext pairList() {
-		PairListContext _localctx = new PairListContext(Context, State);
-		EnterRule(_localctx, 28, RULE_pairList);
+	public PropertyListContext propertyList() {
+		PropertyListContext _localctx = new PropertyListContext(Context, State);
+		EnterRule(_localctx, 24, RULE_propertyList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 117;
-			pair();
-			State = 122;
+			State = 106;
+			property();
+			State = 111;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				State = 118;
+				State = 107;
 				Match(COMMA);
-				State = 119;
-				pair();
+				State = 108;
+				property();
 				}
 				}
-				State = 124;
+				State = 113;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -1113,47 +987,47 @@ public partial class ElsaParser : Parser {
 		return _localctx;
 	}
 
-	public partial class PairContext : ParserRuleContext {
+	public partial class PropertyContext : ParserRuleContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode COLON() { return GetToken(ElsaParser.COLON, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
 			return GetRuleContext<ExprContext>(0);
 		}
-		public PairContext(ParserRuleContext parent, int invokingState)
+		public PropertyContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_pair; } }
+		public override int RuleIndex { get { return RULE_property; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterPair(this);
+			if (typedListener != null) typedListener.EnterProperty(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitPair(this);
+			if (typedListener != null) typedListener.ExitProperty(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitPair(this);
+			if (typedVisitor != null) return typedVisitor.VisitProperty(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public PairContext pair() {
-		PairContext _localctx = new PairContext(Context, State);
-		EnterRule(_localctx, 30, RULE_pair);
+	public PropertyContext property() {
+		PropertyContext _localctx = new PropertyContext(Context, State);
+		EnterRule(_localctx, 26, RULE_property);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 125;
+			State = 114;
 			Match(ID);
-			State = 126;
+			State = 115;
 			Match(COLON);
-			State = 127;
+			State = 116;
 			expr(0);
 			}
 		}
@@ -1180,53 +1054,176 @@ public partial class ElsaParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class LocalVariableDeclarationContext : StatContext {
-		[System.Diagnostics.DebuggerNonUserCode] public LocalVarDeclContext localVarDecl() {
-			return GetRuleContext<LocalVarDeclContext>(0);
+	public partial class IfStatContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode IF() { return GetToken(ElsaParser.IF, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
-		public LocalVariableDeclarationContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode THEN() { return GetToken(ElsaParser.THEN, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public StatContext[] stat() {
+			return GetRuleContexts<StatContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public StatContext stat(int i) {
+			return GetRuleContext<StatContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ELSE() { return GetToken(ElsaParser.ELSE, 0); }
+		public IfStatContext(StatContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterLocalVariableDeclaration(this);
+			if (typedListener != null) typedListener.EnterIfStat(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitLocalVariableDeclaration(this);
+			if (typedListener != null) typedListener.ExitIfStat(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitLocalVariableDeclaration(this);
+			if (typedVisitor != null) return typedVisitor.VisitIfStat(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class ExpressionContext : StatContext {
+	public partial class BlockStatContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public BlockContext block() {
+			return GetRuleContext<BlockContext>(0);
+		}
+		public BlockStatContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterBlockStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitBlockStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitBlockStat(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ExpressionStatContext : StatContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
 			return GetRuleContext<ExprContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
-		public ExpressionContext(StatContext context) { CopyFrom(context); }
+		public ExpressionStatContext(StatContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterExpression(this);
+			if (typedListener != null) typedListener.EnterExpressionStat(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitExpression(this);
+			if (typedListener != null) typedListener.ExitExpressionStat(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitExpression(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpressionStat(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class AssignmentContext : StatContext {
+	public partial class TriggerStatContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public TriggerContext trigger() {
+			return GetRuleContext<TriggerContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		public TriggerStatContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterTriggerStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitTriggerStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitTriggerStat(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ObjectStatContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ObjectContext @object() {
+			return GetRuleContext<ObjectContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		public ObjectStatContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterObjectStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitObjectStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitObjectStat(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ReturnStatContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode RETURN() { return GetToken(ElsaParser.RETURN, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		public ReturnStatContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterReturnStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitReturnStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitReturnStat(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class VariableDeclarationStatContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public VarDeclContext varDecl() {
+			return GetRuleContext<VarDeclContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		public VariableDeclarationStatContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterVariableDeclarationStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitVariableDeclarationStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitVariableDeclarationStat(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class AssignmentStatContext : StatContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
 			return GetRuleContexts<ExprContext>();
 		}
@@ -1235,25 +1232,48 @@ public partial class ElsaParser : Parser {
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EQ() { return GetToken(ElsaParser.EQ, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
-		public AssignmentContext(StatContext context) { CopyFrom(context); }
+		public AssignmentStatContext(StatContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterAssignment(this);
+			if (typedListener != null) typedListener.EnterAssignmentStat(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitAssignment(this);
+			if (typedListener != null) typedListener.ExitAssignmentStat(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitAssignment(this);
+			if (typedVisitor != null) return typedVisitor.VisitAssignmentStat(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class ForContext : StatContext {
+	public partial class LocalVariableDeclarationStatContext : StatContext {
+		[System.Diagnostics.DebuggerNonUserCode] public LocalVarDeclContext localVarDecl() {
+			return GetRuleContext<LocalVarDeclContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
+		public LocalVariableDeclarationStatContext(StatContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterLocalVariableDeclarationStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitLocalVariableDeclarationStat(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitLocalVariableDeclarationStat(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ForStatContext : StatContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode FOR() { return GetToken(ElsaParser.FOR, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_OPEN() { return GetToken(ElsaParser.PARENTHESES_OPEN, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
@@ -1272,121 +1292,21 @@ public partial class ElsaParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public StatContext stat() {
 			return GetRuleContext<StatContext>(0);
 		}
-		public ForContext(StatContext context) { CopyFrom(context); }
+		public ForStatContext(StatContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterFor(this);
+			if (typedListener != null) typedListener.EnterForStat(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitFor(this);
+			if (typedListener != null) typedListener.ExitForStat(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitFor(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class BlockStatementsContext : StatContext {
-		[System.Diagnostics.DebuggerNonUserCode] public Block_statementsContext block_statements() {
-			return GetRuleContext<Block_statementsContext>(0);
-		}
-		public BlockStatementsContext(StatContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterBlockStatements(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitBlockStatements(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitBlockStatements(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class IfContext : StatContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode IF() { return GetToken(ElsaParser.IF, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
-			return GetRuleContext<ExprContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode THEN() { return GetToken(ElsaParser.THEN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public StatContext[] stat() {
-			return GetRuleContexts<StatContext>();
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public StatContext stat(int i) {
-			return GetRuleContext<StatContext>(i);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ELSE() { return GetToken(ElsaParser.ELSE, 0); }
-		public IfContext(StatContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterIf(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitIf(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitIf(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class ReturnContext : StatContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode RETURN() { return GetToken(ElsaParser.RETURN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
-			return GetRuleContext<ExprContext>(0);
-		}
-		public ReturnContext(StatContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterReturn(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitReturn(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitReturn(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class VariableDeclarationContext : StatContext {
-		[System.Diagnostics.DebuggerNonUserCode] public VarDeclContext varDecl() {
-			return GetRuleContext<VarDeclContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SEMICOLON() { return GetToken(ElsaParser.SEMICOLON, 0); }
-		public VariableDeclarationContext(StatContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterVariableDeclaration(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitVariableDeclaration(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitVariableDeclaration(this);
+			if (typedVisitor != null) return typedVisitor.VisitForStat(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -1394,135 +1314,155 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public StatContext stat() {
 		StatContext _localctx = new StatContext(Context, State);
-		EnterRule(_localctx, 32, RULE_stat);
+		EnterRule(_localctx, 28, RULE_stat);
 		int _la;
 		try {
-			State = 169;
+			State = 164;
 			ErrorHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(TokenStream,14,Context) ) {
 			case 1:
-				_localctx = new IfContext(_localctx);
+				_localctx = new TriggerStatContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 129;
+				State = 118;
+				trigger();
+				State = 119;
+				Match(SEMICOLON);
+				}
+				break;
+			case 2:
+				_localctx = new ObjectStatContext(_localctx);
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 121;
+				@object();
+				State = 122;
+				Match(SEMICOLON);
+				}
+				break;
+			case 3:
+				_localctx = new IfStatContext(_localctx);
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 124;
 				Match(IF);
-				State = 130;
+				State = 125;
 				expr(0);
-				State = 131;
+				State = 126;
 				Match(THEN);
-				State = 132;
+				State = 127;
 				stat();
-				State = 135;
+				State = 130;
 				ErrorHandler.Sync(this);
 				switch ( Interpreter.AdaptivePredict(TokenStream,12,Context) ) {
 				case 1:
 					{
-					State = 133;
+					State = 128;
 					Match(ELSE);
-					State = 134;
+					State = 129;
 					stat();
 					}
 					break;
 				}
 				}
 				break;
-			case 2:
-				_localctx = new ForContext(_localctx);
-				EnterOuterAlt(_localctx, 2);
+			case 4:
+				_localctx = new ForStatContext(_localctx);
+				EnterOuterAlt(_localctx, 4);
 				{
-				State = 137;
+				State = 132;
 				Match(FOR);
-				State = 138;
+				State = 133;
 				Match(PARENTHESES_OPEN);
-				State = 139;
+				State = 134;
 				Match(ID);
-				State = 140;
+				State = 135;
 				Match(EQ);
+				State = 136;
+				expr(0);
+				State = 137;
+				Match(SEMICOLON);
+				State = 138;
+				expr(0);
+				State = 139;
+				Match(SEMICOLON);
+				State = 140;
+				expr(0);
 				State = 141;
-				expr(0);
-				State = 142;
-				Match(SEMICOLON);
-				State = 143;
-				expr(0);
-				State = 144;
-				Match(SEMICOLON);
-				State = 145;
-				expr(0);
-				State = 146;
 				Match(PARENTHESES_CLOSE);
-				State = 147;
+				State = 142;
 				stat();
 				}
 				break;
-			case 3:
-				_localctx = new ReturnContext(_localctx);
-				EnterOuterAlt(_localctx, 3);
+			case 5:
+				_localctx = new ReturnStatContext(_localctx);
+				EnterOuterAlt(_localctx, 5);
 				{
-				State = 149;
+				State = 144;
 				Match(RETURN);
-				State = 151;
+				State = 146;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
 					{
-					State = 150;
+					State = 145;
 					expr(0);
 					}
 				}
 
-				State = 153;
-				Match(SEMICOLON);
-				}
-				break;
-			case 4:
-				_localctx = new BlockStatementsContext(_localctx);
-				EnterOuterAlt(_localctx, 4);
-				{
-				State = 154;
-				block_statements();
-				}
-				break;
-			case 5:
-				_localctx = new VariableDeclarationContext(_localctx);
-				EnterOuterAlt(_localctx, 5);
-				{
-				State = 155;
-				varDecl();
-				State = 156;
+				State = 148;
 				Match(SEMICOLON);
 				}
 				break;
 			case 6:
-				_localctx = new LocalVariableDeclarationContext(_localctx);
+				_localctx = new BlockStatContext(_localctx);
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 158;
-				localVarDecl();
-				State = 159;
-				Match(SEMICOLON);
+				State = 149;
+				block();
 				}
 				break;
 			case 7:
-				_localctx = new AssignmentContext(_localctx);
+				_localctx = new VariableDeclarationStatContext(_localctx);
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 161;
-				expr(0);
-				State = 162;
-				Match(EQ);
-				State = 163;
-				expr(0);
-				State = 164;
+				State = 150;
+				varDecl();
+				State = 151;
 				Match(SEMICOLON);
 				}
 				break;
 			case 8:
-				_localctx = new ExpressionContext(_localctx);
+				_localctx = new LocalVariableDeclarationStatContext(_localctx);
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 166;
+				State = 153;
+				localVarDecl();
+				State = 154;
+				Match(SEMICOLON);
+				}
+				break;
+			case 9:
+				_localctx = new AssignmentStatContext(_localctx);
+				EnterOuterAlt(_localctx, 9);
+				{
+				State = 156;
 				expr(0);
-				State = 167;
+				State = 157;
+				Match(EQ);
+				State = 158;
+				expr(0);
+				State = 159;
+				Match(SEMICOLON);
+				}
+				break;
+			case 10:
+				_localctx = new ExpressionStatContext(_localctx);
+				EnterOuterAlt(_localctx, 10);
+				{
+				State = 161;
+				expr(0);
+				State = 162;
 				Match(SEMICOLON);
 				}
 				break;
@@ -1551,7 +1491,301 @@ public partial class ElsaParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class AddContext : ExprContext {
+	public partial class SubtractExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
+			return GetRuleContexts<ExprContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
+			return GetRuleContext<ExprContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MINUS() { return GetToken(ElsaParser.MINUS, 0); }
+		public SubtractExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterSubtractExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitSubtractExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitSubtractExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class IncrementExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INCREMENT() { return GetToken(ElsaParser.INCREMENT, 0); }
+		public IncrementExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterIncrementExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitIncrementExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitIncrementExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ObjectExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ObjectContext @object() {
+			return GetRuleContext<ObjectContext>(0);
+		}
+		public ObjectExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterObjectExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitObjectExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitObjectExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class StringValueExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_VAL() { return GetToken(ElsaParser.STRING_VAL, 0); }
+		public StringValueExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterStringValueExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitStringValueExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitStringValueExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class MultiplyExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
+			return GetRuleContexts<ExprContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
+			return GetRuleContext<ExprContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STAR() { return GetToken(ElsaParser.STAR, 0); }
+		public MultiplyExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterMultiplyExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitMultiplyExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitMultiplyExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ParenthesesExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_OPEN() { return GetToken(ElsaParser.PARENTHESES_OPEN, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_CLOSE() { return GetToken(ElsaParser.PARENTHESES_CLOSE, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprListContext exprList() {
+			return GetRuleContext<ExprListContext>(0);
+		}
+		public ParenthesesExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterParenthesesExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitParenthesesExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitParenthesesExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class FunctionExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public FuncCallContext funcCall() {
+			return GetRuleContext<FuncCallContext>(0);
+		}
+		public FunctionExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterFunctionExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitFunctionExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitFunctionExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class DecrementExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DECREMENT() { return GetToken(ElsaParser.DECREMENT, 0); }
+		public DecrementExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterDecrementExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitDecrementExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDecrementExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class NegateExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MINUS() { return GetToken(ElsaParser.MINUS, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		public NegateExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterNegateExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitNegateExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNegateExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class MethodCallExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public MethodCallContext methodCall() {
+			return GetRuleContext<MethodCallContext>(0);
+		}
+		public MethodCallExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterMethodCallExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitMethodCallExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitMethodCallExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class VariableExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
+		public VariableExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterVariableExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitVariableExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitVariableExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class NotExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EXCLAMATION() { return GetToken(ElsaParser.EXCLAMATION, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		public NotExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterNotExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitNotExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNotExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class IntegerValueExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INTEGER_VAL() { return GetToken(ElsaParser.INTEGER_VAL, 0); }
+		public IntegerValueExprContext(ExprContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.EnterIntegerValueExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IElsaParserListener typedListener = listener as IElsaParserListener;
+			if (typedListener != null) typedListener.ExitIntegerValueExpr(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitIntegerValueExpr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class AddExprContext : ExprContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
 			return GetRuleContexts<ExprContext>();
 		}
@@ -1559,49 +1793,49 @@ public partial class ElsaParser : Parser {
 			return GetRuleContext<ExprContext>(i);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PLUS() { return GetToken(ElsaParser.PLUS, 0); }
-		public AddContext(ExprContext context) { CopyFrom(context); }
+		public AddExprContext(ExprContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterAdd(this);
+			if (typedListener != null) typedListener.EnterAddExpr(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitAdd(this);
+			if (typedListener != null) typedListener.ExitAddExpr(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitAdd(this);
+			if (typedVisitor != null) return typedVisitor.VisitAddExpr(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class ParenthesesContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_OPEN() { return GetToken(ElsaParser.PARENTHESES_OPEN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
-			return GetRuleContext<ExprContext>(0);
+	public partial class BracketsExprContext : ExprContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BRACKET_OPEN() { return GetToken(ElsaParser.BRACKET_OPEN, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BRACKET_CLOSE() { return GetToken(ElsaParser.BRACKET_CLOSE, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ExprListContext exprList() {
+			return GetRuleContext<ExprListContext>(0);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PARENTHESES_CLOSE() { return GetToken(ElsaParser.PARENTHESES_CLOSE, 0); }
-		public ParenthesesContext(ExprContext context) { CopyFrom(context); }
+		public BracketsExprContext(ExprContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterParentheses(this);
+			if (typedListener != null) typedListener.EnterBracketsExpr(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitParentheses(this);
+			if (typedListener != null) typedListener.ExitBracketsExpr(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitParentheses(this);
+			if (typedVisitor != null) return typedVisitor.VisitBracketsExpr(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class CompareContext : ExprContext {
+	public partial class CompareExprContext : ExprContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
 			return GetRuleContexts<ExprContext>();
 		}
@@ -1611,293 +1845,21 @@ public partial class ElsaParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EQUALS() { return GetToken(ElsaParser.EQUALS, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode GREATER() { return GetToken(ElsaParser.GREATER, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode LESS() { return GetToken(ElsaParser.LESS, 0); }
-		public CompareContext(ExprContext context) { CopyFrom(context); }
+		public CompareExprContext(ExprContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterCompare(this);
+			if (typedListener != null) typedListener.EnterCompareExpr(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
 			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitCompare(this);
+			if (typedListener != null) typedListener.ExitCompareExpr(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitCompare(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class MethodInvocationContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public MethodCallContext methodCall() {
-			return GetRuleContext<MethodCallContext>(0);
-		}
-		public MethodInvocationContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterMethodInvocation(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitMethodInvocation(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitMethodInvocation(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class SubtractContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
-			return GetRuleContexts<ExprContext>();
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
-			return GetRuleContext<ExprContext>(i);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MINUS() { return GetToken(ElsaParser.MINUS, 0); }
-		public SubtractContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterSubtract(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitSubtract(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitSubtract(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class VariableReferenceContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(ElsaParser.ID, 0); }
-		public VariableReferenceContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterVariableReference(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitVariableReference(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitVariableReference(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class IncrementContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
-			return GetRuleContext<ExprContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INCREMENT() { return GetToken(ElsaParser.INCREMENT, 0); }
-		public IncrementContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterIncrement(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitIncrement(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitIncrement(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class BracketsContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BRACKET_OPEN() { return GetToken(ElsaParser.BRACKET_OPEN, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ExprListContext exprList() {
-			return GetRuleContext<ExprListContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BRACKET_CLOSE() { return GetToken(ElsaParser.BRACKET_CLOSE, 0); }
-		public BracketsContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterBrackets(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitBrackets(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitBrackets(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class NotContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode EXCLAMATION() { return GetToken(ElsaParser.EXCLAMATION, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
-			return GetRuleContext<ExprContext>(0);
-		}
-		public NotContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterNot(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitNot(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitNot(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class StringValueContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_VAL() { return GetToken(ElsaParser.STRING_VAL, 0); }
-		public StringValueContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterStringValue(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitStringValue(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitStringValue(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class NegateContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MINUS() { return GetToken(ElsaParser.MINUS, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
-			return GetRuleContext<ExprContext>(0);
-		}
-		public NegateContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterNegate(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitNegate(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitNegate(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class DecrementContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr() {
-			return GetRuleContext<ExprContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DECREMENT() { return GetToken(ElsaParser.DECREMENT, 0); }
-		public DecrementContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterDecrement(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitDecrement(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitDecrement(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class FunctionCallContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public FuncCallContext funcCall() {
-			return GetRuleContext<FuncCallContext>(0);
-		}
-		public FunctionCallContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterFunctionCall(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitFunctionCall(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitFunctionCall(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class IntegerValueContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode INTEGER_VAL() { return GetToken(ElsaParser.INTEGER_VAL, 0); }
-		public IntegerValueContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterIntegerValue(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitIntegerValue(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitIntegerValue(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class MultiplyContext : ExprContext {
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext[] expr() {
-			return GetRuleContexts<ExprContext>();
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ExprContext expr(int i) {
-			return GetRuleContext<ExprContext>(i);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STAR() { return GetToken(ElsaParser.STAR, 0); }
-		public MultiplyContext(ExprContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.EnterMultiply(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IElsaParserListener typedListener = listener as IElsaParserListener;
-			if (typedListener != null) typedListener.ExitMultiply(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IElsaParserVisitor<TResult> typedVisitor = visitor as IElsaParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitMultiply(this);
+			if (typedVisitor != null) return typedVisitor.VisitCompareExpr(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -1912,167 +1874,192 @@ public partial class ElsaParser : Parser {
 		int _parentState = State;
 		ExprContext _localctx = new ExprContext(Context, _parentState);
 		ExprContext _prevctx = _localctx;
-		int _startState = 34;
-		EnterRecursionRule(_localctx, 34, RULE_expr, _p);
+		int _startState = 30;
+		EnterRecursionRule(_localctx, 30, RULE_expr, _p);
 		int _la;
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 189;
+			State = 187;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,15,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,17,Context) ) {
 			case 1:
 				{
-				_localctx = new FunctionCallContext(_localctx);
+				_localctx = new FunctionExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
 
-				State = 172;
+				State = 167;
 				funcCall();
 				}
 				break;
 			case 2:
 				{
-				_localctx = new NegateContext(_localctx);
+				_localctx = new ObjectExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 173;
-				Match(MINUS);
-				State = 174;
-				expr(12);
+				State = 168;
+				@object();
 				}
 				break;
 			case 3:
 				{
-				_localctx = new NotContext(_localctx);
+				_localctx = new NegateExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 175;
-				Match(EXCLAMATION);
-				State = 176;
-				expr(11);
+				State = 169;
+				Match(MINUS);
+				State = 170;
+				expr(12);
 				}
 				break;
 			case 4:
 				{
-				_localctx = new IntegerValueContext(_localctx);
+				_localctx = new NotExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 177;
-				Match(INTEGER_VAL);
+				State = 171;
+				Match(EXCLAMATION);
+				State = 172;
+				expr(11);
 				}
 				break;
 			case 5:
 				{
-				_localctx = new StringValueContext(_localctx);
+				_localctx = new IntegerValueExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 178;
-				Match(STRING_VAL);
+				State = 173;
+				Match(INTEGER_VAL);
 				}
 				break;
 			case 6:
 				{
-				_localctx = new ParenthesesContext(_localctx);
+				_localctx = new StringValueExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 179;
-				Match(PARENTHESES_OPEN);
-				State = 180;
-				expr(0);
-				State = 181;
-				Match(PARENTHESES_CLOSE);
+				State = 174;
+				Match(STRING_VAL);
 				}
 				break;
 			case 7:
 				{
-				_localctx = new BracketsContext(_localctx);
+				_localctx = new ParenthesesExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 183;
-				Match(BRACKET_OPEN);
-				State = 184;
-				exprList();
-				State = 185;
-				Match(BRACKET_CLOSE);
+				State = 175;
+				Match(PARENTHESES_OPEN);
+				State = 177;
+				ErrorHandler.Sync(this);
+				_la = TokenStream.LA(1);
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
+					{
+					State = 176;
+					exprList();
+					}
+				}
+
+				State = 179;
+				Match(PARENTHESES_CLOSE);
 				}
 				break;
 			case 8:
 				{
-				_localctx = new MethodInvocationContext(_localctx);
+				_localctx = new BracketsExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 187;
-				methodCall();
+				State = 180;
+				Match(BRACKET_OPEN);
+				State = 182;
+				ErrorHandler.Sync(this);
+				_la = TokenStream.LA(1);
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MINUS) | (1L << PARENTHESES_OPEN) | (1L << BRACKET_OPEN) | (1L << EXCLAMATION) | (1L << STRING_VAL) | (1L << INTEGER_VAL) | (1L << ID))) != 0)) {
+					{
+					State = 181;
+					exprList();
+					}
+				}
+
+				State = 184;
+				Match(BRACKET_CLOSE);
 				}
 				break;
 			case 9:
 				{
-				_localctx = new VariableReferenceContext(_localctx);
+				_localctx = new MethodCallExprContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 188;
+				State = 185;
+				methodCall();
+				}
+				break;
+			case 10:
+				{
+				_localctx = new VariableExprContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 186;
 				Match(ID);
 				}
 				break;
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 209;
+			State = 207;
 			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,17,Context);
+			_alt = Interpreter.AdaptivePredict(TokenStream,19,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( ParseListeners!=null )
 						TriggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					State = 207;
+					State = 205;
 					ErrorHandler.Sync(this);
-					switch ( Interpreter.AdaptivePredict(TokenStream,16,Context) ) {
+					switch ( Interpreter.AdaptivePredict(TokenStream,18,Context) ) {
 					case 1:
 						{
-						_localctx = new MultiplyContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new MultiplyExprContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 191;
+						State = 189;
 						if (!(Precpred(Context, 10))) throw new FailedPredicateException(this, "Precpred(Context, 10)");
-						State = 192;
+						State = 190;
 						Match(STAR);
-						State = 193;
+						State = 191;
 						expr(11);
 						}
 						break;
 					case 2:
 						{
-						_localctx = new AddContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new AddExprContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 194;
+						State = 192;
 						if (!(Precpred(Context, 9))) throw new FailedPredicateException(this, "Precpred(Context, 9)");
-						State = 195;
+						State = 193;
 						Match(PLUS);
-						State = 196;
+						State = 194;
 						expr(10);
 						}
 						break;
 					case 3:
 						{
-						_localctx = new SubtractContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new SubtractExprContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 197;
+						State = 195;
 						if (!(Precpred(Context, 8))) throw new FailedPredicateException(this, "Precpred(Context, 8)");
-						State = 198;
+						State = 196;
 						Match(MINUS);
-						State = 199;
+						State = 197;
 						expr(9);
 						}
 						break;
 					case 4:
 						{
-						_localctx = new CompareContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new CompareExprContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 200;
+						State = 198;
 						if (!(Precpred(Context, 7))) throw new FailedPredicateException(this, "Precpred(Context, 7)");
-						State = 201;
+						State = 199;
 						_la = TokenStream.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GREATER) | (1L << EQUALS) | (1L << LESS))) != 0)) ) {
 						ErrorHandler.RecoverInline(this);
@@ -2081,36 +2068,36 @@ public partial class ElsaParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 202;
+						State = 200;
 						expr(8);
 						}
 						break;
 					case 5:
 						{
-						_localctx = new IncrementContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new IncrementExprContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 203;
+						State = 201;
 						if (!(Precpred(Context, 14))) throw new FailedPredicateException(this, "Precpred(Context, 14)");
-						State = 204;
+						State = 202;
 						Match(INCREMENT);
 						}
 						break;
 					case 6:
 						{
-						_localctx = new DecrementContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new DecrementExprContext(new ExprContext(_parentctx, _parentState));
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 205;
+						State = 203;
 						if (!(Precpred(Context, 13))) throw new FailedPredicateException(this, "Precpred(Context, 13)");
-						State = 206;
+						State = 204;
 						Match(DECREMENT);
 						}
 						break;
 					}
 					} 
 				}
-				State = 211;
+				State = 209;
 				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,17,Context);
+				_alt = Interpreter.AdaptivePredict(TokenStream,19,Context);
 			}
 			}
 		}
@@ -2162,26 +2149,26 @@ public partial class ElsaParser : Parser {
 	[RuleVersion(0)]
 	public ExprListContext exprList() {
 		ExprListContext _localctx = new ExprListContext(Context, State);
-		EnterRule(_localctx, 36, RULE_exprList);
+		EnterRule(_localctx, 32, RULE_exprList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 212;
+			State = 210;
 			expr(0);
-			State = 217;
+			State = 215;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				State = 213;
+				State = 211;
 				Match(COMMA);
-				State = 214;
+				State = 212;
 				expr(0);
 				}
 				}
-				State = 219;
+				State = 217;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -2200,7 +2187,7 @@ public partial class ElsaParser : Parser {
 
 	public override bool Sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 17: return expr_sempred((ExprContext)_localctx, predIndex);
+		case 15: return expr_sempred((ExprContext)_localctx, predIndex);
 		}
 		return true;
 	}
@@ -2218,192 +2205,195 @@ public partial class ElsaParser : Parser {
 
 	private static char[] _serializedATN = {
 		'\x3', '\x608B', '\xA72A', '\x8133', '\xB9ED', '\x417C', '\x3BE7', '\x7786', 
-		'\x5964', '\x3', '.', '\xDF', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
+		'\x5964', '\x3', '-', '\xDD', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
 		'\t', '\x3', '\x4', '\x4', '\t', '\x4', '\x4', '\x5', '\t', '\x5', '\x4', 
 		'\x6', '\t', '\x6', '\x4', '\a', '\t', '\a', '\x4', '\b', '\t', '\b', 
 		'\x4', '\t', '\t', '\t', '\x4', '\n', '\t', '\n', '\x4', '\v', '\t', '\v', 
 		'\x4', '\f', '\t', '\f', '\x4', '\r', '\t', '\r', '\x4', '\xE', '\t', 
 		'\xE', '\x4', '\xF', '\t', '\xF', '\x4', '\x10', '\t', '\x10', '\x4', 
-		'\x11', '\t', '\x11', '\x4', '\x12', '\t', '\x12', '\x4', '\x13', '\t', 
-		'\x13', '\x4', '\x14', '\t', '\x14', '\x3', '\x2', '\x3', '\x2', '\x3', 
-		'\x2', '\x3', '\x2', '\a', '\x2', '-', '\n', '\x2', '\f', '\x2', '\xE', 
-		'\x2', '\x30', '\v', '\x2', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', 
-		'\x3', '\x3', '\x3', '\x4', '\x3', '\x4', '\x3', '\x5', '\x3', '\x5', 
-		'\x5', '\x5', ':', '\n', '\x5', '\x3', '\x6', '\x3', '\x6', '\x5', '\x6', 
-		'>', '\n', '\x6', '\x3', '\a', '\x3', '\a', '\x3', '\a', '\x3', '\a', 
-		'\x5', '\a', '\x44', '\n', '\a', '\x3', '\a', '\x3', '\a', '\x5', '\a', 
-		'H', '\n', '\a', '\x3', '\b', '\x3', '\b', '\x3', '\b', '\x3', '\b', '\x5', 
-		'\b', 'N', '\n', '\b', '\x3', '\b', '\x3', '\b', '\x5', '\b', 'R', '\n', 
-		'\b', '\x3', '\t', '\x3', '\t', '\x3', '\n', '\x3', '\n', '\x3', '\n', 
-		'\x3', '\n', '\x3', '\v', '\x3', '\v', '\x3', '\v', '\x5', '\v', ']', 
-		'\n', '\v', '\x3', '\v', '\x3', '\v', '\x3', '\f', '\x3', '\f', '\x3', 
-		'\f', '\a', '\f', '\x64', '\n', '\f', '\f', '\f', '\xE', '\f', 'g', '\v', 
-		'\f', '\x3', '\r', '\x3', '\r', '\x3', '\xE', '\x3', '\xE', '\a', '\xE', 
-		'm', '\n', '\xE', '\f', '\xE', '\xE', '\xE', 'p', '\v', '\xE', '\x3', 
-		'\xE', '\x3', '\xE', '\x3', '\xF', '\x3', '\xF', '\x3', '\xF', '\x3', 
-		'\xF', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\a', '\x10', '{', 
-		'\n', '\x10', '\f', '\x10', '\xE', '\x10', '~', '\v', '\x10', '\x3', '\x11', 
-		'\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x12', '\x3', '\x12', 
-		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x5', '\x12', 
-		'\x8A', '\n', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', 
-		'\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', 
-		'\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', 
-		'\x12', '\x5', '\x12', '\x9A', '\n', '\x12', '\x3', '\x12', '\x3', '\x12', 
-		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', 
-		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', 
-		'\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x3', '\x12', '\x5', '\x12', 
-		'\xAC', '\n', '\x12', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', 
-		'\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', 
-		'\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', 
-		'\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x5', 
-		'\x13', '\xC0', '\n', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', 
-		'\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', 
-		'\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\x3', '\x13', 
-		'\x3', '\x13', '\x3', '\x13', '\x3', '\x13', '\a', '\x13', '\xD2', '\n', 
-		'\x13', '\f', '\x13', '\xE', '\x13', '\xD5', '\v', '\x13', '\x3', '\x14', 
-		'\x3', '\x14', '\x3', '\x14', '\a', '\x14', '\xDA', '\n', '\x14', '\f', 
-		'\x14', '\xE', '\x14', '\xDD', '\v', '\x14', '\x3', '\x14', '\x2', '\x3', 
-		'$', '\x15', '\x2', '\x4', '\x6', '\b', '\n', '\f', '\xE', '\x10', '\x12', 
-		'\x14', '\x16', '\x18', '\x1A', '\x1C', '\x1E', ' ', '\"', '$', '&', '\x2', 
-		'\x4', '\x3', '\x2', '\xF', '\x13', '\x5', '\x2', '\x4', '\x4', '\x1C', 
-		'\x1C', '\x1F', '\x1F', '\x2', '\xF1', '\x2', '.', '\x3', '\x2', '\x2', 
-		'\x2', '\x4', '\x31', '\x3', '\x2', '\x2', '\x2', '\x6', '\x35', '\x3', 
-		'\x2', '\x2', '\x2', '\b', '\x39', '\x3', '\x2', '\x2', '\x2', '\n', '=', 
-		'\x3', '\x2', '\x2', '\x2', '\f', '?', '\x3', '\x2', '\x2', '\x2', '\xE', 
-		'I', '\x3', '\x2', '\x2', '\x2', '\x10', 'S', '\x3', '\x2', '\x2', '\x2', 
-		'\x12', 'U', '\x3', '\x2', '\x2', '\x2', '\x14', 'Y', '\x3', '\x2', '\x2', 
-		'\x2', '\x16', '`', '\x3', '\x2', '\x2', '\x2', '\x18', 'h', '\x3', '\x2', 
-		'\x2', '\x2', '\x1A', 'j', '\x3', '\x2', '\x2', '\x2', '\x1C', 's', '\x3', 
-		'\x2', '\x2', '\x2', '\x1E', 'w', '\x3', '\x2', '\x2', '\x2', ' ', '\x7F', 
-		'\x3', '\x2', '\x2', '\x2', '\"', '\xAB', '\x3', '\x2', '\x2', '\x2', 
-		'$', '\xBF', '\x3', '\x2', '\x2', '\x2', '&', '\xD6', '\x3', '\x2', '\x2', 
-		'\x2', '(', '-', '\x5', '\x4', '\x3', '\x2', ')', '-', '\x5', '\x6', '\x4', 
-		'\x2', '*', '-', '\x5', '\"', '\x12', '\x2', '+', '-', '\a', '+', '\x2', 
-		'\x2', ',', '(', '\x3', '\x2', '\x2', '\x2', ',', ')', '\x3', '\x2', '\x2', 
-		'\x2', ',', '*', '\x3', '\x2', '\x2', '\x2', ',', '+', '\x3', '\x2', '\x2', 
-		'\x2', '-', '\x30', '\x3', '\x2', '\x2', '\x2', '.', ',', '\x3', '\x2', 
-		'\x2', '\x2', '.', '/', '\x3', '\x2', '\x2', '\x2', '/', '\x3', '\x3', 
-		'\x2', '\x2', '\x2', '\x30', '.', '\x3', '\x2', '\x2', '\x2', '\x31', 
-		'\x32', '\a', '\a', '\x2', '\x2', '\x32', '\x33', '\a', '-', '\x2', '\x2', 
-		'\x33', '\x34', '\x5', '\x1C', '\xF', '\x2', '\x34', '\x5', '\x3', '\x2', 
-		'\x2', '\x2', '\x35', '\x36', '\x5', '\b', '\x5', '\x2', '\x36', '\a', 
-		'\x3', '\x2', '\x2', '\x2', '\x37', ':', '\x5', '\n', '\x6', '\x2', '\x38', 
-		':', '\a', '-', '\x2', '\x2', '\x39', '\x37', '\x3', '\x2', '\x2', '\x2', 
-		'\x39', '\x38', '\x3', '\x2', '\x2', '\x2', ':', '\t', '\x3', '\x2', '\x2', 
-		'\x2', ';', '>', '\a', '\x14', '\x2', '\x2', '<', '>', '\x5', '\x1A', 
-		'\xE', '\x2', '=', ';', '\x3', '\x2', '\x2', '\x2', '=', '<', '\x3', '\x2', 
-		'\x2', '\x2', '>', '\v', '\x3', '\x2', '\x2', '\x2', '?', '@', '\a', '\b', 
-		'\x2', '\x2', '@', '\x43', '\a', '-', '\x2', '\x2', '\x41', '\x42', '\a', 
-		'\x16', '\x2', '\x2', '\x42', '\x44', '\x5', '\x10', '\t', '\x2', '\x43', 
-		'\x41', '\x3', '\x2', '\x2', '\x2', '\x43', '\x44', '\x3', '\x2', '\x2', 
-		'\x2', '\x44', 'G', '\x3', '\x2', '\x2', '\x2', '\x45', '\x46', '\a', 
-		'\x3', '\x2', '\x2', '\x46', 'H', '\x5', '$', '\x13', '\x2', 'G', '\x45', 
-		'\x3', '\x2', '\x2', '\x2', 'G', 'H', '\x3', '\x2', '\x2', '\x2', 'H', 
-		'\r', '\x3', '\x2', '\x2', '\x2', 'I', 'J', '\a', '\t', '\x2', '\x2', 
-		'J', 'M', '\a', '-', '\x2', '\x2', 'K', 'L', '\a', '\x16', '\x2', '\x2', 
-		'L', 'N', '\x5', '\x10', '\t', '\x2', 'M', 'K', '\x3', '\x2', '\x2', '\x2', 
-		'M', 'N', '\x3', '\x2', '\x2', '\x2', 'N', 'Q', '\x3', '\x2', '\x2', '\x2', 
-		'O', 'P', '\a', '\x3', '\x2', '\x2', 'P', 'R', '\x5', '$', '\x13', '\x2', 
-		'Q', 'O', '\x3', '\x2', '\x2', '\x2', 'Q', 'R', '\x3', '\x2', '\x2', '\x2', 
-		'R', '\xF', '\x3', '\x2', '\x2', '\x2', 'S', 'T', '\t', '\x2', '\x2', 
-		'\x2', 'T', '\x11', '\x3', '\x2', '\x2', '\x2', 'U', 'V', '\a', '-', '\x2', 
-		'\x2', 'V', 'W', '\a', '(', '\x2', '\x2', 'W', 'X', '\x5', '\x14', '\v', 
-		'\x2', 'X', '\x13', '\x3', '\x2', '\x2', '\x2', 'Y', 'Z', '\a', '-', '\x2', 
-		'\x2', 'Z', '\\', '\a', '!', '\x2', '\x2', '[', ']', '\x5', '\x16', '\f', 
-		'\x2', '\\', '[', '\x3', '\x2', '\x2', '\x2', '\\', ']', '\x3', '\x2', 
-		'\x2', '\x2', ']', '^', '\x3', '\x2', '\x2', '\x2', '^', '_', '\a', '\"', 
-		'\x2', '\x2', '_', '\x15', '\x3', '\x2', '\x2', '\x2', '`', '\x65', '\x5', 
-		'\x18', '\r', '\x2', '\x61', '\x62', '\a', '\x18', '\x2', '\x2', '\x62', 
-		'\x64', '\x5', '\x18', '\r', '\x2', '\x63', '\x61', '\x3', '\x2', '\x2', 
-		'\x2', '\x64', 'g', '\x3', '\x2', '\x2', '\x2', '\x65', '\x63', '\x3', 
-		'\x2', '\x2', '\x2', '\x65', '\x66', '\x3', '\x2', '\x2', '\x2', '\x66', 
-		'\x17', '\x3', '\x2', '\x2', '\x2', 'g', '\x65', '\x3', '\x2', '\x2', 
-		'\x2', 'h', 'i', '\x5', '$', '\x13', '\x2', 'i', '\x19', '\x3', '\x2', 
-		'\x2', '\x2', 'j', 'n', '\a', '%', '\x2', '\x2', 'k', 'm', '\x5', '\"', 
-		'\x12', '\x2', 'l', 'k', '\x3', '\x2', '\x2', '\x2', 'm', 'p', '\x3', 
-		'\x2', '\x2', '\x2', 'n', 'l', '\x3', '\x2', '\x2', '\x2', 'n', 'o', '\x3', 
-		'\x2', '\x2', '\x2', 'o', 'q', '\x3', '\x2', '\x2', '\x2', 'p', 'n', '\x3', 
-		'\x2', '\x2', '\x2', 'q', 'r', '\a', '&', '\x2', '\x2', 'r', '\x1B', '\x3', 
-		'\x2', '\x2', '\x2', 's', 't', '\a', '%', '\x2', '\x2', 't', 'u', '\x5', 
-		'\x1E', '\x10', '\x2', 'u', 'v', '\a', '&', '\x2', '\x2', 'v', '\x1D', 
-		'\x3', '\x2', '\x2', '\x2', 'w', '|', '\x5', ' ', '\x11', '\x2', 'x', 
-		'y', '\a', '\x18', '\x2', '\x2', 'y', '{', '\x5', ' ', '\x11', '\x2', 
-		'z', 'x', '\x3', '\x2', '\x2', '\x2', '{', '~', '\x3', '\x2', '\x2', '\x2', 
-		'|', 'z', '\x3', '\x2', '\x2', '\x2', '|', '}', '\x3', '\x2', '\x2', '\x2', 
-		'}', '\x1F', '\x3', '\x2', '\x2', '\x2', '~', '|', '\x3', '\x2', '\x2', 
-		'\x2', '\x7F', '\x80', '\a', '-', '\x2', '\x2', '\x80', '\x81', '\a', 
-		'\x16', '\x2', '\x2', '\x81', '\x82', '\x5', '$', '\x13', '\x2', '\x82', 
-		'!', '\x3', '\x2', '\x2', '\x2', '\x83', '\x84', '\a', '\n', '\x2', '\x2', 
-		'\x84', '\x85', '\x5', '$', '\x13', '\x2', '\x85', '\x86', '\a', '\v', 
-		'\x2', '\x2', '\x86', '\x89', '\x5', '\"', '\x12', '\x2', '\x87', '\x88', 
-		'\a', '\f', '\x2', '\x2', '\x88', '\x8A', '\x5', '\"', '\x12', '\x2', 
-		'\x89', '\x87', '\x3', '\x2', '\x2', '\x2', '\x89', '\x8A', '\x3', '\x2', 
-		'\x2', '\x2', '\x8A', '\xAC', '\x3', '\x2', '\x2', '\x2', '\x8B', '\x8C', 
-		'\a', '\r', '\x2', '\x2', '\x8C', '\x8D', '\a', '!', '\x2', '\x2', '\x8D', 
-		'\x8E', '\a', '-', '\x2', '\x2', '\x8E', '\x8F', '\a', '\x3', '\x2', '\x2', 
-		'\x8F', '\x90', '\x5', '$', '\x13', '\x2', '\x90', '\x91', '\a', '\x17', 
-		'\x2', '\x2', '\x91', '\x92', '\x5', '$', '\x13', '\x2', '\x92', '\x93', 
-		'\a', '\x17', '\x2', '\x2', '\x93', '\x94', '\x5', '$', '\x13', '\x2', 
-		'\x94', '\x95', '\a', '\"', '\x2', '\x2', '\x95', '\x96', '\x5', '\"', 
-		'\x12', '\x2', '\x96', '\xAC', '\x3', '\x2', '\x2', '\x2', '\x97', '\x99', 
-		'\a', '\xE', '\x2', '\x2', '\x98', '\x9A', '\x5', '$', '\x13', '\x2', 
-		'\x99', '\x98', '\x3', '\x2', '\x2', '\x2', '\x99', '\x9A', '\x3', '\x2', 
-		'\x2', '\x2', '\x9A', '\x9B', '\x3', '\x2', '\x2', '\x2', '\x9B', '\xAC', 
-		'\a', '\x17', '\x2', '\x2', '\x9C', '\xAC', '\x5', '\x1A', '\xE', '\x2', 
-		'\x9D', '\x9E', '\x5', '\f', '\a', '\x2', '\x9E', '\x9F', '\a', '\x17', 
-		'\x2', '\x2', '\x9F', '\xAC', '\x3', '\x2', '\x2', '\x2', '\xA0', '\xA1', 
-		'\x5', '\xE', '\b', '\x2', '\xA1', '\xA2', '\a', '\x17', '\x2', '\x2', 
-		'\xA2', '\xAC', '\x3', '\x2', '\x2', '\x2', '\xA3', '\xA4', '\x5', '$', 
-		'\x13', '\x2', '\xA4', '\xA5', '\a', '\x3', '\x2', '\x2', '\xA5', '\xA6', 
-		'\x5', '$', '\x13', '\x2', '\xA6', '\xA7', '\a', '\x17', '\x2', '\x2', 
-		'\xA7', '\xAC', '\x3', '\x2', '\x2', '\x2', '\xA8', '\xA9', '\x5', '$', 
-		'\x13', '\x2', '\xA9', '\xAA', '\a', '\x17', '\x2', '\x2', '\xAA', '\xAC', 
-		'\x3', '\x2', '\x2', '\x2', '\xAB', '\x83', '\x3', '\x2', '\x2', '\x2', 
-		'\xAB', '\x8B', '\x3', '\x2', '\x2', '\x2', '\xAB', '\x97', '\x3', '\x2', 
-		'\x2', '\x2', '\xAB', '\x9C', '\x3', '\x2', '\x2', '\x2', '\xAB', '\x9D', 
-		'\x3', '\x2', '\x2', '\x2', '\xAB', '\xA0', '\x3', '\x2', '\x2', '\x2', 
-		'\xAB', '\xA3', '\x3', '\x2', '\x2', '\x2', '\xAB', '\xA8', '\x3', '\x2', 
-		'\x2', '\x2', '\xAC', '#', '\x3', '\x2', '\x2', '\x2', '\xAD', '\xAE', 
-		'\b', '\x13', '\x1', '\x2', '\xAE', '\xC0', '\x5', '\x14', '\v', '\x2', 
-		'\xAF', '\xB0', '\a', '\x1A', '\x2', '\x2', '\xB0', '\xC0', '\x5', '$', 
-		'\x13', '\xE', '\xB1', '\xB2', '\a', '\'', '\x2', '\x2', '\xB2', '\xC0', 
-		'\x5', '$', '\x13', '\r', '\xB3', '\xC0', '\a', ',', '\x2', '\x2', '\xB4', 
-		'\xC0', '\a', '*', '\x2', '\x2', '\xB5', '\xB6', '\a', '!', '\x2', '\x2', 
-		'\xB6', '\xB7', '\x5', '$', '\x13', '\x2', '\xB7', '\xB8', '\a', '\"', 
-		'\x2', '\x2', '\xB8', '\xC0', '\x3', '\x2', '\x2', '\x2', '\xB9', '\xBA', 
-		'\a', '#', '\x2', '\x2', '\xBA', '\xBB', '\x5', '&', '\x14', '\x2', '\xBB', 
-		'\xBC', '\a', '$', '\x2', '\x2', '\xBC', '\xC0', '\x3', '\x2', '\x2', 
-		'\x2', '\xBD', '\xC0', '\x5', '\x12', '\n', '\x2', '\xBE', '\xC0', '\a', 
-		'-', '\x2', '\x2', '\xBF', '\xAD', '\x3', '\x2', '\x2', '\x2', '\xBF', 
-		'\xAF', '\x3', '\x2', '\x2', '\x2', '\xBF', '\xB1', '\x3', '\x2', '\x2', 
-		'\x2', '\xBF', '\xB3', '\x3', '\x2', '\x2', '\x2', '\xBF', '\xB4', '\x3', 
-		'\x2', '\x2', '\x2', '\xBF', '\xB5', '\x3', '\x2', '\x2', '\x2', '\xBF', 
-		'\xB9', '\x3', '\x2', '\x2', '\x2', '\xBF', '\xBD', '\x3', '\x2', '\x2', 
-		'\x2', '\xBF', '\xBE', '\x3', '\x2', '\x2', '\x2', '\xC0', '\xD3', '\x3', 
-		'\x2', '\x2', '\x2', '\xC1', '\xC2', '\f', '\f', '\x2', '\x2', '\xC2', 
-		'\xC3', '\a', '\x1B', '\x2', '\x2', '\xC3', '\xD2', '\x5', '$', '\x13', 
-		'\r', '\xC4', '\xC5', '\f', '\v', '\x2', '\x2', '\xC5', '\xC6', '\a', 
-		'\x19', '\x2', '\x2', '\xC6', '\xD2', '\x5', '$', '\x13', '\f', '\xC7', 
-		'\xC8', '\f', '\n', '\x2', '\x2', '\xC8', '\xC9', '\a', '\x1A', '\x2', 
-		'\x2', '\xC9', '\xD2', '\x5', '$', '\x13', '\v', '\xCA', '\xCB', '\f', 
-		'\t', '\x2', '\x2', '\xCB', '\xCC', '\t', '\x3', '\x2', '\x2', '\xCC', 
-		'\xD2', '\x5', '$', '\x13', '\n', '\xCD', '\xCE', '\f', '\x10', '\x2', 
-		'\x2', '\xCE', '\xD2', '\a', '\x5', '\x2', '\x2', '\xCF', '\xD0', '\f', 
-		'\xF', '\x2', '\x2', '\xD0', '\xD2', '\a', '\x6', '\x2', '\x2', '\xD1', 
-		'\xC1', '\x3', '\x2', '\x2', '\x2', '\xD1', '\xC4', '\x3', '\x2', '\x2', 
-		'\x2', '\xD1', '\xC7', '\x3', '\x2', '\x2', '\x2', '\xD1', '\xCA', '\x3', 
-		'\x2', '\x2', '\x2', '\xD1', '\xCD', '\x3', '\x2', '\x2', '\x2', '\xD1', 
-		'\xCF', '\x3', '\x2', '\x2', '\x2', '\xD2', '\xD5', '\x3', '\x2', '\x2', 
-		'\x2', '\xD3', '\xD1', '\x3', '\x2', '\x2', '\x2', '\xD3', '\xD4', '\x3', 
-		'\x2', '\x2', '\x2', '\xD4', '%', '\x3', '\x2', '\x2', '\x2', '\xD5', 
-		'\xD3', '\x3', '\x2', '\x2', '\x2', '\xD6', '\xDB', '\x5', '$', '\x13', 
-		'\x2', '\xD7', '\xD8', '\a', '\x18', '\x2', '\x2', '\xD8', '\xDA', '\x5', 
-		'$', '\x13', '\x2', '\xD9', '\xD7', '\x3', '\x2', '\x2', '\x2', '\xDA', 
-		'\xDD', '\x3', '\x2', '\x2', '\x2', '\xDB', '\xD9', '\x3', '\x2', '\x2', 
-		'\x2', '\xDB', '\xDC', '\x3', '\x2', '\x2', '\x2', '\xDC', '\'', '\x3', 
-		'\x2', '\x2', '\x2', '\xDD', '\xDB', '\x3', '\x2', '\x2', '\x2', '\x15', 
-		',', '.', '\x39', '=', '\x43', 'G', 'M', 'Q', '\\', '\x65', 'n', '|', 
-		'\x89', '\x99', '\xAB', '\xBF', '\xD1', '\xD3', '\xDB',
+		'\x11', '\t', '\x11', '\x4', '\x12', '\t', '\x12', '\x3', '\x2', '\x3', 
+		'\x2', '\a', '\x2', '\'', '\n', '\x2', '\f', '\x2', '\xE', '\x2', '*', 
+		'\v', '\x2', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x4', '\x3', 
+		'\x4', '\x5', '\x4', '\x31', '\n', '\x4', '\x3', '\x5', '\x3', '\x5', 
+		'\x3', '\x5', '\x3', '\x5', '\x5', '\x5', '\x37', '\n', '\x5', '\x3', 
+		'\x5', '\x3', '\x5', '\x5', '\x5', ';', '\n', '\x5', '\x3', '\x6', '\x3', 
+		'\x6', '\x3', '\x6', '\x3', '\x6', '\x5', '\x6', '\x41', '\n', '\x6', 
+		'\x3', '\x6', '\x3', '\x6', '\x5', '\x6', '\x45', '\n', '\x6', '\x3', 
+		'\a', '\x3', '\a', '\x3', '\b', '\x3', '\b', '\x3', '\b', '\x3', '\b', 
+		'\x3', '\t', '\x3', '\t', '\x3', '\t', '\x5', '\t', 'P', '\n', '\t', '\x3', 
+		'\t', '\x3', '\t', '\x3', '\n', '\x3', '\n', '\x3', '\n', '\a', '\n', 
+		'W', '\n', '\n', '\f', '\n', '\xE', '\n', 'Z', '\v', '\n', '\x3', '\v', 
+		'\x3', '\v', '\x3', '\f', '\x3', '\f', '\a', '\f', '`', '\n', '\f', '\f', 
+		'\f', '\xE', '\f', '\x63', '\v', '\f', '\x3', '\f', '\x3', '\f', '\x3', 
+		'\r', '\x3', '\r', '\x5', '\r', 'i', '\n', '\r', '\x3', '\r', '\x3', '\r', 
+		'\x3', '\xE', '\x3', '\xE', '\x3', '\xE', '\a', '\xE', 'p', '\n', '\xE', 
+		'\f', '\xE', '\xE', '\xE', 's', '\v', '\xE', '\x3', '\xF', '\x3', '\xF', 
+		'\x3', '\xF', '\x3', '\xF', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', 
+		'\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', 
+		'\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x5', '\x10', 
+		'\x85', '\n', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', 
+		'\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', 
+		'\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', 
+		'\x10', '\x5', '\x10', '\x95', '\n', '\x10', '\x3', '\x10', '\x3', '\x10', 
+		'\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', 
+		'\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', 
+		'\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x3', '\x10', '\x5', '\x10', 
+		'\xA7', '\n', '\x10', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', 
+		'\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', 
+		'\x11', '\x3', '\x11', '\x3', '\x11', '\x5', '\x11', '\xB4', '\n', '\x11', 
+		'\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x5', '\x11', '\xB9', '\n', 
+		'\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x5', '\x11', '\xBE', 
+		'\n', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', 
+		'\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', 
+		'\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', '\x3', '\x11', 
+		'\x3', '\x11', '\x3', '\x11', '\a', '\x11', '\xD0', '\n', '\x11', '\f', 
+		'\x11', '\xE', '\x11', '\xD3', '\v', '\x11', '\x3', '\x12', '\x3', '\x12', 
+		'\x3', '\x12', '\a', '\x12', '\xD8', '\n', '\x12', '\f', '\x12', '\xE', 
+		'\x12', '\xDB', '\v', '\x12', '\x3', '\x12', '\x2', '\x3', ' ', '\x13', 
+		'\x2', '\x4', '\x6', '\b', '\n', '\f', '\xE', '\x10', '\x12', '\x14', 
+		'\x16', '\x18', '\x1A', '\x1C', '\x1E', ' ', '\"', '\x2', '\x4', '\x3', 
+		'\x2', '\xF', '\x13', '\x5', '\x2', '\x4', '\x4', '\x1B', '\x1B', '\x1E', 
+		'\x1E', '\x2', '\xF4', '\x2', '(', '\x3', '\x2', '\x2', '\x2', '\x4', 
+		'+', '\x3', '\x2', '\x2', '\x2', '\x6', '.', '\x3', '\x2', '\x2', '\x2', 
+		'\b', '\x32', '\x3', '\x2', '\x2', '\x2', '\n', '<', '\x3', '\x2', '\x2', 
+		'\x2', '\f', '\x46', '\x3', '\x2', '\x2', '\x2', '\xE', 'H', '\x3', '\x2', 
+		'\x2', '\x2', '\x10', 'L', '\x3', '\x2', '\x2', '\x2', '\x12', 'S', '\x3', 
+		'\x2', '\x2', '\x2', '\x14', '[', '\x3', '\x2', '\x2', '\x2', '\x16', 
+		']', '\x3', '\x2', '\x2', '\x2', '\x18', '\x66', '\x3', '\x2', '\x2', 
+		'\x2', '\x1A', 'l', '\x3', '\x2', '\x2', '\x2', '\x1C', 't', '\x3', '\x2', 
+		'\x2', '\x2', '\x1E', '\xA6', '\x3', '\x2', '\x2', '\x2', ' ', '\xBD', 
+		'\x3', '\x2', '\x2', '\x2', '\"', '\xD4', '\x3', '\x2', '\x2', '\x2', 
+		'$', '\'', '\x5', '\x1E', '\x10', '\x2', '%', '\'', '\a', '*', '\x2', 
+		'\x2', '&', '$', '\x3', '\x2', '\x2', '\x2', '&', '%', '\x3', '\x2', '\x2', 
+		'\x2', '\'', '*', '\x3', '\x2', '\x2', '\x2', '(', '&', '\x3', '\x2', 
+		'\x2', '\x2', '(', ')', '\x3', '\x2', '\x2', '\x2', ')', '\x3', '\x3', 
+		'\x2', '\x2', '\x2', '*', '(', '\x3', '\x2', '\x2', '\x2', '+', ',', '\a', 
+		'\a', '\x2', '\x2', ',', '-', '\x5', '\x6', '\x4', '\x2', '-', '\x5', 
+		'\x3', '\x2', '\x2', '\x2', '.', '\x30', '\a', ',', '\x2', '\x2', '/', 
+		'\x31', '\x5', '\x18', '\r', '\x2', '\x30', '/', '\x3', '\x2', '\x2', 
+		'\x2', '\x30', '\x31', '\x3', '\x2', '\x2', '\x2', '\x31', '\a', '\x3', 
+		'\x2', '\x2', '\x2', '\x32', '\x33', '\a', '\b', '\x2', '\x2', '\x33', 
+		'\x36', '\a', ',', '\x2', '\x2', '\x34', '\x35', '\a', '\x15', '\x2', 
+		'\x2', '\x35', '\x37', '\x5', '\f', '\a', '\x2', '\x36', '\x34', '\x3', 
+		'\x2', '\x2', '\x2', '\x36', '\x37', '\x3', '\x2', '\x2', '\x2', '\x37', 
+		':', '\x3', '\x2', '\x2', '\x2', '\x38', '\x39', '\a', '\x3', '\x2', '\x2', 
+		'\x39', ';', '\x5', ' ', '\x11', '\x2', ':', '\x38', '\x3', '\x2', '\x2', 
+		'\x2', ':', ';', '\x3', '\x2', '\x2', '\x2', ';', '\t', '\x3', '\x2', 
+		'\x2', '\x2', '<', '=', '\a', '\t', '\x2', '\x2', '=', '@', '\a', ',', 
+		'\x2', '\x2', '>', '?', '\a', '\x15', '\x2', '\x2', '?', '\x41', '\x5', 
+		'\f', '\a', '\x2', '@', '>', '\x3', '\x2', '\x2', '\x2', '@', '\x41', 
+		'\x3', '\x2', '\x2', '\x2', '\x41', '\x44', '\x3', '\x2', '\x2', '\x2', 
+		'\x42', '\x43', '\a', '\x3', '\x2', '\x2', '\x43', '\x45', '\x5', ' ', 
+		'\x11', '\x2', '\x44', '\x42', '\x3', '\x2', '\x2', '\x2', '\x44', '\x45', 
+		'\x3', '\x2', '\x2', '\x2', '\x45', '\v', '\x3', '\x2', '\x2', '\x2', 
+		'\x46', 'G', '\t', '\x2', '\x2', '\x2', 'G', '\r', '\x3', '\x2', '\x2', 
+		'\x2', 'H', 'I', '\a', ',', '\x2', '\x2', 'I', 'J', '\a', '\'', '\x2', 
+		'\x2', 'J', 'K', '\x5', '\x10', '\t', '\x2', 'K', '\xF', '\x3', '\x2', 
+		'\x2', '\x2', 'L', 'M', '\a', ',', '\x2', '\x2', 'M', 'O', '\a', ' ', 
+		'\x2', '\x2', 'N', 'P', '\x5', '\x12', '\n', '\x2', 'O', 'N', '\x3', '\x2', 
+		'\x2', '\x2', 'O', 'P', '\x3', '\x2', '\x2', '\x2', 'P', 'Q', '\x3', '\x2', 
+		'\x2', '\x2', 'Q', 'R', '\a', '!', '\x2', '\x2', 'R', '\x11', '\x3', '\x2', 
+		'\x2', '\x2', 'S', 'X', '\x5', '\x14', '\v', '\x2', 'T', 'U', '\a', '\x17', 
+		'\x2', '\x2', 'U', 'W', '\x5', '\x14', '\v', '\x2', 'V', 'T', '\x3', '\x2', 
+		'\x2', '\x2', 'W', 'Z', '\x3', '\x2', '\x2', '\x2', 'X', 'V', '\x3', '\x2', 
+		'\x2', '\x2', 'X', 'Y', '\x3', '\x2', '\x2', '\x2', 'Y', '\x13', '\x3', 
+		'\x2', '\x2', '\x2', 'Z', 'X', '\x3', '\x2', '\x2', '\x2', '[', '\\', 
+		'\x5', ' ', '\x11', '\x2', '\\', '\x15', '\x3', '\x2', '\x2', '\x2', ']', 
+		'\x61', '\a', '$', '\x2', '\x2', '^', '`', '\x5', '\x1E', '\x10', '\x2', 
+		'_', '^', '\x3', '\x2', '\x2', '\x2', '`', '\x63', '\x3', '\x2', '\x2', 
+		'\x2', '\x61', '_', '\x3', '\x2', '\x2', '\x2', '\x61', '\x62', '\x3', 
+		'\x2', '\x2', '\x2', '\x62', '\x64', '\x3', '\x2', '\x2', '\x2', '\x63', 
+		'\x61', '\x3', '\x2', '\x2', '\x2', '\x64', '\x65', '\a', '%', '\x2', 
+		'\x2', '\x65', '\x17', '\x3', '\x2', '\x2', '\x2', '\x66', 'h', '\a', 
+		'$', '\x2', '\x2', 'g', 'i', '\x5', '\x1A', '\xE', '\x2', 'h', 'g', '\x3', 
+		'\x2', '\x2', '\x2', 'h', 'i', '\x3', '\x2', '\x2', '\x2', 'i', 'j', '\x3', 
+		'\x2', '\x2', '\x2', 'j', 'k', '\a', '%', '\x2', '\x2', 'k', '\x19', '\x3', 
+		'\x2', '\x2', '\x2', 'l', 'q', '\x5', '\x1C', '\xF', '\x2', 'm', 'n', 
+		'\a', '\x17', '\x2', '\x2', 'n', 'p', '\x5', '\x1C', '\xF', '\x2', 'o', 
+		'm', '\x3', '\x2', '\x2', '\x2', 'p', 's', '\x3', '\x2', '\x2', '\x2', 
+		'q', 'o', '\x3', '\x2', '\x2', '\x2', 'q', 'r', '\x3', '\x2', '\x2', '\x2', 
+		'r', '\x1B', '\x3', '\x2', '\x2', '\x2', 's', 'q', '\x3', '\x2', '\x2', 
+		'\x2', 't', 'u', '\a', ',', '\x2', '\x2', 'u', 'v', '\a', '\x15', '\x2', 
+		'\x2', 'v', 'w', '\x5', ' ', '\x11', '\x2', 'w', '\x1D', '\x3', '\x2', 
+		'\x2', '\x2', 'x', 'y', '\x5', '\x4', '\x3', '\x2', 'y', 'z', '\a', '\x16', 
+		'\x2', '\x2', 'z', '\xA7', '\x3', '\x2', '\x2', '\x2', '{', '|', '\x5', 
+		'\x6', '\x4', '\x2', '|', '}', '\a', '\x16', '\x2', '\x2', '}', '\xA7', 
+		'\x3', '\x2', '\x2', '\x2', '~', '\x7F', '\a', '\n', '\x2', '\x2', '\x7F', 
+		'\x80', '\x5', ' ', '\x11', '\x2', '\x80', '\x81', '\a', '\v', '\x2', 
+		'\x2', '\x81', '\x84', '\x5', '\x1E', '\x10', '\x2', '\x82', '\x83', '\a', 
+		'\f', '\x2', '\x2', '\x83', '\x85', '\x5', '\x1E', '\x10', '\x2', '\x84', 
+		'\x82', '\x3', '\x2', '\x2', '\x2', '\x84', '\x85', '\x3', '\x2', '\x2', 
+		'\x2', '\x85', '\xA7', '\x3', '\x2', '\x2', '\x2', '\x86', '\x87', '\a', 
+		'\r', '\x2', '\x2', '\x87', '\x88', '\a', ' ', '\x2', '\x2', '\x88', '\x89', 
+		'\a', ',', '\x2', '\x2', '\x89', '\x8A', '\a', '\x3', '\x2', '\x2', '\x8A', 
+		'\x8B', '\x5', ' ', '\x11', '\x2', '\x8B', '\x8C', '\a', '\x16', '\x2', 
+		'\x2', '\x8C', '\x8D', '\x5', ' ', '\x11', '\x2', '\x8D', '\x8E', '\a', 
+		'\x16', '\x2', '\x2', '\x8E', '\x8F', '\x5', ' ', '\x11', '\x2', '\x8F', 
+		'\x90', '\a', '!', '\x2', '\x2', '\x90', '\x91', '\x5', '\x1E', '\x10', 
+		'\x2', '\x91', '\xA7', '\x3', '\x2', '\x2', '\x2', '\x92', '\x94', '\a', 
+		'\xE', '\x2', '\x2', '\x93', '\x95', '\x5', ' ', '\x11', '\x2', '\x94', 
+		'\x93', '\x3', '\x2', '\x2', '\x2', '\x94', '\x95', '\x3', '\x2', '\x2', 
+		'\x2', '\x95', '\x96', '\x3', '\x2', '\x2', '\x2', '\x96', '\xA7', '\a', 
+		'\x16', '\x2', '\x2', '\x97', '\xA7', '\x5', '\x16', '\f', '\x2', '\x98', 
+		'\x99', '\x5', '\b', '\x5', '\x2', '\x99', '\x9A', '\a', '\x16', '\x2', 
+		'\x2', '\x9A', '\xA7', '\x3', '\x2', '\x2', '\x2', '\x9B', '\x9C', '\x5', 
+		'\n', '\x6', '\x2', '\x9C', '\x9D', '\a', '\x16', '\x2', '\x2', '\x9D', 
+		'\xA7', '\x3', '\x2', '\x2', '\x2', '\x9E', '\x9F', '\x5', ' ', '\x11', 
+		'\x2', '\x9F', '\xA0', '\a', '\x3', '\x2', '\x2', '\xA0', '\xA1', '\x5', 
+		' ', '\x11', '\x2', '\xA1', '\xA2', '\a', '\x16', '\x2', '\x2', '\xA2', 
+		'\xA7', '\x3', '\x2', '\x2', '\x2', '\xA3', '\xA4', '\x5', ' ', '\x11', 
+		'\x2', '\xA4', '\xA5', '\a', '\x16', '\x2', '\x2', '\xA5', '\xA7', '\x3', 
+		'\x2', '\x2', '\x2', '\xA6', 'x', '\x3', '\x2', '\x2', '\x2', '\xA6', 
+		'{', '\x3', '\x2', '\x2', '\x2', '\xA6', '~', '\x3', '\x2', '\x2', '\x2', 
+		'\xA6', '\x86', '\x3', '\x2', '\x2', '\x2', '\xA6', '\x92', '\x3', '\x2', 
+		'\x2', '\x2', '\xA6', '\x97', '\x3', '\x2', '\x2', '\x2', '\xA6', '\x98', 
+		'\x3', '\x2', '\x2', '\x2', '\xA6', '\x9B', '\x3', '\x2', '\x2', '\x2', 
+		'\xA6', '\x9E', '\x3', '\x2', '\x2', '\x2', '\xA6', '\xA3', '\x3', '\x2', 
+		'\x2', '\x2', '\xA7', '\x1F', '\x3', '\x2', '\x2', '\x2', '\xA8', '\xA9', 
+		'\b', '\x11', '\x1', '\x2', '\xA9', '\xBE', '\x5', '\x10', '\t', '\x2', 
+		'\xAA', '\xBE', '\x5', '\x6', '\x4', '\x2', '\xAB', '\xAC', '\a', '\x19', 
+		'\x2', '\x2', '\xAC', '\xBE', '\x5', ' ', '\x11', '\xE', '\xAD', '\xAE', 
+		'\a', '&', '\x2', '\x2', '\xAE', '\xBE', '\x5', ' ', '\x11', '\r', '\xAF', 
+		'\xBE', '\a', '+', '\x2', '\x2', '\xB0', '\xBE', '\a', ')', '\x2', '\x2', 
+		'\xB1', '\xB3', '\a', ' ', '\x2', '\x2', '\xB2', '\xB4', '\x5', '\"', 
+		'\x12', '\x2', '\xB3', '\xB2', '\x3', '\x2', '\x2', '\x2', '\xB3', '\xB4', 
+		'\x3', '\x2', '\x2', '\x2', '\xB4', '\xB5', '\x3', '\x2', '\x2', '\x2', 
+		'\xB5', '\xBE', '\a', '!', '\x2', '\x2', '\xB6', '\xB8', '\a', '\"', '\x2', 
+		'\x2', '\xB7', '\xB9', '\x5', '\"', '\x12', '\x2', '\xB8', '\xB7', '\x3', 
+		'\x2', '\x2', '\x2', '\xB8', '\xB9', '\x3', '\x2', '\x2', '\x2', '\xB9', 
+		'\xBA', '\x3', '\x2', '\x2', '\x2', '\xBA', '\xBE', '\a', '#', '\x2', 
+		'\x2', '\xBB', '\xBE', '\x5', '\xE', '\b', '\x2', '\xBC', '\xBE', '\a', 
+		',', '\x2', '\x2', '\xBD', '\xA8', '\x3', '\x2', '\x2', '\x2', '\xBD', 
+		'\xAA', '\x3', '\x2', '\x2', '\x2', '\xBD', '\xAB', '\x3', '\x2', '\x2', 
+		'\x2', '\xBD', '\xAD', '\x3', '\x2', '\x2', '\x2', '\xBD', '\xAF', '\x3', 
+		'\x2', '\x2', '\x2', '\xBD', '\xB0', '\x3', '\x2', '\x2', '\x2', '\xBD', 
+		'\xB1', '\x3', '\x2', '\x2', '\x2', '\xBD', '\xB6', '\x3', '\x2', '\x2', 
+		'\x2', '\xBD', '\xBB', '\x3', '\x2', '\x2', '\x2', '\xBD', '\xBC', '\x3', 
+		'\x2', '\x2', '\x2', '\xBE', '\xD1', '\x3', '\x2', '\x2', '\x2', '\xBF', 
+		'\xC0', '\f', '\f', '\x2', '\x2', '\xC0', '\xC1', '\a', '\x1A', '\x2', 
+		'\x2', '\xC1', '\xD0', '\x5', ' ', '\x11', '\r', '\xC2', '\xC3', '\f', 
+		'\v', '\x2', '\x2', '\xC3', '\xC4', '\a', '\x18', '\x2', '\x2', '\xC4', 
+		'\xD0', '\x5', ' ', '\x11', '\f', '\xC5', '\xC6', '\f', '\n', '\x2', '\x2', 
+		'\xC6', '\xC7', '\a', '\x19', '\x2', '\x2', '\xC7', '\xD0', '\x5', ' ', 
+		'\x11', '\v', '\xC8', '\xC9', '\f', '\t', '\x2', '\x2', '\xC9', '\xCA', 
+		'\t', '\x3', '\x2', '\x2', '\xCA', '\xD0', '\x5', ' ', '\x11', '\n', '\xCB', 
+		'\xCC', '\f', '\x10', '\x2', '\x2', '\xCC', '\xD0', '\a', '\x5', '\x2', 
+		'\x2', '\xCD', '\xCE', '\f', '\xF', '\x2', '\x2', '\xCE', '\xD0', '\a', 
+		'\x6', '\x2', '\x2', '\xCF', '\xBF', '\x3', '\x2', '\x2', '\x2', '\xCF', 
+		'\xC2', '\x3', '\x2', '\x2', '\x2', '\xCF', '\xC5', '\x3', '\x2', '\x2', 
+		'\x2', '\xCF', '\xC8', '\x3', '\x2', '\x2', '\x2', '\xCF', '\xCB', '\x3', 
+		'\x2', '\x2', '\x2', '\xCF', '\xCD', '\x3', '\x2', '\x2', '\x2', '\xD0', 
+		'\xD3', '\x3', '\x2', '\x2', '\x2', '\xD1', '\xCF', '\x3', '\x2', '\x2', 
+		'\x2', '\xD1', '\xD2', '\x3', '\x2', '\x2', '\x2', '\xD2', '!', '\x3', 
+		'\x2', '\x2', '\x2', '\xD3', '\xD1', '\x3', '\x2', '\x2', '\x2', '\xD4', 
+		'\xD9', '\x5', ' ', '\x11', '\x2', '\xD5', '\xD6', '\a', '\x17', '\x2', 
+		'\x2', '\xD6', '\xD8', '\x5', ' ', '\x11', '\x2', '\xD7', '\xD5', '\x3', 
+		'\x2', '\x2', '\x2', '\xD8', '\xDB', '\x3', '\x2', '\x2', '\x2', '\xD9', 
+		'\xD7', '\x3', '\x2', '\x2', '\x2', '\xD9', '\xDA', '\x3', '\x2', '\x2', 
+		'\x2', '\xDA', '#', '\x3', '\x2', '\x2', '\x2', '\xDB', '\xD9', '\x3', 
+		'\x2', '\x2', '\x2', '\x17', '&', '(', '\x30', '\x36', ':', '@', '\x44', 
+		'O', 'X', '\x61', 'h', 'q', '\x84', '\x94', '\xA6', '\xB3', '\xB8', '\xBD', 
+		'\xCF', '\xD1', '\xD9',
 	};
 
 	public static readonly ATN _ATN =

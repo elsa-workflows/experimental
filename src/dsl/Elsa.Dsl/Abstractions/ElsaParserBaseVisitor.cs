@@ -55,7 +55,7 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// <return>The visitor result.</return>
 	public virtual Result VisitTrigger([NotNull] ElsaParser.TriggerContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.root"/>.
+	/// Visit a parse tree produced by <see cref="ElsaParser.object"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -63,27 +63,7 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitRoot([NotNull] ElsaParser.RootContext context) { return VisitChildren(context); }
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.activity"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitActivity([NotNull] ElsaParser.ActivityContext context) { return VisitChildren(context); }
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.sequence"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitSequence([NotNull] ElsaParser.SequenceContext context) { return VisitChildren(context); }
+	public virtual Result VisitObject([NotNull] ElsaParser.ObjectContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.varDecl"/>.
 	/// <para>
@@ -155,7 +135,7 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// <return>The visitor result.</return>
 	public virtual Result VisitArg([NotNull] ElsaParser.ArgContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.block_statements"/>.
+	/// Visit a parse tree produced by <see cref="ElsaParser.block"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -163,9 +143,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitBlock_statements([NotNull] ElsaParser.Block_statementsContext context) { return VisitChildren(context); }
+	public virtual Result VisitBlock([NotNull] ElsaParser.BlockContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.block_pairs"/>.
+	/// Visit a parse tree produced by <see cref="ElsaParser.objectInitializer"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -173,9 +153,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitBlock_pairs([NotNull] ElsaParser.Block_pairsContext context) { return VisitChildren(context); }
+	public virtual Result VisitObjectInitializer([NotNull] ElsaParser.ObjectInitializerContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.pairList"/>.
+	/// Visit a parse tree produced by <see cref="ElsaParser.propertyList"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -183,9 +163,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitPairList([NotNull] ElsaParser.PairListContext context) { return VisitChildren(context); }
+	public virtual Result VisitPropertyList([NotNull] ElsaParser.PropertyListContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.pair"/>.
+	/// Visit a parse tree produced by <see cref="ElsaParser.property"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -193,9 +173,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitPair([NotNull] ElsaParser.PairContext context) { return VisitChildren(context); }
+	public virtual Result VisitProperty([NotNull] ElsaParser.PropertyContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>if</c>
+	/// Visit a parse tree produced by the <c>triggerStat</c>
 	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -204,9 +184,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitIf([NotNull] ElsaParser.IfContext context) { return VisitChildren(context); }
+	public virtual Result VisitTriggerStat([NotNull] ElsaParser.TriggerStatContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>for</c>
+	/// Visit a parse tree produced by the <c>objectStat</c>
 	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -215,9 +195,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitFor([NotNull] ElsaParser.ForContext context) { return VisitChildren(context); }
+	public virtual Result VisitObjectStat([NotNull] ElsaParser.ObjectStatContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>return</c>
+	/// Visit a parse tree produced by the <c>ifStat</c>
 	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -226,9 +206,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitReturn([NotNull] ElsaParser.ReturnContext context) { return VisitChildren(context); }
+	public virtual Result VisitIfStat([NotNull] ElsaParser.IfStatContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>blockStatements</c>
+	/// Visit a parse tree produced by the <c>forStat</c>
 	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -237,9 +217,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitBlockStatements([NotNull] ElsaParser.BlockStatementsContext context) { return VisitChildren(context); }
+	public virtual Result VisitForStat([NotNull] ElsaParser.ForStatContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>variableDeclaration</c>
+	/// Visit a parse tree produced by the <c>returnStat</c>
 	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -248,9 +228,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitVariableDeclaration([NotNull] ElsaParser.VariableDeclarationContext context) { return VisitChildren(context); }
+	public virtual Result VisitReturnStat([NotNull] ElsaParser.ReturnStatContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>localVariableDeclaration</c>
+	/// Visit a parse tree produced by the <c>blockStat</c>
 	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -259,9 +239,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitLocalVariableDeclaration([NotNull] ElsaParser.LocalVariableDeclarationContext context) { return VisitChildren(context); }
+	public virtual Result VisitBlockStat([NotNull] ElsaParser.BlockStatContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>assignment</c>
+	/// Visit a parse tree produced by the <c>variableDeclarationStat</c>
 	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -270,9 +250,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitAssignment([NotNull] ElsaParser.AssignmentContext context) { return VisitChildren(context); }
+	public virtual Result VisitVariableDeclarationStat([NotNull] ElsaParser.VariableDeclarationStatContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>expression</c>
+	/// Visit a parse tree produced by the <c>localVariableDeclarationStat</c>
 	/// labeled alternative in <see cref="ElsaParser.stat"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -281,9 +261,31 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitExpression([NotNull] ElsaParser.ExpressionContext context) { return VisitChildren(context); }
+	public virtual Result VisitLocalVariableDeclarationStat([NotNull] ElsaParser.LocalVariableDeclarationStatContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>add</c>
+	/// Visit a parse tree produced by the <c>assignmentStat</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitAssignmentStat([NotNull] ElsaParser.AssignmentStatContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>expressionStat</c>
+	/// labeled alternative in <see cref="ElsaParser.stat"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitExpressionStat([NotNull] ElsaParser.ExpressionStatContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>subtractExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -292,9 +294,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitAdd([NotNull] ElsaParser.AddContext context) { return VisitChildren(context); }
+	public virtual Result VisitSubtractExpr([NotNull] ElsaParser.SubtractExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>parentheses</c>
+	/// Visit a parse tree produced by the <c>incrementExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -303,9 +305,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitParentheses([NotNull] ElsaParser.ParenthesesContext context) { return VisitChildren(context); }
+	public virtual Result VisitIncrementExpr([NotNull] ElsaParser.IncrementExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>compare</c>
+	/// Visit a parse tree produced by the <c>objectExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -314,9 +316,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitCompare([NotNull] ElsaParser.CompareContext context) { return VisitChildren(context); }
+	public virtual Result VisitObjectExpr([NotNull] ElsaParser.ObjectExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>methodInvocation</c>
+	/// Visit a parse tree produced by the <c>stringValueExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -325,9 +327,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitMethodInvocation([NotNull] ElsaParser.MethodInvocationContext context) { return VisitChildren(context); }
+	public virtual Result VisitStringValueExpr([NotNull] ElsaParser.StringValueExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>subtract</c>
+	/// Visit a parse tree produced by the <c>multiplyExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -336,9 +338,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitSubtract([NotNull] ElsaParser.SubtractContext context) { return VisitChildren(context); }
+	public virtual Result VisitMultiplyExpr([NotNull] ElsaParser.MultiplyExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>variableReference</c>
+	/// Visit a parse tree produced by the <c>parenthesesExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -347,9 +349,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitVariableReference([NotNull] ElsaParser.VariableReferenceContext context) { return VisitChildren(context); }
+	public virtual Result VisitParenthesesExpr([NotNull] ElsaParser.ParenthesesExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>increment</c>
+	/// Visit a parse tree produced by the <c>functionExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -358,9 +360,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitIncrement([NotNull] ElsaParser.IncrementContext context) { return VisitChildren(context); }
+	public virtual Result VisitFunctionExpr([NotNull] ElsaParser.FunctionExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>brackets</c>
+	/// Visit a parse tree produced by the <c>decrementExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -369,9 +371,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitBrackets([NotNull] ElsaParser.BracketsContext context) { return VisitChildren(context); }
+	public virtual Result VisitDecrementExpr([NotNull] ElsaParser.DecrementExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>not</c>
+	/// Visit a parse tree produced by the <c>negateExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -380,9 +382,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitNot([NotNull] ElsaParser.NotContext context) { return VisitChildren(context); }
+	public virtual Result VisitNegateExpr([NotNull] ElsaParser.NegateExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>stringValue</c>
+	/// Visit a parse tree produced by the <c>methodCallExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -391,9 +393,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitStringValue([NotNull] ElsaParser.StringValueContext context) { return VisitChildren(context); }
+	public virtual Result VisitMethodCallExpr([NotNull] ElsaParser.MethodCallExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>negate</c>
+	/// Visit a parse tree produced by the <c>variableExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -402,9 +404,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitNegate([NotNull] ElsaParser.NegateContext context) { return VisitChildren(context); }
+	public virtual Result VisitVariableExpr([NotNull] ElsaParser.VariableExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>decrement</c>
+	/// Visit a parse tree produced by the <c>notExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -413,9 +415,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitDecrement([NotNull] ElsaParser.DecrementContext context) { return VisitChildren(context); }
+	public virtual Result VisitNotExpr([NotNull] ElsaParser.NotExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>functionCall</c>
+	/// Visit a parse tree produced by the <c>integerValueExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -424,9 +426,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitFunctionCall([NotNull] ElsaParser.FunctionCallContext context) { return VisitChildren(context); }
+	public virtual Result VisitIntegerValueExpr([NotNull] ElsaParser.IntegerValueExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>integerValue</c>
+	/// Visit a parse tree produced by the <c>addExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -435,9 +437,9 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitIntegerValue([NotNull] ElsaParser.IntegerValueContext context) { return VisitChildren(context); }
+	public virtual Result VisitAddExpr([NotNull] ElsaParser.AddExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>multiply</c>
+	/// Visit a parse tree produced by the <c>bracketsExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -446,7 +448,18 @@ public partial class ElsaParserBaseVisitor<Result> : AbstractParseTreeVisitor<Re
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitMultiply([NotNull] ElsaParser.MultiplyContext context) { return VisitChildren(context); }
+	public virtual Result VisitBracketsExpr([NotNull] ElsaParser.BracketsExprContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>compareExpr</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitCompareExpr([NotNull] ElsaParser.CompareExprContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.exprList"/>.
 	/// <para>

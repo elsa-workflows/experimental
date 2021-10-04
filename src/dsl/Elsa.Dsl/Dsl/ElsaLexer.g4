@@ -17,7 +17,6 @@ FLOAT               :   'float';
 INT                 :   'int';
 STRING              :   'string';
 OBJECT              :   'object';
-SEQUENCE            :   'Sequence';
 SYMBOL              :   [=>$+`];
 COLON               :   ':';
 SEMICOLON           :   ';';

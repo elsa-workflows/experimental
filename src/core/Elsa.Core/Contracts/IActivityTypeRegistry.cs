@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using Elsa.Models;
 
 namespace Elsa.Contracts
 {
-    public interface IActivityTypeRegistry
+    public interface IActivityTypeRegistry : IRegistry<ActivityType>
     {
-        void Register(ActivityType activityType);
-        IEnumerable<ActivityType> List();
+        void Register(ActivityType value);
     }
 }
