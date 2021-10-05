@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Antlr4.Runtime.Tree;
+using Elsa.Activities.Containers;
 using Elsa.Builders;
 using Elsa.Contracts;
 using Elsa.Dsl.Extensions;
@@ -12,86 +13,115 @@ namespace Elsa.Dsl.Interpreters
 {
     public class WorkflowDefinitionBuilderInterpreter : ElsaParserBaseVisitor<IWorkflowDefinitionBuilder>
     {
+        private readonly ITypeSystem _typeSystem;
         private readonly IWorkflowDefinitionBuilder _workflowDefinitionBuilder = new WorkflowDefinitionBuilder();
-        private readonly ITriggerTypeRegistry _triggerTypeRegistry;
-        private readonly IActivityTypeRegistry _activityTypeRegistry;
         private readonly ParseTreeProperty<object> _object = new();
-        private readonly ParseTreeProperty<Type> _pairType = new();
-        private readonly ParseTreeProperty<object?> _pairValue = new();
+        private readonly Stack<PropertyInfo> _propertyStack = new();
+        private readonly Stack<object> _propertyValueStack = new();
 
-        public WorkflowDefinitionBuilderInterpreter(ITriggerTypeRegistry triggerTypeRegistry, IActivityTypeRegistry activityTypeRegistry)
+        public WorkflowDefinitionBuilderInterpreter(ITypeSystem typeSystem)
         {
-            _triggerTypeRegistry = triggerTypeRegistry;
-            _activityTypeRegistry = activityTypeRegistry;
+            _typeSystem = typeSystem;
         }
 
         protected override IWorkflowDefinitionBuilder DefaultResult => _workflowDefinitionBuilder;
 
-        public override IWorkflowDefinitionBuilder VisitTrigger(ElsaParser.TriggerContext context)
+        public override IWorkflowDefinitionBuilder VisitFile(ElsaParser.FileContext context)
         {
-            var triggerTypeName = context.@object().ID().GetText();
-            var triggerType = _triggerTypeRegistry.Get(triggerTypeName);
-            var trigger = (ITrigger?)Activator.CreateInstance(triggerType.Type);
+            var triggerStats = context.stat().OfType<ElsaParser.TriggerStatContext>().ToList();
+            var objectStats = context.stat().OfType<ElsaParser.ObjectStatContext>().ToList();
 
-            if (trigger == null)
-                throw new Exception($"Could not create trigger of type {triggerTypeName}. The specified name does not exist in the trigger registry. Did you forget to register it?");
-            
-            _workflowDefinitionBuilder.AddTrigger(trigger);
-            _object.Put(context.@object(), trigger);
+            VisitMany(triggerStats);
+            VisitMany(objectStats);
 
-            return VisitChildren(context);
-        }
-
-        public override IWorkflowDefinitionBuilder VisitObject(ElsaParser.ObjectContext context)
-        {
-            var @object = _object.Get(context);
-            var triggerType = @object.GetType();
-            var pairs = context.objectInitializer().propertyList().property();
-
-            foreach (var pair in pairs)
-            {
-                var propertyName = pair.ID().GetText();
-                var propertyValueExpr = pair.expr();
-                var property = triggerType.GetProperty(propertyName);
-
-                if (property == null)
-                    throw new Exception($"Could not set property {propertyName} on trigger of type {triggerType.FullName}. The specified property does not exist.");
-
-                _pairType.Put(propertyValueExpr, property.PropertyType);
-                Visit(propertyValueExpr);
-                var propertyValue = _pairValue.Get(propertyValueExpr);
-                var propertyInputValue = CreateInputValue(property, propertyValue);
-                property.SetValue(@object, propertyInputValue);
-            }
+            var rootActivities = objectStats.Select(x => (IActivity)_object.Get(x.@object())).ToList();
+            var rootActivity = rootActivities.Count == 1 ? rootActivities.Single() : new Sequence(rootActivities.ToArray());
+            _workflowDefinitionBuilder.WithRoot(rootActivity);
 
             return DefaultResult;
         }
         
+        public override IWorkflowDefinitionBuilder VisitTrigger(ElsaParser.TriggerContext context)
+        {
+            VisitChildren(context);
+            var trigger = (ITrigger)_object.Get(context.@object());
+
+            _workflowDefinitionBuilder.AddTrigger(trigger);
+
+            return DefaultResult;
+        }
+
+        public override IWorkflowDefinitionBuilder VisitObject(ElsaParser.ObjectContext context)
+        {
+            var objectTypeName = context.ID().GetText();
+            var objectTypeDescriptor = _typeSystem.ResolveTypeName(objectTypeName);
+
+            if (objectTypeDescriptor == null)
+                throw new Exception($"Unknown type: {objectTypeName}");
+
+            var objectType = objectTypeDescriptor.Type;
+            var @object = Activator.CreateInstance(objectType)!;
+
+            _object.Put(context, @object);
+            VisitChildren(context);
+            _propertyValueStack.Push(@object);
+
+            return DefaultResult;
+        }
+
+        public override IWorkflowDefinitionBuilder VisitProperty(ElsaParser.PropertyContext context)
+        {
+            var @object = _object.Get(context.Parent.Parent.Parent);
+            var objectType = @object.GetType();
+            var propertyName = context.ID().GetText();
+            var propertyInfo = objectType.GetProperty(propertyName);
+
+            if (propertyInfo == null)
+                throw new Exception($"Type {objectType.Name} does not have a public property named {propertyName}.");
+
+            _propertyStack.Push(propertyInfo);
+            VisitChildren(context);
+            _propertyStack.Pop();
+
+            var propertyValue = _propertyValueStack.Pop();
+            SetPropertyValue(@object, propertyInfo, propertyValue);
+
+            return DefaultResult;
+        }
+
         public override IWorkflowDefinitionBuilder VisitBracketsExpr(ElsaParser.BracketsExprContext context)
         {
+            var propertyInfo = _propertyStack.Peek();
+            var propertyType = GetUnderlyingTargetType(propertyInfo.PropertyType);
+            var targetElementType = propertyType.GetGenericArguments().First();
             var contents = context.exprList().expr();
-            var targetCollectionType = GetUnderlyingTargetType(_pairType.Get(context));
-            var targetElementType = targetCollectionType.GetGenericArguments().First();
 
             var items = contents.Select(x =>
             {
                 Visit(x);
-                return _pairValue.Get(x);
+                return _propertyValueStack.Pop();
             }).ToList();
-            
+
             var stronglyTypedListType = typeof(ICollection<>).MakeGenericType(targetElementType);
             var stronglyTypedList = items.ConvertTo(stronglyTypedListType);
 
-            _pairValue.Put(context, stronglyTypedList);
-
+            _propertyValueStack.Push(stronglyTypedList);
             return DefaultResult;
         }
 
         public override IWorkflowDefinitionBuilder VisitStringValueExpr(ElsaParser.StringValueExprContext context)
         {
             var value = context.GetText().Trim('\"');
-            _pairValue.Put(context, value);
+            _propertyValueStack.Push(value);
             return DefaultResult;
+        }
+
+        private void SetPropertyValue(object target, PropertyInfo propertyInfo, object? value)
+        {
+            if (typeof(Input).IsAssignableFrom(propertyInfo.PropertyType))
+                value = CreateInputValue(propertyInfo, value);
+
+            propertyInfo.SetValue(target, value, null);
         }
 
         private Input CreateInputValue(PropertyInfo propertyInfo, object? propertyValue)
@@ -103,10 +133,11 @@ namespace Elsa.Dsl.Interpreters
             return inputValue;
         }
 
-        private Type GetUnderlyingTargetType(Type type)
+        private void VisitMany(IEnumerable<IParseTree> contexts)
         {
-            var targetType = typeof(Input).IsAssignableFrom(type) ? type.GetGenericArguments().First() : type;
-            return targetType;
+            foreach (var parseTree in contexts) Visit(parseTree);
         }
+
+        private Type GetUnderlyingTargetType(Type type) => typeof(Input).IsAssignableFrom(type) ? type.GetGenericArguments().First() : type;
     }
 }

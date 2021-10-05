@@ -8,13 +8,11 @@ namespace Elsa.Dsl.Services
 {
     public class DslEngine : IDslEngine
     {
-        private readonly ITriggerTypeRegistry _triggerTypeRegistry;
-        private readonly IActivityTypeRegistry _activityTypeRegistry;
+        private readonly ITypeSystem _typeSystem;
 
-        public DslEngine(ITriggerTypeRegistry triggerTypeRegistry, IActivityTypeRegistry activityTypeRegistry)
+        public DslEngine(ITypeSystem typeSystem)
         {
-            _triggerTypeRegistry = triggerTypeRegistry;
-            _activityTypeRegistry = activityTypeRegistry;
+            _typeSystem = typeSystem;
         }
         
         public WorkflowDefinition Parse(string script)
@@ -25,7 +23,7 @@ namespace Elsa.Dsl.Services
             var parser = new ElsaParser(tokens);
             var tree = parser.file();
 
-            var interpreter = new WorkflowDefinitionBuilderInterpreter(_triggerTypeRegistry, _activityTypeRegistry);
+            var interpreter = new WorkflowDefinitionBuilderInterpreter(_typeSystem);
             var workflowBuilder = interpreter.Visit(tree);
             var workflow = workflowBuilder.BuildWorkflow();
 

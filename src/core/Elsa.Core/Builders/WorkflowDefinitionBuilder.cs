@@ -8,47 +8,47 @@ namespace Elsa.Builders
 {
     public class WorkflowDefinitionBuilder : IWorkflowDefinitionBuilder
     {
-        private string? _id;
-        private int _version = 1;
-        private IActivity? _root;
-        private readonly ICollection<ITrigger> _triggers = new List<ITrigger>();
+        public string? Id { get; private set; }
+        public int Version { get; private set; } = 1;
+        public IActivity? Root { get; private set; }
+        public ICollection<ITrigger> Triggers { get; } = new List<ITrigger>();
 
         public IWorkflowDefinitionBuilder WithId(string id)
         {
-            _id = id;
+            Id = id;
             return this;
         }
 
         public IWorkflowDefinitionBuilder WithVersion(int version)
         {
-            _version = version;
+            Version = version;
             return this;
         }
 
         public IWorkflowDefinitionBuilder WithRoot(IActivity root)
         {
-            _root = root;
+            Root = root;
             return this;
         }
 
         public IWorkflowDefinitionBuilder AddTrigger(ITrigger trigger)
         {
-            _triggers.Add(trigger);
+            Triggers.Add(trigger);
             return this;
         }
 
         public WorkflowDefinition BuildWorkflow()
         {
-            var id = _id ?? Guid.NewGuid().ToString("N");
-            var root = _root ?? new Sequence();
+            var id = Id ?? Guid.NewGuid().ToString("N");
+            var root = Root ?? new Sequence();
 
             return new WorkflowDefinition
             {
                 Id = Guid.NewGuid().ToString("N"),
-                Version = _version,
+                Version = Version,
                 CreatedAt = DateTime.UtcNow,
                 DefinitionId = id,
-                Workflow = new Workflow(root, _triggers)
+                Workflow = new Workflow(root, Triggers)
             };
         }
     }

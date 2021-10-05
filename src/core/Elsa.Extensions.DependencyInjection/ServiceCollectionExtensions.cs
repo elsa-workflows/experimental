@@ -41,8 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IWorkflowStateSerializer, WorkflowStateSerializer>()
                 .AddSingleton<IActivitySchedulerFactory, ActivitySchedulerFactory>()
                 .AddSingleton<IActivityNodeResolver, OutboundActivityNodeResolver>()
-                .AddSingleton<IActivityTypeRegistry, ActivityTypeRegistry>()
-                .AddSingleton<ITriggerTypeRegistry, TriggerTypeRegistry>()
+                .AddSingleton<ITypeSystem, TypeSystem>()
                 .AddSingleton<IHasher, Hasher>()
                 
                 // DSL.
