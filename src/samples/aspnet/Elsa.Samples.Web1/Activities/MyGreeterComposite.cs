@@ -7,7 +7,7 @@ using Elsa.Models;
 
 namespace Elsa.Samples.Web1.Activities
 {
-    public class MyGreeterComposite : Composite, IContainer
+    public class MyGreeterComposite : Composite
     {
         private readonly Variable _name = new Variable<string>();
 

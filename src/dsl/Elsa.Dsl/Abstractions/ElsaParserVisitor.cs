@@ -50,6 +50,12 @@ public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitObject([NotNull] ElsaParser.ObjectContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.newObject"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNewObject([NotNull] ElsaParser.NewObjectContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.varDecl"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -185,6 +191,13 @@ public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitExpressionStat([NotNull] ElsaParser.ExpressionStatContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>newObjectExpr</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNewObjectExpr([NotNull] ElsaParser.NewObjectExprContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>subtractExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.

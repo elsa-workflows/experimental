@@ -2,6 +2,7 @@ using Antlr4.Runtime;
 using Elsa.Contracts;
 using Elsa.Dsl.Contracts;
 using Elsa.Dsl.Interpreters;
+using Elsa.Dsl.Models;
 using Elsa.Models;
 
 namespace Elsa.Dsl.Services
@@ -23,7 +24,7 @@ namespace Elsa.Dsl.Services
             var parser = new ElsaParser(tokens);
             var tree = parser.file();
 
-            var interpreter = new WorkflowDefinitionBuilderInterpreter(_typeSystem);
+            var interpreter = new WorkflowDefinitionBuilderInterpreter(_typeSystem, new WorkflowDefinitionInterpreterSettings());
             var workflowBuilder = interpreter.Visit(tree);
             var workflow = workflowBuilder.BuildWorkflow();
 

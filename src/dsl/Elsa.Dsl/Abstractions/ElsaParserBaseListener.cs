@@ -72,6 +72,18 @@ public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitObject([NotNull] ElsaParser.ObjectContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.newObject"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterNewObject([NotNull] ElsaParser.NewObjectContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.newObject"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitNewObject([NotNull] ElsaParser.NewObjectContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.varDecl"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -343,6 +355,20 @@ public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExpressionStat([NotNull] ElsaParser.ExpressionStatContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>newObjectExpr</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterNewObjectExpr([NotNull] ElsaParser.NewObjectExprContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>newObjectExpr</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitNewObjectExpr([NotNull] ElsaParser.NewObjectExprContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>subtractExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.

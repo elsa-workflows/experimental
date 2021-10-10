@@ -13,6 +13,10 @@ trigger
 object
     :   ID objectInitializer?
     ;
+    
+newObject
+    :   NEW ID ('<' type '>')? '(' args? ')'
+    ;
 
 varDecl             
     :   VARIABLE ID (':' type)? (EQ expr)?
@@ -28,6 +32,7 @@ type
     |   INT
     |   OBJECT
     |   STRING
+    |   ID
     ;
      
 methodCall
@@ -78,6 +83,7 @@ stat
 expr
     :   funcCall                         #functionExpr
     |   object                           #objectExpr
+    |   newObject                        #newObjectExpr
     |   expr '++'                        #incrementExpr
     |   expr '--'                        #decrementExpr
     |   '-' expr                         #negateExpr

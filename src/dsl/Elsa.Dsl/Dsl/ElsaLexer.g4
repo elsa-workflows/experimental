@@ -4,6 +4,7 @@ EQ                  :   '=';
 GREATER             :   '>';
 INCREMENT           :   '++';
 DECREMENT           :   '--';
+NEW                 :   'new';
 TRIGGER             :   'trigger';
 VARIABLE            :   'variable';
 LET                 :   'let';
@@ -43,7 +44,6 @@ LINE_COMMENT        :   '//' .*? '\r'? '\n' -> skip;
 INTEGER_VAL         :   DIGIT+;
 ID                  :   LETTER (LETTER | DIGIT)*;
 WS                  :   [ \t\r\n] -> skip;
-//TEXT                :   (LETTER|SYMBOL)+;
 
 fragment LETTER     :   [a-zA-Z_];
 fragment DIGIT      :   [0-9];

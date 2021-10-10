@@ -6,7 +6,9 @@ namespace Elsa.Models
     public enum TypeKind
     {
         Unknown = 0,
-        Activity = 1,
-        Trigger = 2
+        Primitive = 1,
+        Object = 2,
+        Activity = 4,
+        Trigger = 8
     }
 }

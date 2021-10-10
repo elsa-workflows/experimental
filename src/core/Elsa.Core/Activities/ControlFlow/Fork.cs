@@ -9,7 +9,7 @@ using Elsa.Models;
 
 namespace Elsa.Activities.ControlFlow
 {
-    public class Fork : Activity, IContainer
+    public class Fork : Activity
     {
         [Input] public Input<JoinMode> JoinMode { get; set; } = new(ControlFlow.JoinMode.WaitAny);
         [Outbound] public ICollection<IActivity> Branches { get; set; } = new List<IActivity>();

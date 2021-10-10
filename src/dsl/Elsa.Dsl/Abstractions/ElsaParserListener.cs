@@ -61,6 +61,16 @@ public interface IElsaParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitObject([NotNull] ElsaParser.ObjectContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.newObject"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterNewObject([NotNull] ElsaParser.NewObjectContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.newObject"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitNewObject([NotNull] ElsaParser.NewObjectContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.varDecl"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -290,6 +300,18 @@ public interface IElsaParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitExpressionStat([NotNull] ElsaParser.ExpressionStatContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>newObjectExpr</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterNewObjectExpr([NotNull] ElsaParser.NewObjectExprContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>newObjectExpr</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitNewObjectExpr([NotNull] ElsaParser.NewObjectExprContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>subtractExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
