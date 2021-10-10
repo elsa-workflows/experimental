@@ -42,5 +42,13 @@ namespace Elsa.Models
         public Input(DelegateReference delegateReference) : base(new DelegateExpression(delegateReference), delegateReference, typeof(T))
         {
         }
+
+        public Input(ElsaExpression expression) : this(new ElsaExpressionReference(expression))
+        {
+        }
+
+        private Input(ElsaExpressionReference expressionReference) : base(expressionReference.Expression, expressionReference, typeof(T))
+        {
+        }
     }
 }

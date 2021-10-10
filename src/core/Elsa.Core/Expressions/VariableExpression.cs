@@ -27,9 +27,9 @@ namespace Elsa.Expressions
 
     public class VariableExpressionHandler : IExpressionHandler
     {
-        public ValueTask<object?> EvaluateAsync(IExpression input, ExpressionExecutionContext context)
+        public ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
         {
-            var variableReference = (VariableExpression)input;
+            var variableReference = (VariableExpression)expression;
             var variable = variableReference.Variable;
             var value = variable.Get(context);
             return ValueTask.FromResult(value);

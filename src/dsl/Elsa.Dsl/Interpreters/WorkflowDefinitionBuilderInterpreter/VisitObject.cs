@@ -15,6 +15,15 @@ namespace Elsa.Dsl.Interpreters
             return DefaultResult;
         }
 
+        public override IWorkflowDefinitionBuilder VisitObjectStat(ElsaParser.ObjectStatContext context)
+        {
+            VisitChildren(context);
+            var value = _expressionValue.Get(context.@object());
+            _expressionValue.Put(context, value);
+
+            return DefaultResult;
+        }
+
         public override IWorkflowDefinitionBuilder VisitObject(ElsaParser.ObjectContext context)
         {
             var objectTypeName = context.ID().GetText();

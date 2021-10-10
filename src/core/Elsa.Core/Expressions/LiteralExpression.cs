@@ -19,9 +19,9 @@ namespace Elsa.Expressions
 
     public class LiteralHandler : IExpressionHandler
     {
-        public ValueTask<object?> EvaluateAsync(IExpression input, ExpressionExecutionContext context)
+        public ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
         {
-            var variableReference = (LiteralExpression)input;
+            var variableReference = (LiteralExpression)expression;
             var value = variableReference.Value;
             return ValueTask.FromResult(value);
         }

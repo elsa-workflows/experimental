@@ -356,6 +356,30 @@ public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExpressionStat([NotNull] ElsaParser.ExpressionStatContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.thenStat"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterThenStat([NotNull] ElsaParser.ThenStatContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.thenStat"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitThenStat([NotNull] ElsaParser.ThenStatContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.elseStat"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterElseStat([NotNull] ElsaParser.ElseStatContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.elseStat"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitElseStat([NotNull] ElsaParser.ElseStatContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>newObjectExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>

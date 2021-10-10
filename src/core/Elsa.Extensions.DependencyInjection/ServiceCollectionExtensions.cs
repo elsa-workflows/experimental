@@ -24,8 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddElsa(this IServiceCollection services) => services
             .AddElsaCore()
             .AddElsaRuntime()
-            .AddDefaultExpressionHandlers()
-        ;
+            .AddDefaultExpressionHandlers();
 
         public static IServiceCollection AddElsaCore(this IServiceCollection services)
         {
@@ -43,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IActivityNodeResolver, OutboundActivityNodeResolver>()
                 .AddSingleton<ITypeSystem, TypeSystem>()
                 .AddSingleton<IHasher, Hasher>()
-                
+
                 // DSL.
                 .AddSingleton<IDslEngine, DslEngine>()
 
@@ -85,9 +84,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IServiceCollection AddDefaultExpressionHandlers(this IServiceCollection services) =>
             services
-                .AddExpressionHandler<LiteralHandler>(typeof(LiteralExpression))
-                .AddExpressionHandler<DelegateExpressionHandler>(typeof(DelegateExpression))
-                .AddExpressionHandler<VariableExpressionHandler>(typeof(VariableExpression));
+                .AddExpressionHandler<LiteralHandler, LiteralExpression>()
+                .AddExpressionHandler<DelegateExpressionHandler, DelegateExpression>()
+                .AddExpressionHandler<VariableExpressionHandler, VariableExpression>()
+                .AddExpressionHandler<ElsaExpressionHandler, ElsaExpression>();
+
+        public static IServiceCollection AddExpressionHandler<THandler, TExpression>(this IServiceCollection services) where THandler : class, IExpressionHandler =>
+            services.AddExpressionHandler<THandler>(typeof(TExpression));
 
         public static IServiceCollection AddExpressionHandler<THandler>(this IServiceCollection services, Type expression) where THandler : class, IExpressionHandler
         {
@@ -99,7 +102,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
-        
+
         public static IServiceCollection AddWorkflowProvider<T>(this IServiceCollection services) where T : class, IWorkflowProvider => services.AddSingleton<IWorkflowProvider, T>();
         public static IServiceCollection AddStimulusHandler<T>(this IServiceCollection services) where T : class, IStimulusHandler => services.AddSingleton<IStimulusHandler, T>();
         public static IServiceCollection AddInstructionHandler<T>(this IServiceCollection services) where T : class, IWorkflowInstructionHandler => services.AddSingleton<IWorkflowInstructionHandler, T>();

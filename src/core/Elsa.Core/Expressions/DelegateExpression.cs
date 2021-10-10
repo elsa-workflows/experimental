@@ -23,9 +23,9 @@ namespace Elsa.Expressions
 
     public class DelegateExpressionHandler : IExpressionHandler
     {
-        public async ValueTask<object?> EvaluateAsync(IExpression input, ExpressionExecutionContext context)
+        public async ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
         {
-            var delegateExpression = (DelegateExpression)input;
+            var delegateExpression = (DelegateExpression)expression;
             var @delegate = delegateExpression.DelegateReference.Delegate;
             var value = @delegate != null ? await @delegate(context) : default;
             return value;

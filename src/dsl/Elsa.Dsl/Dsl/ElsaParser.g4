@@ -70,7 +70,7 @@ property
 stat
     :   trigger ';'                                         #triggerStat
     |   object ';'                                          #objectStat       
-    |   'if' expr 'then' stat ('else' stat)?                #ifStat
+    |   'if' expr 'then' thenStat ('else' elseStat)?        #ifStat
     |   'for' '(' ID '=' expr ';' expr ';' expr ')' stat    #forStat
     |   'return' expr? ';'                                  #returnStat                              
     |   block                                               #blockStat
@@ -78,6 +78,14 @@ stat
     |   localVarDecl ';'                                    #localVariableDeclarationStat
     |   expr '=' expr ';'                                   #assignmentStat
     |   expr ';'                                            #expressionStat
+    ;
+
+thenStat 
+    :   stat
+    ;
+    
+elseStat 
+    :   stat
     ;
 
 expr

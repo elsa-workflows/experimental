@@ -192,6 +192,18 @@ public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitExpressionStat([NotNull] ElsaParser.ExpressionStatContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.thenStat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitThenStat([NotNull] ElsaParser.ThenStatContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.elseStat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitElseStat([NotNull] ElsaParser.ElseStatContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>newObjectExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// </summary>

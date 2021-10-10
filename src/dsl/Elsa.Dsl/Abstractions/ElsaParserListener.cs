@@ -301,6 +301,26 @@ public interface IElsaParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExpressionStat([NotNull] ElsaParser.ExpressionStatContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.thenStat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterThenStat([NotNull] ElsaParser.ThenStatContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.thenStat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitThenStat([NotNull] ElsaParser.ThenStatContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.elseStat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterElseStat([NotNull] ElsaParser.ElseStatContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.elseStat"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitElseStat([NotNull] ElsaParser.ElseStatContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>newObjectExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// </summary>

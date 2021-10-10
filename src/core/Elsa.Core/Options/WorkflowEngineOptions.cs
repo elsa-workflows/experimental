@@ -21,6 +21,8 @@ namespace Elsa.Options
             return this;
         }
 
+        public WorkflowEngineOptions RegisterExpressionHandler<THandler, TExpression>() => RegisterExpressionHandler<THandler>(typeof(TExpression));
+        
         public WorkflowEngineOptions RegisterExpressionHandler<THandler>(Type expression)
         {
             _expressionHandlers.Add(expression, typeof(THandler));
