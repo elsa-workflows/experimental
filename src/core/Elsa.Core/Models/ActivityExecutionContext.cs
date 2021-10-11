@@ -78,10 +78,18 @@ namespace Elsa.Models
         public T GetRequiredService<T>() where T : notnull => WorkflowExecutionContext.GetRequiredService<T>();
         public T? Get<T>(Input<T> input) => Get<T>(input.LocationReference);
 
-        public object Get(RegisterLocationReference locationReference) =>
-            GetLocation(locationReference)?.Value ?? throw new InvalidOperationException($"No location found with ID {locationReference.Id}. Did you forget to declare a variable with a container?");
+        public object? Get(RegisterLocationReference locationReference)
+        {
+            var location = GetLocation(locationReference) ?? throw new InvalidOperationException($"No location found with ID {locationReference.Id}. Did you forget to declare a variable with a container?");
+            return location.Value;
+        }
 
-        public T Get<T>(RegisterLocationReference locationReference) => (T)Get(locationReference);
+        public T? Get<T>(RegisterLocationReference locationReference)
+        {
+            var value = Get(locationReference);
+            return value != default ? (T?)(value) : default;
+        }
+
         public void Set(RegisterLocationReference locationReference, object? value) => ExpressionExecutionContext.Set(locationReference, value);
         public void Set(Output? output, object? value) => ExpressionExecutionContext.Set(output, value);
 
@@ -94,9 +102,9 @@ namespace Elsa.Models
             return (T?)value;
         }
 
-        private RegisterLocation? GetLocation(RegisterLocationReference locationReference) => 
-            ExpressionExecutionContext.Register.TryGetLocation(locationReference.Id, out var location) 
-                ? location 
+        private RegisterLocation? GetLocation(RegisterLocationReference locationReference) =>
+            ExpressionExecutionContext.Register.TryGetLocation(locationReference.Id, out var location)
+                ? location
                 : ParentActivityExecutionContext?.GetLocation(locationReference);
 
         public void PreventContinuation() => Continue = false;

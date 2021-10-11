@@ -34,6 +34,8 @@ var resource = assembly.GetManifestResourceStream("Elsa.Samples.Console2.Sample1
 var script = await new StreamReader(resource!).ReadToEndAsync();
 var workflowDefinition = dslEngine.Parse(script);
 
+await workflowEngine.ExecuteWorkflowAsync(workflowDefinition);
+
 IWorkflowEngine CreateWorkflowEngine()
 {
     var builder = DefaultWorkflowEngineBuilder.CreateDefaultBuilder();
