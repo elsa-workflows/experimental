@@ -5,22 +5,10 @@
     
     if age > 16 then
     {
-        WriteLine
-        {
-            Text: "Enjoy your driver's license!"
-        };
-        //print("Enjoy your driver's license!");
+        print("Enjoy your driver's license!");
     }
     else
-        WriteLine
-        {
-            Text: "Enjoy your bicycle!"
-        };
-        //print("Enjoy your bicycle!");
-      
-    WriteLine
-    {
-        Text: "Goodbye."
-    };              
-    //print("Goodbye.");
+        print("Enjoy your bicycle!");
+                    
+    print("Goodbye.");
 }

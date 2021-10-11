@@ -1,6 +1,7 @@
 using System;
 using Elsa.ActivityNodeResolvers;
 using Elsa.Contracts;
+using Elsa.Dsl.Abstractions;
 using Elsa.Dsl.Contracts;
 using Elsa.Dsl.Services;
 using Elsa.Expressions;

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Elsa.Contracts;
+using Elsa.Dsl.Abstractions;
 using Elsa.Models;
 
-namespace Elsa.Services
+namespace Elsa.Dsl.Services
 {
     public class TypeSystem : ITypeSystem
     {

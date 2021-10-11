@@ -1,9 +1,9 @@
 using System;
-using System.Reflection;
 using Elsa.Contracts;
+using Elsa.Dsl.Abstractions;
 using Elsa.Models;
 
-namespace Elsa.Extensions
+namespace Elsa.Dsl.Extensions
 {
     public static class TypeSystemExtensions
     {

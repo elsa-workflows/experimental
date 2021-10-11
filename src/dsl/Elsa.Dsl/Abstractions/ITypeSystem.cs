@@ -1,6 +1,6 @@
 using Elsa.Models;
 
-namespace Elsa.Contracts
+namespace Elsa.Dsl.Abstractions
 {
     public interface ITypeSystem
     {
