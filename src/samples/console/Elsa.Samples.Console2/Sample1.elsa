@@ -4,10 +4,10 @@
     
     if age > 16 then
     {
-        print("Enjoy your driver's license!");
+        print("Enjoy your beer!");
     }
     else
-        print("Enjoy your bicycle!");
+        print("Enjoy your soda!");
                     
     print("Goodbye.");
 }
