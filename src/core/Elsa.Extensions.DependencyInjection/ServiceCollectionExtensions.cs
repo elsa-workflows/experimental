@@ -3,6 +3,7 @@ using Elsa.ActivityNodeResolvers;
 using Elsa.Contracts;
 using Elsa.Dsl.Abstractions;
 using Elsa.Dsl.Contracts;
+using Elsa.Dsl.Extensions;
 using Elsa.Dsl.Services;
 using Elsa.Expressions;
 using Elsa.Options;
@@ -45,7 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IHasher, Hasher>()
 
                 // DSL.
-                .AddSingleton<IDslEngine, DslEngine>()
+                .AddDsl()
 
                 // Expressions.
                 .AddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
