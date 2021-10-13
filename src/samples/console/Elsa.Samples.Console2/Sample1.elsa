@@ -1,7 +1,6 @@
 {
-    // If
     print("What's your age?");
-    variable age = ReadLine;
+    variable age = read();
     
     if age > 16 then
     {

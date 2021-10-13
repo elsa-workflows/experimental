@@ -25,12 +25,11 @@ namespace Elsa.Dsl.Interpreters
             VisitChildren(context);
             
             var functionName = context.ID().GetText();
-            var args = _argValues.Get(context.args());
-
+            var argsNode = context.args();
+            var args = argsNode != null ? _argValues.Get(context.args()) : default;
             var activity = _functionActivityRegistry.ResolveFunction(functionName, args);
             
             _expressionValue.Put(context, activity);
-            
             return DefaultResult;
         }
     }
