@@ -21,7 +21,7 @@ namespace Elsa.Expressions
             var elsaExpression = (ElsaExpression)expression;
             
             // TODO: evaluate expression.
-            return default;
+            return new ValueTask<object?>(elsaExpression.Expression);
         }
     }
 }

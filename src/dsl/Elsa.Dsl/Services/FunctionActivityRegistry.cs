@@ -78,6 +78,9 @@ namespace Elsa.Dsl.Services
 
         private Input CreateInputValue(PropertyInfo propertyInfo, object? propertyValue)
         {
+            if (propertyValue is Input input)
+                return input;
+            
             var underlyingType = propertyInfo.PropertyType.GetGenericArguments().First();
             var propertyValueType = propertyValue?.GetType();
             var inputType = typeof(Input<>).MakeGenericType(underlyingType);

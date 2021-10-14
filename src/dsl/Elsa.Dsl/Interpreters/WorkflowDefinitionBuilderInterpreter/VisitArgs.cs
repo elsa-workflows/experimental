@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Antlr4.Runtime.Tree;
 using Elsa.Contracts;
 
 namespace Elsa.Dsl.Interpreters
@@ -8,11 +9,12 @@ namespace Elsa.Dsl.Interpreters
         public override IWorkflowDefinitionBuilder VisitArgs(ElsaParser.ArgsContext context)
         {
             var args = context.arg();
-
+            
             var argValues = args.Select(x =>
             {
                 Visit(x);
-                return _expressionValue.Get(x.expr());
+                var childContext = (IParseTree)x.expr() ?? (IParseTree)x.expr_elsa() ?? x.expr_external();
+                return _expressionValue.Get(childContext);
             }).ToList();
 
             _argValues.Put(context, argValues);

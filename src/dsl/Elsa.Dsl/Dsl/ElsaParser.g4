@@ -38,17 +38,31 @@ type
 methodCall
     :   ID '.' funcCall
     ;
-                
-funcCall
-    :   ID '(' args? ')'
-    ;
     
+funcCall
+    :   ID '(' args ')'
+    ;
+
 args
     :   arg (',' arg)*
     ;
     
 arg
     :   expr
+    |   expr_external
+    |   expr_elsa
+    ;
+    
+expr_external
+    :   '|' ID '|' expr_external_value '||'
+    ;
+    
+expr_external_value
+    :   (ESC|.)*?
+    ;
+    
+expr_elsa
+    :   .*?
     ;
     
 block
@@ -68,16 +82,16 @@ property
     ;
     
 stat
-    :   trigger ';'                                         #triggerStat
-    |   object ';'                                          #objectStat       
-    |   'if' expr 'then' thenStat ('else' elseStat)?        #ifStat
-    |   'for' '(' ID '=' expr ';' expr ';' expr ')' stat    #forStat
-    |   'return' expr? ';'                                  #returnStat                              
-    |   block                                               #blockStat
-    |   varDecl ';'                                         #variableDeclarationStat
-    |   localVarDecl ';'                                    #localVariableDeclarationStat
-    |   expr '=' expr ';'                                   #assignmentStat
-    |   expr ';'                                            #expressionStat
+    :   trigger ';'                                             #triggerStat
+    |   object ';'                                              #objectStat       
+    |   'if' expr 'then' thenStat ('else' elseStat)?            #ifStat
+    |   'for' '(' ID '=' expr ';' expr ';' expr ')' stat        #forStat
+    |   'return' expr? ';'                                      #returnStat                              
+    |   block                                                   #blockStat
+    |   varDecl ';'                                             #variableDeclarationStat
+    |   localVarDecl ';'                                        #localVariableDeclarationStat
+    |   expr '=' expr ';'                                       #assignmentStat
+    |   expr ';'                                                #expressionStat
     ;
 
 thenStat 
@@ -111,3 +125,4 @@ expr
 exprList
     :   expr (',' expr)*
     ;
+   

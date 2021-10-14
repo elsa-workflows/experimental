@@ -1,13 +1,1 @@
-{
-    print("What's your age?");
-    variable age = read();
-    
-    if age > 16 then
-    {
-        print("Enjoy your beer!");
-    }
-    else
-        print("Enjoy your soda!");
-                    
-    print("Goodbye.");
-}
+print(`Counting numbers from {start} to {end}`);

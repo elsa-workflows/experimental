@@ -1,4 +1,5 @@
 using Antlr4.Runtime;
+using Elsa.Contracts;
 using Elsa.Dsl.Abstractions;
 using Elsa.Dsl.Contracts;
 using Elsa.Dsl.Interpreters;
@@ -11,11 +12,13 @@ namespace Elsa.Dsl.Services
     {
         private readonly ITypeSystem _typeSystem;
         private readonly IFunctionActivityRegistry _functionActivityRegistry;
+        private readonly IExpressionHandlerRegistry _expressionHandlerRegistry;
 
-        public DslEngine(ITypeSystem typeSystem, IFunctionActivityRegistry functionActivityRegistry)
+        public DslEngine(ITypeSystem typeSystem, IFunctionActivityRegistry functionActivityRegistry, IExpressionHandlerRegistry expressionHandlerRegistry)
         {
             _typeSystem = typeSystem;
             _functionActivityRegistry = functionActivityRegistry;
+            _expressionHandlerRegistry = expressionHandlerRegistry;
         }
 
         public WorkflowDefinition Parse(string script)
@@ -25,7 +28,7 @@ namespace Elsa.Dsl.Services
             var tokens = new CommonTokenStream(lexer);
             var parser = new ElsaParser(tokens);
             var tree = parser.file();
-            var interpreter = new WorkflowDefinitionBuilderInterpreter(_typeSystem, _functionActivityRegistry, new WorkflowDefinitionInterpreterSettings());
+            var interpreter = new WorkflowDefinitionBuilderInterpreter(_typeSystem, _functionActivityRegistry, _expressionHandlerRegistry, new WorkflowDefinitionInterpreterSettings());
             var workflowBuilder = interpreter.Visit(tree);
             var workflow = workflowBuilder.BuildWorkflow();
 

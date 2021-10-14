@@ -98,6 +98,24 @@ public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitArg([NotNull] ElsaParser.ArgContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.expr_external"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpr_external([NotNull] ElsaParser.Expr_externalContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.expr_external_value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpr_external_value([NotNull] ElsaParser.Expr_external_valueContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.expr_elsa"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpr_elsa([NotNull] ElsaParser.Expr_elsaContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.block"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
