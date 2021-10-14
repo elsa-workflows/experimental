@@ -13,7 +13,7 @@ namespace Elsa.Dsl.Interpreters
             var argValues = args.Select(x =>
             {
                 Visit(x);
-                var childContext = (IParseTree)x.expr() ?? (IParseTree)x.expr_elsa() ?? x.expr_external();
+                var childContext = (IParseTree)x.expr() ?? x.expr_external();
                 return _expressionValue.Get(childContext);
             }).ToList();
 

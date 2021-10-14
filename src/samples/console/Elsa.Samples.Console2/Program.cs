@@ -30,7 +30,7 @@ typeSystem.Register<HttpTrigger>();
 typeSystem.Register<TimerTrigger>();
 
 functionActivityRegistry.RegisterFunction("print", nameof(WriteLine), new[] { nameof(WriteLine.Text) });
-functionActivityRegistry.RegisterFunction("read", nameof(ReadLine));
+functionActivityRegistry.RegisterFunction("read", nameof(ReadLine), new[]{ nameof(ReadLine.Output) });
 
 var assembly = Assembly.GetExecutingAssembly();
 var resource = assembly.GetManifestResourceStream("Elsa.Samples.Console2.Sample1.elsa");

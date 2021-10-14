@@ -161,16 +161,6 @@ public interface IElsaParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExpr_external_value([NotNull] ElsaParser.Expr_external_valueContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.expr_elsa"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExpr_elsa([NotNull] ElsaParser.Expr_elsaContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.expr_elsa"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExpr_elsa([NotNull] ElsaParser.Expr_elsaContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.block"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

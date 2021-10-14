@@ -192,18 +192,6 @@ public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExpr_external_value([NotNull] ElsaParser.Expr_external_valueContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.expr_elsa"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExpr_elsa([NotNull] ElsaParser.Expr_elsaContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.expr_elsa"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExpr_elsa([NotNull] ElsaParser.Expr_elsaContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.block"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

@@ -20,7 +20,8 @@ namespace Elsa.Dsl.Interpreters
 
             VisitChildren(context);
 
-            var workflowVariableValue = _expressionValue.Get(context.expr());
+            var initExpr = context.expr();
+            var workflowVariableValue = initExpr != null ? _expressionValue.Get(initExpr) : default;
             
             var workflowVariable = new Variable
             {

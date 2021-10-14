@@ -72,6 +72,8 @@ namespace Elsa.Dsl.Services
         {
             if (typeof(Input).IsAssignableFrom(propertyInfo.PropertyType))
                 value = CreateInputValue(propertyInfo, value);
+            else if (typeof(Output).IsAssignableFrom(propertyInfo.PropertyType))
+                value = CreateOutputValue(propertyInfo, value);
 
             propertyInfo.SetValue(target, value, null);
         }
@@ -96,6 +98,28 @@ namespace Elsa.Dsl.Services
             var convertedValue = propertyValue.ConvertTo(underlyingType);
 
             return (Input)Activator.CreateInstance(inputType, convertedValue)!;
+        }
+        
+        private Output CreateOutputValue(PropertyInfo propertyInfo, object? propertyValue)
+        {
+            if (propertyValue is Output output)
+                return output;
+            
+            var underlyingType = propertyInfo.PropertyType.GetGenericArguments().First();
+            var propertyValueType = propertyValue?.GetType();
+            var outputType = typeof(Output<>).MakeGenericType(underlyingType);
+
+            if (propertyValueType != null)
+            {
+                var hasCtorWithSpecifiedType = outputType.GetConstructors().Any(x => x.GetParameters().Any(y => y.ParameterType.IsAssignableFrom(propertyValueType)));
+
+                if (hasCtorWithSpecifiedType)
+                    return (Output)Activator.CreateInstance(outputType, propertyValue, null)!;
+            }
+
+            var convertedValue = propertyValue.ConvertTo(underlyingType);
+
+            return (Output)Activator.CreateInstance(outputType, convertedValue)!;
         }
 
         private record FunctionActivityDescriptor(Type ActivityType, ICollection<PropertyInfo> Properties);

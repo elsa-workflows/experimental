@@ -40,7 +40,7 @@ methodCall
     ;
     
 funcCall
-    :   ID '(' args ')'
+    :   ID '(' args? ')'
     ;
 
 args
@@ -50,7 +50,6 @@ args
 arg
     :   expr
     |   expr_external
-    |   expr_elsa
     ;
     
 expr_external
@@ -59,10 +58,6 @@ expr_external
     
 expr_external_value
     :   (ESC|.)*?
-    ;
-    
-expr_elsa
-    :   .*?
     ;
     
 block

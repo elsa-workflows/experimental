@@ -15,15 +15,5 @@ namespace Elsa.Dsl.Interpreters
             
             return DefaultResult;
         }
-
-        public override IWorkflowDefinitionBuilder VisitExpr_elsa(ElsaParser.Expr_elsaContext context)
-        {
-            var expressionText = context.GetText();
-            var elsaExpression = new ElsaExpression(expressionText);
-            
-            _expressionValue.Put(context, elsaExpression);
-            
-            return DefaultResult;
-        }
     }
 }
