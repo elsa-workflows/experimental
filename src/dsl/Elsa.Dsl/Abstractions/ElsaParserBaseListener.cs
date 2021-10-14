@@ -614,6 +614,20 @@ public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitAddExpr([NotNull] ElsaParser.AddExprContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>backTickStringValueExpr</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBackTickStringValueExpr([NotNull] ElsaParser.BackTickStringValueExprContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>backTickStringValueExpr</c>
+	/// labeled alternative in <see cref="ElsaParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBackTickStringValueExpr([NotNull] ElsaParser.BackTickStringValueExprContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>bracketsExpr</c>
 	/// labeled alternative in <see cref="ElsaParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>

@@ -2,6 +2,7 @@
 using Elsa.Contracts;
 using Elsa.Expressions;
 using Elsa.Models;
+using Elsa.Scripting.JavaScript;
 
 namespace Elsa.Dsl.Interpreters
 {
@@ -12,7 +13,8 @@ namespace Elsa.Dsl.Interpreters
             var ifActivity = new If();
             var conditionExpr = context.expr().GetText();
 
-            ifActivity.Condition = new Input<bool>(new ElsaExpression(conditionExpr));
+            var javaScriptExpression = new JavaScriptExpression(conditionExpr);
+            ifActivity.Condition = new Input<bool>(javaScriptExpression, new JavaScriptExpressionReference(javaScriptExpression));
             
             var thenStat = context.thenStat().stat();
             var elseStat = context.elseStat()?.stat();

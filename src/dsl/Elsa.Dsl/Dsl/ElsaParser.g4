@@ -111,6 +111,7 @@ expr
     |   expr ('==' | '>' | '<') expr     #compareExpr
     |   INTEGER_VAL                      #integerValueExpr
     |   STRING_VAL                       #stringValueExpr
+    |   BACKTICKSTRING_VAL               #backTickStringValueExpr
     |   '(' exprList? ')'                #parenthesesExpr
     |   '[' exprList? ']'                #bracketsExpr
     |   methodCall                       #methodCallExpr

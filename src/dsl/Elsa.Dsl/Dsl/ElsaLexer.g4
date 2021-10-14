@@ -42,7 +42,7 @@ PIPE                :   '|';
 PIPE_DBL            :   '||';
 PERIOD              :   '.';
 STRING_VAL          :   '"' ('\\"' | .)*? '"';
-STRINGTICK_VAL      :   '`' ('\\"' | .)*? '`';
+BACKTICKSTRING_VAL  :   '`' ('\\"' | .)*? '`';
 LINE_COMMENT        :   '//' .*? '\r'? '\n' -> skip;
 INTEGER_VAL         :   DIGIT+;
 ID                  :   LETTER (LETTER | DIGIT)*;

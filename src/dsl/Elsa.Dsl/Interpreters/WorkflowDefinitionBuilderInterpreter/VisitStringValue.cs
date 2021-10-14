@@ -10,5 +10,12 @@ namespace Elsa.Dsl.Interpreters
             _expressionValue.Put(context, value);
             return DefaultResult;
         }
+
+        public override IWorkflowDefinitionBuilder VisitBackTickStringValueExpr(ElsaParser.BackTickStringValueExprContext context)
+        {
+            var value = context.GetText().Trim('\"');
+            _expressionValue.Put(context, value);
+            return DefaultResult;
+        }
     }
 }

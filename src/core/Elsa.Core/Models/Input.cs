@@ -19,6 +19,7 @@ namespace Elsa.Models
 
     public class Input<T> : Input
     {
+        
         public Input(T literal) : this(new Literal<T>(literal))
         {
         }
@@ -44,6 +45,10 @@ namespace Elsa.Models
         }
 
         public Input(ElsaExpression expression) : this(new ElsaExpressionReference(expression))
+        {
+        }
+        
+        public Input(IExpression expression, RegisterLocationReference locationReference) : base(expression, locationReference, typeof(T))
         {
         }
 

@@ -6,6 +6,7 @@ using Elsa.Dsl.Contracts;
 using Elsa.Dsl.Extensions;
 using Elsa.Dsl.Services;
 using Elsa.Expressions;
+using Elsa.Extensions;
 using Elsa.Options;
 using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Pipelines.ActivityExecution;
@@ -90,20 +91,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddExpressionHandler<DelegateExpressionHandler, DelegateExpression>()
                 .AddExpressionHandler<VariableExpressionHandler, VariableExpression>()
                 .AddExpressionHandler<ElsaExpressionHandler, ElsaExpression>();
-
-        public static IServiceCollection AddExpressionHandler<THandler, TExpression>(this IServiceCollection services) where THandler : class, IExpressionHandler =>
-            services.AddExpressionHandler<THandler>(typeof(TExpression));
-
-        public static IServiceCollection AddExpressionHandler<THandler>(this IServiceCollection services, Type expression) where THandler : class, IExpressionHandler
-        {
-            // Register handler with DI.
-            services.AddSingleton<THandler>();
-
-            // Register handler with options.
-            services.Configure<WorkflowEngineOptions>(elsa => elsa.RegisterExpressionHandler<THandler>(expression));
-
-            return services;
-        }
 
         public static IServiceCollection AddWorkflowProvider<T>(this IServiceCollection services) where T : class, IWorkflowProvider => services.AddSingleton<IWorkflowProvider, T>();
         public static IServiceCollection AddStimulusHandler<T>(this IServiceCollection services) where T : class, IStimulusHandler => services.AddSingleton<IStimulusHandler, T>();

@@ -10,6 +10,7 @@ using Elsa.Dsl.Extensions;
 using Elsa.Models;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Runtime.Contracts;
+using Elsa.Scripting.JavaScript;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -48,7 +49,8 @@ IWorkflowEngine CreateWorkflowEngine()
         .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
         .AddInMemoryWorkflowInstanceStore()
         .AddInMemoryBookmarkStore()
-        .AddInMemoryTriggerStore();
+        .AddInMemoryTriggerStore()
+        .AddJavaScriptExpressions();
 
     return builder.BuildWorkflowEngine();
 }
