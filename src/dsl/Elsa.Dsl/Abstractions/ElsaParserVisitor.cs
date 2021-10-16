@@ -32,11 +32,11 @@ using IToken = Antlr4.Runtime.IToken;
 [System.CLSCompliant(false)]
 public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.file"/>.
+	/// Visit a parse tree produced by <see cref="ElsaParser.program"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitFile([NotNull] ElsaParser.FileContext context);
+	Result VisitProgram([NotNull] ElsaParser.ProgramContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.trigger"/>.
 	/// </summary>
@@ -74,6 +74,18 @@ public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitType([NotNull] ElsaParser.TypeContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.expressionMarker"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpressionMarker([NotNull] ElsaParser.ExpressionMarkerContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="ElsaParser.expressionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpressionContent([NotNull] ElsaParser.ExpressionContentContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.methodCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -97,18 +109,6 @@ public interface IElsaParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitArg([NotNull] ElsaParser.ArgContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.expr_external"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitExpr_external([NotNull] ElsaParser.Expr_externalContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="ElsaParser.expr_external_value"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitExpr_external_value([NotNull] ElsaParser.Expr_external_valueContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ElsaParser.block"/>.
 	/// </summary>

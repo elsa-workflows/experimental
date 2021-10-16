@@ -18,6 +18,7 @@ FLOAT               :   'float';
 INT                 :   'int';
 STRING              :   'string';
 OBJECT              :   'object';
+EXPRESSION_MARKER   :   'expression';
 SYMBOL              :   [=>$+`];
 COLON               :   ':';
 SEMICOLON           :   ';';

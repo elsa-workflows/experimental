@@ -36,17 +36,17 @@ using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 [System.CLSCompliant(false)]
 public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.file"/>.
+	/// Enter a parse tree produced by <see cref="ElsaParser.program"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterFile([NotNull] ElsaParser.FileContext context) { }
+	public virtual void EnterProgram([NotNull] ElsaParser.ProgramContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.file"/>.
+	/// Exit a parse tree produced by <see cref="ElsaParser.program"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitFile([NotNull] ElsaParser.FileContext context) { }
+	public virtual void ExitProgram([NotNull] ElsaParser.ProgramContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.trigger"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -120,6 +120,30 @@ public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitType([NotNull] ElsaParser.TypeContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.expressionMarker"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExpressionMarker([NotNull] ElsaParser.ExpressionMarkerContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.expressionMarker"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExpressionMarker([NotNull] ElsaParser.ExpressionMarkerContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.expressionContent"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExpressionContent([NotNull] ElsaParser.ExpressionContentContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.expressionContent"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExpressionContent([NotNull] ElsaParser.ExpressionContentContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.methodCall"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -167,30 +191,6 @@ public partial class ElsaParserBaseListener : IElsaParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitArg([NotNull] ElsaParser.ArgContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.expr_external"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExpr_external([NotNull] ElsaParser.Expr_externalContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.expr_external"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExpr_external([NotNull] ElsaParser.Expr_externalContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.expr_external_value"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExpr_external_value([NotNull] ElsaParser.Expr_external_valueContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.expr_external_value"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExpr_external_value([NotNull] ElsaParser.Expr_external_valueContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.block"/>.
 	/// <para>The default implementation does nothing.</para>

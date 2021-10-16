@@ -5,6 +5,7 @@ using System.Reflection;
 using Elsa.Contracts;
 using Elsa.Dsl.Abstractions;
 using Elsa.Dsl.Extensions;
+using Elsa.Dsl.Interpreters;
 using Elsa.Models;
 
 namespace Elsa.Dsl.Services
@@ -86,6 +87,9 @@ namespace Elsa.Dsl.Services
             var underlyingType = propertyInfo.PropertyType.GetGenericArguments().First();
             var propertyValueType = propertyValue?.GetType();
             var inputType = typeof(Input<>).MakeGenericType(underlyingType);
+
+            if (propertyValue is ExternalExpressionReference externalExpressionReference)
+                return (Input)Activator.CreateInstance(inputType, externalExpressionReference.Expression, externalExpressionReference.Reference)!;
 
             if (propertyValueType != null)
             {

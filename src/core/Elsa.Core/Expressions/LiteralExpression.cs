@@ -21,8 +21,8 @@ namespace Elsa.Expressions
     {
         public ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
         {
-            var variableReference = (LiteralExpression)expression;
-            var value = variableReference.Value;
+            var literalExpression = (LiteralExpression)expression;
+            var value = literalExpression.Value;
             return ValueTask.FromResult(value);
         }
     }

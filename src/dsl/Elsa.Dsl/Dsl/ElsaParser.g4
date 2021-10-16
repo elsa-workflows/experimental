@@ -2,7 +2,7 @@ parser grammar ElsaParser;
 
 options { tokenVocab = ElsaLexer; }
 
-file                
+program                
     :   (stat | LINE_COMMENT)*
     ;
     
@@ -34,6 +34,15 @@ type
     |   STRING
     |   ID
     ;
+    
+expressionMarker
+    :   EXPRESSION_MARKER '(' ID ',' expressionContent ')'
+    |   ID '=>' expressionContent
+    ;
+    
+expressionContent
+    :   .*?
+    ;
      
 methodCall
     :   ID '.' funcCall
@@ -49,15 +58,7 @@ args
     
 arg
     :   expr
-    |   expr_external
-    ;
-    
-expr_external
-    :   '|' ID '|' expr_external_value '||'
-    ;
-    
-expr_external_value
-    :   (ESC|.)*?
+    |   expressionMarker
     ;
     
 block

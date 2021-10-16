@@ -6,7 +6,7 @@ namespace Elsa.Dsl.Interpreters
 {
     public partial class WorkflowDefinitionBuilderInterpreter
     {
-        public override IWorkflowDefinitionBuilder VisitFile(ElsaParser.FileContext context)
+        public override IWorkflowDefinitionBuilder VisitProgram(ElsaParser.ProgramContext context)
         {
             var stats = context.stat();
             var rootSequence = new Sequence();

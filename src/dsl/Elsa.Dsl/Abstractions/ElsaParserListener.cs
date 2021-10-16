@@ -31,15 +31,15 @@ using IToken = Antlr4.Runtime.IToken;
 [System.CLSCompliant(false)]
 public interface IElsaParserListener : IParseTreeListener {
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.file"/>.
+	/// Enter a parse tree produced by <see cref="ElsaParser.program"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterFile([NotNull] ElsaParser.FileContext context);
+	void EnterProgram([NotNull] ElsaParser.ProgramContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.file"/>.
+	/// Exit a parse tree produced by <see cref="ElsaParser.program"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitFile([NotNull] ElsaParser.FileContext context);
+	void ExitProgram([NotNull] ElsaParser.ProgramContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.trigger"/>.
 	/// </summary>
@@ -101,6 +101,26 @@ public interface IElsaParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitType([NotNull] ElsaParser.TypeContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.expressionMarker"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExpressionMarker([NotNull] ElsaParser.ExpressionMarkerContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.expressionMarker"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExpressionMarker([NotNull] ElsaParser.ExpressionMarkerContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ElsaParser.expressionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExpressionContent([NotNull] ElsaParser.ExpressionContentContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ElsaParser.expressionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExpressionContent([NotNull] ElsaParser.ExpressionContentContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.methodCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -140,26 +160,6 @@ public interface IElsaParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitArg([NotNull] ElsaParser.ArgContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.expr_external"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExpr_external([NotNull] ElsaParser.Expr_externalContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.expr_external"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExpr_external([NotNull] ElsaParser.Expr_externalContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="ElsaParser.expr_external_value"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterExpr_external_value([NotNull] ElsaParser.Expr_external_valueContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="ElsaParser.expr_external_value"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitExpr_external_value([NotNull] ElsaParser.Expr_external_valueContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ElsaParser.block"/>.
 	/// </summary>
