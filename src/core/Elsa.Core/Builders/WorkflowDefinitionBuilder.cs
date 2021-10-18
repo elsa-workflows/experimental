@@ -44,7 +44,7 @@ namespace Elsa.Builders
 
             return new WorkflowDefinition
             {
-                Id = Guid.NewGuid().ToString("N"),
+                Id = id,
                 Version = Version,
                 CreatedAt = DateTime.UtcNow,
                 DefinitionId = id,

@@ -14,6 +14,7 @@ using Elsa.Pipelines.WorkflowExecution;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.HostedServices;
 using Elsa.Runtime.Instructions;
+using Elsa.Runtime.Interpreters;
 using Elsa.Runtime.Options;
 using Elsa.Runtime.Services;
 using Elsa.Runtime.Stimuli.Handlers;
@@ -76,12 +77,15 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddStimulusHandler<TriggerWorkflowsStimulusHandler>()
                     .AddStimulusHandler<ResumeWorkflowsStimulusHandler>()
 
-                    // Instruction handlers.
-                    .AddInstructionHandler<TriggerWorkflowInstructionHandler>()
-                    .AddInstructionHandler<ResumeWorkflowInstructionHandler>()
+                    // Instruction interpreters.
+                    .AddInstructionInterpreter<TriggerWorkflowInstructionInterpreter>()
+                    .AddInstructionInterpreter<ResumeWorkflowInstructionInterpreter>()
 
                     // Workflow providers.
                     .AddWorkflowProvider<ConfigurationWorkflowProvider>()
+                
+                    // Workflow engine.
+                    .AddSingleton<IWorkflowEngine, WorkflowEngine>()
                 ;
         }
 
@@ -94,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddWorkflowProvider<T>(this IServiceCollection services) where T : class, IWorkflowProvider => services.AddSingleton<IWorkflowProvider, T>();
         public static IServiceCollection AddStimulusHandler<T>(this IServiceCollection services) where T : class, IStimulusHandler => services.AddSingleton<IStimulusHandler, T>();
-        public static IServiceCollection AddInstructionHandler<T>(this IServiceCollection services) where T : class, IWorkflowInstructionHandler => services.AddSingleton<IWorkflowInstructionHandler, T>();
+        public static IServiceCollection AddInstructionInterpreter<T>(this IServiceCollection services) where T : class, IWorkflowInstructionInterpreter => services.AddSingleton<IWorkflowInstructionInterpreter, T>();
         public static IServiceCollection ConfigureWorkflowRuntime(this IServiceCollection services, Action<WorkflowRuntimeOptions> configure) => services.Configure(configure);
         public static IServiceCollection IndexWorkflowTriggers(this IServiceCollection services) => services.AddHostedService<IndexWorkflowTriggers>();
         public static IServiceCollection AddWorkflowInstanceStore<T>(this IServiceCollection services) where T : class, IWorkflowInstanceStore => services.AddSingleton<IWorkflowInstanceStore, T>();

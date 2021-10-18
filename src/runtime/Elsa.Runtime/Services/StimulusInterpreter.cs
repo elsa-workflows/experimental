@@ -9,11 +9,11 @@ namespace Elsa.Runtime.Services
     public class StimulusInterpreter : IStimulusInterpreter
     {
         private readonly IEnumerable<IStimulusHandler> _workflowExecutionInstructionProviders;
-        private readonly IEnumerable<IWorkflowInstructionHandler> _workflowExecutionInstructionHandlers;
+        private readonly IEnumerable<IWorkflowInstructionInterpreter> _workflowExecutionInstructionHandlers;
 
         public StimulusInterpreter(
             IEnumerable<IStimulusHandler> workflowExecutionInstructionProviders,
-            IEnumerable<IWorkflowInstructionHandler> workflowExecutionInstructionHandlers)
+            IEnumerable<IWorkflowInstructionInterpreter> workflowExecutionInstructionHandlers)
         {
             _workflowExecutionInstructionProviders = workflowExecutionInstructionProviders;
             _workflowExecutionInstructionHandlers = workflowExecutionInstructionHandlers;

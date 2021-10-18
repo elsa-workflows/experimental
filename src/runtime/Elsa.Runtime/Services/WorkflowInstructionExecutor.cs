@@ -8,9 +8,9 @@ namespace Elsa.Runtime.Services
 {
     public class WorkflowInstructionExecutor : IWorkflowInstructionExecutor
     {
-        private readonly IEnumerable<IWorkflowInstructionHandler> _workflowExecutionInstructionHandlers;
+        private readonly IEnumerable<IWorkflowInstructionInterpreter> _workflowExecutionInstructionHandlers;
 
-        public WorkflowInstructionExecutor(IEnumerable<IWorkflowInstructionHandler> workflowExecutionInstructionHandlers)
+        public WorkflowInstructionExecutor(IEnumerable<IWorkflowInstructionInterpreter> workflowExecutionInstructionHandlers)
         {
             _workflowExecutionInstructionHandlers = workflowExecutionInstructionHandlers;
         }

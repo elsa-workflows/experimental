@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Api.Endpoints.Workflows
 {
-    public static class Execute
+    public static class Dispatch
     {
         public static async Task<IResult> HandleAsync(string id, IWorkflowRegistry workflowRegistry, HttpResponse response, CancellationToken cancellationToken)
         {
             var workflowDefinition = await workflowRegistry.GetByIdAsync(id, cancellationToken);
-            return workflowDefinition == null ? Results.NotFound() : new ExecuteWorkflowResult(workflowDefinition);
+            return workflowDefinition == null ? Results.NotFound() : new DispatchWorkflowResult(workflowDefinition);
         }
     }
 }

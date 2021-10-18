@@ -1,0 +1,29 @@
+syntax = "proto3";
+package Elsa.Runtime.ProtoActor;
+option csharp_namespace = "Elsa.Runtime.ProtoActor.Messages";
+
+message ExecuteWorkflowDefinition {
+  string id = 1;
+  int32 version = 2;
+}
+
+message ExecuteWorkflowInstance {
+  string id = 1;
+  optional Bookmark bookmark = 2;
+}
+
+message HandleStimulus {
+    string activityTypeName = 1;
+    optional string Hash = 2;
+    map<string, string> data = 3;
+}
+
+message Bookmark {
+  string id = 1;
+  string name = 2;
+  optional string hash = 3;
+  string activityId = 4;
+  string activityInstanceId = 5;
+  map<string, string> data = 6;
+  optional string callbackMethodName = 7;
+}

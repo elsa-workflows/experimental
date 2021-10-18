@@ -1,5 +1,4 @@
-variable name: string;
+variable name;
 print("Hi! What's your name?");
 read(name);
-// print(js => `Nice to meet you, ${name}!`);
-print("Nice to meet you!");
+print(js => `Nice to meet you, ${name}!`);

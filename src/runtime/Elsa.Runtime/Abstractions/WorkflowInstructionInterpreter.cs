@@ -4,11 +4,11 @@ using Elsa.Runtime.Contracts;
 
 namespace Elsa.Runtime.Abstractions
 {
-    public abstract class WorkflowInstructionHandler<TInstruction> : IWorkflowInstructionHandler where TInstruction: IWorkflowInstruction
+    public abstract class WorkflowInstructionInterpreter<TInstruction> : IWorkflowInstructionInterpreter where TInstruction: IWorkflowInstruction
     {
-        bool IWorkflowInstructionHandler.GetSupportsInstruction(IWorkflowInstruction instruction) => instruction is TInstruction;
+        bool IWorkflowInstructionInterpreter.GetSupportsInstruction(IWorkflowInstruction instruction) => instruction is TInstruction;
 
-        ValueTask<WorkflowInstructionResult?> IWorkflowInstructionHandler.ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken) => ExecuteInstructionAsync((TInstruction)instruction, cancellationToken);
+        ValueTask<WorkflowInstructionResult?> IWorkflowInstructionInterpreter.ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken) => ExecuteInstructionAsync((TInstruction)instruction, cancellationToken);
 
         protected virtual ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(TInstruction instruction, CancellationToken cancellationToken = default)
         {

@@ -36,7 +36,7 @@ namespace Elsa.Services
             _identityGraphService = identityGraphService;
             _schedulerFactory = schedulerFactory;
         }
-        
+
         public async Task<WorkflowExecutionResult> InvokeAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
@@ -54,7 +54,7 @@ namespace Elsa.Services
             return await InvokeAsync(workflowExecutionContext);
         }
 
-        public async Task<WorkflowExecutionResult> ResumeAsync(WorkflowDefinition workflowDefinition, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionResult> InvokeAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
@@ -62,18 +62,22 @@ namespace Elsa.Services
             // Create workflow execution context.
             var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflowDefinition, workflowState, bookmark, default, cancellationToken);
 
-            // Construct bookmark.
-            var bookmarkedActivityContext = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
-            var bookmarkedActivity = bookmarkedActivityContext.Activity;
-            var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : Noop;
+            if (bookmark != null)
+            {
+                // Construct bookmark.
+                var bookmarkedActivityContext = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
+                var bookmarkedActivity = bookmarkedActivityContext.Activity;
 
-            // Schedule the activity to resume.
-            var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
-            var workItem = new ActivityWorkItem(bookmarkedActivity.Id, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
-            workflowExecutionContext.Scheduler.Push(workItem);
+                // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
+                var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : Noop;
 
-            // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
-            workflowExecutionContext.ExecuteDelegate = resumeDelegate;
+                // Schedule the activity to resume.
+                var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
+                var workItem = new ActivityWorkItem(bookmarkedActivity.Id, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
+                workflowExecutionContext.Scheduler.Push(workItem);
+
+                workflowExecutionContext.ExecuteDelegate = resumeDelegate;
+            }
 
             return await InvokeAsync(workflowExecutionContext);
         }

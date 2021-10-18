@@ -13,7 +13,7 @@ namespace Elsa.Runtime.Services
     /// <summary>
     /// A workflow engine represents a logical unit of services to execute workflows.
     /// It's basically a thin wrapper around a service provider built from a given service collection using <see cref="WorkflowEngineBuilder"/>.
-    /// Useful for scenarios where you have multiple tenants in a system or if you simply want to use different workflow engine configurations within the same application.
+    /// May be useful for scenarios where you have multiple tenants in a system or if you simply want to use different workflow engine configurations within the same application.
     /// </summary>
     public class WorkflowEngine : IWorkflowEngine
     {
@@ -30,18 +30,22 @@ namespace Elsa.Runtime.Services
             return await workflowInvoker.InvokeAsync(workflow, cancellationToken);
         }
 
-        public async Task<IEnumerable<WorkflowInstructionResult?>> TriggerWorkflowsAsync(IStimulus stimulus, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowInstructionResult?>> HandleStimulusAsync(IStimulus stimulus, CancellationToken cancellationToken = default)
         {
             var stimulusInterpreter = ServiceProvider.GetRequiredService<IStimulusInterpreter>();
-            var instructions = await stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, cancellationToken);
             var instructionExecutor = ServiceProvider.GetRequiredService<IWorkflowInstructionExecutor>();
+            
+            // Collect instructions for the specified stimulus.
+            var instructions = await stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, cancellationToken);
+            
+            // Execute instructions.
             return await instructionExecutor.ExecuteInstructionsAsync(instructions, cancellationToken);
         }
 
         public async Task<WorkflowExecutionResult> ResumeAsync(WorkflowDefinition workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default)
         {
             var workflowInvoker = ServiceProvider.GetRequiredService<IWorkflowInvoker>();
-            return await workflowInvoker.ResumeAsync(workflow, bookmark, workflowState, cancellationToken);
+            return await workflowInvoker.InvokeAsync(workflow, workflowState, bookmark, cancellationToken);
         }
     }
 }
