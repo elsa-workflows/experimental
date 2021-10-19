@@ -2,6 +2,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +17,7 @@ namespace Elsa.Api.ApiResults
         {
             var response = httpContext.Response;
             var workflowDispatcher = httpContext.RequestServices.GetRequiredService<IWorkflowDefinitionDispatcher>();
-            await workflowDispatcher.DispatchAsync(WorkflowDefinition);
+            await workflowDispatcher.DispatchAsync(new DispatchWorkflowDefinitionRequest(WorkflowDefinition.DefinitionId, WorkflowDefinition.Version));
 
             response.StatusCode = (int)HttpStatusCode.OK;
             //if (!response.HasStarted) 
