@@ -6,22 +6,35 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Google.Protobuf" Version="3.18.1" />
-      <PackageReference Include="Grpc.Tools" Version="2.41.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-preview.7.21377.19" />
-      <PackageReference Include="Proto.Actor" Version="0.24.0" />
-      <PackageReference Include="Proto.Cluster" Version="0.24.0" />
-      <PackageReference Include="Proto.Cluster.Consul" Version="0.24.0" />
-      <PackageReference Include="Proto.Cluster.TestProvider" Version="0.24.0" />
-      <PackageReference Include="Proto.Remote" Version="0.24.0" />
-      <PackageReference Include="Proto.Remote.GrpcCore" Version="0.24.0" />
+        <PackageReference Include="Google.Protobuf" Version="3.18.1" />
+        <PackageReference Include="Grpc.Tools" Version="2.41.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-preview.7.21377.19" />
+
     </ItemGroup>
 
+    <ItemGroup Label="ProtoActor">
+        <PackageReference Include="Proto.Actor" Version="0.24.0" />
+        <PackageReference Include="Proto.Cluster" Version="0.24.0" />
+        <PackageReference Include="Proto.Cluster.Consul" Version="0.24.0" />
+        <PackageReference Include="Proto.Cluster.Identity.Redis" Version="0.24.0" />
+        <PackageReference Include="Proto.Cluster.TestProvider" Version="0.24.0" />
+        <PackageReference Include="Proto.Remote" Version="0.24.0" />
+        <PackageReference Include="Proto.Remote.GrpcCore" Version="0.24.0" />
+    </ItemGroup>
+
+    <!--    <ItemGroup Label="ProtoActor">-->
+    <!--        <ProjectReference Include="..\..\..\..\..\ProtoActor\protoactor-dotnet\src\Proto.Actor\Proto.Actor.csproj"/>-->
+    <!--        <ProjectReference Include="..\..\..\..\..\ProtoActor\protoactor-dotnet\src\Proto.Cluster.TestProvider\Proto.Cluster.TestProvider.csproj"/>-->
+    <!--        <ProjectReference Include="..\..\..\..\..\ProtoActor\protoactor-dotnet\src\Proto.Cluster\Proto.Cluster.csproj"/>-->
+    <!--        <ProjectReference Include="..\..\..\..\..\ProtoActor\protoactor-dotnet\src\Proto.Remote.GrpcCore\Proto.Remote.GrpcCore.csproj"/>-->
+    <!--        <ProjectReference Include="..\..\..\..\..\ProtoActor\protoactor-dotnet\src\Proto.Remote\Proto.Remote.csproj"/>-->
+    <!--    </ItemGroup>-->
+
     <ItemGroup>
-      <ProjectReference Include="..\Elsa.Runtime\Elsa.Runtime.csproj" />
+        <ProjectReference Include="..\Elsa.Runtime\Elsa.Runtime.csproj" />
     </ItemGroup>
 
     <ItemGroup>

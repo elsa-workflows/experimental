@@ -1,47 +1,33 @@
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Models;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.ProtoActor.Actors;
+using Elsa.Runtime.Models;
 using Elsa.Runtime.ProtoActor.Messages;
-using Proto;
 using Proto.Cluster;
-using Proto.DependencyInjection;
 
 namespace Elsa.Runtime.ProtoActor.Services
 {
     public class ProtoActorWorkflowDefinitionDispatcher : IWorkflowDefinitionDispatcher
     {
-        private readonly ActorSystem _actorSystem;
+        private readonly Cluster _cluster;
 
-        public ProtoActorWorkflowDefinitionDispatcher(ActorSystem actorSystem)
+        public ProtoActorWorkflowDefinitionDispatcher(Cluster cluster)
         {
-            _actorSystem = actorSystem;
+            _cluster = cluster;
         }
 
-        public Task DispatchAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
+        public async Task DispatchAsync(DispatchWorkflowDefinitionRequest request, CancellationToken cancellationToken = default)
         {
-            var workflowDefinitionIdAndVersion = $"{workflowDefinition.Id}:{workflowDefinition.Version}";
+            var (definitionId, version) = request;
+            var workflowDefinitionIdAndVersion = $"{definitionId}:{version}";
 
             var message = new ExecuteWorkflowDefinition
             {
-                Id = workflowDefinition.DefinitionId,
-                Version = workflowDefinition.Version
+                Id = definitionId,
+                Version = version
             };
 
-            //var actor = await _actorSystem.Cluster().RequestAsync<WorkflowDefinitionActor>(workflowDefinitionIdAndVersion, "Execute", message, cancellationToken);
-
-            var pid = _actorSystem.ProcessRegistry.SearchByName(workflowDefinitionIdAndVersion).FirstOrDefault();
-
-            if (pid == null)
-            {
-                var props = _actorSystem.DI().PropsFor<WorkflowDefinitionActor>();
-                pid = _actorSystem.Root.SpawnNamed(props, workflowDefinitionIdAndVersion);
-            }
-            
-            _actorSystem.Root.Send(pid, message);
-            return Task.CompletedTask;
+            await _cluster.RequestAsync<Ack>(workflowDefinitionIdAndVersion, GrainKinds.WorkflowDefinition, message, cancellationToken);
         }
     }
 }

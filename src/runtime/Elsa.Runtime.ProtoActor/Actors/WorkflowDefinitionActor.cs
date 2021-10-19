@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
@@ -7,7 +6,7 @@ using Elsa.Runtime.Contracts;
 using Elsa.Runtime.ProtoActor.Messages;
 using Elsa.State;
 using Proto;
-using Proto.DependencyInjection;
+using Proto.Cluster;
 
 namespace Elsa.Runtime.ProtoActor.Actors
 {
@@ -34,7 +33,7 @@ namespace Elsa.Runtime.ProtoActor.Actors
             var cancellationToken = context.CancellationToken;
             var workflowDefinition = (await _workflowRegistry.GetByIdAsync(workflowDefinitionId, cancellationToken))!;
             var workflowInstanceId = Guid.NewGuid().ToString();
-
+        
             var workflowInstance = new WorkflowInstance
             {
                 Id = workflowInstanceId,
@@ -45,15 +44,16 @@ namespace Elsa.Runtime.ProtoActor.Actors
                     Id = workflowInstanceId
                 }
             };
-
+        
             await _workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
-            var props = context.System.DI().PropsFor<WorkflowInstanceActor>();
-            var pid = context.SpawnNamed(props, workflowInstanceId);
-
-            context.Send(pid, new ExecuteWorkflowInstance
+            
+            var executeWorkflowInstanceMessage = new ExecuteWorkflowInstance
             {
                 Id = workflowInstanceId
-            });
+            };
+        
+            await context.ClusterRequestAsync<Ack>(workflowInstanceId, GrainKinds.WorkflowInstance, executeWorkflowInstanceMessage, cancellationToken);
+            context.Respond(new Ack());
         }
     }
 }

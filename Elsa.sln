@@ -17,6 +17,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{7D21EB5E-D6B4-48A5-A9BC-A26387A65F0B}"
 ProjectSection(SolutionItems) = preProject
 	README.md = README.md
+	docker-compose.yml = docker-compose.yml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{0354F050-3992-4DD4-B0EE-5FBA04AC72B6}"
@@ -66,6 +67,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Runtime.ProtoActor", "src\runtime\Elsa.Runtime.ProtoActor\Elsa.Runtime.ProtoActor.csproj", "{E5A05E1D-0F7F-4030-B434-596C76486CDB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Samples.Web2", "src\samples\aspnet\Elsa.Samples.Web2\Elsa.Samples.Web2.csproj", "{13A6BAF1-9BAD-4A3A-A61F-5E4F01CDF0BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "protoactor", "protoactor", "{03A5D774-A546-4D4B-8687-C6F96A886C72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proto.Actor", "..\..\ProtoActor\protoactor-dotnet\src\Proto.Actor\Proto.Actor.csproj", "{B8F68D35-C561-4C45-881D-84142B557A54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proto.Cluster", "..\..\ProtoActor\protoactor-dotnet\src\Proto.Cluster\Proto.Cluster.csproj", "{E27E725F-C4B0-4D6E-ADA0-DD7D014F4C6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proto.Cluster.TestProvider", "..\..\ProtoActor\protoactor-dotnet\src\Proto.Cluster.TestProvider\Proto.Cluster.TestProvider.csproj", "{EB1BACFB-3DF0-45D0-89AF-4571023DDE50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proto.Remote", "..\..\ProtoActor\protoactor-dotnet\src\Proto.Remote\Proto.Remote.csproj", "{0BD81F36-D6B4-4DF1-8BAA-5F25B6779FC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proto.Remote.GrpcCore", "..\..\ProtoActor\protoactor-dotnet\src\Proto.Remote.GrpcCore\Proto.Remote.GrpcCore.csproj", "{466E5047-4184-42C6-9C4D-14A5707E2F49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -137,6 +150,26 @@ Global
 		{13A6BAF1-9BAD-4A3A-A61F-5E4F01CDF0BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13A6BAF1-9BAD-4A3A-A61F-5E4F01CDF0BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13A6BAF1-9BAD-4A3A-A61F-5E4F01CDF0BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8F68D35-C561-4C45-881D-84142B557A54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8F68D35-C561-4C45-881D-84142B557A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8F68D35-C561-4C45-881D-84142B557A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8F68D35-C561-4C45-881D-84142B557A54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E27E725F-C4B0-4D6E-ADA0-DD7D014F4C6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E27E725F-C4B0-4D6E-ADA0-DD7D014F4C6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E27E725F-C4B0-4D6E-ADA0-DD7D014F4C6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E27E725F-C4B0-4D6E-ADA0-DD7D014F4C6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB1BACFB-3DF0-45D0-89AF-4571023DDE50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB1BACFB-3DF0-45D0-89AF-4571023DDE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB1BACFB-3DF0-45D0-89AF-4571023DDE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB1BACFB-3DF0-45D0-89AF-4571023DDE50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BD81F36-D6B4-4DF1-8BAA-5F25B6779FC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BD81F36-D6B4-4DF1-8BAA-5F25B6779FC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BD81F36-D6B4-4DF1-8BAA-5F25B6779FC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BD81F36-D6B4-4DF1-8BAA-5F25B6779FC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{466E5047-4184-42C6-9C4D-14A5707E2F49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{466E5047-4184-42C6-9C4D-14A5707E2F49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{466E5047-4184-42C6-9C4D-14A5707E2F49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{466E5047-4184-42C6-9C4D-14A5707E2F49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{155227F0-A33B-40AA-A4B4-06F813EB921B} = {61017E64-6D00-49CB-9E81-5002DC8F7D5F}
@@ -166,5 +199,10 @@ Global
 		{5D349665-3B5D-4DA4-A7B0-C6F11611B0C9} = {2633B8B9-4AEC-4A54-8832-1C940B54E041}
 		{E5A05E1D-0F7F-4030-B434-596C76486CDB} = {04584653-8E42-47DB-850B-7C6C37B307B7}
 		{13A6BAF1-9BAD-4A3A-A61F-5E4F01CDF0BF} = {56C2FFB8-EA54-45B5-A095-4A78142EB4B5}
+		{B8F68D35-C561-4C45-881D-84142B557A54} = {03A5D774-A546-4D4B-8687-C6F96A886C72}
+		{E27E725F-C4B0-4D6E-ADA0-DD7D014F4C6C} = {03A5D774-A546-4D4B-8687-C6F96A886C72}
+		{EB1BACFB-3DF0-45D0-89AF-4571023DDE50} = {03A5D774-A546-4D4B-8687-C6F96A886C72}
+		{0BD81F36-D6B4-4DF1-8BAA-5F25B6779FC5} = {03A5D774-A546-4D4B-8687-C6F96A886C72}
+		{466E5047-4184-42C6-9C4D-14A5707E2F49} = {03A5D774-A546-4D4B-8687-C6F96A886C72}
 	EndGlobalSection
 EndGlobal

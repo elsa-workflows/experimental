@@ -34,19 +34,19 @@ namespace Elsa.Runtime.ProtoActor.Actors
             var workflowInstanceId = message.Id;
             var cancellationToken = context.CancellationToken;
             var workflowInstance = await _workflowInstanceStore.GetByIdAsync(workflowInstanceId, cancellationToken);
-
+            
             if (workflowInstance == null)
                 throw new Exception($"No workflow instance found with ID {workflowInstanceId}");
-
+            
             var workflowDefinitionId = workflowInstance.DefinitionId;
             var workflowDefinition = await _workflowRegistry.GetByIdAsync(workflowDefinitionId, cancellationToken);
-
+            
             if (workflowDefinition == null)
                 throw new Exception($"No workflow definition found with ID {workflowDefinitionId}");
-
+            
             var workflowState = workflowInstance.WorkflowState;
             var bookmarkMessage = message.Bookmark;
-
+            
             if (bookmarkMessage == null)
             {
                 await _workflowInvoker.InvokeAsync(workflowDefinition, cancellationToken);
@@ -62,9 +62,11 @@ namespace Elsa.Runtime.ProtoActor.Actors
                         bookmarkMessage.ActivityInstanceId,
                         null,
                         bookmarkMessage.CallbackMethodName);
-
+            
                 await _workflowInvoker.InvokeAsync(workflowDefinition, workflowState, bookmark, cancellationToken);
             }
+            
+            context.Respond(new Ack());
         }
     }
 }

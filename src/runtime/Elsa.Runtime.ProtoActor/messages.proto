@@ -1,6 +1,9 @@
 syntax = "proto3";
-package Elsa.Runtime.ProtoActor;
+package Elsa.Runtime.ProtoActor.Messages;
 option csharp_namespace = "Elsa.Runtime.ProtoActor.Messages";
+
+// An empty response type
+message Ack {}
 
 message ExecuteWorkflowDefinition {
   string id = 1;
@@ -12,7 +15,7 @@ message ExecuteWorkflowInstance {
   optional Bookmark bookmark = 2;
 }
 
-message HandleStimulus {
+message HandleStimulusRequest {
     string activityTypeName = 1;
     optional string Hash = 2;
     map<string, string> data = 3;
