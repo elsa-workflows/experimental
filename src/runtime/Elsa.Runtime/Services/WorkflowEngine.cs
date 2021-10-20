@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 using Elsa.State;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,29 +24,29 @@ namespace Elsa.Runtime.Services
         }
 
         public IServiceProvider ServiceProvider { get; }
-        
+
         public async Task<WorkflowExecutionResult> ExecuteWorkflowAsync(WorkflowDefinition workflow, CancellationToken cancellationToken = default)
         {
             var workflowInvoker = ServiceProvider.GetRequiredService<IWorkflowExecutor>();
             return await workflowInvoker.ExecuteAsync(workflow, cancellationToken);
         }
 
-        public async Task<IEnumerable<WorkflowInstructionResult?>> HandleStimulusAsync(IStimulus stimulus, CancellationToken cancellationToken = default)
-        {
-            var stimulusInterpreter = ServiceProvider.GetRequiredService<IStimulusInterpreter>();
-            var instructionExecutor = ServiceProvider.GetRequiredService<IWorkflowInstructionExecutor>();
-            
-            // Collect instructions for the specified stimulus.
-            var instructions = await stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, cancellationToken);
-            
-            // Execute instructions.
-            return await instructionExecutor.ExecuteInstructionsAsync(instructions, cancellationToken);
-        }
-
         public async Task<WorkflowExecutionResult> ResumeAsync(WorkflowDefinition workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default)
         {
             var workflowInvoker = ServiceProvider.GetRequiredService<IWorkflowExecutor>();
             return await workflowInvoker.ExecuteAsync(workflow, workflowState, bookmark, cancellationToken);
+        }
+        
+        public async Task<IEnumerable<WorkflowInstructionResult?>> HandleStimulusAsync(IStimulus stimulus, ExecuteInstructionOptions options, CancellationToken cancellationToken = default)
+        {
+            var stimulusInterpreter = ServiceProvider.GetRequiredService<IStimulusInterpreter>();
+            var instructionExecutor = ServiceProvider.GetRequiredService<IWorkflowInstructionExecutor>();
+
+            // Collect instructions for the specified stimulus.
+            var instructions = await stimulusInterpreter.GetInstructionsAsync(stimulus, cancellationToken);
+
+            // Execute instructions.
+            return await instructionExecutor.ExecuteAsync(instructions, options, cancellationToken);
         }
     }
 }

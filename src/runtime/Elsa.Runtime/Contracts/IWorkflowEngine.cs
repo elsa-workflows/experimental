@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Models;
+using Elsa.Runtime.Models;
 using Elsa.State;
 
 namespace Elsa.Runtime.Contracts
@@ -12,7 +13,7 @@ namespace Elsa.Runtime.Contracts
         IServiceProvider ServiceProvider { get; }
         Task<WorkflowExecutionResult> ExecuteWorkflowAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionResult> ResumeAsync(WorkflowDefinition workflowDefinition, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default);
-        Task<IEnumerable<WorkflowInstructionResult?>> HandleStimulusAsync(IStimulus stimulus, CancellationToken cancellationToken);
+        Task<IEnumerable<WorkflowInstructionResult?>> HandleStimulusAsync(IStimulus stimulus, ExecuteInstructionOptions options, CancellationToken cancellationToken);
         
     }
 }

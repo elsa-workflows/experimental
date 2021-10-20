@@ -12,7 +12,7 @@ namespace Elsa.Api.Endpoints.Events
         {
             var hash = hasher.Hash(eventName);
             var stimulus = Stimuli.Standard(nameof(Event), hash);
-            return new ProcessStimulusResult(stimulus);
+            return new ProcessStimulusResult(stimulus, new ExecuteInstructionOptions { ExecutionMode = ExecutionMode.Asynchronous });
         }
     }
 }
