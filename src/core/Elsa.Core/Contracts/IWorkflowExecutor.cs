@@ -6,11 +6,11 @@ using Elsa.State;
 
 namespace Elsa.Contracts
 {
-    public interface IWorkflowInvoker
+    public interface IWorkflowExecutor
     {
-        Task<WorkflowExecutionResult> InvokeAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default);
-        Task<WorkflowExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext);
-        Task<WorkflowExecutionResult> InvokeAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default);
+        Task<WorkflowExecutionResult> ExecuteAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default);
+        Task<WorkflowExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowExecutionContext);
+        Task<WorkflowExecutionResult> ExecuteAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default);
 
         WorkflowExecutionContext CreateWorkflowExecutionContext(
             IServiceProvider serviceProvider,

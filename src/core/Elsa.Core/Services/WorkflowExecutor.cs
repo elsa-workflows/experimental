@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Services
 {
-    public class WorkflowInvoker : IWorkflowInvoker
+    public class WorkflowExecutor : IWorkflowExecutor
     {
         private static ValueTask Noop(ActivityExecutionContext context) => new();
 
@@ -21,7 +21,7 @@ namespace Elsa.Services
         private readonly IIdentityGraphService _identityGraphService;
         private readonly IActivitySchedulerFactory _schedulerFactory;
 
-        public WorkflowInvoker(
+        public WorkflowExecutor(
             IServiceScopeFactory serviceScopeFactory,
             IActivityWalker activityWalker,
             IWorkflowExecutionPipeline pipeline,
@@ -37,7 +37,7 @@ namespace Elsa.Services
             _schedulerFactory = schedulerFactory;
         }
 
-        public async Task<WorkflowExecutionResult> InvokeAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionResult> ExecuteAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
@@ -51,10 +51,10 @@ namespace Elsa.Services
             var workItem = new ActivityWorkItem(workflow.Root.Id, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
             workflowExecutionContext.Scheduler.Push(workItem);
 
-            return await InvokeAsync(workflowExecutionContext);
+            return await ExecuteAsync(workflowExecutionContext);
         }
 
-        public async Task<WorkflowExecutionResult> InvokeAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionResult> ExecuteAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
@@ -79,10 +79,10 @@ namespace Elsa.Services
                 workflowExecutionContext.ExecuteDelegate = resumeDelegate;
             }
 
-            return await InvokeAsync(workflowExecutionContext);
+            return await ExecuteAsync(workflowExecutionContext);
         }
 
-        public async Task<WorkflowExecutionResult> InvokeAsync(WorkflowExecutionContext workflowExecutionContext)
+        public async Task<WorkflowExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowExecutionContext)
         {
             // Execute the activity execution pipeline.
             await _pipeline.ExecuteAsync(workflowExecutionContext);

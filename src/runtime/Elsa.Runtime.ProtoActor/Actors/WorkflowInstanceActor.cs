@@ -14,13 +14,13 @@ namespace Elsa.Runtime.ProtoActor.Actors
     {
         private readonly IWorkflowInstanceStore _workflowInstanceStore;
         private readonly IWorkflowRegistry _workflowRegistry;
-        private readonly IWorkflowInvoker _workflowInvoker;
+        private readonly IWorkflowExecutor _workflowExecutor;
 
-        public WorkflowInstanceActor(IWorkflowInstanceStore workflowInstanceStore, IWorkflowRegistry workflowRegistry, IWorkflowInvoker workflowInvoker)
+        public WorkflowInstanceActor(IWorkflowInstanceStore workflowInstanceStore, IWorkflowRegistry workflowRegistry, IWorkflowExecutor workflowExecutor)
         {
             _workflowInstanceStore = workflowInstanceStore;
             _workflowRegistry = workflowRegistry;
-            _workflowInvoker = workflowInvoker;
+            _workflowExecutor = workflowExecutor;
         }
 
         public Task ReceiveAsync(IContext context) => context.Message switch
@@ -49,7 +49,7 @@ namespace Elsa.Runtime.ProtoActor.Actors
             
             if (bookmarkMessage == null)
             {
-                await _workflowInvoker.InvokeAsync(workflowDefinition, cancellationToken);
+                await _workflowExecutor.ExecuteAsync(workflowDefinition, cancellationToken);
             }
             else
             {
@@ -63,7 +63,7 @@ namespace Elsa.Runtime.ProtoActor.Actors
                         null,
                         bookmarkMessage.CallbackMethodName);
             
-                await _workflowInvoker.InvokeAsync(workflowDefinition, workflowState, bookmark, cancellationToken);
+                await _workflowExecutor.ExecuteAsync(workflowDefinition, workflowState, bookmark, cancellationToken);
             }
             
             context.Respond(new Ack());

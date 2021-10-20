@@ -14,8 +14,8 @@ namespace Elsa.Api.ApiResults
         public async Task ExecuteAsync(HttpContext httpContext)
         {
             var response = httpContext.Response;
-            var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowInvoker>();
-            var result = await workflowInvoker.InvokeAsync(WorkflowDefinition);
+            var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowExecutor>();
+            var result = await workflowInvoker.ExecuteAsync(WorkflowDefinition);
 
             if (!response.HasStarted) 
                 await response.WriteAsJsonAsync(result, httpContext.RequestAborted);
