@@ -46,8 +46,9 @@ namespace Elsa.Samples.Console1
             var workflow11 = new Func<IActivity>(ForEachWorkflow.Create);
             var workflow12 = new Func<IActivity>(ParallelForEachWorkflow.Create);
             var workflow13 = new Func<IActivity>(BlockingParallelForEachWorkflow.Create);
+            var workflow14 = new Func<IActivity>(FreeFlowchartWorkflow.Create);
 
-            var workflowFactory = workflow13;
+            var workflowFactory = workflow14;
             var workflowGraph = workflowFactory();
             var workflow = new Workflow(workflowGraph);
 
