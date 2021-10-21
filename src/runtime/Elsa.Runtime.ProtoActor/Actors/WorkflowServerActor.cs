@@ -51,7 +51,7 @@ namespace Elsa.Runtime.ProtoActor.Actors
             );
 
             var cancellationToken = context.CancellationToken;
-            var instructions = await _stimulusInterpreter.GetInstructionsAsync(stimulus, cancellationToken);
+            var instructions = await _stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, cancellationToken);
 
             foreach (var instruction in instructions)
             {

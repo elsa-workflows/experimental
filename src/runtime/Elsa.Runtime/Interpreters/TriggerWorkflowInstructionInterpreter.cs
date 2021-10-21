@@ -4,7 +4,6 @@ using Elsa.Contracts;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Instructions;
-using Elsa.Runtime.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Interpreters
@@ -22,7 +21,7 @@ namespace Elsa.Runtime.Interpreters
             _logger = logger;
         }
 
-        protected override async ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(TriggerWorkflowInstruction instruction, ExecuteInstructionOptions options, CancellationToken cancellationToken = default)
+        protected override async ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(TriggerWorkflowInstruction instruction, CancellationToken cancellationToken = default)
         {
             var workflowTrigger = instruction.WorkflowTrigger;
             var workflowDefinitionId = workflowTrigger.WorkflowDefinitionId;

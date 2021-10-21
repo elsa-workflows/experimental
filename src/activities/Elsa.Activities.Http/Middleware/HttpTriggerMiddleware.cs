@@ -28,9 +28,8 @@ namespace Elsa.Activities.Http.Middleware
             var hash = _hasher.Hash((path.ToLowerInvariant(), method.ToLowerInvariant()));
             var activityTypeName = nameof(HttpTrigger);
             var stimulus = Stimuli.Standard(activityTypeName, hash);
-            var instructions = await stimulusInterpreter.GetInstructionsAsync(stimulus, abortToken);
-            var instructionOptions = new ExecuteInstructionOptions { ExecutionMode = ExecutionMode.Synchronous};
-            var executionResults = (await instructionExecutor.ExecuteAsync(instructions, instructionOptions, CancellationToken.None)).ToList();
+            var instructions = await stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, abortToken);
+            var executionResults = (await instructionExecutor.ExecuteInstructionsAsync(instructions, CancellationToken.None)).ToList();
 
             if (!executionResults.Any())
             {
