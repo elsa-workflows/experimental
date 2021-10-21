@@ -15,9 +15,9 @@ namespace Elsa.Runtime.Services
     /// It's basically a thin wrapper around a service provider built from a given service collection using <see cref="WorkflowEngineBuilder"/>.
     /// May be useful for scenarios where you have multiple tenants in a system or if you simply want to use different workflow engine configurations within the same application.
     /// </summary>
-    public class WorkflowEngine : IWorkflowEngine
+    public class WorkflowServer : IWorkflowServer
     {
-        public WorkflowEngine(IServiceProvider serviceProvider)
+        public WorkflowServer(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
         }
@@ -26,7 +26,7 @@ namespace Elsa.Runtime.Services
         
         public async Task<WorkflowExecutionResult> ExecuteWorkflowAsync(WorkflowDefinition workflow, CancellationToken cancellationToken = default)
         {
-            var workflowInvoker = ServiceProvider.GetRequiredService<IWorkflowExecutor>();
+            var workflowInvoker = ServiceProvider.GetRequiredService<IWorkflowEngine>();
             return await workflowInvoker.ExecuteAsync(workflow, cancellationToken);
         }
 
@@ -44,7 +44,7 @@ namespace Elsa.Runtime.Services
 
         public async Task<WorkflowExecutionResult> ResumeAsync(WorkflowDefinition workflow, Bookmark bookmark, WorkflowState workflowState, CancellationToken cancellationToken = default)
         {
-            var workflowInvoker = ServiceProvider.GetRequiredService<IWorkflowExecutor>();
+            var workflowInvoker = ServiceProvider.GetRequiredService<IWorkflowEngine>();
             return await workflowInvoker.ExecuteAsync(workflow, workflowState, bookmark, cancellationToken);
         }
     }

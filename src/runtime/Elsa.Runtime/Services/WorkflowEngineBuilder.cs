@@ -7,10 +7,10 @@ namespace Elsa.Runtime.Services
     {
         public IServiceCollection Services { get; } = new ServiceCollection();
         
-        public IWorkflowEngine BuildWorkflowEngine()
+        public IWorkflowServer BuildWorkflowEngine()
         {
             var serviceProvider = Services.BuildServiceProvider();
-            return new WorkflowEngine(serviceProvider);
+            return new WorkflowServer(serviceProvider);
         }
     }
 }

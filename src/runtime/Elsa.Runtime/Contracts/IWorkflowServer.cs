@@ -7,7 +7,7 @@ using Elsa.State;
 
 namespace Elsa.Runtime.Contracts
 {
-    public interface IWorkflowEngine
+    public interface IWorkflowServer
     {
         IServiceProvider ServiceProvider { get; }
         Task<WorkflowExecutionResult> ExecuteWorkflowAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default);

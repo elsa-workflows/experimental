@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Core.
                 .AddSingleton<IActivityInvoker, ActivityInvoker>()
-                .AddSingleton<IWorkflowExecutor, WorkflowExecutor>()
+                .AddSingleton<IWorkflowEngine, WorkflowEngine>()
                 .AddSingleton<IActivityWalker, ActivityWalker>()
                 .AddSingleton<IIdentityGraphService, IdentityGraphService>()
                 .AddSingleton<IWorkflowStateSerializer, WorkflowStateSerializer>()
@@ -85,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddWorkflowProvider<ConfigurationWorkflowProvider>()
                 
                     // Workflow engine.
-                    .AddSingleton<IWorkflowEngine, WorkflowEngine>()
+                    .AddSingleton<IWorkflowServer, WorkflowServer>()
                 ;
         }
 

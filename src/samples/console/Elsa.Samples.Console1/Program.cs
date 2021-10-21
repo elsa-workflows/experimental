@@ -82,7 +82,7 @@ namespace Elsa.Samples.Console1
             }
         }
 
-        private static IWorkflowEngine CreateWorkflowEngine()
+        private static IWorkflowServer CreateWorkflowEngine()
         {
             var builder = DefaultWorkflowEngineBuilder.CreateDefaultBuilder();
 

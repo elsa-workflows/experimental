@@ -10,13 +10,13 @@ namespace Elsa.Runtime.Interpreters
 {
     public class TriggerWorkflowInstructionInterpreter : WorkflowInstructionInterpreter<TriggerWorkflowInstruction>
     {
-        private readonly IWorkflowExecutor _workflowExecutor;
+        private readonly IWorkflowEngine _workflowEngine;
         private readonly IWorkflowRegistry _workflowRegistry;
         private readonly ILogger _logger;
 
-        public TriggerWorkflowInstructionInterpreter(IWorkflowExecutor workflowExecutor, IWorkflowRegistry workflowRegistry, ILogger<TriggerWorkflowInstructionInterpreter> logger)
+        public TriggerWorkflowInstructionInterpreter(IWorkflowEngine workflowEngine, IWorkflowRegistry workflowRegistry, ILogger<TriggerWorkflowInstructionInterpreter> logger)
         {
-            _workflowExecutor = workflowExecutor;
+            _workflowEngine = workflowEngine;
             _workflowRegistry = workflowRegistry;
             _logger = logger;
         }
@@ -36,7 +36,7 @@ namespace Elsa.Runtime.Interpreters
             }
 
             // Execute workflow.
-            var workflowExecutionResult = await _workflowExecutor.ExecuteAsync(workflowDefinition, cancellationToken);
+            var workflowExecutionResult = await _workflowEngine.ExecuteAsync(workflowDefinition, cancellationToken);
             
             return new WorkflowInstructionResult(workflowDefinition, workflowExecutionResult);
         }

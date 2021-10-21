@@ -41,7 +41,7 @@ var workflowDefinition = dslEngine.Parse(script);
 
 await workflowEngine.ExecuteWorkflowAsync(workflowDefinition);
 
-IWorkflowEngine CreateWorkflowEngine()
+IWorkflowServer CreateWorkflowEngine()
 {
     var builder = DefaultWorkflowEngineBuilder.CreateDefaultBuilder();
 

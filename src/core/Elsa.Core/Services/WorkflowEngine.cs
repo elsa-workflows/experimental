@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Services
 {
-    public class WorkflowExecutor : IWorkflowExecutor
+    public class WorkflowEngine : IWorkflowEngine
     {
         private static ValueTask Noop(ActivityExecutionContext context) => new();
 
@@ -21,7 +21,7 @@ namespace Elsa.Services
         private readonly IIdentityGraphService _identityGraphService;
         private readonly IActivitySchedulerFactory _schedulerFactory;
 
-        public WorkflowExecutor(
+        public WorkflowEngine(
             IServiceScopeFactory serviceScopeFactory,
             IActivityWalker activityWalker,
             IWorkflowExecutionPipeline pipeline,
