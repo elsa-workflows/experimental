@@ -27,6 +27,7 @@ builder.Services
 // Configure middleware pipeline.
 var app = builder.Build();
 
+// Configure workflow engine execution pipeline.
 app.Services.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
     .PersistWorkflows()
     .UseActivityScheduler()
@@ -38,8 +39,12 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", (Delegate)(() => "Hello World!"));
 
 // Map Elsa API endpoints.
-app.MapWorkflowsEndpoint(workflows => workflows.MapExecute().MapDispatch());
-app.MapEventsEndpoint(events => events.MapTrigger());
+app.MapWorkflowsResource(workflows => workflows
+    .MapExecute()
+    .MapDispatch());
+
+app.MapEventsResource(events => events
+    .MapTrigger());
 
 // Register Elsa HTTP activity middleware.
 app.UseHttpActivities();

@@ -21,10 +21,13 @@ namespace Elsa.Samples.Console1
             var serviceProvider = CreateServices();
 
             serviceProvider
+                // Configure activity execution pipeline.
                 .ConfigureDefaultActivityExecutionPipeline(pipeline => pipeline
                     .UseLogging()
                     .UseActivityDrivers()
                 )
+                
+                // Configure workflow engine execution pipeline.
                 .ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
                     .PersistWorkflows()
                     .UseActivityScheduler()

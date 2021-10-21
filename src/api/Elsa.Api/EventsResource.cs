@@ -23,6 +23,6 @@ namespace Elsa.Api
     
     public static class EventsResourceExtensions
     {
-        public static void MapEventsEndpoint(this IEndpointRouteBuilder endpoints, Action<EventsResource> configureResource) => configureResource(new(endpoints));
+        public static void MapEventsResource(this IEndpointRouteBuilder endpoints, Action<EventsResource> configureResource) => configureResource(new(endpoints));
     }
 }

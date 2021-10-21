@@ -29,6 +29,6 @@ namespace Elsa.Api
     
     public static class WorkflowsResourceExtensions
     {
-        public static void MapWorkflowsEndpoint(this IEndpointRouteBuilder endpoints, Action<WorkflowsResource> configureResource) => configureResource(new(endpoints));
+        public static void MapWorkflowsResource(this IEndpointRouteBuilder endpoints, Action<WorkflowsResource> configureResource) => configureResource(new(endpoints));
     }
 }
