@@ -1,72 +1,58 @@
-using System;
+using System.Linq;
 using System.Threading.Tasks;
-using Elsa.Contracts;
-using Elsa.Models;
-using Elsa.Persistence.Abstractions.Contracts;
-using Elsa.Runtime.Contracts;
 using Elsa.Runtime.ProtoActor.Messages;
 using Proto;
-using Bookmark = Elsa.Models.Bookmark;
+using Proto.DependencyInjection;
 
 namespace Elsa.Runtime.ProtoActor.Actors
 {
     public class WorkflowInstanceActor : IActor
     {
-        private readonly IWorkflowInstanceStore _workflowInstanceStore;
-        private readonly IWorkflowRegistry _workflowRegistry;
-        private readonly IWorkflowEngine _workflowEngine;
-
-        public WorkflowInstanceActor(IWorkflowInstanceStore workflowInstanceStore, IWorkflowRegistry workflowRegistry, IWorkflowEngine workflowEngine)
-        {
-            _workflowInstanceStore = workflowInstanceStore;
-            _workflowRegistry = workflowRegistry;
-            _workflowEngine = workflowEngine;
-        }
-
         public Task ReceiveAsync(IContext context) => context.Message switch
         {
-            ExecuteWorkflowInstance m => OnExecuteWorkflowInstance(context, m),
+            ExecuteWorkflowInstance m => OnExecuteWorkflowInstanceAsync(context, m),
+            DispatchWorkflowInstance m => OnDispatchWorkflowInstanceAsync(context, m),
             _ => Task.CompletedTask
         };
 
-        private async Task OnExecuteWorkflowInstance(IContext context, ExecuteWorkflowInstance message)
+        private async Task OnExecuteWorkflowInstanceAsync(IContext context, ExecuteWorkflowInstance message)
         {
             var workflowInstanceId = message.Id;
+            var pid = GetWorkflowOperatorPid(context, workflowInstanceId);
             var cancellationToken = context.CancellationToken;
-            var workflowInstance = await _workflowInstanceStore.GetByIdAsync(workflowInstanceId, cancellationToken);
+            var response = await context.RequestAsync<ExecuteWorkflowResponse>(pid, message, cancellationToken);
             
-            if (workflowInstance == null)
-                throw new Exception($"No workflow instance found with ID {workflowInstanceId}");
+            context.Respond(response);
+        }
+        
+        private Task OnDispatchWorkflowInstanceAsync(IContext context, DispatchWorkflowInstance message)
+        {
+            var workflowInstanceId = message.Id;
+            var pid = GetWorkflowOperatorPid(context, workflowInstanceId);
             
-            var workflowDefinitionId = workflowInstance.DefinitionId;
-            var workflowDefinition = await _workflowRegistry.GetByIdAsync(workflowDefinitionId, cancellationToken);
-            
-            if (workflowDefinition == null)
-                throw new Exception($"No workflow definition found with ID {workflowDefinitionId}");
-            
-            var workflowState = workflowInstance.WorkflowState;
-            var bookmarkMessage = message.Bookmark;
-            
-            if (bookmarkMessage == null)
+            var executeWorkflowInstanceMessage = new ExecuteWorkflowInstance
             {
-                await _workflowEngine.ExecuteAsync(workflowDefinition, cancellationToken);
-            }
-            else
-            {
-                var bookmark =
-                    new Bookmark(
-                        bookmarkMessage.Id,
-                        bookmarkMessage.Hash,
-                        bookmarkMessage.Name,
-                        bookmarkMessage.ActivityId,
-                        bookmarkMessage.ActivityInstanceId,
-                        null,
-                        bookmarkMessage.CallbackMethodName);
+                Id = workflowInstanceId,
+                Bookmark = message.Bookmark
+            };
             
-                await _workflowEngine.ExecuteAsync(workflowDefinition, workflowState, bookmark, cancellationToken);
-            }
+            context.Send(pid, executeWorkflowInstanceMessage);
+            context.Respond(new Unit());
+            return Task.CompletedTask;
+        }
+
+        private PID GetWorkflowOperatorPid(IContext context, string workflowInstanceId)
+        {
+            var actorName = $"workflow-operator:{workflowInstanceId}";
+            var pid = context.System.ProcessRegistry.SearchByName(actorName).FirstOrDefault();
             
-            context.Respond(new Ack());
+            if (pid != null) 
+                return pid;
+            
+            var props = context.System.DI().PropsFor<WorkflowOperatorActor>();
+            pid = context.SpawnNamed(props, workflowInstanceId);
+
+            return pid;
         }
     }
 }

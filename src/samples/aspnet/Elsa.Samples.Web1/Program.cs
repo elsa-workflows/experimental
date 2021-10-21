@@ -4,6 +4,7 @@ using Elsa.Api;
 using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Pipelines.WorkflowExecution.Components;
+using Elsa.Runtime.ProtoActor.Extensions;
 using Elsa.Samples.Web1.Workflows;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ builder.Services
     .AddInMemoryTriggerStore()
     .IndexWorkflowTriggers()
     .AddHttpWorkflowServices()
+    .AddProtoActorWorkflowHost()
     .ConfigureWorkflowRuntime(options =>
     {
         options.Workflows.Add("HelloWorldWorkflow", new HelloWorldWorkflow());

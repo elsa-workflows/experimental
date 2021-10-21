@@ -9,11 +9,11 @@ namespace Elsa.Samples.Web1.Workflows
 {
     public class CompositeActivitiesWorkflow : IWorkflow
     {
-        public void Build(IWorkflowDefinitionBuilder definitionBuilder)
+        public void Build(IWorkflowDefinitionBuilder workflow)
         {
             var name = new Variable<string>();
 
-            definitionBuilder.WithRoot(new Sequence
+            workflow.WithRoot(new Sequence
             {
                 Variables = { name },
                 Activities =

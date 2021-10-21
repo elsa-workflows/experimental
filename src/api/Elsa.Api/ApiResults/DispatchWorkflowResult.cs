@@ -12,16 +12,15 @@ namespace Elsa.Api.ApiResults
     {
         public DispatchWorkflowResult(WorkflowDefinition workflowDefinition) => WorkflowDefinition = workflowDefinition;
         public WorkflowDefinition WorkflowDefinition { get; }
-        
+
         public async Task ExecuteAsync(HttpContext httpContext)
         {
             var response = httpContext.Response;
-            var workflowDispatcher = httpContext.RequestServices.GetRequiredService<IWorkflowDefinitionDispatcher>();
-            await workflowDispatcher.DispatchAsync(new DispatchWorkflowDefinitionRequest(WorkflowDefinition.DefinitionId, WorkflowDefinition.Version));
+            var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowInvoker>();
+            var result = await workflowInvoker.DispatchAsync(new DispatchWorkflowDefinitionRequest(WorkflowDefinition.DefinitionId, WorkflowDefinition.Version));
 
             response.StatusCode = (int)HttpStatusCode.OK;
-            //if (!response.HasStarted) 
-            //await response.WriteAsJsonAsync(result, httpContext.RequestAborted);
+            await response.WriteAsJsonAsync(result, httpContext.RequestAborted);
         }
     }
 }

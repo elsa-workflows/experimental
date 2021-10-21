@@ -37,7 +37,7 @@ namespace Elsa.Services
             _schedulerFactory = schedulerFactory;
         }
 
-        public async Task<WorkflowExecutionResult> ExecuteAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
+        public async Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
@@ -54,7 +54,7 @@ namespace Elsa.Services
             return await ExecuteAsync(workflowExecutionContext);
         }
 
-        public async Task<WorkflowExecutionResult> ExecuteAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
+        public async Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
@@ -82,7 +82,7 @@ namespace Elsa.Services
             return await ExecuteAsync(workflowExecutionContext);
         }
 
-        public async Task<WorkflowExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowExecutionContext)
+        public async Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowExecutionContext workflowExecutionContext)
         {
             // Execute the activity execution pipeline.
             await _pipeline.ExecuteAsync(workflowExecutionContext);
@@ -91,7 +91,7 @@ namespace Elsa.Services
             var workflowState = _workflowStateSerializer.ReadState(workflowExecutionContext);
 
             // Return workflow execution result containing state + bookmarks.
-            return new WorkflowExecutionResult(workflowState, workflowExecutionContext.Bookmarks);
+            return new ExecuteWorkflowResult(workflowState, workflowExecutionContext.Bookmarks);
         }
 
         public WorkflowExecutionContext CreateWorkflowExecutionContext(

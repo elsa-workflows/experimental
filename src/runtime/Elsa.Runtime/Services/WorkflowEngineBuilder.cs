@@ -7,7 +7,7 @@ namespace Elsa.Runtime.Services
     {
         public IServiceCollection Services { get; } = new ServiceCollection();
         
-        public IWorkflowServer BuildWorkflowEngine()
+        public IWorkflowServer BuildWorkflowServer()
         {
             var serviceProvider = Services.BuildServiceProvider();
             return new WorkflowServer(serviceProvider);

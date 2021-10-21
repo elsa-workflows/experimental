@@ -1,6 +1,5 @@
 ﻿using Elsa.Activities.ControlFlow;
 using Elsa.Contracts;
-using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Scripting.JavaScript;
 

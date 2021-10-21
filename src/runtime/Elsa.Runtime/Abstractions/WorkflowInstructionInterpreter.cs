@@ -8,14 +8,22 @@ namespace Elsa.Runtime.Abstractions
     {
         bool IWorkflowInstructionInterpreter.GetSupportsInstruction(IWorkflowInstruction instruction) => instruction is TInstruction;
 
-        ValueTask<WorkflowInstructionResult?> IWorkflowInstructionInterpreter.ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken) => ExecuteInstructionAsync((TInstruction)instruction, cancellationToken);
+        ValueTask<ExecuteWorkflowInstructionResult?> IWorkflowInstructionInterpreter.ExecuteInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken) => ExecuteInstructionAsync((TInstruction)instruction, cancellationToken);
+        ValueTask<DispatchWorkflowInstructionResult?> IWorkflowInstructionInterpreter.DispatchInstructionAsync(IWorkflowInstruction instruction, CancellationToken cancellationToken) => DispatchInstructionAsync((TInstruction)instruction, cancellationToken);
 
-        protected virtual ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(TInstruction instruction, CancellationToken cancellationToken = default)
+        protected virtual ValueTask<ExecuteWorkflowInstructionResult?> ExecuteInstructionAsync(TInstruction instruction, CancellationToken cancellationToken = default)
         {
             var result = ExecuteInstruction(instruction);
             return ValueTask.FromResult(result);
         }
+        
+        protected virtual ValueTask<DispatchWorkflowInstructionResult?> DispatchInstructionAsync(TInstruction instruction, CancellationToken cancellationToken = default)
+        {
+            var result = DispatchInstruction(instruction);
+            return ValueTask.FromResult(result);
+        }
 
-        protected virtual WorkflowInstructionResult? ExecuteInstruction(TInstruction instruction) => null;
+        protected virtual ExecuteWorkflowInstructionResult? ExecuteInstruction(TInstruction instruction) => null;
+        protected virtual DispatchWorkflowInstructionResult? DispatchInstruction(TInstruction instruction) => null;
     }
 }

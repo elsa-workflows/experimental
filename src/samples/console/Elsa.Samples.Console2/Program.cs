@@ -1,21 +1,21 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using Elsa.Activities.Console;
 using Elsa.Activities.Containers;
 using Elsa.Activities.Http;
 using Elsa.Activities.Timers;
+using Elsa.Contracts;
 using Elsa.Dsl.Abstractions;
 using Elsa.Dsl.Contracts;
 using Elsa.Dsl.Extensions;
 using Elsa.Models;
 using Elsa.Persistence.InMemory.Extensions;
-using Elsa.Runtime.Contracts;
 using Elsa.Scripting.JavaScript;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-var workflowEngine = CreateWorkflowEngine();
-var serviceProvider = workflowEngine.ServiceProvider;
+var serviceProvider = CreateServices();
 var typeSystem = serviceProvider.GetRequiredService<ITypeSystem>();
 var dslEngine = serviceProvider.GetRequiredService<IDslEngine>();
 var functionActivityRegistry = serviceProvider.GetRequiredService<IFunctionActivityRegistry>();
@@ -31,7 +31,7 @@ typeSystem.Register<HttpTrigger>();
 typeSystem.Register<TimerTrigger>();
 
 functionActivityRegistry.RegisterFunction("print", nameof(WriteLine), new[] { nameof(WriteLine.Text) });
-functionActivityRegistry.RegisterFunction("read", nameof(ReadLine), new[]{ nameof(ReadLine.Output) });
+functionActivityRegistry.RegisterFunction("read", nameof(ReadLine), new[] { nameof(ReadLine.Output) });
 
 var assembly = Assembly.GetExecutingAssembly();
 var resource = assembly.GetManifestResourceStream("Elsa.Samples.Console2.Sample1.elsa");
@@ -39,18 +39,20 @@ var resource = assembly.GetManifestResourceStream("Elsa.Samples.Console2.Sample1
 var script = await new StreamReader(resource!).ReadToEndAsync();
 var workflowDefinition = dslEngine.Parse(script);
 
-await workflowEngine.ExecuteWorkflowAsync(workflowDefinition);
+var workflowEngine = serviceProvider.GetRequiredService<IWorkflowEngine>();
+await workflowEngine.ExecuteAsync(workflowDefinition);
 
-IWorkflowServer CreateWorkflowEngine()
+IServiceProvider CreateServices()
 {
-    var builder = DefaultWorkflowEngineBuilder.CreateDefaultBuilder();
+    var services = new ServiceCollection();
 
-    builder.Services
+    services
+        .AddElsa()
         .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
         .AddInMemoryWorkflowInstanceStore()
         .AddInMemoryBookmarkStore()
         .AddInMemoryTriggerStore()
         .AddJavaScriptExpressions();
 
-    return builder.BuildWorkflowEngine();
+    return services.BuildServiceProvider();
 }

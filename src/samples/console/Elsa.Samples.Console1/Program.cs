@@ -8,7 +8,6 @@ using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Pipelines.ActivityExecution.Components;
 using Elsa.Pipelines.WorkflowExecution.Components;
-using Elsa.Runtime.Contracts;
 using Elsa.Samples.Console1.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,9 +18,9 @@ namespace Elsa.Samples.Console1
     {
         static async Task Main()
         {
-            var workflowEngine = CreateWorkflowEngine();
+            var serviceProvider = CreateServices();
 
-            workflowEngine.ServiceProvider
+            serviceProvider
                 .ConfigureDefaultActivityExecutionPipeline(pipeline => pipeline
                     .UseLogging()
                     .UseActivityDrivers()
@@ -54,7 +53,8 @@ namespace Elsa.Samples.Console1
                 Workflow = workflow,
             };
 
-            var workflowExecutionResult = await workflowEngine.ExecuteWorkflowAsync(workflowDefinition);
+            var workflowEngine = serviceProvider.GetRequiredService<IWorkflowEngine>();
+            var workflowExecutionResult = await workflowEngine.ExecuteAsync(workflowDefinition);
             var workflowState = workflowExecutionResult.WorkflowState;
             var bookmarks = new List<Bookmark>(workflowExecutionResult.Bookmarks);
 
@@ -75,24 +75,25 @@ namespace Elsa.Samples.Console1
 
                     Console.ReadLine();
 
-                    var resumeResult = await workflowEngine.ResumeAsync(workflowDefinition, bookmark, workflowState);
+                    var resumeResult = await workflowEngine.ExecuteAsync(workflowDefinition, workflowState, bookmark);
                     workflowState = resumeResult.WorkflowState;
                     bookmarks = resumeResult.Bookmarks.ToList();
                 }
             }
         }
 
-        private static IWorkflowServer CreateWorkflowEngine()
+        private static IServiceProvider CreateServices()
         {
-            var builder = DefaultWorkflowEngineBuilder.CreateDefaultBuilder();
+            var services = new ServiceCollection();
 
-            builder.Services
+            services
+                .AddElsa()
                 .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
                 .AddInMemoryWorkflowInstanceStore()
                 .AddInMemoryBookmarkStore()
                 .AddInMemoryTriggerStore();
 
-            return builder.BuildWorkflowEngine();
+            return services.BuildServiceProvider();
         }
     }
 }

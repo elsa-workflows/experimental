@@ -17,17 +17,17 @@ namespace Elsa.Samples.Web1.Workflows
         public string Id => nameof(HttpWorkflow);
         public int Version => 1;
 
-        public void Build(IWorkflowDefinitionBuilder definitionBuilder)
+        public void Build(IWorkflowDefinitionBuilder workflow)
         {
             // Add triggers.
-            definitionBuilder.AddTrigger(new HttpTrigger
+            workflow.AddTrigger(new HttpTrigger
             {
                 Path = new Input<string>("/hello-world"),
                 SupportedMethods = new Input<ICollection<string>>(new[] { HttpMethods.Get })
             });
 
             // Setup workflow graph.
-            definitionBuilder.WithRoot(new Sequence
+            workflow.WithRoot(new Sequence
             {
                 Activities =
                 {

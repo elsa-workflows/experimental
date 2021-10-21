@@ -37,12 +37,10 @@ namespace Elsa.Runtime.ProtoActor.Extensions
 
             return services
                 .AddHostedService<WorkflowServerHost>()
-                .AddSingleton<IStimulusDispatcher, ProtoActorStimulusDispatcher>()
-                .AddSingleton<IWorkflowDefinitionDispatcher, ProtoActorWorkflowDefinitionDispatcher>()
-                .AddSingleton<IWorkflowInstanceDispatcher, ProtoActorWorkflowInstanceDispatcher>()
-                .AddTransient<WorkflowServerActor>()
+                .AddSingleton<IWorkflowInvoker, ProtoActorWorkflowInvoker>()
                 .AddTransient<WorkflowDefinitionActor>()
-                .AddTransient<WorkflowInstanceActor>();
+                .AddTransient<WorkflowInstanceActor>()
+                .AddTransient<WorkflowOperatorActor>();
         }
         
         private static ActorSystemConfig GetSystemConfig() =>
@@ -63,8 +61,7 @@ namespace Elsa.Runtime.ProtoActor.Extensions
         {
             //var clusterProvider = new ConsulProvider(new ConsulProviderConfig{});
             var clusterProvider = new TestProvider(new TestProviderOptions(), new InMemAgent());
-
-            var workflowServerProps = system.DI().PropsFor<WorkflowServerActor>();
+            
             var workflowDefinitionProps = system.DI().PropsFor<WorkflowDefinitionActor>();
             var workflowInstanceProps = system.DI().PropsFor<WorkflowInstanceActor>();
 
@@ -72,7 +69,6 @@ namespace Elsa.Runtime.ProtoActor.Extensions
                 ClusterConfig
                     // .Setup("MyCluster", clusterProvider, new IdentityStorageLookup(GetIdentityLookup(clusterName)))
                     .Setup(clusterName, clusterProvider, new PartitionIdentityLookup())
-                    .WithClusterKind(GrainKinds.WorkflowServer, workflowServerProps)
                     .WithClusterKind(GrainKinds.WorkflowDefinition, workflowDefinitionProps)
                     .WithClusterKind(GrainKinds.WorkflowInstance, workflowInstanceProps)
                 ;

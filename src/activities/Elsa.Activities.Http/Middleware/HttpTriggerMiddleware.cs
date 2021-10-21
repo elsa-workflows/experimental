@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Runtime.Contracts;
@@ -20,7 +19,7 @@ namespace Elsa.Activities.Http.Middleware
             _hasher = hasher;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, IStimulusInterpreter stimulusInterpreter, IWorkflowInstructionExecutor instructionExecutor)
+        public async Task InvokeAsync(HttpContext httpContext, IWorkflowServer workflowServer)
         {
             var path = GetPath(httpContext);
             var method = httpContext.Request.Method!.ToLowerInvariant();
@@ -28,9 +27,8 @@ namespace Elsa.Activities.Http.Middleware
             var hash = _hasher.Hash((path.ToLowerInvariant(), method.ToLowerInvariant()));
             var activityTypeName = nameof(HttpTrigger);
             var stimulus = Stimuli.Standard(activityTypeName, hash);
-            var instructions = await stimulusInterpreter.GetExecutionInstructionsAsync(stimulus, abortToken);
-            var executionResults = (await instructionExecutor.ExecuteInstructionsAsync(instructions, CancellationToken.None)).ToList();
-
+            var executionResults = (await workflowServer.ExecuteStimulusAsync(stimulus, abortToken)).ToList();
+            
             if (!executionResults.Any())
             {
                 await _next(httpContext);
@@ -43,10 +41,12 @@ namespace Elsa.Activities.Http.Middleware
             {
                 response.ContentType = "application/json";
                 response.StatusCode = StatusCodes.Status200OK;
+                
                 var model = new
                 {
-                    workflowInstanceIds = executionResults.Where(x => x != null).Select(x => x!.WorkflowExecutionResult.WorkflowState.Id).ToArray()
+                    workflowInstanceIds = executionResults.Select(x => x.ExecuteWorkflowResult.WorkflowState.Id).ToArray()
                 };
+                
                 var json = JsonSerializer.Serialize(model);
                 await response.WriteAsync(json, abortToken);
             }

@@ -25,7 +25,7 @@ namespace Elsa.Runtime.Interpreters
             _logger = logger;
         }
 
-        protected override async ValueTask<WorkflowInstructionResult?> ExecuteInstructionAsync(ResumeWorkflowInstruction instruction, CancellationToken cancellationToken = default)
+        protected override async ValueTask<ExecuteWorkflowInstructionResult?> ExecuteInstructionAsync(ResumeWorkflowInstruction instruction, CancellationToken cancellationToken = default)
         {
             var workflowBookmark = instruction.WorkflowBookmark;
             var workflowDefinitionId = workflowBookmark.WorkflowDefinitionId;
@@ -57,7 +57,7 @@ namespace Elsa.Runtime.Interpreters
             // Update workflow instance with new workflow state.
             workflowInstance.WorkflowState = workflowExecutionResult.WorkflowState;
 
-            return new WorkflowInstructionResult(workflowDefinition, workflowExecutionResult);
+            return new ExecuteWorkflowInstructionResult(workflowDefinition, workflowExecutionResult);
         }
     }
 }

@@ -6,9 +6,9 @@ namespace Elsa.Samples.Web2.Workflows
 {
     public class HelloWorldWorkflow : IWorkflow
     {
-        public void Build(IWorkflowDefinitionBuilder definitionBuilder)
+        public void Build(IWorkflowDefinitionBuilder workflow)
         {
-            definitionBuilder.WithRoot(new WriteLine("Hello World!"));
+            workflow.WithRoot(new WriteLine("Hello World!"));
         }
     }
 }
