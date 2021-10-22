@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -16,7 +17,12 @@ namespace Elsa.Activities.ControlFlow
             var nextNode = result ? Then : Else;
 
             if (nextNode != null)
-                context.ScheduleActivity(nextNode);
+                context.ScheduleActivity(nextNode, OnChildCompletedAsync);
+        }
+
+        private ValueTask OnChildCompletedAsync(ActivityExecutionContext context, ActivityExecutionContext childContext)
+        {
+            return ValueTask.CompletedTask;
         }
     }
 }
