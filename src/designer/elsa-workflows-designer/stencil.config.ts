@@ -31,7 +31,7 @@ export const config: Config = {
         tailwindcss({}),
         autoprefixer({}),
         purgecss({
-          content: ['./**/*.tsx']
+          content: ['./**/*.tsx'],
         })]
     })
   ]

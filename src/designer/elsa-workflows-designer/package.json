@@ -29,8 +29,8 @@
     "@fullhuman/postcss-purgecss": "^4.0.3",
     "@stencil/postcss": "^2.1.0",
     "@stencil/sass": "^1.5.2",
-    "@types/jquery": "^3.5.5",
-    "@types/jquery-mousewheel": "^3.1.8",
+    "@types/jquery": "^3.5.8",
+    "@types/jquery-mousewheel": "^3.1.9",
     "autoprefixer": "^10.3.7",
     "postcss": "^8.3.11",
     "tailwindcss": "^2.2.17"
