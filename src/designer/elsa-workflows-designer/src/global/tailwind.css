@@ -5,3 +5,29 @@
 .btn {
   @apply px-4 py-2 bg-blue-600 text-white rounded font-sans;
 }
+
+.panel-h-collapsed {
+  height: 0;
+}
+
+.panel-v-collapsed {
+  display: none;
+}
+
+.panel-h-toggle {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 20px;
+  background: red;
+}
+
+.panel-v-toggle {
+  position: absolute;
+  right: -35px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  background: red;
+  z-index: 10;
+}

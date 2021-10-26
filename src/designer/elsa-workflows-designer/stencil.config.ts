@@ -5,6 +5,9 @@ import autoprefixer from 'autoprefixer';
 import tailwindcss from 'tailwindcss';
 import purgecss from '@fullhuman/postcss-purgecss';
 
+// @ts-ignore
+const dev: boolean = process.argv && process.argv.indexOf('--dev') > -1;
+
 export const config: Config = {
   namespace: 'elsa-workflows-designer',
   globalStyle: 'src/global/tailwind.css',
@@ -30,9 +33,8 @@ export const config: Config = {
       plugins: [
         tailwindcss({}),
         autoprefixer({}),
-        purgecss({
-          content: ['./**/*.tsx'],
-        })]
+        ...(dev ? [] : [purgecss({content: ['./**/*.tsx']})])
+      ]
     })
   ]
 };

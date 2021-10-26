@@ -1,0 +1,18 @@
+.canvas-container {
+  left: 300px;
+}
+
+.activity-picker{
+  width: 300px;
+}
+
+.activity-picker-closed {
+
+  .activity-picker{
+    width: 0;
+  }
+
+  .canvas-container {
+    left: 0;
+  }
+}

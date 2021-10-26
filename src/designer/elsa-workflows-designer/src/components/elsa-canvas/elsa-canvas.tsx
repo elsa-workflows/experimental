@@ -1,4 +1,4 @@
-import {Component, h, Method} from '@stencil/core';
+import {Component, h, Host, Method} from '@stencil/core';
 import {CellView, Dom, Graph, Node, Platform, Shape} from '@antv/x6';
 import './shapes';
 import './connectors';
@@ -38,8 +38,6 @@ export class ElsaCanvas {
       grid: true,
       async: true,
       autoResize: true,
-      width: 1024,
-      height: 760,
       clipboard: {
         enabled: true,
         useLocalStorage: true,
@@ -53,13 +51,11 @@ export class ElsaCanvas {
       scroller: {
         enabled: true,
         pannable: true,
-        pageVisible: true,
+        pageVisible: false,
         pageBreak: false,
-        padding: 20,
-        //minVisibleWidth: 2048,
-        //minVisibleHeight: 2048
+        padding: 0,
       },
-      connecting:{
+      connecting: {
         allowBlank: false,
         allowMulti: true,
         allowLoop: true,
@@ -96,17 +92,10 @@ export class ElsaCanvas {
   }
 
   render() {
-    return <div>
-      <div id="container"
-           style={{width: '100%', height: '600px'}}
+    return (
+      <Host id="container"
+           class="absolute left-0 top-0 right-0 bottom-0"
            ref={el => this.container = el}/>
-      <button class="btn" onClick={e => this.onClick(e)}>Click Me</button>
-    </div>;
+    );
   }
-
-  private onClick = (e: Event) => {
-    //const p = this.target.getPosition();
-    //p.x += 50;
-    //this.target.setPosition(p);
-  };
 }
