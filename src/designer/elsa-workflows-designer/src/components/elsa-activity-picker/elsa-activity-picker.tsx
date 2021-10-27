@@ -34,7 +34,18 @@ export class ElsaActivityPicker {
     const node =
       this.graph.createNode({
         shape: 'activity',
-        label: 'HTTP Response'
+        text: 'HTTP Response',
+        ports: [
+          {
+            id: 'port1',
+            group: 'out',
+            attrs: {
+              text: {
+                text: 'next',
+              },
+            }
+          }
+        ]
       });
 
     this.dnd.start(node, e as MouseEvent);
@@ -66,27 +77,8 @@ export class ElsaActivityPicker {
 
               {[...Array(5)].map(x => (
                 <div class="w-full flex items-center pl-10 pr-2 py-2">
-                  <div
-                    class="border border-solid border-blue-600 rounded-md bg-blue-400 text-white cursor-move"
-                    onMouseDown={e => this.startDrag(e)}>
-                    <div class="flex flex-row">
-                      <div class="flex flex-1 items-center bg-blue-500">
-                        <div class="flex-1 px-2 py-1">
-                          <svg class="h-6 w-6 text-white" width="24" height="24" viewBox="0 0 24 24"
-                               stroke-width="2"
-                               stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z"/>
-                            <path d="M7 18a4.6 4.4 0 0 1 0 -9h0a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-12"/>
-                          </svg>
-                        </div>
-                      </div>
-                      <div class="flex items-center">
-                        <div class="px-2 py-1">
-                          HTTP Trigger
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <elsa-activity class="cursor-move"
+                                 onMouseDown={e => this.startDrag(e)}/>
                 </div>
               ))}
 

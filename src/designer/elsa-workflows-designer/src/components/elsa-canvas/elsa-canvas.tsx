@@ -3,6 +3,7 @@ import {Graph, Node} from '@antv/x6';
 import './shapes';
 import './connectors';
 import './ports';
+import {ActivityNode} from "./shapes";
 
 @Component({
   tag: 'elsa-canvas',
@@ -77,7 +78,7 @@ export class ElsaCanvas {
         allowPort: true,
         highlight: true,
         snap: {
-          radius: 50,
+          radius: 20,
         },
       },
       mousewheel: {
@@ -92,16 +93,27 @@ export class ElsaCanvas {
       shape: 'activity',
       x: 80,
       y: 80,
-      label: 'http',
+      text: 'Delay'
     });
 
-    graph.addNode({
+    const n = graph.addNode({
       shape: 'activity',
       x: 80,
       y: 180,
-      label: 'http response',
-    });
+      width: 320,
+      height: 80,
+      text: 'HTTP Request',
+      ports: [
+        {
+          id: 'port1',
+          group: 'out',
+        }
+      ],
+    }) as ActivityNode;
 
+    setTimeout(() => {
+      return n.text = 'A new label here';
+    }, 3000);
   }
 
   render() {
