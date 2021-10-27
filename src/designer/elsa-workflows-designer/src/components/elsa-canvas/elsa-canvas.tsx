@@ -1,5 +1,5 @@
-import {Component, h, Host, Method} from '@stencil/core';
-import {CellView, Dom, Graph, Node, Platform, Shape} from '@antv/x6';
+import {Component, h, Method, Element} from '@stencil/core';
+import {Graph, Node} from '@antv/x6';
 import './shapes';
 import './connectors';
 import './ports';
@@ -10,14 +10,27 @@ import './ports';
 })
 export class ElsaCanvas {
 
+  @Element() el: HTMLElement;
   private container: HTMLElement;
   private graph: Graph;
   private target: Node;
 
   @Method()
-  async getGraph(): Promise<Graph> {
+  public async getGraph(): Promise<Graph> {
     return this.graph;
   };
+
+  @Method()
+  public async resize(width?: number, height?: number): Promise<void> {
+    this.graph.resize(width, height);
+  }
+
+  @Method()
+  public async updateLayout(): Promise<void> {
+    const width = this.el.clientWidth;
+    const height = this.el.clientHeight;
+    this.graph.resize(width, height);
+  }
 
   componentDidLoad() {
 
@@ -93,9 +106,9 @@ export class ElsaCanvas {
 
   render() {
     return (
-      <Host id="container"
-           class="absolute left-0 top-0 right-0 bottom-0"
-           ref={el => this.container = el}/>
+      <div
+        class="absolute left-0 top-0 right-0 bottom-0"
+        ref={el => this.container = el}/>
     );
   }
 }

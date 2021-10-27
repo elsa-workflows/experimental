@@ -91,3 +91,20 @@ Graph.registerNode(
   },
   true,
 )
+
+// Graph.registerNode(
+//   'activity-2',
+//   {
+//     shape: 'activity-2',
+//     html(){
+//       const wrap = document.createElement('div');
+//
+//       wrap.innerHTML = `
+//       <div>
+//           TEST
+//         </div>
+//       `;
+//
+//       return wrap;
+//     }
+//   });
