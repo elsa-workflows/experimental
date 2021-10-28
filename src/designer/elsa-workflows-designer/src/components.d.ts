@@ -8,8 +8,6 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
 import { ActivityPickerStateChangedArgs } from "./components/elsa-activity-picker/elsa-activity-picker";
 export namespace Components {
-    interface ElsaActivity {
-    }
     interface ElsaActivityPicker {
         "graph": Graph;
     }
@@ -22,12 +20,6 @@ export namespace Components {
     }
 }
 declare global {
-    interface HTMLElsaActivityElement extends Components.ElsaActivity, HTMLStencilElement {
-    }
-    var HTMLElsaActivityElement: {
-        prototype: HTMLElsaActivityElement;
-        new (): HTMLElsaActivityElement;
-    };
     interface HTMLElsaActivityPickerElement extends Components.ElsaActivityPicker, HTMLStencilElement {
     }
     var HTMLElsaActivityPickerElement: {
@@ -47,15 +39,12 @@ declare global {
         new (): HTMLElsaWorkflowEditorElement;
     };
     interface HTMLElementTagNameMap {
-        "elsa-activity": HTMLElsaActivityElement;
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
         "elsa-canvas": HTMLElsaCanvasElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
     }
 }
 declare namespace LocalJSX {
-    interface ElsaActivity {
-    }
     interface ElsaActivityPicker {
         "graph"?: Graph;
         "onExpandedStateChanged"?: (event: CustomEvent<ActivityPickerStateChangedArgs>) => void;
@@ -65,7 +54,6 @@ declare namespace LocalJSX {
     interface ElsaWorkflowEditor {
     }
     interface IntrinsicElements {
-        "elsa-activity": ElsaActivity;
         "elsa-activity-picker": ElsaActivityPicker;
         "elsa-canvas": ElsaCanvas;
         "elsa-workflow-editor": ElsaWorkflowEditor;
@@ -75,7 +63,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "elsa-activity": LocalJSX.ElsaActivity & JSXBase.HTMLAttributes<HTMLElsaActivityElement>;
             "elsa-activity-picker": LocalJSX.ElsaActivityPicker & JSXBase.HTMLAttributes<HTMLElsaActivityPickerElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;

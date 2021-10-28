@@ -60,7 +60,6 @@ export class ElsaCanvas {
         enabled: true,
         showNodeSelectionBox: true,
         rubberband: true,
-        modifiers: ['ctrl', 'meta'],
       },
       scroller: {
         enabled: true,
@@ -68,6 +67,7 @@ export class ElsaCanvas {
         pageVisible: false,
         pageBreak: false,
         padding: 0,
+        modifiers: ['ctrl', 'meta'],
       },
       connecting: {
         allowBlank: false,
@@ -77,6 +77,13 @@ export class ElsaCanvas {
         allowEdge: false,
         allowPort: true,
         highlight: true,
+        router: 'manhattan',
+        connector: {
+          name: 'rounded',
+          args: {
+            radius: 10
+          },
+        },
         snap: {
           radius: 20,
         },
@@ -88,32 +95,6 @@ export class ElsaCanvas {
       history: true,
       interacting: () => state.interactingMap,
     });
-
-    graph.addNode({
-      shape: 'activity',
-      x: 80,
-      y: 80,
-      text: 'Delay'
-    });
-
-    const n = graph.addNode({
-      shape: 'activity',
-      x: 80,
-      y: 180,
-      width: 320,
-      height: 80,
-      text: 'HTTP Request',
-      ports: [
-        {
-          id: 'port1',
-          group: 'out',
-        }
-      ],
-    }) as ActivityNode;
-
-    setTimeout(() => {
-      return n.text = 'A new label here';
-    }, 3000);
   }
 
   render() {

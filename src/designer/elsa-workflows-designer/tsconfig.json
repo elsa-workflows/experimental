@@ -6,7 +6,8 @@
     "experimentalDecorators": true,
     "lib": [
       "dom",
-      "es2017"
+      "es2017",
+      "es2018.promise"
     ],
     "moduleResolution": "node",
     "module": "esnext",
