@@ -1,5 +1,5 @@
 import {Component, Listen, h} from "@stencil/core";
-import {ActivityPickerStateChangedArgs} from "../elsa-activity-picker/elsa-activity-picker";
+import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
 
 @Component({
   tag: 'elsa-workflow-editor',
@@ -20,12 +20,22 @@ export class ElsaWorkflowEditor {
     this.activityPicker.graph = await this.canvas.getGraph();
   }
 
-  private onActivityPickerStateChanged = async (e: ActivityPickerStateChangedArgs) => {
+  private onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => {
 
     if (e.expanded)
       this.container.classList.remove('activity-picker-closed');
     else
       this.container.classList.toggle('activity-picker-closed', true);
+
+    await this.updateLayout();
+  }
+
+  private onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => {
+
+    if (e.expanded)
+      this.container.classList.remove('trigger-container-closed');
+    else
+      this.container.classList.toggle('trigger-container-closed', true);
 
     await this.updateLayout();
   }
@@ -37,12 +47,15 @@ export class ElsaWorkflowEditor {
   render() {
     return (
       <div class="absolute top-0 left-0 bottom-0 right-0" ref={el => this.container = el}>
-        <elsa-activity-picker ref={el => this.activityPicker = el}
-                              onExpandedStateChanged={(e) => this.onActivityPickerStateChanged(e.detail)}/>
+        <elsa-panel onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)} size={300}>
+          <elsa-activity-picker ref={el => this.activityPicker = el}/>
+        </elsa-panel>
+        <elsa-panel onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)} size={300}
+                    orientation={PanelOrientation.Horizontal}>
+          <elsa-trigger-container/>
+        </elsa-panel>
         <elsa-canvas class="absolute top-0 right-0 bottom-0" ref={el => this.canvas = el}/>
       </div>
     );
   }
-
-
 }

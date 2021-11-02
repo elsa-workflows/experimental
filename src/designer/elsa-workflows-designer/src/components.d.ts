@@ -6,7 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
-import { ActivityPickerStateChangedArgs } from "./components/elsa-activity-picker/elsa-activity-picker";
+import { PanelOrientation, PanelStateChangedArgs } from "./components/elsa-panel/models";
 export namespace Components {
     interface ElsaActivityPicker {
         "graph": Graph;
@@ -15,6 +15,10 @@ export namespace Components {
         "getGraph": () => Promise<Graph>;
         "resize": (width?: number, height?: number) => Promise<void>;
         "updateLayout": () => Promise<void>;
+    }
+    interface ElsaPanel {
+        "orientation": PanelOrientation;
+        "size": number;
     }
     interface ElsaWorkflowEditor {
     }
@@ -32,6 +36,12 @@ declare global {
         prototype: HTMLElsaCanvasElement;
         new (): HTMLElsaCanvasElement;
     };
+    interface HTMLElsaPanelElement extends Components.ElsaPanel, HTMLStencilElement {
+    }
+    var HTMLElsaPanelElement: {
+        prototype: HTMLElsaPanelElement;
+        new (): HTMLElsaPanelElement;
+    };
     interface HTMLElsaWorkflowEditorElement extends Components.ElsaWorkflowEditor, HTMLStencilElement {
     }
     var HTMLElsaWorkflowEditorElement: {
@@ -41,21 +51,27 @@ declare global {
     interface HTMLElementTagNameMap {
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
         "elsa-canvas": HTMLElsaCanvasElement;
+        "elsa-panel": HTMLElsaPanelElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
     }
 }
 declare namespace LocalJSX {
     interface ElsaActivityPicker {
         "graph"?: Graph;
-        "onExpandedStateChanged"?: (event: CustomEvent<ActivityPickerStateChangedArgs>) => void;
     }
     interface ElsaCanvas {
+    }
+    interface ElsaPanel {
+        "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
+        "orientation"?: PanelOrientation;
+        "size"?: number;
     }
     interface ElsaWorkflowEditor {
     }
     interface IntrinsicElements {
         "elsa-activity-picker": ElsaActivityPicker;
         "elsa-canvas": ElsaCanvas;
+        "elsa-panel": ElsaPanel;
         "elsa-workflow-editor": ElsaWorkflowEditor;
     }
 }
@@ -65,6 +81,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "elsa-activity-picker": LocalJSX.ElsaActivityPicker & JSXBase.HTMLAttributes<HTMLElsaActivityPickerElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
+            "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;
         }
     }

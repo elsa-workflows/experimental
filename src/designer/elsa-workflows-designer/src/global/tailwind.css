@@ -11,10 +11,18 @@
   display: none;
 }
 
-.panel-toggle {
+.panel-toggle-v {
   right: -26px;
   top: 50%;
   transform: translateY(-50%);
+
+  @apply absolute py-4 bg-gray-50 border border-gray-400 text-gray-400 rounded-r z-10;
+}
+
+.panel-toggle-h {
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
 
   @apply absolute py-4 bg-gray-50 border border-gray-400 text-gray-400 rounded-r z-10;
 }

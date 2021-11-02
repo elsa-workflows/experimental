@@ -1,16 +1,9 @@
 elsa-canvas {
   left: 300px;
-}
-
-.activity-picker {
-  width: 300px;
+  top: 300px;
 }
 
 .activity-picker-closed {
-
-  .activity-picker {
-    width: 0;
-  }
 
   .activity-list {
     display: none;
@@ -18,5 +11,12 @@ elsa-canvas {
 
   elsa-canvas {
     left: 0;
+  }
+}
+
+.trigger-container-closed {
+
+  elsa-canvas {
+    top: 0;
   }
 }

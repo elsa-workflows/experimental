@@ -1,5 +1,5 @@
 import {Component, h, Method, Element} from '@stencil/core';
-import {Graph, Node} from '@antv/x6';
+import {Graph, Node, Shape} from '@antv/x6';
 import './shapes';
 import './connectors';
 import './ports';
@@ -78,15 +78,44 @@ export class ElsaCanvas {
         allowPort: true,
         highlight: true,
         router: 'manhattan',
+        connectionPoint: 'anchor',
         connector: {
           name: 'rounded',
           args: {
-            radius: 10
+            radius: 20
           },
         },
         snap: {
           radius: 20,
         },
+        validateMagnet({magnet}) {
+          return magnet.getAttribute('port-group') !== 'in'
+        },
+        validateConnection({sourceView, targetView, sourceMagnet, targetMagnet}) {
+          if (!sourceMagnet || sourceMagnet.getAttribute('port-group') === 'in') {
+            return false
+          }
+
+          if (!targetMagnet || targetMagnet.getAttribute('port-group') !== 'in') {
+            return false
+          }
+
+          const portId = targetMagnet.getAttribute('port')!
+          const node = targetView.cell as Node
+          const port = node.getPort(portId)
+          return !(port && port.connected);
+
+
+        },
+        createEdge() {
+          return new Shape.Edge({
+            attrs: {
+              line: {
+                stroke: '#7b7b7b',
+              },
+            },
+          })
+        }
       },
       mousewheel: {
         enabled: true,

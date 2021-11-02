@@ -1,0 +1,19 @@
+.panel-state-closed {
+
+  .panel {
+
+    &panel-orientation-v {
+      width: 0;
+    }
+
+    &panel-orientation-h {
+      height: 0;
+    }
+  }
+
+  .panel-content-container {
+    left: 0;
+    top: 0;
+    display: none;
+  }
+}
