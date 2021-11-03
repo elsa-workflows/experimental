@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type     | Default |
-| -------- | --------- | ----------- | -------- | ------- |
-| `size`   | `size`    |             | `number` | `300`   |
+| Property      | Attribute     | Description | Type                                                       | Default                     |
+| ------------- | ------------- | ----------- | ---------------------------------------------------------- | --------------------------- |
+| `orientation` | `orientation` |             | `PanelOrientation.Horizontal \| PanelOrientation.Vertical` | `PanelOrientation.Vertical` |
 
 
 ## Events

@@ -1,12 +1,36 @@
-import {Component, h, Event, EventEmitter, State, Prop, Watch} from "@stencil/core";
+import {Component, FunctionalComponent, h, Prop, State, Watch} from "@stencil/core";
 import {Addon, Graph} from '@antv/x6';
 import groupBy from 'lodash/groupBy';
-import {ActivityDescriptor} from "../../models";
-import {Activity} from "../elsa-activity/elsa-activity";
+import {ActivityDescriptor, ActivityKind} from '../../models';
+
+interface ActivityProps {
+  activityDescriptor: ActivityDescriptor;
+}
+
+const Activity: FunctionalComponent<ActivityProps> = ({activityDescriptor}) => (
+  <div class="border border-solid border-blue-600 rounded-md bg-blue-400 text-white overflow-hidden" draggable={true}>
+    <div class="flex flex-row">
+      <div class="flex flex-shrink items-center bg-blue-500">
+        <div class="px-2 py-1">
+          <svg class="h-6 w-6 text-white" width="24" height="24" viewBox="0 0 24 24"
+               stroke-width="2"
+               stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z"/>
+            <path d="M7 18a4.6 4.4 0 0 1 0 -9h0a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-12"/>
+          </svg>
+        </div>
+      </div>
+      <div class="flex items-center">
+        <div class="px-4 py-2">
+          {activityDescriptor.displayName}
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 @Component({
   tag: 'elsa-activity-picker',
-  styleUrl: 'elsa-activity-picker.scss',
 })
 export class ElsaActivityPicker {
   @Prop() graph: Graph;
@@ -37,56 +61,50 @@ export class ElsaActivityPicker {
       {
         activityType: 'Assign',
         displayName: 'Assign',
-        category: cats.primitives
+        category: cats.primitives,
+        kind: ActivityKind.Action
       },
       {
         activityType: 'WriteLine',
         displayName: 'Write Line',
-        category: cats.console
+        category: cats.console,
+        kind: ActivityKind.Action
       },
       {
         activityType: 'ReadLine',
         displayName: 'Read Line',
-        category: cats.console
+        category: cats.console,
+        kind: ActivityKind.Action
       },
       {
         activityType: 'SendHttpRequest',
         displayName: 'Send HTTP Request',
-        category: cats.http
+        category: cats.http,
+        kind: ActivityKind.Action
       },
       {
         activityType: 'HttpTrigger',
         displayName: 'HTTP Trigger',
-        category: cats.http
+        category: cats.http,
+        kind: ActivityKind.Trigger
       },
       {
         activityType: 'WriteHttpResponse',
         displayName: 'Write HTTP Response',
-        category: cats.http
+        category: cats.http,
+        kind: ActivityKind.Action
       }
     ];
   }
 
-  startDrag = (e: Event, activityDescriptor: ActivityDescriptor) => {
-    const target = e.currentTarget
+  private onStartDrag(e: DragEvent, activity: ActivityDescriptor) {
+    const json = JSON.stringify(activity);
+    const isTrigger = activity.kind == ActivityKind.Trigger;
+    e.dataTransfer.setData('activity-descriptor', json);
 
-    const node =
-      this.graph.createNode({
-        shape: 'activity',
-        text: activityDescriptor.displayName,
-        ports: [
-          {
-            id: 'inbound1',
-            group: 'in',
-          },
-          {
-            id: 'outbound1',
-            group: 'out',
-          }
-        ]
-      });
-
-    this.dnd.start(node, e as MouseEvent);
+    if(isTrigger) {
+      e.dataTransfer.setData('trigger-descriptor', json);
+    }
   }
 
   render() {
@@ -117,7 +135,7 @@ export class ElsaActivityPicker {
 
                 {activities.map(activity => (
                   <div class="w-full flex items-center pl-10 pr-2 py-2">
-                    <div class="cursor-move" onMouseDown={e => this.startDrag(e, activity)}>
+                    <div class="cursor-move" onDragStart={e => this.onStartDrag(e, activity)}>
                       <Activity activityDescriptor={activity}/>
                     </div>
                   </div>

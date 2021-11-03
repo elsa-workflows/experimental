@@ -1,1 +1,2 @@
-﻿export * from './metadata';
+﻿export * from './core';
+export * from './metadata';

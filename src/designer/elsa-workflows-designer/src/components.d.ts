@@ -19,6 +19,8 @@ export namespace Components {
     interface ElsaPanel {
         "orientation": PanelOrientation;
     }
+    interface ElsaTriggerContainer {
+    }
     interface ElsaWorkflowEditor {
     }
 }
@@ -41,6 +43,12 @@ declare global {
         prototype: HTMLElsaPanelElement;
         new (): HTMLElsaPanelElement;
     };
+    interface HTMLElsaTriggerContainerElement extends Components.ElsaTriggerContainer, HTMLStencilElement {
+    }
+    var HTMLElsaTriggerContainerElement: {
+        prototype: HTMLElsaTriggerContainerElement;
+        new (): HTMLElsaTriggerContainerElement;
+    };
     interface HTMLElsaWorkflowEditorElement extends Components.ElsaWorkflowEditor, HTMLStencilElement {
     }
     var HTMLElsaWorkflowEditorElement: {
@@ -51,6 +59,7 @@ declare global {
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
         "elsa-canvas": HTMLElsaCanvasElement;
         "elsa-panel": HTMLElsaPanelElement;
+        "elsa-trigger-container": HTMLElsaTriggerContainerElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
     }
 }
@@ -64,12 +73,15 @@ declare namespace LocalJSX {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
         "orientation"?: PanelOrientation;
     }
+    interface ElsaTriggerContainer {
+    }
     interface ElsaWorkflowEditor {
     }
     interface IntrinsicElements {
         "elsa-activity-picker": ElsaActivityPicker;
         "elsa-canvas": ElsaCanvas;
         "elsa-panel": ElsaPanel;
+        "elsa-trigger-container": ElsaTriggerContainer;
         "elsa-workflow-editor": ElsaWorkflowEditor;
     }
 }
@@ -80,6 +92,7 @@ declare module "@stencil/core" {
             "elsa-activity-picker": LocalJSX.ElsaActivityPicker & JSXBase.HTMLAttributes<HTMLElsaActivityPickerElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
+            "elsa-trigger-container": LocalJSX.ElsaTriggerContainer & JSXBase.HTMLAttributes<HTMLElsaTriggerContainerElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;
         }
     }

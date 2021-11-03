@@ -4,6 +4,8 @@ $trigger-panel-height: 100px;
 elsa-canvas {
   left: $activity-picker-width;
   top: $trigger-panel-height;
+  right: 0;
+  bottom: 0;
 }
 
 elsa-panel.elsa-trigger-container {
@@ -38,5 +40,9 @@ elsa-panel.panel-state-expanded.elsa-activity-picker-container {
 
   elsa-canvas {
     top: 0;
+  }
+
+  elsa-trigger-container {
+    display: none;
   }
 }

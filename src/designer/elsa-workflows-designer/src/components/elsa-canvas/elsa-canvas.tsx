@@ -3,7 +3,6 @@ import {Graph, Node, Shape} from '@antv/x6';
 import './shapes';
 import './connectors';
 import './ports';
-import {ActivityNode} from "./shapes";
 
 @Component({
   tag: 'elsa-canvas',

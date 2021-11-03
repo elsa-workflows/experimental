@@ -1,5 +1,6 @@
 import {Component, Listen, h} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
+import {ActivityDescriptor} from "../../models";
 
 @Component({
   tag: 'elsa-workflow-editor',
@@ -20,41 +21,67 @@ export class ElsaWorkflowEditor {
     this.activityPicker.graph = await this.canvas.getGraph();
   }
 
-  private onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => {
-
-    if (e.expanded)
-      this.container.classList.remove('activity-picker-closed');
-    else
-      this.container.classList.toggle('activity-picker-closed', true);
-
-    await this.updateLayout();
-  }
-
-  private onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => {
-
-    if (e.expanded)
-      this.container.classList.remove('trigger-container-closed');
-    else
-      this.container.classList.toggle('trigger-container-closed', true);
-
-    await this.updateLayout();
-  }
-
   private updateLayout = async () => {
     await this.canvas.updateLayout();
   };
 
+  private updateContainerLayout = async (panelClassName: string, panelExpanded: boolean) => {
+
+    if (panelExpanded)
+      this.container.classList.remove(panelClassName);
+    else
+      this.container.classList.toggle(panelClassName, true);
+
+    await this.updateLayout();
+  }
+
+  private onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-picker-closed', e.expanded)
+  private onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('trigger-container-closed', e.expanded)
+
+  private static onDragOver(e: DragEvent) {
+    e.preventDefault();
+  }
+
+  private async onDrop(e: DragEvent) {
+    const json = e.dataTransfer.getData('activity-descriptor');
+    const activityDescriptor: ActivityDescriptor = JSON.parse(json);
+    const graph = await this.canvas.getGraph();
+
+    const node =
+      graph.createNode({
+        shape: 'activity',
+        text: activityDescriptor.displayName,
+        x: e.offsetX,
+        y: e.offsetY,
+        ports: [
+          {
+            id: 'inbound1',
+            group: 'in',
+          },
+          {
+            id: 'outbound1',
+            group: 'out',
+          }
+        ]
+      });
+
+    graph.addNode(node);
+  }
+
   render() {
     return (
       <div class="absolute top-0 left-0 bottom-0 right-0" ref={el => this.container = el}>
-        <elsa-panel class="elsa-activity-picker-container" onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
+        <elsa-panel class="elsa-activity-picker-container"
+                    onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
           <elsa-activity-picker ref={el => this.activityPicker = el}/>
         </elsa-panel>
-        <elsa-panel class="elsa-trigger-container" onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
+        <elsa-panel class="elsa-trigger-container"
+                    onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
                     orientation={PanelOrientation.Horizontal}>
           <elsa-trigger-container/>
         </elsa-panel>
-        <elsa-canvas class="absolute top-0 right-0 bottom-0" ref={el => this.canvas = el}/>
+        <elsa-canvas class="absolute" ref={el => this.canvas = el} onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
+                     onDrop={e => this.onDrop(e)}/>
       </div>
     );
   }
