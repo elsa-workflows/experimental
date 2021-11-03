@@ -121,7 +121,28 @@ export class ElsaCanvas {
         modifiers: ['ctrl', 'meta'],
       },
       history: true,
+      minimap: {
+        enabled: true,
+        container: this.container,
+      },
       interacting: () => state.interactingMap,
+    });
+
+    graph.on('edge:mouseenter', ({edge}) => {
+      edge.addTools([
+        'source-arrowhead',
+        'target-arrowhead',
+        {
+          name: 'button-remove',
+          args: {
+            distance: -30,
+          },
+        },
+      ])
+    });
+
+    graph.on('edge:mouseleave', ({edge}) => {
+      edge.removeTools()
     });
   }
 

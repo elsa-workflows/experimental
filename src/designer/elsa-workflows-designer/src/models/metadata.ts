@@ -5,6 +5,12 @@ export interface ActivityDescriptor {
   kind: ActivityKind;
 }
 
+export interface TriggerDescriptor {
+  triggerType: string;
+  displayName: string;
+  category: string;
+}
+
 export enum ActivityKind {
   Action,
   Trigger
