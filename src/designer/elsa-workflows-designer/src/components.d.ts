@@ -18,7 +18,6 @@ export namespace Components {
     }
     interface ElsaPanel {
         "orientation": PanelOrientation;
-        "size": number;
     }
     interface ElsaWorkflowEditor {
     }
@@ -64,7 +63,6 @@ declare namespace LocalJSX {
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
         "orientation"?: PanelOrientation;
-        "size"?: number;
     }
     interface ElsaWorkflowEditor {
     }

@@ -1,4 +1,4 @@
-import {Component, h, Event, EventEmitter, State, Prop, Watch} from "@stencil/core";
+import {Component, h, Event, EventEmitter, State, Prop, Watch, Host} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "./models";
 
 @Component({
@@ -6,7 +6,6 @@ import {PanelOrientation, PanelStateChangedArgs} from "./models";
   styleUrl: 'elsa-panel.scss',
 })
 export class ElsaPanel {
-  @Prop() size: number = 300;
   @Prop() orientation: PanelOrientation = PanelOrientation.Vertical;
   @Event() expandedStateChanged: EventEmitter<PanelStateChangedArgs>;
   @State() isExpanded: boolean = true;
@@ -17,14 +16,14 @@ export class ElsaPanel {
   };
 
   render() {
-    const size = this.isExpanded ? this.size : 0;
+    const isExpanded = this.isExpanded;
     const orientation = this.orientation;
     const containerCssClass = orientation == PanelOrientation.Vertical ? 'panel-orientation-v left-0 top-0 bottom-0 border-r' : 'panel-orientation-h left-0 top-0 right-0 border-b';
+    const stateClass = isExpanded ? 'panel-state-expanded' : 'panel-state-collapsed';
     const toggleCssClass = orientation == PanelOrientation.Vertical ? 'panel-toggle-v' : 'panel-toggle-h';
-    const panelStyle = orientation == PanelOrientation.Vertical ? {width: `${size}px`} : {height: `${size}px`};
 
     return (
-      <div class={`panel absolute transition-all duration-200 ease-in-out ${containerCssClass}`} style={panelStyle}>
+      <Host class={`panel absolute transition-all duration-200 ease-in-out bg-white z-10 ${containerCssClass} ${stateClass}`}>
 
         <div class="panel-content-container">
           <slot/>
@@ -37,7 +36,7 @@ export class ElsaPanel {
             <polyline points="9 6 15 12 9 18"/>
           </svg>
         </div>
-      </div>
+      </Host>
     );
   }
 }

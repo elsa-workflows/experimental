@@ -47,10 +47,10 @@ export class ElsaWorkflowEditor {
   render() {
     return (
       <div class="absolute top-0 left-0 bottom-0 right-0" ref={el => this.container = el}>
-        <elsa-panel onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)} size={300}>
+        <elsa-panel class="elsa-activity-picker-container" onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
           <elsa-activity-picker ref={el => this.activityPicker = el}/>
         </elsa-panel>
-        <elsa-panel onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)} size={300}
+        <elsa-panel class="elsa-trigger-container" onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
                     orientation={PanelOrientation.Horizontal}>
           <elsa-trigger-container/>
         </elsa-panel>
