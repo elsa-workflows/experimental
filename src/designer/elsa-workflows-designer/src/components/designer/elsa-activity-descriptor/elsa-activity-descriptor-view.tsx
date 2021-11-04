@@ -1,4 +1,4 @@
-import {ActivityDescriptor} from "../../models";
+import {ActivityDescriptor} from "../../../models";
 import {FunctionalComponent, h} from "@stencil/core";
 
 export interface ActivityDescriptorProps {

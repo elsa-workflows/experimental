@@ -6,7 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
-import { PanelOrientation, PanelStateChangedArgs } from "./components/elsa-panel/models";
+import { PanelOrientation, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
 export namespace Components {
     interface ElsaActivityPicker {
         "graph": Graph;
@@ -20,7 +20,9 @@ export namespace Components {
         "orientation": PanelOrientation;
     }
     interface ElsaSlideOverPanel {
-        "isVisible": boolean;
+        "hide": () => Promise<void>;
+        "show": () => Promise<void>;
+        "title": string;
     }
     interface ElsaTriggerContainer {
     }
@@ -84,7 +86,7 @@ declare namespace LocalJSX {
         "orientation"?: PanelOrientation;
     }
     interface ElsaSlideOverPanel {
-        "isVisible"?: boolean;
+        "title"?: string;
     }
     interface ElsaTriggerContainer {
     }

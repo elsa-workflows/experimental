@@ -1,4 +1,4 @@
-import {TriggerDescriptor} from "../../models";
+import {TriggerDescriptor} from "../../../models";
 import {FunctionalComponent, h} from "@stencil/core";
 
 export interface TriggerDescriptorProps {

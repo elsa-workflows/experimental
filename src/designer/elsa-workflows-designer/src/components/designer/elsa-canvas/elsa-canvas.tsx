@@ -1,7 +1,6 @@
 import {Component, h, Method, Element} from '@stencil/core';
 import {Graph, Node, Shape} from '@antv/x6';
 import './shapes';
-import './connectors';
 import './ports';
 
 @Component({

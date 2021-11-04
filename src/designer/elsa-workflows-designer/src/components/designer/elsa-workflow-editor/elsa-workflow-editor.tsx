@@ -1,6 +1,7 @@
 import {Component, Listen, h} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
-import {ActivityDescriptor} from "../../models";
+import {ActivityDescriptor} from "../../../models";
+import {Graph} from "@antv/x6";
 
 @Component({
   tag: 'elsa-workflow-editor',
@@ -11,6 +12,8 @@ export class ElsaWorkflowEditor {
   private canvas: HTMLElsaCanvasElement;
   private container: HTMLDivElement;
   private activityPicker: HTMLElsaActivityPickerElement;
+  private graph: Graph;
+  private slideOverPanel: HTMLElsaSlideOverPanelElement;
 
   @Listen('resize', {target: 'window'})
   async handResize() {
@@ -18,7 +21,9 @@ export class ElsaWorkflowEditor {
   }
 
   async componentDidLoad() {
-    this.activityPicker.graph = await this.canvas.getGraph();
+    const graph = this.graph = this.activityPicker.graph = await this.canvas.getGraph();
+
+    graph.on('node:dblclick', this.onNodeDoubleClick);
   }
 
   private updateLayout = async () => {
@@ -45,7 +50,7 @@ export class ElsaWorkflowEditor {
   private async onDrop(e: DragEvent) {
     const json = e.dataTransfer.getData('activity-descriptor');
     const activityDescriptor: ActivityDescriptor = JSON.parse(json);
-    const graph = await this.canvas.getGraph();
+    const graph = await this.graph;
 
     const node =
       graph.createNode({
@@ -57,8 +62,8 @@ export class ElsaWorkflowEditor {
           {
             id: 'inbound1',
             group: 'in',
-            attrs:{
-              text:{
+            attrs: {
+              text: {
                 text: 'In'
               }
             }
@@ -66,8 +71,8 @@ export class ElsaWorkflowEditor {
           {
             id: 'outbound1',
             group: 'out',
-            attrs:{
-              text:{
+            attrs: {
+              text: {
                 text: 'Done'
               }
             }
@@ -77,6 +82,10 @@ export class ElsaWorkflowEditor {
 
     graph.addNode(node);
   }
+
+  private onNodeDoubleClick = async () => {
+    await this.slideOverPanel.show();
+  };
 
   render() {
     return (
@@ -92,7 +101,7 @@ export class ElsaWorkflowEditor {
         </elsa-panel>
         <elsa-canvas class="absolute" ref={el => this.canvas = el} onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
                      onDrop={e => this.onDrop(e)}/>
-        <elsa-slide-over-panel/>
+        <elsa-slide-over-panel ref={el => this.slideOverPanel = el} title="Write Line"/>
       </div>
     );
   }

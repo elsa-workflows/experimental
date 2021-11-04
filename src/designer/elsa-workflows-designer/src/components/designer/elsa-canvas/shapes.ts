@@ -1,102 +1,4 @@
-import {Cell, Dom, Graph, Shape} from "@antv/x6";
-import {Rect} from "@antv/x6/lib/shape/standard";
-import {ForceDirected} from "@antv/x6/lib/layout/force-directed";
-import NodeData = ForceDirected.NodeData;
-import {HTML} from "@antv/x6/es/shape/standard";
-import {PortManager} from "@antv/x6/lib/model/port";
-import {merge} from "jquery";
-import {config} from "../../../stencil.config";
-
-const ports = {
-  groups: {
-    top: {
-      position: 'top',
-      attrs: {
-        circle: {
-          r: 4,
-          magnet: true,
-          stroke: '#5F95FF',
-          strokeWidth: 1,
-          fill: '#fff',
-        },
-      },
-    },
-    right: {
-      position: 'right',
-      attrs: {
-        circle: {
-          r: 4,
-          magnet: true,
-          stroke: '#5F95FF',
-          strokeWidth: 1,
-          fill: '#fff',
-        },
-      },
-    },
-    bottom: {
-      position: 'bottom',
-      attrs: {
-        circle: {
-          r: 4,
-          magnet: true,
-          stroke: '#5F95FF',
-          strokeWidth: 1,
-          fill: '#fff'
-        },
-      },
-    },
-    left: {
-      position: 'left',
-      attrs: {
-        circle: {
-          r: 4,
-          magnet: true,
-          stroke: '#5F95FF',
-          strokeWidth: 1,
-          fill: '#fff'
-        },
-      },
-    },
-  },
-  items: [
-    {
-      group: 'top',
-    },
-    {
-      group: 'right',
-    },
-    {
-      group: 'bottom',
-    },
-    {
-      group: 'left',
-    },
-  ],
-}
-
-Graph.registerNode(
-  'activity-old',
-  {
-    inherit: 'rect',
-    width: 130,
-    height: 36,
-    attrs: {
-      body: {
-        strokeWidth: 1,
-        stroke: '#108ee9',
-        fill: '#fff',
-        rx: 10,
-        ry: 10,
-      },
-      text: {
-        fontSize: 12,
-        color: 'red',
-      },
-    },
-    ports: {...ports}
-  },
-  true,
-)
+import {Cell, Graph, Shape} from "@antv/x6";
 
 export class ActivityNode extends Shape.HTML {
   get text() {
@@ -135,7 +37,6 @@ export class ActivityNode extends Shape.HTML {
     wrapper.innerHTML = this.createHtml();
     document.body.append(wrapper);
     const rect = wrapper.firstElementChild.getBoundingClientRect();
-    console.debug(rect);
     wrapper.remove();
 
     const width = rect.width;
@@ -160,7 +61,7 @@ export class ActivityNode extends Shape.HTML {
                   </div>
                 </div>
                 <div class="flex items-center">
-                  <div class="px-4 py-2">
+                  <div class="px-4 py-1">
                     ${text}
                   </div>
                 </div>
@@ -172,6 +73,7 @@ export class ActivityNode extends Shape.HTML {
 }
 
 ActivityNode.config({
+  //portMarkup: [Markup.getForeignObjectMarkup()],
   ports: {
     groups: {
       in: {
@@ -184,6 +86,15 @@ ActivityNode.config({
             strokeWidth: 2,
             fill: '#fff',
           },
+          text: {
+            fontSize: 12,
+            fill: '#888',
+          },
+        },
+        label: {
+          position: {
+            name: 'outside',
+          },
         },
       },
       out: {
@@ -195,6 +106,15 @@ ActivityNode.config({
             stroke: '#fff',
             strokeWidth: 2,
             fill: '#3c82f6',
+          },
+          text: {
+            fontSize: 12,
+            fill: '#888',
+          },
+        },
+        label: {
+          position: {
+            name: 'outside',
           },
         },
       },

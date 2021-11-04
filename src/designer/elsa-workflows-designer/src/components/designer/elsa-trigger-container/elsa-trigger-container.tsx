@@ -1,5 +1,5 @@
 import {Component, h, State} from '@stencil/core';
-import {Trigger, TriggerDescriptor} from "../../models";
+import {Trigger, TriggerDescriptor} from "../../../models";
 import {TriggerView} from "./elsa-trigger";
 
 @Component({

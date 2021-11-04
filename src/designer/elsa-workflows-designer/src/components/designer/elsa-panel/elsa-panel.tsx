@@ -1,4 +1,4 @@
-import {Component, h, Event, EventEmitter, State, Prop, Watch, Host} from "@stencil/core";
+import {Component, h, Event, EventEmitter, State, Prop, Host} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "./models";
 
 @Component({

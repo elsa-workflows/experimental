@@ -1,7 +1,7 @@
 import {Component, FunctionalComponent, h, Prop, State, Watch} from "@stencil/core";
 import {Addon, Graph} from '@antv/x6';
 import groupBy from 'lodash/groupBy';
-import {ActivityDescriptor, ActivityKind} from '../../models';
+import {ActivityDescriptor, ActivityKind} from '../../../models';
 import {ActivityDescriptorView} from "../elsa-activity-descriptor/elsa-activity-descriptor-view";
 
 @Component({

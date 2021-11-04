@@ -1,29 +1,72 @@
-import {Component, h, Prop} from "@stencil/core";
+import {Component, h, Method, Prop, State} from "@stencil/core";
 
 @Component({
   tag: 'elsa-slide-over-panel'
 })
 export class ElsaSlideOverPanel {
-  @Prop()
-  public isVisible: boolean;
+  private overlayElement: HTMLElement;
+
+  @Prop() public title: string;
+
+  @Method()
+  public async show(): Promise<void> {
+    this.isShowing = true;
+    this.isHiding = false;
+    this.isVisible = true;
+  }
+
+  @Method()
+  public async hide(): Promise<void> {
+    this.isHiding = true;
+    this.isShowing = false;
+  }
+
+  @State() public isHiding: boolean = false;
+  @State() public isShowing: boolean = false;
+  @State() public isVisible: boolean = true;
 
   public render() {
-    if (!this.isVisible)
-      return null;
-
     return this.renderPanel();
   }
 
+  private onCloseClick = async () => {
+    await this.hide();
+  };
+
+  private onOverlayClick = async (e: MouseEvent) => {
+    if (e.target != this.overlayElement)
+      return;
+    await this.hide();
+  };
+
+  private onTransitionEnd = (e: TransitionEvent) => {
+    if (this.isHiding) {
+      this.isVisible = false;
+      this.isHiding = false;
+    }
+  };
+
   private renderPanel() {
+    const isVisible = this.isVisible;
+    const isHiding = this.isHiding;
+    const wrapperClass = isVisible ? 'block' : 'hidden';
+    const backdropClass = !isHiding && isVisible ? 'opacity-50' : 'opacity-0';
+    const panelClass = !isHiding && isVisible ? 'max-w-2xl w-2xl' : 'max-w-0 w-0';
+
     return (
-      <div class="fixed inset-0 overflow-hidden z-10" aria-labelledby="slide-over-title" role="dialog"
+      <div class={`fixed inset-0 overflow-hidden z-10 ${wrapperClass}`} aria-labelledby="slide-over-title" role="dialog"
            aria-modal="true">
         <div class="absolute inset-0 overflow-hidden">
-          <div class="absolute inset-0 bg-gray-100 opacity-50"/>
-          <div class="absolute inset-0" aria-hidden="true">
+
+          <div class={`absolute inset-0 bg-gray-100 ease-in-out duration-200 ${backdropClass}`}
+               onTransitionEnd={e => this.onTransitionEnd(e)}/>
+
+          <div class="absolute inset-0" aria-hidden="true" onClick={e => this.onOverlayClick(e)}
+               ref={el => this.overlayElement = el}>
+
             <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex sm:pl-16">
 
-              <div class="w-screen max-w-2xl">
+              <div class={`w-screen ease-in-out duration-200 ${panelClass}`}>
                 <form class="h-full flex flex-col bg-white shadow-xl">
                   <div class="flex flex-col flex-1">
 
@@ -31,11 +74,12 @@ export class ElsaSlideOverPanel {
                       <div class="flex items-start justify-between space-x-3">
                         <div class="space-y-1">
                           <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">
-                            Properties
+                            {this.title}
                           </h2>
                         </div>
                         <div class="h-7 flex items-center">
-                          <button type="button" class="text-gray-400 hover:text-gray-500">
+                          <button type="button" class="text-gray-400 hover:text-gray-500"
+                                  onClick={() => this.onCloseClick()}>
                             <span class="sr-only">Close panel</span>
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor" aria-hidden="true">
