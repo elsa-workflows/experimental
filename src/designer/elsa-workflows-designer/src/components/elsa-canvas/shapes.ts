@@ -1,4 +1,4 @@
-import {Cell, Dom, Graph, Shape} from "@antv/x6";
+import {Cell, Dom, Graph, Markup, Shape} from "@antv/x6";
 import {Rect} from "@antv/x6/lib/shape/standard";
 import {ForceDirected} from "@antv/x6/lib/layout/force-directed";
 import NodeData = ForceDirected.NodeData;
@@ -172,6 +172,7 @@ export class ActivityNode extends Shape.HTML {
 }
 
 ActivityNode.config({
+  //portMarkup: [Markup.getForeignObjectMarkup()],
   ports: {
     groups: {
       in: {
@@ -184,6 +185,15 @@ ActivityNode.config({
             strokeWidth: 2,
             fill: '#fff',
           },
+          text: {
+            fontSize: 12,
+            fill: '#888',
+          },
+        },
+        label: {
+          position: {
+            name: 'outside',
+          },
         },
       },
       out: {
@@ -195,6 +205,15 @@ ActivityNode.config({
             stroke: '#fff',
             strokeWidth: 2,
             fill: '#3c82f6',
+          },
+          text: {
+            fontSize: 12,
+            fill: '#888',
+          },
+        },
+        label: {
+          position: {
+            name: 'outside',
           },
         },
       },

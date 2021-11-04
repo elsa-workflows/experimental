@@ -57,10 +57,20 @@ export class ElsaWorkflowEditor {
           {
             id: 'inbound1',
             group: 'in',
+            attrs:{
+              text:{
+                text: 'In'
+              }
+            }
           },
           {
             id: 'outbound1',
             group: 'out',
+            attrs:{
+              text:{
+                text: 'Done'
+              }
+            }
           }
         ]
       });
@@ -82,6 +92,7 @@ export class ElsaWorkflowEditor {
         </elsa-panel>
         <elsa-canvas class="absolute" ref={el => this.canvas = el} onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
                      onDrop={e => this.onDrop(e)}/>
+        <elsa-slide-over-panel/>
       </div>
     );
   }

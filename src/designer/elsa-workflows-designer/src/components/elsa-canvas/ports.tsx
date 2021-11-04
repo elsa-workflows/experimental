@@ -1,6 +1,8 @@
-import {Graph, Line, Point} from "@antv/x6";
+import {Graph, Line, Point, Rectangle} from "@antv/x6";
 import {right, SideArgs} from "@antv/x6/lib/registry/port-layout/line";
 import {toResult} from "@antv/x6/lib/registry/port-layout/util";
+import {PortManager} from "@antv/x6/lib/model/port";
+import PortPosition = PortManager.PortPosition;
 
 Graph.registerPortLayout('dynamicOut', (portsPositionArgs, elemBBox) => {
   return portsPositionArgs.map((_, index) => {

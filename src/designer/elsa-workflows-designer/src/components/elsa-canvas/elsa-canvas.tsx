@@ -48,9 +48,20 @@ export class ElsaCanvas {
 
     const graph = this.graph = new Graph({
       container: this.container,
-      grid: true,
+      grid: {
+        type: 'mesh',
+        size: 20,
+        visible: true,
+        args: {
+          color: '#e0e0e0'
+        }
+      },
       async: true,
       autoResize: true,
+      keyboard: {
+        enabled: true,
+        global: false,
+      },
       clipboard: {
         enabled: true,
         useLocalStorage: true,
@@ -116,16 +127,38 @@ export class ElsaCanvas {
           })
         }
       },
+      onPortRendered(args) {
+        const selectors = args.contentSelectors
+        const container = selectors && selectors.foContent
+        if (container) {
+          const port = document.createElement('div');
+          port.className = 'rounded-full border border-2 border-blue h-8 w-8';
+          port.innerHTML = `<p>done</p>`;
+          (container as HTMLElement).append(port);
+        }},
       mousewheel: {
         enabled: true,
         modifiers: ['ctrl', 'meta'],
       },
-      history: true,
-      minimap: {
+      history: {
         enabled: true,
-        container: this.container,
+        beforeAddCommand: (e: string, args: any) => {
+
+          if(args.key == 'tools')
+            return false;
+
+          const supportedEvents = ['cell:added', 'cell:removed', 'cell:change:*'];
+          console.debug({e, args});
+
+          return supportedEvents.indexOf(e) >= 0;
+        },
       },
-      interacting: () => state.interactingMap,
+      // Todo:
+      // minimap: {
+      //   enabled: true,
+      //   container: this.container,
+      // },
+      //interacting: () => state.interactingMap,
     });
 
     graph.on('edge:mouseenter', ({edge}) => {
@@ -143,6 +176,93 @@ export class ElsaCanvas {
 
     graph.on('edge:mouseleave', ({edge}) => {
       edge.removeTools()
+    });
+
+    // graph.on('node:mouseenter', ({node}) => {
+    //
+    //   node.addTools({
+    //     name: 'button-remove',
+    //     args: {
+    //       x: 0,
+    //       y: 0,
+    //       offset: {x: 46, y: 18},
+    //     },
+    //   })
+    // });
+    //
+    // graph.on('node:mouseleave', ({node}) => {
+    //   node.removeTools()
+    // });
+
+    graph.bindKey(['meta+c', 'ctrl+c'], () => {
+      const cells = graph.getSelectedCells()
+      if (cells.length) {
+        graph.copy(cells)
+      }
+      return false
+    });
+
+    graph.bindKey(['meta+x', 'ctrl+x'], () => {
+      const cells = graph.getSelectedCells()
+      if (cells.length) {
+        graph.cut(cells)
+      }
+      return false
+    });
+
+    graph.bindKey(['meta+v', 'ctrl+v'], () => {
+      if (!graph.isClipboardEmpty()) {
+        const cells = graph.paste({offset: 32})
+        graph.cleanSelection()
+        graph.select(cells)
+      }
+      return false
+    });
+
+    //undo redo
+    graph.bindKey(['meta+z', 'ctrl+z'], () => {
+      if (graph.history.canUndo()) {
+        graph.history.undo()
+      }
+      return false
+    });
+
+    graph.bindKey(['meta+y', 'ctrl+y'], () => {
+      if (graph.history.canRedo()) {
+        graph.history.redo()
+      }
+      return false
+    });
+
+    // select all;
+    graph.bindKey(['meta+a', 'ctrl+a'], () => {
+      const nodes = graph.getNodes()
+      if (nodes) {
+        graph.select(nodes)
+      }
+    });
+
+    //delete
+    graph.bindKey('del', () => {
+      const cells = graph.getSelectedCells()
+      if (cells.length) {
+        graph.removeCells(cells)
+      }
+    });
+
+    // zoom
+    graph.bindKey(['ctrl+1', 'meta+1'], () => {
+      const zoom = graph.zoom()
+      if (zoom < 1.5) {
+        graph.zoom(0.1)
+      }
+    });
+
+    graph.bindKey(['ctrl+2', 'meta+2'], () => {
+      const zoom = graph.zoom()
+      if (zoom > 0.5) {
+        graph.zoom(-0.1)
+      }
     });
   }
 

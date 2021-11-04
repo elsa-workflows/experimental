@@ -19,6 +19,9 @@ export namespace Components {
     interface ElsaPanel {
         "orientation": PanelOrientation;
     }
+    interface ElsaSlideOverPanel {
+        "isVisible": boolean;
+    }
     interface ElsaTriggerContainer {
     }
     interface ElsaWorkflowEditor {
@@ -43,6 +46,12 @@ declare global {
         prototype: HTMLElsaPanelElement;
         new (): HTMLElsaPanelElement;
     };
+    interface HTMLElsaSlideOverPanelElement extends Components.ElsaSlideOverPanel, HTMLStencilElement {
+    }
+    var HTMLElsaSlideOverPanelElement: {
+        prototype: HTMLElsaSlideOverPanelElement;
+        new (): HTMLElsaSlideOverPanelElement;
+    };
     interface HTMLElsaTriggerContainerElement extends Components.ElsaTriggerContainer, HTMLStencilElement {
     }
     var HTMLElsaTriggerContainerElement: {
@@ -59,6 +68,7 @@ declare global {
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
         "elsa-canvas": HTMLElsaCanvasElement;
         "elsa-panel": HTMLElsaPanelElement;
+        "elsa-slide-over-panel": HTMLElsaSlideOverPanelElement;
         "elsa-trigger-container": HTMLElsaTriggerContainerElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
     }
@@ -73,6 +83,9 @@ declare namespace LocalJSX {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
         "orientation"?: PanelOrientation;
     }
+    interface ElsaSlideOverPanel {
+        "isVisible"?: boolean;
+    }
     interface ElsaTriggerContainer {
     }
     interface ElsaWorkflowEditor {
@@ -81,6 +94,7 @@ declare namespace LocalJSX {
         "elsa-activity-picker": ElsaActivityPicker;
         "elsa-canvas": ElsaCanvas;
         "elsa-panel": ElsaPanel;
+        "elsa-slide-over-panel": ElsaSlideOverPanel;
         "elsa-trigger-container": ElsaTriggerContainer;
         "elsa-workflow-editor": ElsaWorkflowEditor;
     }
@@ -92,6 +106,7 @@ declare module "@stencil/core" {
             "elsa-activity-picker": LocalJSX.ElsaActivityPicker & JSXBase.HTMLAttributes<HTMLElsaActivityPickerElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
+            "elsa-slide-over-panel": LocalJSX.ElsaSlideOverPanel & JSXBase.HTMLAttributes<HTMLElsaSlideOverPanelElement>;
             "elsa-trigger-container": LocalJSX.ElsaTriggerContainer & JSXBase.HTMLAttributes<HTMLElsaTriggerContainerElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;
         }
