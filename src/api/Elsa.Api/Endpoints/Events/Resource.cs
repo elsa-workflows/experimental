@@ -1,9 +1,8 @@
 using System;
-using Elsa.Api.Endpoints.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace Elsa.Api
+namespace Elsa.Api.Endpoints.Events
 {
     public class EventsResource
     {
@@ -14,9 +13,9 @@ namespace Elsa.Api
             _endpoints = endpoints;
         }
 
-        public EventsResource MapTrigger()
+        public EventsResource Trigger()
         {
-            _endpoints.MapPost("api/events/{eventName}/trigger", Trigger.Handle);
+            _endpoints.MapPost("api/events/{eventName}/trigger", Events.Trigger.Handle);
             return this;
         }
     }

@@ -5,8 +5,11 @@ namespace Elsa.Models
 {
     public abstract class Activity : IActivity
     {
+        protected Activity() => ActivityType = GetType().Name;
+        protected Activity(string activityType) => ActivityType = activityType;
+
         public string Id { get; set; } = default!;
-        public string ActivityType => GetType().Name;
+        public string ActivityType { get; set; }
 
         public virtual ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
@@ -18,7 +21,7 @@ namespace Elsa.Models
         {
         }
     }
-    
+
     public abstract class ActivityWithResult : Activity
     {
         public Output? Result { get; set; }

@@ -1,9 +1,8 @@
 using System;
-using Elsa.Api.Endpoints.Workflows;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace Elsa.Api
+namespace Elsa.Api.Endpoints.Workflows
 {
     public class WorkflowsResource
     {
@@ -14,9 +13,9 @@ namespace Elsa.Api
             _endpoints = endpoints;
         }
 
-        public WorkflowsResource MapExecute()
+        public WorkflowsResource Execute()
         {
-            _endpoints.MapPost("api/workflows/{id}/execute", Execute.HandleAsync);
+            _endpoints.MapPost("api/workflows/{id}/execute", Workflows.Execute.HandleAsync);
             return this;
         }
         

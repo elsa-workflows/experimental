@@ -37,6 +37,8 @@ namespace Elsa.Extensions
             return query.Select(x => x!).ToList();
         }
         
+        
+        
         public static IEnumerable<Variable> GetVariables(this IActivity activity)
         {
             var properties = activity.GetType().GetProperties();
