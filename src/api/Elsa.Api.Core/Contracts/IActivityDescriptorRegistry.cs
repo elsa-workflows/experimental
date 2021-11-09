@@ -6,11 +6,13 @@ namespace Elsa.Api.Core.Contracts
 {
     public interface IActivityDescriptorRegistry
     {
-        void AddDescriptor(ActivityDescriptor activityDescriptor);
-        void AddDescriptors(IEnumerable<ActivityDescriptor> activityDescriptors);
+        void Add(object provider, ActivityDescriptor descriptor);
+        void AddMany(object provider, IEnumerable<ActivityDescriptor> descriptors);
         void Clear();
-        IEnumerable<ActivityDescriptor> ListDescriptors();
-        ActivityDescriptor? FindDescriptor(Func<ActivityDescriptor> predicate);
-        ActivityDescriptor? FindDescriptor(string activityType);
+        void ClearProvider(object provider);
+        IEnumerable<ActivityDescriptor> ListAll();
+        IEnumerable<ActivityDescriptor> ListByProvider(object provider);
+        ActivityDescriptor? Find(Func<ActivityDescriptor, bool> predicate);
+        ActivityDescriptor? Find(string activityType);
     }
 }

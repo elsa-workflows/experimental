@@ -11,6 +11,7 @@ using Elsa.Api.Core.Extensions;
 using Elsa.Api.Core.Models;
 using Elsa.Attributes;
 using Elsa.Contracts;
+using Elsa.Models;
 using Humanizer;
 
 namespace Elsa.Api.Core.Services
@@ -28,7 +29,9 @@ namespace Elsa.Api.Core.Services
 
         public ValueTask<ActivityDescriptor> DescribeActivityAsync(Type activityType, CancellationToken cancellationToken = default)
         {
+            var ns = activityType.Namespace != null ? activityType.Namespace.StartsWith("Elsa.Activities.") ? activityType.Namespace["Elsa.Activities.".Length..] : activityType.Namespace : null;
             var typeName = activityType.Name;
+            var fullTypeName = ns != null ? $"{ns}.{typeName}" : typeName;
             var displayNameAttr = activityType.GetCustomAttribute<DisplayNameAttribute>();
             var displayName = displayNameAttr?.DisplayName ?? typeName.Humanize(LetterCasing.Title);
             var categoryAttr = activityType.GetCustomAttribute<CategoryAttribute>();
@@ -48,16 +51,18 @@ namespace Elsa.Api.Core.Services
                 };
 
             var properties = activityType.GetProperties();
+            var inputProperties = properties.Where(x => typeof(Input).IsAssignableFrom(x.PropertyType)).ToList();
+            var outputProperties = properties.Where(x => typeof(Output).IsAssignableFrom(x.PropertyType)).ToList();
 
             var descriptor = new ActivityDescriptor
             {
                 Category = category,
                 Description = description,
-                ActivityType = typeName,
+                ActivityType = fullTypeName,
                 DisplayName = displayName,
                 OutboundPorts = outboundPorts.ToList(),
-                InputProperties = DescribeInputProperties(properties).ToList(),
-                OutputProperties = DescribeOutputProperties(properties).ToList()
+                InputProperties = DescribeInputProperties(inputProperties).ToList(),
+                OutputProperties = DescribeOutputProperties(outputProperties).ToList()
             };
 
             return ValueTask.FromResult(descriptor);
@@ -68,25 +73,23 @@ namespace Elsa.Api.Core.Services
             foreach (var propertyInfo in properties)
             {
                 var inputAttribute = propertyInfo.GetCustomAttribute<InputAttribute>();
-
-                if (inputAttribute == null)
-                    continue;
+                var wrappedPropertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
 
                 yield return new ActivityInputDescriptor
                 (
-                    inputAttribute.Name ?? propertyInfo.Name,
-                    propertyInfo.PropertyType,
-                    GetUIHint(propertyInfo),
-                    inputAttribute.DisplayName ?? propertyInfo.Name.Humanize(LetterCasing.Title),
-                    inputAttribute.Description,
+                    inputAttribute?.Name ?? propertyInfo.Name,
+                    wrappedPropertyType,
+                    GetUIHint(wrappedPropertyType, inputAttribute),
+                    inputAttribute?.DisplayName ?? propertyInfo.Name.Humanize(LetterCasing.Title),
+                    inputAttribute?.Description,
                     _optionsResolver.GetOptions(propertyInfo),
-                    inputAttribute.Category,
-                    inputAttribute.Order,
+                    inputAttribute?.Category,
+                    inputAttribute?.Order ?? 0,
                     _defaultValueResolver.GetDefaultValue(propertyInfo),
-                    inputAttribute.DefaultSyntax,
-                    inputAttribute.SupportedSyntaxes,
-                    inputAttribute.IsReadOnly,
-                    inputAttribute.IsBrowsable
+                    inputAttribute?.DefaultSyntax,
+                    inputAttribute?.SupportedSyntaxes,
+                    inputAttribute?.IsReadOnly ?? false,
+                    inputAttribute?.IsBrowsable ?? true
                 );
             }
         }
@@ -96,38 +99,32 @@ namespace Elsa.Api.Core.Services
             foreach (var propertyInfo in properties)
             {
                 var activityPropertyAttribute = propertyInfo.GetCustomAttribute<OutputAttribute>();
-
-                if (activityPropertyAttribute == null)
-                    continue;
+                var wrappedPropertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
 
                 yield return new ActivityOutputDescriptor
                 (
-                    (activityPropertyAttribute.Name ?? propertyInfo.Name).Pascalize(),
-                    propertyInfo.PropertyType,
-                    activityPropertyAttribute.Description
+                    (activityPropertyAttribute?.Name ?? propertyInfo.Name).Pascalize(),
+                    wrappedPropertyType,
+                    activityPropertyAttribute?.Description
                 );
             }
         }
 
-        private string GetUIHint(PropertyInfo propertyInfo)
+        private string GetUIHint(Type wrappedPropertyType, InputAttribute? inputAttribute)
         {
-            var activityPropertyAttribute = propertyInfo.GetCustomAttribute<InputAttribute>()!;
+            if (inputAttribute?.UIHint != null)
+                return inputAttribute.UIHint;
 
-            if (activityPropertyAttribute.UIHint != null)
-                return activityPropertyAttribute.UIHint;
-
-            var type = propertyInfo.PropertyType;
-
-            if (type == typeof(bool) || type == typeof(bool?))
+            if (wrappedPropertyType == typeof(bool) || wrappedPropertyType == typeof(bool?))
                 return ActivityInputUIHints.Checkbox;
 
-            if (type == typeof(string))
+            if (wrappedPropertyType == typeof(string))
                 return ActivityInputUIHints.SingleLine;
 
-            if (typeof(IEnumerable).IsAssignableFrom(type))
+            if (typeof(IEnumerable).IsAssignableFrom(wrappedPropertyType))
                 return ActivityInputUIHints.Dropdown;
 
-            if (type.IsEnum || type.IsNullableType() && type.GetTypeOfNullable().IsEnum)
+            if (wrappedPropertyType.IsEnum || wrappedPropertyType.IsNullableType() && wrappedPropertyType.GetTypeOfNullable().IsEnum)
                 return ActivityInputUIHints.Dropdown;
 
             return ActivityInputUIHints.SingleLine;

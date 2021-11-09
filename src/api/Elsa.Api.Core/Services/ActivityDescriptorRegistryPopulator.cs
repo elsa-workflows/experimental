@@ -22,10 +22,11 @@ namespace Elsa.Api.Core.Services
 
         public async ValueTask PopulateRegistryAsync(CancellationToken cancellationToken)
         {
-            var tasks = _providers.Select(async x => await x.GetDescriptorsAsync(cancellationToken));
-            var descriptorLists = await Task.WhenAll(tasks);
-            var descriptors = descriptorLists.SelectMany(x => x);
-            _registry.AddDescriptors(descriptors);
+            foreach (var provider in _providers)
+            {
+                var descriptors = await provider.GetDescriptorsAsync(cancellationToken);
+                _registry.AddMany(provider, descriptors);
+            }
         }
     }
 }

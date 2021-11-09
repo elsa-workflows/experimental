@@ -1,13 +1,18 @@
 using System;
+using Elsa.Activities.Console;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Api;
+using Elsa.Api.Converters;
+using Elsa.Api.Core.Extensions;
 using Elsa.Api.Endpoints.ActivityDescriptors;
 using Elsa.Api.Endpoints.Events;
 using Elsa.Api.Endpoints.Workflows;
+using Elsa.Api.Extensions;
 using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Pipelines.WorkflowExecution.Components;
 using Elsa.Runtime.ProtoActor.Extensions;
+using Elsa.Samples.Web1.Activities;
 using Elsa.Samples.Web1.Workflows;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,15 +20,18 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var services = builder.Services;
+
 // Add services.
 
-builder.Services
+services
     .AddElsa()
     .AddInMemoryWorkflowInstanceStore()
     .AddInMemoryBookmarkStore()
     .AddInMemoryTriggerStore()
     .IndexWorkflowTriggers()
     .AddHttpActivityServices()
+    .AddWorkflowApiServices()
     .AddProtoActorWorkflowHost()
     .ConfigureWorkflowRuntime(options =>
     {
@@ -33,11 +41,18 @@ builder.Services
         options.Workflows.Add(nameof(CompositeActivitiesWorkflow), new CompositeActivitiesWorkflow());
     });
 
+// Register available activities.
+
+services.AddActivity<WriteLine>();
+services.AddActivity<WriteLines>();
+services.AddActivity<ReadLine>();
+
 // Configure middleware pipeline.
 var app = builder.Build();
+var serviceProvider = app.Services;
 
 // Configure workflow engine execution pipeline.
-app.Services.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
+serviceProvider.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
     .PersistWorkflows()
     .UseActivityScheduler()
 );
