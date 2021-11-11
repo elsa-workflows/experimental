@@ -23,7 +23,6 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 // Add services.
-
 services
     .AddElsa()
     .AddInMemoryWorkflowInstanceStore()
@@ -41,8 +40,10 @@ services
         options.Workflows.Add(nameof(CompositeActivitiesWorkflow), new CompositeActivitiesWorkflow());
     });
 
-// Register available activities.
+// Testing only: allow client app to connect from anywhere.
+services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 
+// Register available activities.
 services.AddActivity<WriteLine>();
 services.AddActivity<WriteLines>();
 services.AddActivity<ReadLine>();
@@ -60,6 +61,7 @@ serviceProvider.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
+app.UseCors();
 app.MapGet("/", (Delegate)(() => "Hello World!"));
 
 // Map Elsa API endpoints.

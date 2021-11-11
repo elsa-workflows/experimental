@@ -23,7 +23,13 @@
   },
   "dependencies": {
     "@antv/x6": "^1.28.1",
-    "@stencil/core": "^2.9.0"
+    "@stencil/core": "^2.9.0",
+    "@stencil/state-tunnel": "^1.0.1",
+    "@stencil/store": "^1.5.0",
+    "axios": "^0.24.0",
+    "axios-middleware": "^0.3.1",
+    "reflect-metadata": "^0.1.13",
+    "typedi": "^0.10.0"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^4.0.3",

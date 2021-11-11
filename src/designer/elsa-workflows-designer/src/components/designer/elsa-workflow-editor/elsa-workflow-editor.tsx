@@ -2,6 +2,9 @@ import {Component, Listen, h} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
 import {ActivityDescriptor} from "../../../models";
 import {Graph} from "@antv/x6";
+import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
+import {Container} from "typedi";
+import {ElsaApiClientProvider} from "../../../services/elsa-api-client-provider";
 
 @Component({
   tag: 'elsa-workflow-editor',
@@ -14,10 +17,17 @@ export class ElsaWorkflowEditor {
   private activityPicker: HTMLElsaActivityPickerElement;
   private graph: Graph;
   private slideOverPanel: HTMLElsaSlideOverPanelElement;
+  private activityDescriptors: Array<ActivityDescriptor> = [];
 
   @Listen('resize', {target: 'window'})
   async handResize() {
     await this.updateLayout();
+  }
+
+  async componentWillLoad() {
+    const elsaClientProvider = Container.get(ElsaApiClientProvider);
+    const client = await elsaClientProvider.getClient();
+    this.activityDescriptors = await client.activityDescriptorsApi.list();
   }
 
   async componentDidLoad() {
@@ -88,21 +98,29 @@ export class ElsaWorkflowEditor {
   };
 
   render() {
+
+    const tunnelState: WorkflowEditorState = {
+      workflowDefinitionId: null,
+      activityDescriptors: this.activityDescriptors
+    };
+
     return (
-      <div class="absolute top-0 left-0 bottom-0 right-0" ref={el => this.container = el}>
-        <elsa-panel class="elsa-activity-picker-container"
-                    onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
-          <elsa-activity-picker ref={el => this.activityPicker = el}/>
-        </elsa-panel>
-        <elsa-panel class="elsa-trigger-container"
-                    onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
-                    orientation={PanelOrientation.Horizontal}>
-          <elsa-trigger-container/>
-        </elsa-panel>
-        <elsa-canvas class="absolute" ref={el => this.canvas = el} onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
-                     onDrop={e => this.onDrop(e)}/>
-        <elsa-slide-over-panel ref={el => this.slideOverPanel = el} title="Write Line"/>
-      </div>
+      <WorkflowEditorTunnel.Provider state={tunnelState}>
+        <div class="absolute top-0 left-0 bottom-0 right-0" ref={el => this.container = el}>
+          <elsa-panel class="elsa-activity-picker-container"
+                      onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
+            <elsa-activity-picker ref={el => this.activityPicker = el}/>
+          </elsa-panel>
+          <elsa-panel class="elsa-trigger-container"
+                      onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
+                      orientation={PanelOrientation.Horizontal}>
+            <elsa-trigger-container/>
+          </elsa-panel>
+          <elsa-canvas class="absolute" ref={el => this.canvas = el} onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
+                       onDrop={e => this.onDrop(e)}/>
+          <elsa-slide-over-panel ref={el => this.slideOverPanel = el} headerText="Write Line"/>
+        </div>
+      </WorkflowEditorTunnel.Provider>
     );
   }
 }

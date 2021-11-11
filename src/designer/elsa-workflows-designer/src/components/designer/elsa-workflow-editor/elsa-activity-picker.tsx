@@ -3,13 +3,14 @@ import {Addon, Graph} from '@antv/x6';
 import groupBy from 'lodash/groupBy';
 import {ActivityDescriptor, ActivityKind} from '../../../models';
 import {ActivityDescriptorView} from "../elsa-activity-descriptor/elsa-activity-descriptor-view";
+import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
 
 @Component({
   tag: 'elsa-activity-picker',
 })
 export class ElsaActivityPicker {
   @Prop() graph: Graph;
-  @State() activityDescriptors: Array<ActivityDescriptor> = [];
+  @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
   private dnd: Addon.Dnd;
 
   @Watch('graph')
@@ -25,54 +26,7 @@ export class ElsaActivityPicker {
     });
   }
 
-  componentWillLoad() {
-    const cats = {
-      primitives: 'Primitives',
-      console: 'Console',
-      http: 'HTTP'
-    };
-
-    this.activityDescriptors = [
-      {
-        activityType: 'Assign',
-        displayName: 'Assign',
-        category: cats.primitives,
-        kind: ActivityKind.Action
-      },
-      {
-        activityType: 'WriteLine',
-        displayName: 'Write Line',
-        category: cats.console,
-        kind: ActivityKind.Action
-      },
-      {
-        activityType: 'ReadLine',
-        displayName: 'Read Line',
-        category: cats.console,
-        kind: ActivityKind.Action
-      },
-      {
-        activityType: 'SendHttpRequest',
-        displayName: 'Send HTTP Request',
-        category: cats.http,
-        kind: ActivityKind.Action
-      },
-      {
-        activityType: 'HttpTrigger',
-        displayName: 'HTTP Trigger',
-        category: cats.http,
-        kind: ActivityKind.Trigger
-      },
-      {
-        activityType: 'WriteHttpResponse',
-        displayName: 'Write HTTP Response',
-        category: cats.http,
-        kind: ActivityKind.Action
-      }
-    ];
-  }
-
-  private onStartDrag(e: DragEvent, activity: ActivityDescriptor) {
+  private static onStartDrag(e: DragEvent, activity: ActivityDescriptor) {
     const json = JSON.stringify(activity);
     const isTrigger = activity.kind == ActivityKind.Trigger;
     e.dataTransfer.setData('activity-descriptor', json);
@@ -83,6 +37,7 @@ export class ElsaActivityPicker {
   }
 
   render() {
+    debugger;
     const activityDescriptors = this.activityDescriptors;
     const categorizedActivitiesLookup = groupBy(activityDescriptors, x => x.category);
     const categories = Object.keys(categorizedActivitiesLookup);
@@ -126,7 +81,7 @@ export class ElsaActivityPicker {
 
                   {activities.map(activity => (
                     <div class="w-full flex items-center pl-10 pr-2 py-2">
-                      <div class="cursor-move" onDragStart={e => this.onStartDrag(e, activity)}>
+                      <div class="cursor-move" onDragStart={e => ElsaActivityPicker.onStartDrag(e, activity)}>
                         <ActivityDescriptorView activityDescriptor={activity}/>
                       </div>
                     </div>
@@ -142,3 +97,6 @@ export class ElsaActivityPicker {
     );
   }
 }
+
+debugger;
+WorkflowEditorTunnel.injectProps(ElsaActivityPicker, ['activityDescriptors']);

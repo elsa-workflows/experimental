@@ -6,7 +6,7 @@ import {Component, h, Method, Prop, State} from "@stencil/core";
 export class ElsaSlideOverPanel {
   private overlayElement: HTMLElement;
 
-  @Prop() public title: string;
+  @Prop() public headerText: string;
 
   @Method()
   public async show(): Promise<void> {
@@ -23,7 +23,7 @@ export class ElsaSlideOverPanel {
 
   @State() public isHiding: boolean = false;
   @State() public isShowing: boolean = false;
-  @State() public isVisible: boolean = true;
+  @State() public isVisible: boolean = false;
 
   public render() {
     return this.renderPanel();
@@ -74,7 +74,7 @@ export class ElsaSlideOverPanel {
                       <div class="flex items-start justify-between space-x-3">
                         <div class="space-y-1">
                           <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">
-                            {this.title}
+                            {this.headerText}
                           </h2>
                         </div>
                         <div class="h-7 flex items-center">

@@ -6,9 +6,11 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
+import { ActivityDescriptor } from "./models";
 import { PanelOrientation, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
 export namespace Components {
     interface ElsaActivityPicker {
+        "activityDescriptors": Array<ActivityDescriptor>;
         "graph": Graph;
     }
     interface ElsaCanvas {
@@ -19,10 +21,13 @@ export namespace Components {
     interface ElsaPanel {
         "orientation": PanelOrientation;
     }
+    interface ElsaShell {
+        "serverUrl": string;
+    }
     interface ElsaSlideOverPanel {
+        "headerText": string;
         "hide": () => Promise<void>;
         "show": () => Promise<void>;
-        "title": string;
     }
     interface ElsaTriggerContainer {
     }
@@ -48,6 +53,12 @@ declare global {
         prototype: HTMLElsaPanelElement;
         new (): HTMLElsaPanelElement;
     };
+    interface HTMLElsaShellElement extends Components.ElsaShell, HTMLStencilElement {
+    }
+    var HTMLElsaShellElement: {
+        prototype: HTMLElsaShellElement;
+        new (): HTMLElsaShellElement;
+    };
     interface HTMLElsaSlideOverPanelElement extends Components.ElsaSlideOverPanel, HTMLStencilElement {
     }
     var HTMLElsaSlideOverPanelElement: {
@@ -70,6 +81,7 @@ declare global {
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
         "elsa-canvas": HTMLElsaCanvasElement;
         "elsa-panel": HTMLElsaPanelElement;
+        "elsa-shell": HTMLElsaShellElement;
         "elsa-slide-over-panel": HTMLElsaSlideOverPanelElement;
         "elsa-trigger-container": HTMLElsaTriggerContainerElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
@@ -77,6 +89,7 @@ declare global {
 }
 declare namespace LocalJSX {
     interface ElsaActivityPicker {
+        "activityDescriptors"?: Array<ActivityDescriptor>;
         "graph"?: Graph;
     }
     interface ElsaCanvas {
@@ -85,8 +98,11 @@ declare namespace LocalJSX {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
         "orientation"?: PanelOrientation;
     }
+    interface ElsaShell {
+        "serverUrl"?: string;
+    }
     interface ElsaSlideOverPanel {
-        "title"?: string;
+        "headerText"?: string;
     }
     interface ElsaTriggerContainer {
     }
@@ -96,6 +112,7 @@ declare namespace LocalJSX {
         "elsa-activity-picker": ElsaActivityPicker;
         "elsa-canvas": ElsaCanvas;
         "elsa-panel": ElsaPanel;
+        "elsa-shell": ElsaShell;
         "elsa-slide-over-panel": ElsaSlideOverPanel;
         "elsa-trigger-container": ElsaTriggerContainer;
         "elsa-workflow-editor": ElsaWorkflowEditor;
@@ -108,6 +125,7 @@ declare module "@stencil/core" {
             "elsa-activity-picker": LocalJSX.ElsaActivityPicker & JSXBase.HTMLAttributes<HTMLElsaActivityPickerElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
+            "elsa-shell": LocalJSX.ElsaShell & JSXBase.HTMLAttributes<HTMLElsaShellElement>;
             "elsa-slide-over-panel": LocalJSX.ElsaSlideOverPanel & JSXBase.HTMLAttributes<HTMLElsaSlideOverPanelElement>;
             "elsa-trigger-container": LocalJSX.ElsaTriggerContainer & JSXBase.HTMLAttributes<HTMLElsaTriggerContainerElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;

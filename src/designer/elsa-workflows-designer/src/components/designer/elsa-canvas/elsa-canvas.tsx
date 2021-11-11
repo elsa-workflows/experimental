@@ -87,7 +87,6 @@ export class ElsaCanvas {
         allowPort: true,
         highlight: true,
         router: 'manhattan',
-        connectionPoint: 'anchor',
         connector: {
           name: 'rounded',
           args: {

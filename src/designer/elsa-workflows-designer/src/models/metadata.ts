@@ -1,3 +1,7 @@
+export interface ActivityDescriptorResponse {
+  activityDescriptors: Array<ActivityDescriptor>;
+}
+
 export interface ActivityDescriptor {
   activityType: string;
   displayName: string;
