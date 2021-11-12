@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Attributes;
@@ -7,6 +8,7 @@ using Elsa.Models;
 
 namespace Elsa.Activities.Containers.FreeFlowchart
 {
+    [Category("Containers")]
     public class FreeFlowchart : Container
     {
         [Outbound]public IActivity Start { get; set; } = default!;
