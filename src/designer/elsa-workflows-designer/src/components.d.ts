@@ -7,6 +7,8 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
 import { ActivityDescriptor } from "./models";
+import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
+import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
 import { PanelOrientation, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
 export namespace Components {
     interface ElsaActivityPicker {
@@ -14,8 +16,11 @@ export namespace Components {
         "graph": Graph;
     }
     interface ElsaCanvas {
-        "getGraph": () => Promise<Graph>;
-        "resize": (width?: number, height?: number) => Promise<void>;
+        "addActivity": (args: AddActivityArgs) => Promise<void>;
+        "updateLayout": () => Promise<void>;
+    }
+    interface ElsaFreeFlowchart {
+        "addActivity": (args: AddActivityArgs) => Promise<void>;
         "updateLayout": () => Promise<void>;
     }
     interface ElsaPanel {
@@ -46,6 +51,12 @@ declare global {
     var HTMLElsaCanvasElement: {
         prototype: HTMLElsaCanvasElement;
         new (): HTMLElsaCanvasElement;
+    };
+    interface HTMLElsaFreeFlowchartElement extends Components.ElsaFreeFlowchart, HTMLStencilElement {
+    }
+    var HTMLElsaFreeFlowchartElement: {
+        prototype: HTMLElsaFreeFlowchartElement;
+        new (): HTMLElsaFreeFlowchartElement;
     };
     interface HTMLElsaPanelElement extends Components.ElsaPanel, HTMLStencilElement {
     }
@@ -80,6 +91,7 @@ declare global {
     interface HTMLElementTagNameMap {
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
         "elsa-canvas": HTMLElsaCanvasElement;
+        "elsa-free-flowchart": HTMLElsaFreeFlowchartElement;
         "elsa-panel": HTMLElsaPanelElement;
         "elsa-shell": HTMLElsaShellElement;
         "elsa-slide-over-panel": HTMLElsaSlideOverPanelElement;
@@ -93,6 +105,9 @@ declare namespace LocalJSX {
         "graph"?: Graph;
     }
     interface ElsaCanvas {
+    }
+    interface ElsaFreeFlowchart {
+        "onActivityEditorRequested"?: (event: CustomEvent<any>) => void;
     }
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
@@ -111,6 +126,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "elsa-activity-picker": ElsaActivityPicker;
         "elsa-canvas": ElsaCanvas;
+        "elsa-free-flowchart": ElsaFreeFlowchart;
         "elsa-panel": ElsaPanel;
         "elsa-shell": ElsaShell;
         "elsa-slide-over-panel": ElsaSlideOverPanel;
@@ -124,6 +140,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "elsa-activity-picker": LocalJSX.ElsaActivityPicker & JSXBase.HTMLAttributes<HTMLElsaActivityPickerElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
+            "elsa-free-flowchart": LocalJSX.ElsaFreeFlowchart & JSXBase.HTMLAttributes<HTMLElsaFreeFlowchartElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
             "elsa-shell": LocalJSX.ElsaShell & JSXBase.HTMLAttributes<HTMLElsaShellElement>;
             "elsa-slide-over-panel": LocalJSX.ElsaSlideOverPanel & JSXBase.HTMLAttributes<HTMLElsaSlideOverPanelElement>;

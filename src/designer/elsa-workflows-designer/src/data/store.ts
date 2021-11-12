@@ -1,7 +1,7 @@
 ﻿import { createStore } from "@stencil/store";
 
 const { state, onChange } = createStore({
-  activityDescriptors: [],
+  serverAddress: '',
   monacoLibPath: ''
 });
 

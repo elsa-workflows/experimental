@@ -37,7 +37,6 @@ export class ElsaActivityPicker {
   }
 
   render() {
-    debugger;
     const activityDescriptors = this.activityDescriptors;
     const categorizedActivitiesLookup = groupBy(activityDescriptors, x => x.category);
     const categories = Object.keys(categorizedActivitiesLookup);
@@ -98,5 +97,4 @@ export class ElsaActivityPicker {
   }
 }
 
-debugger;
 WorkflowEditorTunnel.injectProps(ElsaActivityPicker, ['activityDescriptors']);

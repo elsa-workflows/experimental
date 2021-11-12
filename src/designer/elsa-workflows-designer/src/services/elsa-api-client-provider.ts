@@ -3,6 +3,7 @@ import {Service as MiddlewareService} from 'axios-middleware';
 import {EventBus} from './event-bus';
 import {ActivityDescriptor, ActivityDescriptorResponse,} from "../models";
 import {EventTypes} from "../models/events";
+import 'reflect-metadata';
 import {Container, Service} from "typedi";
 import {ServerSettings} from "./server-settings";
 
@@ -47,18 +48,16 @@ export interface ActivitiesApi {
 @Service()
 export class ElsaApiClientProvider
 {
-  private _serverSettings: ServerSettings;
-  private _elsaClient: ElsaClient;
+  private elsaClient: ElsaClient;
 
-  constructor(serverSettings: ServerSettings) {
-    this._serverSettings = serverSettings;
+  constructor(private serverSettings: ServerSettings) {
   }
 
   public async getClient(): Promise<ElsaClient>
   {
-    if(!!this._elsaClient)
-      return this._elsaClient;
+    if(!!this.elsaClient)
+      return this.elsaClient;
 
-    return this._elsaClient = await createElsaClient(this._serverSettings.baseAddress);
+    return this.elsaClient = await createElsaClient(this.serverSettings.baseAddress);
   }
 }
