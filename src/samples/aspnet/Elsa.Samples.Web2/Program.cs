@@ -1,6 +1,5 @@
 using System;
 using Elsa.Activities.Http.Extensions;
-using Elsa.Api;
 using Elsa.Api.Endpoints.Events;
 using Elsa.Api.Endpoints.Workflows;
 using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;

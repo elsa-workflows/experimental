@@ -1,8 +1,6 @@
 using System;
 using Elsa.Activities.Console;
 using Elsa.Activities.Http.Extensions;
-using Elsa.Api;
-using Elsa.Api.Converters;
 using Elsa.Api.Core.Extensions;
 using Elsa.Api.Endpoints.ActivityDescriptors;
 using Elsa.Api.Endpoints.Events;
