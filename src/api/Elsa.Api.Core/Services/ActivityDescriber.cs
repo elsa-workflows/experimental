@@ -35,7 +35,7 @@ namespace Elsa.Api.Core.Services
             var displayNameAttr = activityType.GetCustomAttribute<DisplayNameAttribute>();
             var displayName = displayNameAttr?.DisplayName ?? typeName.Humanize(LetterCasing.Title);
             var categoryAttr = activityType.GetCustomAttribute<CategoryAttribute>();
-            var category = categoryAttr?.Category ?? "Miscellaneous";
+            var category = categoryAttr?.Category ?? GetCategoryFromNamespace(ns) ?? "Miscellaneous";
             var descriptionAttr = activityType.GetCustomAttribute<DescriptionAttribute>();
             var description = descriptionAttr?.Description;
 
@@ -66,6 +66,16 @@ namespace Elsa.Api.Core.Services
             };
 
             return ValueTask.FromResult(descriptor);
+        }
+
+        private string? GetCategoryFromNamespace(string? ns)
+        {
+            if (string.IsNullOrWhiteSpace(ns))
+                return null;
+
+            var index = ns.LastIndexOf('.');
+
+            return index < 0 ? ns : ns[index..];
         }
 
         private IEnumerable<ActivityInputDescriptor> DescribeInputProperties(IEnumerable<PropertyInfo> properties)
