@@ -24,16 +24,15 @@ export class ElsaWorkflowEditor {
     await this.updateLayout();
   }
 
+  @Listen('activityEditRequested')
+  async handleActivityEditRequested() {
+    await this.slideOverPanel.show();
+  }
+
   async componentWillLoad() {
     const elsaClientProvider = Container.get(ElsaApiClientProvider);
     const client = await elsaClientProvider.getClient();
     this.activityDescriptors = await client.activityDescriptorsApi.list();
-  }
-
-  async componentDidLoad() {
-    const graph = this.graph = this.activityPicker.graph = await this.canvas.getGraph();
-
-    graph.on('node:dblclick', this.onNodeDoubleClick);
   }
 
   private updateLayout = async () => {
@@ -60,42 +59,9 @@ export class ElsaWorkflowEditor {
   private async onDrop(e: DragEvent) {
     const json = e.dataTransfer.getData('activity-descriptor');
     const activityDescriptor: ActivityDescriptor = JSON.parse(json);
-    const graph = await this.graph;
 
-    const node =
-      graph.createNode({
-        shape: 'activity',
-        text: activityDescriptor.displayName,
-        x: e.offsetX,
-        y: e.offsetY,
-        ports: [
-          {
-            id: 'inbound1',
-            group: 'in',
-            attrs: {
-              text: {
-                text: 'In'
-              }
-            }
-          },
-          {
-            id: 'outbound1',
-            group: 'out',
-            attrs: {
-              text: {
-                text: 'Done'
-              }
-            }
-          }
-        ]
-      });
-
-    graph.addNode(node);
+    await this.canvas.addActivity({descriptor: activityDescriptor, x: e.offsetX, y: e.offsetY});
   }
-
-  private onNodeDoubleClick = async () => {
-    await this.slideOverPanel.show();
-  };
 
   render() {
 
@@ -116,7 +82,8 @@ export class ElsaWorkflowEditor {
                       orientation={PanelOrientation.Horizontal}>
             <elsa-trigger-container/>
           </elsa-panel>
-          <elsa-canvas class="absolute" ref={el => this.canvas = el} onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
+          <elsa-canvas class="absolute" ref={el => this.canvas = el}
+                       onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
                        onDrop={e => this.onDrop(e)}/>
           <elsa-slide-over-panel ref={el => this.slideOverPanel = el} headerText="Write Line"/>
         </div>
