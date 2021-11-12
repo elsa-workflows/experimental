@@ -1,4 +1,4 @@
-import {Component, Element, Event, EventEmitter, h, Method} from '@stencil/core';
+import {Component, Element, Event, EventEmitter, h, Host, Method} from '@stencil/core';
 import {Graph, Node, Shape} from '@antv/x6';
 import '../../../models/shapes';
 import '../../../models/ports';
@@ -18,20 +18,12 @@ export class ElsaFreeFlowchart implements ActivityComponent {
 
   @Event() activityEditorRequested: EventEmitter;
 
-  // @Method()
-  // public async getGraph(): Promise<Graph> {
-  //   return this.graph;
-  // };
-
-  // @Method()
-  // public async resize(width?: number, height?: number): Promise<void> {
-  //   this.graph.resize(width, height);
-  // }
-
   @Method()
   public async updateLayout(): Promise<void> {
+    console.debug('update from free flowchart');
     const width = this.el.clientWidth;
     const height = this.el.clientHeight;
+    console.debug({width, height});
     this.graph.resize(width, height);
   }
 
@@ -279,46 +271,6 @@ export class ElsaFreeFlowchart implements ActivityComponent {
       }
     });
   }
-
-  // private static onDragOver(e: DragEvent) {
-  //   e.preventDefault();
-  // }
-
-  // private async onDrop(e: DragEvent) {
-  //   const json = e.dataTransfer.getData('activity-descriptor');
-  //   const activityDescriptor: ActivityDescriptor = JSON.parse(json);
-  //   const graph = this.graph;
-  //
-  //   const node =
-  //     graph.createNode({
-  //       shape: 'activity',
-  //       text: activityDescriptor.displayName,
-  //       x: e.offsetX,
-  //       y: e.offsetY,
-  //       ports: [
-  //         {
-  //           id: 'inbound1',
-  //           group: 'in',
-  //           attrs: {
-  //             text: {
-  //               text: 'In'
-  //             }
-  //           }
-  //         },
-  //         {
-  //           id: 'outbound1',
-  //           group: 'out',
-  //           attrs: {
-  //             text: {
-  //               text: 'Done'
-  //             }
-  //           }
-  //         }
-  //       ]
-  //     });
-  //
-  //   graph.addNode(node);
-  // }
 
   private onNodeDoubleClick = async () => {
     this.activityEditorRequested.emit();
