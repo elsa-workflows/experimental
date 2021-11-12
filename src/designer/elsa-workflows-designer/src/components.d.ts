@@ -6,7 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
-import { ActivityDescriptor } from "./models";
+import { Activity, ActivityDescriptor } from "./models";
 import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
 import { PanelOrientation, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";

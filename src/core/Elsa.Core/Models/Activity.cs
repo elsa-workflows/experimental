@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 
@@ -10,6 +11,7 @@ namespace Elsa.Models
 
         public string Id { get; set; } = default!;
         public string ActivityType { get; set; }
+        public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
 
         public virtual ValueTask ExecuteAsync(ActivityExecutionContext context)
         {

@@ -23,7 +23,6 @@ export class ElsaCanvas {
 
   @Method()
   public async updateLayout(): Promise<void> {
-    console.debug('update from canvas');
     await this.root.updateLayout();
   }
 

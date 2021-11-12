@@ -1,7 +1,6 @@
 import {Component, Listen, h} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
 import {ActivityDescriptor} from "../../../models";
-import {Graph} from "@antv/x6";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
 import {Container} from "typedi";
 import {ElsaApiClientProvider} from "../../../services/elsa-api-client-provider";
@@ -15,7 +14,6 @@ export class ElsaWorkflowEditor {
   private canvas: HTMLElsaCanvasElement;
   private container: HTMLDivElement;
   private activityPicker: HTMLElsaActivityPickerElement;
-  private graph: Graph;
   private slideOverPanel: HTMLElsaSlideOverPanelElement;
   private activityDescriptors: Array<ActivityDescriptor> = [];
 
