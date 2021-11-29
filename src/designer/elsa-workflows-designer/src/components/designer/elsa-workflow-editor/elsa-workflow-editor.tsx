@@ -14,8 +14,9 @@ export class ElsaWorkflowEditor {
   private canvas: HTMLElsaCanvasElement;
   private container: HTMLDivElement;
   private activityPicker: HTMLElsaActivityPickerElement;
-  private slideOverPanel: HTMLElsaSlideOverPanelElement;
+  private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
   private activityDescriptors: Array<ActivityDescriptor> = [];
+
 
   @Listen('resize', {target: 'window'})
   async handResize() {
@@ -24,7 +25,7 @@ export class ElsaWorkflowEditor {
 
   @Listen('activityEditRequested')
   async handleActivityEditRequested() {
-    await this.slideOverPanel.show();
+    await this.activityPropertiesEditor.show();
   }
 
   async componentWillLoad() {
@@ -83,7 +84,7 @@ export class ElsaWorkflowEditor {
           <elsa-canvas class="absolute" ref={el => this.canvas = el}
                        onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
                        onDrop={e => this.onDrop(e)}/>
-          <elsa-slide-over-panel ref={el => this.slideOverPanel = el} headerText="Write Line"/>
+          <elsa-activity-properties-editor ref={el => this.activityPropertiesEditor = el} />
         </div>
       </WorkflowEditorTunnel.Provider>
     );

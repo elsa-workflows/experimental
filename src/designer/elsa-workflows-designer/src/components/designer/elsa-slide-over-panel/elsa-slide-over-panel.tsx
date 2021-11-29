@@ -1,4 +1,5 @@
 import {Component, h, Method, Prop, State} from "@stencil/core";
+import {TabDefinition} from "./models";
 
 @Component({
   tag: 'elsa-slide-over-panel'
@@ -7,6 +8,7 @@ export class ElsaSlideOverPanel {
   private overlayElement: HTMLElement;
 
   @Prop() public headerText: string;
+  @Prop() public tabs: Array<TabDefinition> = [];
 
   @Method()
   public async show(): Promise<void> {
@@ -52,6 +54,9 @@ export class ElsaSlideOverPanel {
     const wrapperClass = isVisible ? 'block' : 'hidden';
     const backdropClass = !isHiding && isVisible ? 'opacity-50' : 'opacity-0';
     const panelClass = !isHiding && isVisible ? 'max-w-2xl w-2xl' : 'max-w-0 w-0';
+    const tabs = this.tabs;
+
+    debugger;
 
     return (
       <div class={`fixed inset-0 overflow-hidden z-10 ${wrapperClass}`} aria-labelledby="slide-over-title" role="dialog"
@@ -93,47 +98,19 @@ export class ElsaSlideOverPanel {
 
                     <div class="border-b border-gray-200">
                       <nav class="-mb-px flex" aria-label="Tabs">
-                        <a href="#"
-                           class="border-blue-500 text-blue-600 py-4 px-1 text-center border-b-2 font-medium text-sm flex-1">
-                          Common
-                        </a>
-
-                        <a href="#"
-                           class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-center border-b-2 font-medium text-sm flex-1">
-                          Advanced
-                        </a>
-
-                        <a href="#"
-                           class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-center border-b-2 font-medium text-sm flex-1">
-                          JSON
-                        </a>
+                        {tabs.map(tab => {
+                          return <a href="#"
+                                    class="border-blue-500 text-blue-600 py-4 px-1 text-center border-b-2 font-medium text-sm flex-1">
+                            {tab.displayText}
+                          </a>
+                        })}
                       </nav>
                     </div>
 
                     <div class="flex-1 relative">
 
                       <div class="absolute inset-0 overflow-y-scroll">
-                        <div class="p-4">
-                          <label htmlFor="activity-name" class="block text-sm font-medium text-gray-700">
-                            Name
-                          </label>
-                          <div class="mt-1">
-                            <input type="text" name="activity-name" id="activity-name"
-                                   class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
-                          </div>
-                          <p class="mt-2 text-sm text-gray-500">The name of the activity.</p>
-                        </div>
-
-                        <div class="p-4">
-                          <label htmlFor="activity-description" class="block text-sm font-medium text-gray-700">
-                            Description
-                          </label>
-                          <div class="mt-1">
-                        <textarea name="activity-description" id="activity-description"
-                                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
-                          </div>
-                          <p class="mt-2 text-sm text-gray-500">A description for this activity.</p>
-                        </div>
+                        {tabs.map(tab => tab.content())}
                       </div>
                     </div>
                   </div>

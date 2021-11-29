@@ -10,10 +10,15 @@ import { Activity, ActivityDescriptor } from "./models";
 import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
 import { PanelOrientation, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
+import { TabDefinition } from "./components/designer/elsa-slide-over-panel/models";
 export namespace Components {
     interface ElsaActivityPicker {
         "activityDescriptors": Array<ActivityDescriptor>;
         "graph": Graph;
+    }
+    interface ElsaActivityPropertiesEditor {
+        "hide": () => Promise<void>;
+        "show": () => Promise<void>;
     }
     interface ElsaCanvas {
         "addActivity": (args: AddActivityArgs) => Promise<void>;
@@ -33,6 +38,7 @@ export namespace Components {
         "headerText": string;
         "hide": () => Promise<void>;
         "show": () => Promise<void>;
+        "tabs": Array<TabDefinition>;
     }
     interface ElsaTriggerContainer {
     }
@@ -45,6 +51,12 @@ declare global {
     var HTMLElsaActivityPickerElement: {
         prototype: HTMLElsaActivityPickerElement;
         new (): HTMLElsaActivityPickerElement;
+    };
+    interface HTMLElsaActivityPropertiesEditorElement extends Components.ElsaActivityPropertiesEditor, HTMLStencilElement {
+    }
+    var HTMLElsaActivityPropertiesEditorElement: {
+        prototype: HTMLElsaActivityPropertiesEditorElement;
+        new (): HTMLElsaActivityPropertiesEditorElement;
     };
     interface HTMLElsaCanvasElement extends Components.ElsaCanvas, HTMLStencilElement {
     }
@@ -90,6 +102,7 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
+        "elsa-activity-properties-editor": HTMLElsaActivityPropertiesEditorElement;
         "elsa-canvas": HTMLElsaCanvasElement;
         "elsa-free-flowchart": HTMLElsaFreeFlowchartElement;
         "elsa-panel": HTMLElsaPanelElement;
@@ -104,10 +117,12 @@ declare namespace LocalJSX {
         "activityDescriptors"?: Array<ActivityDescriptor>;
         "graph"?: Graph;
     }
+    interface ElsaActivityPropertiesEditor {
+    }
     interface ElsaCanvas {
     }
     interface ElsaFreeFlowchart {
-        "onActivityEditorRequested"?: (event: CustomEvent<any>) => void;
+        "onActivityEditRequested"?: (event: CustomEvent<any>) => void;
     }
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
@@ -118,6 +133,7 @@ declare namespace LocalJSX {
     }
     interface ElsaSlideOverPanel {
         "headerText"?: string;
+        "tabs"?: Array<TabDefinition>;
     }
     interface ElsaTriggerContainer {
     }
@@ -125,6 +141,7 @@ declare namespace LocalJSX {
     }
     interface IntrinsicElements {
         "elsa-activity-picker": ElsaActivityPicker;
+        "elsa-activity-properties-editor": ElsaActivityPropertiesEditor;
         "elsa-canvas": ElsaCanvas;
         "elsa-free-flowchart": ElsaFreeFlowchart;
         "elsa-panel": ElsaPanel;
@@ -139,6 +156,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "elsa-activity-picker": LocalJSX.ElsaActivityPicker & JSXBase.HTMLAttributes<HTMLElsaActivityPickerElement>;
+            "elsa-activity-properties-editor": LocalJSX.ElsaActivityPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaActivityPropertiesEditorElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
             "elsa-free-flowchart": LocalJSX.ElsaFreeFlowchart & JSXBase.HTMLAttributes<HTMLElsaFreeFlowchartElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;

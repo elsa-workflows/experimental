@@ -20,7 +20,7 @@ export class ElsaFreeFlowchart implements ActivityComponent {
   private graph: Graph;
   private target: Node;
 
-  @Event() activityEditorRequested: EventEmitter;
+  @Event() activityEditRequested: EventEmitter;
 
   @Method()
   public async updateLayout(): Promise<void> {
@@ -57,7 +57,7 @@ export class ElsaFreeFlowchart implements ActivityComponent {
   }
 
   private onNodeDoubleClick = async () => {
-    this.activityEditorRequested.emit();
+    this.activityEditRequested.emit();
   };
 
   render() {
