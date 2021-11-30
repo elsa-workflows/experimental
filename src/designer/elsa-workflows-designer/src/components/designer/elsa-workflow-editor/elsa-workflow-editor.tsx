@@ -1,10 +1,8 @@
 import {Component, h, Listen, Prop, State} from "@stencil/core";
-import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
+import {PanelPosition, PanelStateChangedArgs} from "../elsa-panel/models";
 import {Activity, ActivityDescriptor, ActivityEditRequestArgs} from "../../../models";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
 import ShellTunnel from "../elsa-shell/state";
-import {Container} from "typedi";
-import {ElsaApiClientProvider} from "../../../services/elsa-api-client-provider";
 
 @Component({
   tag: 'elsa-workflow-editor',
@@ -38,12 +36,6 @@ export class ElsaWorkflowEditor {
     this.applyActivityChanges = e.detail.applyChanges;
   }
 
-  async componentWillLoad() {
-    // const elsaClientProvider = Container.get(ElsaApiClientProvider);
-    // const client = await elsaClientProvider.getClient();
-    // this.activityDescriptors = await client.activityDescriptorsApi.list();
-  }
-
   private updateLayout = async () => {
     await this.canvas.updateLayout();
   };
@@ -60,6 +52,7 @@ export class ElsaWorkflowEditor {
 
   private onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-picker-closed', e.expanded)
   private onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('trigger-container-closed', e.expanded)
+  private onActivityEditorPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-editor-closed', e.expanded)
 
   private static onDragOver(e: DragEvent) {
     e.preventDefault();
@@ -91,20 +84,27 @@ export class ElsaWorkflowEditor {
       <WorkflowEditorTunnel.Provider state={tunnelState}>
         <div class="absolute top-0 left-0 bottom-0 right-0" ref={el => this.container = el}>
           <elsa-panel class="elsa-activity-picker-container"
+                      position={PanelPosition.Left}
                       onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
             <elsa-activity-picker ref={el => this.activityPicker = el}/>
           </elsa-panel>
           <elsa-panel class="elsa-trigger-container"
                       onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
-                      orientation={PanelOrientation.Horizontal}>
+                      position={PanelPosition.Top}>
             <elsa-trigger-container/>
           </elsa-panel>
           <elsa-canvas class="absolute" ref={el => this.canvas = el}
                        onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
                        onDrop={e => this.onDrop(e)}/>
-          <elsa-activity-properties-editor activity={activityUnderEdit}
-                                           onActivityUpdated={e => this.onActivityUpdated(e)}
-                                           ref={el => this.activityPropertiesEditor = el}/>
+
+          <elsa-panel class="elsa-activity-editor-container"
+                      position={PanelPosition.Right}
+                      onExpandedStateChanged={e => this.onActivityEditorPanelStateChanged(e.detail)}>
+            <elsa-activity-properties-editor activity={activityUnderEdit}
+                                             onActivityUpdated={e => this.onActivityUpdated(e)}
+                                             ref={el => this.activityPropertiesEditor = el}/>
+          </elsa-panel>
+
         </div>
       </WorkflowEditorTunnel.Provider>
     );

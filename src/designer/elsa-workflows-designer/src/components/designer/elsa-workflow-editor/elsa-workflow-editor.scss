@@ -1,24 +1,33 @@
 $activity-picker-width: 300px;
 $trigger-panel-height: 130px;
+$activity-editor-width: 500px;
 
 elsa-canvas {
   left: $activity-picker-width;
   top: $trigger-panel-height;
-  right: 0;
+  right: $activity-editor-width;
   bottom: 0;
 }
 
 elsa-panel.elsa-trigger-container {
   left: $activity-picker-width;
+  right: $activity-editor-width;
 }
 
 elsa-panel.panel-state-expanded.elsa-trigger-container {
   left: $activity-picker-width;
+  right: $activity-editor-width;
   height: $trigger-panel-height;
 }
 
 elsa-panel.panel-state-expanded.elsa-activity-picker-container {
   width: $activity-picker-width;
+}
+
+elsa-panel.panel-state-expanded.elsa-activity-editor-container {
+  width: $activity-editor-width;
+  right: 0;
+  left: unset;
 }
 
 .activity-picker-closed {
@@ -44,5 +53,20 @@ elsa-panel.panel-state-expanded.elsa-activity-picker-container {
 
   elsa-trigger-container {
     display: none;
+  }
+}
+
+.activity-editor-closed {
+
+  elsa-activity-properties-editor {
+    display: none;
+  }
+
+  elsa-canvas {
+    right: 0;
+  }
+
+  elsa-panel.elsa-trigger-container {
+    right: 0;
   }
 }

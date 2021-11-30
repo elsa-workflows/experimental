@@ -45,12 +45,8 @@ export class ElsaActivityPropertiesEditor {
     const actions = [DefaultActions.Cancel, DefaultActions.Save];
 
     return (
-      <elsa-slide-over-panel expand={expanded} headerText={title} tabs={tabs} selectedTab={selectedTab}
-                             actions={actions}
-                             ref={el => this.slideOverPanel = el}
-                             onCollapsed={() => this.onPanelCollapsed()}
-                             onSubmitted={e => this.onSubmit(e)}
-      />
+      <elsa-form-panel headerText={title} tabs={tabs} selectedTab={selectedTab}
+                       actions={actions}/>
     );
   }
 

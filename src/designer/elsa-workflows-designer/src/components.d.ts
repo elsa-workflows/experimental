@@ -8,9 +8,10 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
 import { Activity, ActivityDescriptor, ActivityEditRequestArgs, ActivityInput } from "./models";
 import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
+import { ActionDefinition, TabDefinition } from "./components/designer/elsa-form-panel/models";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
-import { PanelOrientation, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
-import { ActionDefinition, TabDefinition } from "./components/designer/elsa-slide-over-panel/models";
+import { PanelPosition, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
+import { ActionDefinition as ActionDefinition1, TabDefinition as TabDefinition1 } from "./components/designer/elsa-slide-over-panel/models";
 export namespace Components {
     interface ElsaActivityPicker {
         "activityDescriptors": Array<ActivityDescriptor>;
@@ -26,12 +27,18 @@ export namespace Components {
         "addActivity": (args: AddActivityArgs) => Promise<void>;
         "updateLayout": () => Promise<void>;
     }
+    interface ElsaFormPanel {
+        "actions": Array<ActionDefinition>;
+        "headerText": string;
+        "selectedTab"?: TabDefinition;
+        "tabs": Array<TabDefinition>;
+    }
     interface ElsaFreeFlowchart {
         "addActivity": (args: AddActivityArgs) => Promise<void>;
         "updateLayout": () => Promise<void>;
     }
     interface ElsaPanel {
-        "orientation": PanelOrientation;
+        "position": PanelPosition;
     }
     interface ElsaShell {
         "serverUrl": string;
@@ -69,6 +76,12 @@ declare global {
     var HTMLElsaCanvasElement: {
         prototype: HTMLElsaCanvasElement;
         new (): HTMLElsaCanvasElement;
+    };
+    interface HTMLElsaFormPanelElement extends Components.ElsaFormPanel, HTMLStencilElement {
+    }
+    var HTMLElsaFormPanelElement: {
+        prototype: HTMLElsaFormPanelElement;
+        new (): HTMLElsaFormPanelElement;
     };
     interface HTMLElsaFreeFlowchartElement extends Components.ElsaFreeFlowchart, HTMLStencilElement {
     }
@@ -110,6 +123,7 @@ declare global {
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
         "elsa-activity-properties-editor": HTMLElsaActivityPropertiesEditorElement;
         "elsa-canvas": HTMLElsaCanvasElement;
+        "elsa-form-panel": HTMLElsaFormPanelElement;
         "elsa-free-flowchart": HTMLElsaFreeFlowchartElement;
         "elsa-panel": HTMLElsaPanelElement;
         "elsa-shell": HTMLElsaShellElement;
@@ -130,12 +144,19 @@ declare namespace LocalJSX {
     }
     interface ElsaCanvas {
     }
+    interface ElsaFormPanel {
+        "actions"?: Array<ActionDefinition>;
+        "headerText"?: string;
+        "onSubmitted"?: (event: CustomEvent<FormData>) => void;
+        "selectedTab"?: TabDefinition;
+        "tabs"?: Array<TabDefinition>;
+    }
     interface ElsaFreeFlowchart {
         "onActivityEditRequested"?: (event: CustomEvent<ActivityEditRequestArgs>) => void;
     }
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
-        "orientation"?: PanelOrientation;
+        "position"?: PanelPosition;
     }
     interface ElsaShell {
         "serverUrl"?: string;
@@ -158,6 +179,7 @@ declare namespace LocalJSX {
         "elsa-activity-picker": ElsaActivityPicker;
         "elsa-activity-properties-editor": ElsaActivityPropertiesEditor;
         "elsa-canvas": ElsaCanvas;
+        "elsa-form-panel": ElsaFormPanel;
         "elsa-free-flowchart": ElsaFreeFlowchart;
         "elsa-panel": ElsaPanel;
         "elsa-shell": ElsaShell;
@@ -173,6 +195,7 @@ declare module "@stencil/core" {
             "elsa-activity-picker": LocalJSX.ElsaActivityPicker & JSXBase.HTMLAttributes<HTMLElsaActivityPickerElement>;
             "elsa-activity-properties-editor": LocalJSX.ElsaActivityPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaActivityPropertiesEditorElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
+            "elsa-form-panel": LocalJSX.ElsaFormPanel & JSXBase.HTMLAttributes<HTMLElsaFormPanelElement>;
             "elsa-free-flowchart": LocalJSX.ElsaFreeFlowchart & JSXBase.HTMLAttributes<HTMLElsaFreeFlowchartElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
             "elsa-shell": LocalJSX.ElsaShell & JSXBase.HTMLAttributes<HTMLElsaShellElement>;

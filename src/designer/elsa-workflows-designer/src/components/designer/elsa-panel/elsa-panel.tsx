@@ -1,12 +1,12 @@
-import {Component, h, Event, EventEmitter, State, Prop, Host} from "@stencil/core";
-import {PanelOrientation, PanelStateChangedArgs} from "./models";
+import {Component, Event, EventEmitter, h, Host, Prop, State} from "@stencil/core";
+import {PanelPosition, PanelStateChangedArgs} from "./models";
 
 @Component({
   tag: 'elsa-panel',
   styleUrl: 'elsa-panel.scss',
 })
 export class ElsaPanel {
-  @Prop() orientation: PanelOrientation = PanelOrientation.Vertical;
+  @Prop() position: PanelPosition = PanelPosition.Left;
   @Event() expandedStateChanged: EventEmitter<PanelStateChangedArgs>;
   @State() isExpanded: boolean = true;
 
@@ -17,13 +17,26 @@ export class ElsaPanel {
 
   render() {
     const isExpanded = this.isExpanded;
-    const orientation = this.orientation;
-    const containerCssClass = orientation == PanelOrientation.Vertical ? 'panel-orientation-v left-0 top-0 bottom-0 border-r' : 'panel-orientation-h left-0 top-0 right-0 border-b';
+    const position = this.position;
     const stateClass = isExpanded ? 'panel-state-expanded' : 'panel-state-collapsed';
-    const toggleCssClass = orientation == PanelOrientation.Vertical ? 'panel-toggle-v' : 'panel-toggle-h';
+
+    const containerClassMap = [];
+    containerClassMap[PanelPosition.Left] = 'panel-position-left left-0 top-0 bottom-0 border-r';
+    containerClassMap[PanelPosition.Top] = 'panel-position-top left-0 top-0 right-0 border-b';
+    containerClassMap[PanelPosition.Right] = 'panel-position-right right-0 top-0 bottom-0 border-l';
+    const containerCssClass = containerClassMap[position];
+
+    const toggleClassMap = {};
+    toggleClassMap[PanelPosition.Left] = 'panel-toggle-left';
+    toggleClassMap[PanelPosition.Top] = 'panel-toggle-top';
+    toggleClassMap[PanelPosition.Right] = 'panel-toggle-right';
+    toggleClassMap[PanelPosition.Bottom] = 'panel-toggle-bottom';
+
+    const toggleCssClass = toggleClassMap[position];
 
     return (
-      <Host class={`panel absolute transition-all duration-200 ease-in-out bg-white z-10 ${containerCssClass} ${stateClass}`}>
+      <Host
+        class={`panel absolute transition-all duration-200 ease-in-out bg-white z-10 ${containerCssClass} ${stateClass}`}>
 
         <div class="panel-content-container">
           <slot/>

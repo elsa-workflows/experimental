@@ -54,7 +54,7 @@ export class ElsaFreeFlowchart implements ActivityComponent {
   public async componentDidLoad() {
     const graph = this.graph = createGraph(this.container);
 
-    graph.on('node:dblclick', this.onNodeDoubleClick);
+    graph.on('node:click', this.onNodeClick);
 
     await this.updateLayout();
   }
@@ -63,7 +63,7 @@ export class ElsaFreeFlowchart implements ActivityComponent {
 
   };
 
-  private onNodeDoubleClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
+  private onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
     const node = e.node;
     const activity = node.data as Activity;
 
