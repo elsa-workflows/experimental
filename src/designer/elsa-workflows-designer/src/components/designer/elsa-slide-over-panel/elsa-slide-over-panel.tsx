@@ -1,4 +1,4 @@
-import {Component, h, Method, Prop, State} from "@stencil/core";
+import {Component, Event, EventEmitter, h, Method, Prop, State, Watch} from "@stencil/core";
 import {TabDefinition} from "./models";
 
 @Component({
@@ -9,6 +9,9 @@ export class ElsaSlideOverPanel {
 
   @Prop() public headerText: string;
   @Prop() public tabs: Array<TabDefinition> = [];
+  @Prop() public expand: boolean;
+
+  @Event() public collapsed: EventEmitter;
 
   @Method()
   public async show(): Promise<void> {
@@ -26,6 +29,13 @@ export class ElsaSlideOverPanel {
   @State() public isHiding: boolean = false;
   @State() public isShowing: boolean = false;
   @State() public isVisible: boolean = false;
+
+  @Watch('expand')
+  private handleExpanded(value: boolean) {
+    this.isShowing = value;
+    this.isHiding = !value;
+    this.isVisible = value;
+  }
 
   public render() {
     return this.renderPanel();
@@ -45,6 +55,7 @@ export class ElsaSlideOverPanel {
     if (this.isHiding) {
       this.isVisible = false;
       this.isHiding = false;
+      this.collapsed.emit();
     }
   };
 
@@ -55,8 +66,6 @@ export class ElsaSlideOverPanel {
     const backdropClass = !isHiding && isVisible ? 'opacity-50' : 'opacity-0';
     const panelClass = !isHiding && isVisible ? 'max-w-2xl w-2xl' : 'max-w-0 w-0';
     const tabs = this.tabs;
-
-    debugger;
 
     return (
       <div class={`fixed inset-0 overflow-hidden z-10 ${wrapperClass}`} aria-labelledby="slide-over-title" role="dialog"

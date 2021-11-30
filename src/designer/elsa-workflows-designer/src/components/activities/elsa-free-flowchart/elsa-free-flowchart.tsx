@@ -1,5 +1,5 @@
 import {Component, Element, Event, EventEmitter, h, Host, Method} from '@stencil/core';
-import {Graph, Node, Shape} from '@antv/x6';
+import {Collection, EdgeView, Graph, Node, NodeView, Shape} from '@antv/x6';
 import {v4 as uuid} from 'uuid';
 import '../../../models/shapes';
 import '../../../models/ports';
@@ -8,6 +8,9 @@ import {AddActivityArgs} from "../../designer/elsa-canvas/elsa-canvas";
 import {Activity} from "../../../models";
 import {createGraph} from "./graph-factory";
 import {createNode} from "./node-factory";
+import NodeEventArgs = Collection.NodeEventArgs;
+import EventArgs = EdgeView.EventArgs;
+import PositionEventArgs = NodeView.PositionEventArgs;
 
 @Component({
   tag: 'elsa-free-flowchart',
@@ -20,7 +23,7 @@ export class ElsaFreeFlowchart implements ActivityComponent {
   private graph: Graph;
   private target: Node;
 
-  @Event() activityEditRequested: EventEmitter;
+  @Event() activityEditRequested: EventEmitter<Activity>;
 
   @Method()
   public async updateLayout(): Promise<void> {
@@ -56,8 +59,10 @@ export class ElsaFreeFlowchart implements ActivityComponent {
     await this.updateLayout();
   }
 
-  private onNodeDoubleClick = async () => {
-    this.activityEditRequested.emit();
+  private onNodeDoubleClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
+    debugger;
+    const activity = e.node.data as Activity;
+    this.activityEditRequested.emit(activity);
   };
 
   render() {

@@ -7,6 +7,7 @@ export interface ActivityDescriptor {
   displayName: string;
   category: string;
   kind: ActivityKind;
+  inputProperties: Array<ActivityInputDescriptor>
 }
 
 export interface TriggerDescriptor {
@@ -19,3 +20,27 @@ export enum ActivityKind {
   Action,
   Trigger
 }
+
+export interface ActivityPropertyDescriptor {
+  name: string;
+  type: DotNetType;
+  displayName?: string;
+  description?: string;
+  order: number;
+  isBrowsable?: boolean;
+}
+
+export interface ActivityInputDescriptor extends ActivityPropertyDescriptor {
+  uiHint: string;
+  options?: any;
+  category?: string;
+  defaultValue?: any;
+  defaultSyntax?: string;
+  supportedSyntaxes?: Array<string>;
+  isReadOnly?: boolean;
+}
+
+export interface ActivityOutputDescriptor extends ActivityPropertyDescriptor {
+}
+
+export type DotNetType = string;

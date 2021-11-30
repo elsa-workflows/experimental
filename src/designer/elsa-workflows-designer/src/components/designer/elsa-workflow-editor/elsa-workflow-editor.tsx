@@ -1,6 +1,6 @@
-import {Component, Listen, h} from "@stencil/core";
+import {Component, h, Listen, State} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
-import {ActivityDescriptor} from "../../../models";
+import {Activity, ActivityDescriptor} from "../../../models";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
 import {Container} from "typedi";
 import {ElsaApiClientProvider} from "../../../services/elsa-api-client-provider";
@@ -17,15 +17,21 @@ export class ElsaWorkflowEditor {
   private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
   private activityDescriptors: Array<ActivityDescriptor> = [];
 
+  @State() private activityUnderEdit?: Activity;
 
   @Listen('resize', {target: 'window'})
   async handResize() {
     await this.updateLayout();
   }
 
+  @Listen('collapsed')
+  async handPanelCollapsed() {
+    this.activityUnderEdit = null;
+  }
+
   @Listen('activityEditRequested')
-  async handleActivityEditRequested() {
-    await this.activityPropertiesEditor.show();
+  async handleActivityEditRequested(e: CustomEvent<Activity>) {
+    this.activityUnderEdit = e.detail;
   }
 
   async componentWillLoad() {
@@ -69,6 +75,8 @@ export class ElsaWorkflowEditor {
       activityDescriptors: this.activityDescriptors
     };
 
+    const activityUnderEdit = this.activityUnderEdit;
+
     return (
       <WorkflowEditorTunnel.Provider state={tunnelState}>
         <div class="absolute top-0 left-0 bottom-0 right-0" ref={el => this.container = el}>
@@ -84,7 +92,7 @@ export class ElsaWorkflowEditor {
           <elsa-canvas class="absolute" ref={el => this.canvas = el}
                        onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
                        onDrop={e => this.onDrop(e)}/>
-          <elsa-activity-properties-editor ref={el => this.activityPropertiesEditor = el} />
+          <elsa-activity-properties-editor activity={activityUnderEdit} ref={el => this.activityPropertiesEditor = el}/>
         </div>
       </WorkflowEditorTunnel.Provider>
     );

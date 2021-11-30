@@ -17,6 +17,8 @@ export namespace Components {
         "graph": Graph;
     }
     interface ElsaActivityPropertiesEditor {
+        "activity"?: Activity;
+        "activityDescriptors": Array<ActivityDescriptor>;
         "hide": () => Promise<void>;
         "show": () => Promise<void>;
     }
@@ -35,6 +37,7 @@ export namespace Components {
         "serverUrl": string;
     }
     interface ElsaSlideOverPanel {
+        "expand": boolean;
         "headerText": string;
         "hide": () => Promise<void>;
         "show": () => Promise<void>;
@@ -118,11 +121,13 @@ declare namespace LocalJSX {
         "graph"?: Graph;
     }
     interface ElsaActivityPropertiesEditor {
+        "activity"?: Activity;
+        "activityDescriptors"?: Array<ActivityDescriptor>;
     }
     interface ElsaCanvas {
     }
     interface ElsaFreeFlowchart {
-        "onActivityEditRequested"?: (event: CustomEvent<any>) => void;
+        "onActivityEditRequested"?: (event: CustomEvent<Activity>) => void;
     }
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
@@ -132,7 +137,9 @@ declare namespace LocalJSX {
         "serverUrl"?: string;
     }
     interface ElsaSlideOverPanel {
+        "expand"?: boolean;
         "headerText"?: string;
+        "onCollapsed"?: (event: CustomEvent<any>) => void;
         "tabs"?: Array<TabDefinition>;
     }
     interface ElsaTriggerContainer {
