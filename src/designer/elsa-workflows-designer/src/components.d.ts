@@ -6,7 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
-import { Activity, ActivityDescriptor } from "./models";
+import { Activity, ActivityDescriptor, ActivityEditRequestArgs, ActivityInput } from "./models";
 import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
 import { PanelOrientation, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
@@ -125,11 +125,12 @@ declare namespace LocalJSX {
     interface ElsaActivityPropertiesEditor {
         "activity"?: Activity;
         "activityDescriptors"?: Array<ActivityDescriptor>;
+        "onActivityUpdated"?: (event: CustomEvent<Activity>) => void;
     }
     interface ElsaCanvas {
     }
     interface ElsaFreeFlowchart {
-        "onActivityEditRequested"?: (event: CustomEvent<Activity>) => void;
+        "onActivityEditRequested"?: (event: CustomEvent<ActivityEditRequestArgs>) => void;
     }
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
@@ -143,6 +144,7 @@ declare namespace LocalJSX {
         "expand"?: boolean;
         "headerText"?: string;
         "onCollapsed"?: (event: CustomEvent<any>) => void;
+        "onSubmitted"?: (event: CustomEvent<FormData>) => void;
         "selectedTab"?: TabDefinition;
         "tabs"?: Array<TabDefinition>;
     }

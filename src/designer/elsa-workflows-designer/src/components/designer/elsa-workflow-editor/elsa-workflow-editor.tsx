@@ -1,6 +1,6 @@
 import {Component, h, Listen, State} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
-import {Activity, ActivityDescriptor} from "../../../models";
+import {Activity, ActivityDescriptor, ActivityEditRequestArgs} from "../../../models";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
 import {Container} from "typedi";
 import {ElsaApiClientProvider} from "../../../services/elsa-api-client-provider";
@@ -16,6 +16,7 @@ export class ElsaWorkflowEditor {
   private activityPicker: HTMLElsaActivityPickerElement;
   private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
   private activityDescriptors: Array<ActivityDescriptor> = [];
+  private applyActivityChanges: (activity: Activity) => void;
 
   @State() private activityUnderEdit?: Activity;
 
@@ -30,8 +31,9 @@ export class ElsaWorkflowEditor {
   }
 
   @Listen('activityEditRequested')
-  async handleActivityEditRequested(e: CustomEvent<Activity>) {
-    this.activityUnderEdit = e.detail;
+  async handleActivityEditRequested(e: CustomEvent<ActivityEditRequestArgs>) {
+    this.activityUnderEdit = e.detail.activity;
+    this.applyActivityChanges = e.detail.applyChanges;
   }
 
   async componentWillLoad() {
@@ -68,6 +70,12 @@ export class ElsaWorkflowEditor {
     await this.canvas.addActivity({descriptor: activityDescriptor, x: e.offsetX, y: e.offsetY});
   }
 
+  private onActivityUpdated = (e: CustomEvent<Activity>) => {
+    this.activityUnderEdit = null;
+    const updatedActivity = e.detail;
+    this.applyActivityChanges(updatedActivity);
+  }
+
   render() {
 
     const tunnelState: WorkflowEditorState = {
@@ -92,7 +100,9 @@ export class ElsaWorkflowEditor {
           <elsa-canvas class="absolute" ref={el => this.canvas = el}
                        onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}
                        onDrop={e => this.onDrop(e)}/>
-          <elsa-activity-properties-editor activity={activityUnderEdit} ref={el => this.activityPropertiesEditor = el}/>
+          <elsa-activity-properties-editor activity={activityUnderEdit}
+                                           onActivityUpdated={e => this.onActivityUpdated(e)}
+                                           ref={el => this.activityPropertiesEditor = el}/>
         </div>
       </WorkflowEditorTunnel.Provider>
     );

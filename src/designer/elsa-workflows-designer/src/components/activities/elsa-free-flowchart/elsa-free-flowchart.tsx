@@ -5,7 +5,7 @@ import '../../../models/shapes';
 import '../../../models/ports';
 import {ActivityComponent} from "../activity-component";
 import {AddActivityArgs} from "../../designer/elsa-canvas/elsa-canvas";
-import {Activity} from "../../../models";
+import {Activity, ActivityEditRequestArgs, ActivityInput} from "../../../models";
 import {createGraph} from "./graph-factory";
 import {createNode} from "./node-factory";
 import NodeEventArgs = Collection.NodeEventArgs;
@@ -23,7 +23,7 @@ export class ElsaFreeFlowchart implements ActivityComponent {
   private graph: Graph;
   private target: Node;
 
-  @Event() activityEditRequested: EventEmitter<Activity>;
+  @Event() activityEditRequested: EventEmitter<ActivityEditRequestArgs>;
 
   @Method()
   public async updateLayout(): Promise<void> {
@@ -41,17 +41,17 @@ export class ElsaFreeFlowchart implements ActivityComponent {
     const activity: Activity = {
       id: uuid(),
       activityType: descriptor.activityType,
-      metadata: {}
+      metadata: {},
+      input: new Map<string, ActivityInput>()
     };
 
     const node = createNode(graph, descriptor, activity, x, y);
     graph.addNode(node);
 
     const json = graph.toJSON();
-    console.debug(json);
   }
 
-  async componentDidLoad() {
+  public async componentDidLoad() {
     const graph = this.graph = createGraph(this.container);
 
     graph.on('node:dblclick', this.onNodeDoubleClick);
@@ -59,9 +59,20 @@ export class ElsaFreeFlowchart implements ActivityComponent {
     await this.updateLayout();
   }
 
+  private applyActivityChanges = (activity: Activity) => {
+
+  };
+
   private onNodeDoubleClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
-    const activity = e.node.data as Activity;
-    this.activityEditRequested.emit(activity);
+    const node = e.node;
+    const activity = node.data as Activity;
+
+    const args: ActivityEditRequestArgs = {
+      activity: activity,
+      applyChanges: a => node.data = a
+    };
+
+    this.activityEditRequested.emit(args);
   };
 
   render() {

@@ -16,10 +16,8 @@ namespace Elsa.Models
         public Type TargetType { get; set; }
     }
 
-
     public class Input<T> : Input
     {
-        
         public Input(T literal) : this(new Literal<T>(literal))
         {
         }
@@ -27,11 +25,11 @@ namespace Elsa.Models
         public Input(Func<T> @delegate) : this(new DelegateReference(() => @delegate()))
         {
         }
-        
+
         public Input(Func<ExpressionExecutionContext, T> @delegate) : this(new DelegateReference<T>(@delegate))
         {
         }
-        
+
         public Input(Variable<T> variable) : base(new VariableExpression(variable), variable, typeof(T))
         {
         }
@@ -47,7 +45,7 @@ namespace Elsa.Models
         public Input(ElsaExpression expression) : this(new ElsaExpressionReference(expression))
         {
         }
-        
+
         public Input(IExpression expression, RegisterLocationReference locationReference) : base(expression, locationReference, typeof(T))
         {
         }

@@ -16,10 +16,10 @@ namespace Elsa.Activities.ControlFlow
 
     public class For : Activity
     {
-        [Input] public Input<int> Start { get; set; } = new(0);
-        [Input] public Input<int> End { get; set; } = new(0);
-        [Input] public Input<int> Step { get; set; } = new(1);
-        [Input] public Input<ForOperator> Operator { get; set; } = new(ForOperator.LessThanOrEqual);
+        public Input<int> Start { get; set; } = new(0);
+        public Input<int> End { get; set; } = new(0);
+        public Input<int> Step { get; set; } = new(1);
+        public Input<ForOperator> Operator { get; set; } = new(ForOperator.LessThanOrEqual);
         [Outbound] public IActivity? Body { get; set; }
         public Variable<int?> CurrentValue { get; set; } = new();
 

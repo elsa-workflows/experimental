@@ -10,7 +10,7 @@ import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
 })
 export class ElsaActivityPicker {
   @Prop() graph: Graph;
-  @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
+  @Prop({mutable: true}) activityDescriptors: Array<ActivityDescriptor> = [];
   private dnd: Addon.Dnd;
 
   @Watch('graph')

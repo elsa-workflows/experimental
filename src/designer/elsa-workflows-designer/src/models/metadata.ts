@@ -1,3 +1,5 @@
+import {Type} from "./shared";
+
 export interface ActivityDescriptorResponse {
   activityDescriptors: Array<ActivityDescriptor>;
 }
@@ -23,7 +25,7 @@ export enum ActivityKind {
 
 export interface ActivityPropertyDescriptor {
   name: string;
-  type: DotNetType;
+  type: Type;
   displayName?: string;
   description?: string;
   order: number;
@@ -42,5 +44,3 @@ export interface ActivityInputDescriptor extends ActivityPropertyDescriptor {
 
 export interface ActivityOutputDescriptor extends ActivityPropertyDescriptor {
 }
-
-export type DotNetType = string;

@@ -6,6 +6,7 @@ import {ActionDefinition, ActionType, TabDefinition} from "./models";
 })
 export class ElsaSlideOverPanel {
   private overlayElement: HTMLElement;
+  private formElement: HTMLFormElement;
 
   @Prop() public headerText: string;
   @Prop() public tabs: Array<TabDefinition> = [];
@@ -14,6 +15,8 @@ export class ElsaSlideOverPanel {
   @Prop() public expand: boolean;
 
   @Event() public collapsed: EventEmitter;
+  @Event() public submitted: EventEmitter<FormData>;
+
 
   @Method()
   public async show(): Promise<void> {
@@ -36,7 +39,9 @@ export class ElsaSlideOverPanel {
   private handleExpanded(value: boolean) {
     this.isShowing = value;
     this.isHiding = !value;
-    this.isVisible = value;
+
+    if (value)
+      this.isVisible = true;
   }
 
   public render() {
@@ -50,7 +55,14 @@ export class ElsaSlideOverPanel {
   private onOverlayClick = async (e: MouseEvent) => {
     if (e.target != this.overlayElement)
       return;
+
+    // Hide panel.
     await this.hide();
+
+    // Raise Form Submitted event to apply changes.
+    const formData = new FormData(this.formElement);
+
+    this.submitted.emit(formData);
   };
 
   private onTransitionEnd = (e: TransitionEvent) => {
@@ -64,6 +76,12 @@ export class ElsaSlideOverPanel {
   private onTabClick(e: Event, tab: TabDefinition) {
     e.preventDefault();
     this.selectedTab = tab;
+  }
+
+  private onSubmit(e: Event) {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    this.submitted.emit(formData);
   }
 
   private renderPanel() {
@@ -90,7 +108,8 @@ export class ElsaSlideOverPanel {
             <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex sm:pl-16">
 
               <div class={`w-screen ease-in-out duration-200 ${panelClass}`}>
-                <form class="h-full flex flex-col bg-white shadow-xl">
+                <form class="h-full flex flex-col bg-white shadow-xl" onSubmit={e => this.onSubmit(e)}
+                      ref={el => this.formElement = el} method="post">
                   <div class="flex flex-col flex-1">
 
                     <div class="px-4 py-6 bg-gray-50 sm:px-6">
