@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Models;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Runtime.Models;
 
 namespace Elsa.Runtime.Contracts
 {
@@ -11,8 +11,7 @@ namespace Elsa.Runtime.Contracts
     /// </summary>
     public interface IWorkflowProvider
     {
-        ValueTask<WorkflowDefinition?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
-        ValueTask<IEnumerable<WorkflowDefinition>> FindManyByIdAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default);
-        ValueTask<PagedList<WorkflowDefinition>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken = default);
+        ValueTask<Workflow?> FindByIdAsync(string id, VersionOptions versionOptions, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<Workflow> StreamAllAsync(CancellationToken cancellationToken = default);
     }
 }

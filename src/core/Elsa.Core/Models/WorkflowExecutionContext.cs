@@ -20,7 +20,7 @@ namespace Elsa.Models
 
         public WorkflowExecutionContext(
             IServiceProvider serviceProvider,
-            WorkflowDefinition workflow,
+            Workflow workflow,
             ActivityNode graph,
             IActivityScheduler scheduler,
             Bookmark? bookmark,
@@ -40,7 +40,7 @@ namespace Elsa.Models
             NodeActivityLookup = _nodes.ToDictionary(x => x.Activity);
         }
 
-        public WorkflowDefinition Workflow { get; }
+        public Workflow Workflow { get; }
         public ActivityNode Graph { get; set; }
         public string Id { get; set; }
         public IReadOnlyCollection<ActivityNode> Nodes => new ReadOnlyCollection<ActivityNode>(_nodes);

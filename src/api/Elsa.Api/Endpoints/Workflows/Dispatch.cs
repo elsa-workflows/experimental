@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Api.ApiResults;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Api.Endpoints.Workflows
@@ -10,8 +11,8 @@ namespace Elsa.Api.Endpoints.Workflows
     {
         public static async Task<IResult> HandleAsync(string id, IWorkflowRegistry workflowRegistry, HttpResponse response, CancellationToken cancellationToken)
         {
-            var workflowDefinition = await workflowRegistry.GetByIdAsync(id, cancellationToken);
-            return workflowDefinition == null ? Results.NotFound() : new DispatchWorkflowResult(workflowDefinition);
+            var workflow = await workflowRegistry.FindByIdAsync(id, VersionOptions.Published, cancellationToken);
+            return workflow == null ? Results.NotFound() : new DispatchWorkflowResult(workflow);
         }
     }
 }

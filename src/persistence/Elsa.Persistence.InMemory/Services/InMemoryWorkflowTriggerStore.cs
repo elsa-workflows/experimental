@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
+using Elsa.Persistence.Abstractions.Models;
 
 namespace Elsa.Persistence.InMemory.Services
 {
@@ -40,7 +40,7 @@ namespace Elsa.Persistence.InMemory.Services
 
         public async Task ReplaceTriggersAsync(string workflowDefinitionId, IEnumerable<WorkflowTrigger> triggers, CancellationToken cancellationToken = default)
         {
-            var entriesToRemove = _records.Where(x => x.Value.WorkflowDefinitionId == workflowDefinitionId);
+            var entriesToRemove = _records.Where(x => x.Value.WorkflowId == workflowDefinitionId);
 
             foreach (var entry in entriesToRemove) 
                 _records.TryRemove(entry);

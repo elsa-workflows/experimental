@@ -1,6 +1,7 @@
 using System;
+using Elsa.Models;
 
-namespace Elsa.Models
+namespace Elsa.Persistence.Abstractions.Models
 {
     /// <summary>
     /// Represents a workflow definition.

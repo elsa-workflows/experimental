@@ -1,4 +1,3 @@
-using System;
 using Elsa.Activities.Console;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Api.Core.Extensions;
@@ -60,7 +59,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
 app.UseCors();
-app.MapGet("/", (Delegate)(() => "Hello World!"));
+app.MapGet("/", () => "Hello World!");
 
 // Map Elsa API endpoints.
 app.MapWorkflowsResource(resource => resource.Execute());

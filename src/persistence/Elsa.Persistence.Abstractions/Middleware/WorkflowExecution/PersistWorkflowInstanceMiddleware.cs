@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
+using Elsa.Persistence.Abstractions.Models;
 using Elsa.Pipelines.WorkflowExecution;
 
 namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
@@ -30,12 +31,15 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
 
         public async ValueTask InvokeAsync(WorkflowExecutionContext context)
         {
+            var workflow = context.Workflow;
+            var (id, version) = workflow.Metadata.Identity;
+            
             // Setup a new workflow instance.
             var workflowInstance = new WorkflowInstance
             {
                 Id = context.Id,
-                DefinitionId = context.Workflow.Id,
-                Version = context.Workflow.Version,
+                DefinitionId = id,
+                Version = version,
                 WorkflowState = _workflowStateSerializer.ReadState(context)
             };
 
@@ -79,7 +83,7 @@ namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution
             var workflowBookmarks = context.Bookmarks.Select(x => new WorkflowBookmark
             {
                 Id = x.Id,
-                WorkflowDefinitionId = context.Workflow.Id,
+                WorkflowDefinitionId = id,
                 WorkflowInstanceId = workflowInstance.Id,
                 Hash = x.Hash,
                 Data = x.Data,

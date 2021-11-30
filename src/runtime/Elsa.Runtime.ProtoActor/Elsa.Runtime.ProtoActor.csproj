@@ -6,23 +6,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Google.Protobuf" Version="3.19.1" />
+        <PackageReference Include="Google.Protobuf" Version="3.19.1"/>
         <PackageReference Include="Grpc.Tools" Version="2.41.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0"/>
 
     </ItemGroup>
 
     <ItemGroup Label="ProtoActor">
-        <PackageReference Include="Proto.Actor" Version="0.25.0" />
-        <PackageReference Include="Proto.Cluster" Version="0.25.0" />
-        <PackageReference Include="Proto.Cluster.Consul" Version="0.25.0" />
-        <PackageReference Include="Proto.Cluster.Identity.Redis" Version="0.25.0" />
-        <PackageReference Include="Proto.Cluster.TestProvider" Version="0.25.0" />
-        <PackageReference Include="Proto.Remote" Version="0.25.0" />
-        <PackageReference Include="Proto.Remote.GrpcCore" Version="0.25.0" />
+        <PackageReference Include="Proto.Actor" Version="0.25.0"/>
+        <PackageReference Include="Proto.Cluster" Version="0.25.0"/>
+        <PackageReference Include="Proto.Cluster.Consul" Version="0.25.0"/>
+        <PackageReference Include="Proto.Cluster.Identity.Redis" Version="0.25.0"/>
+        <PackageReference Include="Proto.Cluster.TestProvider" Version="0.25.0"/>
+        <PackageReference Include="Proto.Remote" Version="0.25.0"/>
+        <PackageReference Include="Proto.Remote.GrpcCore" Version="0.25.0"/>
     </ItemGroup>
 
     <!--    <ItemGroup Label="ProtoActor">-->
@@ -34,15 +34,15 @@
     <!--    </ItemGroup>-->
 
     <ItemGroup>
-        <ProjectReference Include="..\Elsa.Runtime\Elsa.Runtime.csproj" />
+        <ProjectReference Include="..\Elsa.Runtime\Elsa.Runtime.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="messages.proto" />
+        <Protobuf Include="messages.proto"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Contracts" />
+        <Folder Include="Contracts"/>
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-using Elsa.Models;
+using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
 
 namespace Elsa.Runtime.Instructions

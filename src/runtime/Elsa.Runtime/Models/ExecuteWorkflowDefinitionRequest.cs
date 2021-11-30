@@ -1,4 +1,4 @@
 namespace Elsa.Runtime.Models
 {
-    public record ExecuteWorkflowDefinitionRequest(string DefinitionId, int Version);
+    public record ExecuteWorkflowDefinitionRequest(string Id, int Version);
 }

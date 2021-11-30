@@ -26,7 +26,7 @@ namespace Elsa.Samples.Console1
                     .UseLogging()
                     .UseActivityDrivers()
                 )
-                
+
                 // Configure workflow engine execution pipeline.
                 .ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
                     .PersistWorkflows()
@@ -50,15 +50,10 @@ namespace Elsa.Samples.Console1
 
             var workflowFactory = workflow14;
             var workflowGraph = workflowFactory();
-            var workflow = new Workflow(workflowGraph);
-
-            var workflowDefinition = new WorkflowDefinition
-            {
-                Workflow = workflow,
-            };
+            var workflow = Workflow.FromActivity(workflowGraph);
 
             var workflowEngine = serviceProvider.GetRequiredService<IWorkflowEngine>();
-            var workflowExecutionResult = await workflowEngine.ExecuteAsync(workflowDefinition);
+            var workflowExecutionResult = await workflowEngine.ExecuteAsync(workflow);
             var workflowState = workflowExecutionResult.WorkflowState;
             var bookmarks = new List<Bookmark>(workflowExecutionResult.Bookmarks);
 
@@ -79,7 +74,7 @@ namespace Elsa.Samples.Console1
 
                     Console.ReadLine();
 
-                    var resumeResult = await workflowEngine.ExecuteAsync(workflowDefinition, workflowState, bookmark);
+                    var resumeResult = await workflowEngine.ExecuteAsync(workflow, workflowState, bookmark);
                     workflowState = resumeResult.WorkflowState;
                     bookmarks = resumeResult.Bookmarks.ToList();
                 }

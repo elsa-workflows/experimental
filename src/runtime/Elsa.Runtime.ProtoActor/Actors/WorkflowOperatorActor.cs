@@ -8,6 +8,7 @@ using Elsa.Contracts;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 using Elsa.Runtime.ProtoActor.Messages;
 using Elsa.State;
 using Proto;
@@ -15,6 +16,9 @@ using Bookmark = Elsa.Runtime.ProtoActor.Messages.Bookmark;
 
 namespace Elsa.Runtime.ProtoActor.Actors
 {
+    /// <summary>
+    /// Executes a workflow instance.
+    /// </summary>
     public class WorkflowOperatorActor : IActor
     {
         private readonly IWorkflowInstanceStore _workflowInstanceStore;
@@ -39,22 +43,22 @@ namespace Elsa.Runtime.ProtoActor.Actors
             var workflowInstanceId = message.Id;
             var cancellationToken = context.CancellationToken;
             var workflowInstance = await _workflowInstanceStore.GetByIdAsync(workflowInstanceId, cancellationToken);
-            
+
             if (workflowInstance == null)
                 throw new Exception($"No workflow instance found with ID {workflowInstanceId}");
-            
+
             var workflowDefinitionId = workflowInstance.DefinitionId;
-            var workflowDefinition = await _workflowRegistry.GetByIdAsync(workflowDefinitionId, cancellationToken);
-            
-            if (workflowDefinition == null)
+            var workflow = await _workflowRegistry.FindByIdAsync(workflowDefinitionId, VersionOptions.SpecificVersion(workflowInstance.Version), cancellationToken);
+
+            if (workflow == null)
                 throw new Exception($"No workflow definition found with ID {workflowDefinitionId}");
-            
+
             var workflowState = workflowInstance.WorkflowState;
             var bookmarkMessage = message.Bookmark;
 
-            var executionResult = await ExecuteAsync(workflowDefinition, workflowState, bookmarkMessage, cancellationToken);
+            var executionResult = await ExecuteAsync(workflow, workflowState, bookmarkMessage, cancellationToken);
             var response = MapResult(executionResult);
-            
+
             context.Respond(response);
         }
 
@@ -75,7 +79,7 @@ namespace Elsa.Runtime.ProtoActor.Actors
                 bookmark.Data.Add(data);
                 return bookmark;
             });
-            
+
             var response = new ExecuteWorkflowResponse
             {
                 WorkflowState = new Json
@@ -89,10 +93,10 @@ namespace Elsa.Runtime.ProtoActor.Actors
             return response;
         }
 
-        private async Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmarkMessage, CancellationToken cancellationToken)
+        private async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, Bookmark? bookmarkMessage, CancellationToken cancellationToken)
         {
             if (bookmarkMessage == null)
-                return await _workflowEngine.ExecuteAsync(workflowDefinition, cancellationToken);
+                return await _workflowEngine.ExecuteAsync(workflow, cancellationToken);
 
             var bookmark =
                 new Elsa.Models.Bookmark(
@@ -103,8 +107,8 @@ namespace Elsa.Runtime.ProtoActor.Actors
                     bookmarkMessage.ActivityInstanceId,
                     null,
                     bookmarkMessage.CallbackMethodName);
-            
-            return await _workflowEngine.ExecuteAsync(workflowDefinition, workflowState, bookmark, cancellationToken);
+
+            return await _workflowEngine.ExecuteAsync(workflow, workflowState, bookmark, cancellationToken);
         }
     }
 }

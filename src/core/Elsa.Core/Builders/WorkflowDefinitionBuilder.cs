@@ -37,19 +37,14 @@ namespace Elsa.Builders
             return this;
         }
 
-        public WorkflowDefinition BuildWorkflow()
+        public Workflow BuildWorkflow()
         {
             var id = Id ?? Guid.NewGuid().ToString("N");
             var root = Root ?? new Sequence();
-
-            return new WorkflowDefinition
-            {
-                Id = id,
-                Version = Version,
-                CreatedAt = DateTime.UtcNow,
-                DefinitionId = id,
-                Workflow = new Workflow(root, Triggers)
-            };
+            var identity = new WorkflowIdentity(id, Version);
+            var publication = WorkflowPublication.LatestAndPublished;
+            var metadata = new WorkflowMetadata(identity, publication);
+            return new Workflow(metadata, root, Triggers);
         }
     }
 }

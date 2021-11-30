@@ -21,7 +21,7 @@ namespace Elsa.Dsl.Services
             _expressionHandlerRegistry = expressionHandlerRegistry;
         }
 
-        public WorkflowDefinition Parse(string script)
+        public Workflow Parse(string script)
         {
             var stream = CharStreams.fromString(script);
             var lexer = new ElsaLexer(stream);

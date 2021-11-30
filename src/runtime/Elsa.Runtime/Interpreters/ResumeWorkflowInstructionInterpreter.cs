@@ -6,6 +6,7 @@ using Elsa.Persistence.Abstractions.Contracts;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Instructions;
+using Elsa.Runtime.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Interpreters
@@ -30,13 +31,6 @@ namespace Elsa.Runtime.Interpreters
             var workflowBookmark = instruction.WorkflowBookmark;
             var workflowDefinitionId = workflowBookmark.WorkflowDefinitionId;
             var workflowInstanceId = workflowBookmark.WorkflowInstanceId;
-            var workflowDefinition = await _workflowRegistry.GetByIdAsync(workflowDefinitionId, cancellationToken);
-
-            if (workflowDefinition == null)
-            {
-                _logger.LogWarning("Workflow bookmark {WorkflowBookmarkId} points to workflow definition ID {WorkflowDefinitionId}, but no such workflow definition was found", workflowBookmark.Id, workflowBookmark.WorkflowDefinitionId);
-                return null;
-            }
 
             var workflowInstance = await _workflowInstanceStore.GetByIdAsync(workflowInstanceId, cancellationToken);
 
@@ -48,16 +42,24 @@ namespace Elsa.Runtime.Interpreters
 
                 return null;
             }
+            
+            var workflow = await _workflowRegistry.FindByIdAsync(workflowDefinitionId, VersionOptions.SpecificVersion(workflowInstance.Version), cancellationToken);
 
+            if (workflow == null)
+            {
+                _logger.LogWarning("Workflow bookmark {WorkflowBookmarkId} points to workflow definition ID {WorkflowDefinitionId}, but no such workflow definition was found", workflowBookmark.Id, workflowBookmark.WorkflowDefinitionId);
+                return null;
+            }
+            
             // Resume workflow instance.
             var bookmark = new Bookmark(workflowBookmark.Id, workflowBookmark.Name, workflowBookmark.Hash, workflowBookmark.ActivityId, workflowBookmark.ActivityInstanceId, workflowBookmark.Data, workflowBookmark.CallbackMethodName);
             var workflowState = workflowInstance.WorkflowState;
-            var workflowExecutionResult = await _workflowEngine.ExecuteAsync(workflowDefinition, workflowState, bookmark, cancellationToken);
+            var workflowExecutionResult = await _workflowEngine.ExecuteAsync(workflow, workflowState, bookmark, cancellationToken);
 
             // Update workflow instance with new workflow state.
             workflowInstance.WorkflowState = workflowExecutionResult.WorkflowState;
 
-            return new ExecuteWorkflowInstructionResult(workflowDefinition, workflowExecutionResult);
+            return new ExecuteWorkflowInstructionResult(workflow, workflowExecutionResult);
         }
     }
 }

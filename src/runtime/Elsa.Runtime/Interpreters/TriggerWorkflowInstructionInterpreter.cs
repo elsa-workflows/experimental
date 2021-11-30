@@ -25,48 +25,48 @@ namespace Elsa.Runtime.Interpreters
         protected override async ValueTask<ExecuteWorkflowInstructionResult?> ExecuteInstructionAsync(TriggerWorkflowInstruction instruction, CancellationToken cancellationToken = default)
         {
             var workflowTrigger = instruction.WorkflowTrigger;
-            var workflowDefinitionId = workflowTrigger.WorkflowDefinitionId;
+            var workflowId = workflowTrigger.WorkflowId;
 
             // Get workflow to execute.
-            var workflowDefinition = await GetWorkflowDefinitionAsync(workflowDefinitionId, cancellationToken);
+            var workflow = await FindWorkflowAsync(workflowId, cancellationToken);
 
-            if (workflowDefinition == null)
+            if (workflow == null)
                 return null;
 
             // Execute workflow.
-            var executeRequest = new ExecuteWorkflowDefinitionRequest(workflowDefinitionId, workflowDefinition.Version);
+            var executeRequest = new ExecuteWorkflowDefinitionRequest(workflowId, workflow.Metadata.Identity.Version);
             var workflowExecutionResult = await _workflowInvoker.ExecuteAsync(executeRequest, cancellationToken);
-            
-            return new ExecuteWorkflowInstructionResult(workflowDefinition, workflowExecutionResult);
+
+            return new ExecuteWorkflowInstructionResult(workflow, workflowExecutionResult);
         }
 
         protected override async ValueTask<DispatchWorkflowInstructionResult?> DispatchInstructionAsync(TriggerWorkflowInstruction instruction, CancellationToken cancellationToken = default)
         {
             var workflowTrigger = instruction.WorkflowTrigger;
-            var workflowDefinitionId = workflowTrigger.WorkflowDefinitionId;
+            var workflowId = workflowTrigger.WorkflowId;
 
             // Get workflow to dispatch.
-            var workflowDefinition = await GetWorkflowDefinitionAsync(workflowDefinitionId, cancellationToken);
+            var workflow = await FindWorkflowAsync(workflowId, cancellationToken);
 
-            if (workflowDefinition == null)
+            if (workflow == null)
                 return null;
 
             // Execute workflow.
-            var dispatchRequest = new DispatchWorkflowDefinitionRequest(workflowDefinitionId, workflowDefinition.Version);
+            var dispatchRequest = new DispatchWorkflowDefinitionRequest(workflowId, workflow.Metadata.Identity.Version);
             await _workflowInvoker.DispatchAsync(dispatchRequest, cancellationToken);
-            
+
             return new DispatchWorkflowInstructionResult();
         }
 
-        private async Task<WorkflowDefinition?> GetWorkflowDefinitionAsync(string definitionId, CancellationToken cancellationToken)
+        private async Task<Workflow?> FindWorkflowAsync(string id, CancellationToken cancellationToken)
         {
             // Get workflow to execute.
-            var workflowDefinition = await _workflowRegistry.GetByIdAsync(definitionId, cancellationToken);
+            var workflow = await _workflowRegistry.FindByIdAsync(id, VersionOptions.Published, cancellationToken);
 
-            if (workflowDefinition != null) 
-                return workflowDefinition;
-            
-            _logger.LogWarning("Could not trigger workflow definition {WorkflowDefinitionId} because it was not found", definitionId);
+            if (workflow != null)
+                return workflow;
+
+            _logger.LogWarning("Could not trigger workflow definition {WorkflowDefinitionId} because it was not found", id);
             return null;
         }
     }

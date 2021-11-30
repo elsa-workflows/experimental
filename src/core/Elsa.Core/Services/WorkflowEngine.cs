@@ -37,30 +37,29 @@ namespace Elsa.Services
             _schedulerFactory = schedulerFactory;
         }
 
-        public async Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default)
+        public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
 
             // Setup a workflow execution context.
-            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflowDefinition, default, default, default, cancellationToken);
+            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, default, default, default, cancellationToken);
 
             // Schedule the first node.
             var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
-            var workflow = workflowDefinition.Workflow;
             var workItem = new ActivityWorkItem(workflow.Root.Id, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
             workflowExecutionContext.Scheduler.Push(workItem);
 
             return await ExecuteAsync(workflowExecutionContext);
         }
 
-        public async Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
+        public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
         {
             // Create a child scope.
             using var scope = _serviceScopeFactory.CreateScope();
 
             // Create workflow execution context.
-            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflowDefinition, workflowState, bookmark, default, cancellationToken);
+            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, bookmark, default, cancellationToken);
 
             if (bookmark != null)
             {
@@ -96,13 +95,13 @@ namespace Elsa.Services
 
         public WorkflowExecutionContext CreateWorkflowExecutionContext(
             IServiceProvider serviceProvider,
-            WorkflowDefinition workflowDefinition,
+            Workflow workflow,
             WorkflowState? workflowState,
             Bookmark? bookmark,
             ExecuteActivityDelegate? executeActivityDelegate,
             CancellationToken cancellationToken)
         {
-            var root = workflowDefinition.Workflow.Root;
+            var root = workflow.Root;
 
             // Build graph.
             var graph = _activityWalker.Walk(root);
@@ -114,7 +113,7 @@ namespace Elsa.Services
             var scheduler = _schedulerFactory.CreateScheduler();
 
             // Setup a workflow execution context.
-            var workflowExecutionContext = new WorkflowExecutionContext(serviceProvider, workflowDefinition, graph, scheduler, bookmark, executeActivityDelegate, cancellationToken);
+            var workflowExecutionContext = new WorkflowExecutionContext(serviceProvider, workflow, graph, scheduler, bookmark, executeActivityDelegate, cancellationToken);
 
             // Restore workflow execution context from state, if provided.
             if (workflowState != null)

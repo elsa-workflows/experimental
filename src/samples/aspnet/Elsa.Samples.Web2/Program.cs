@@ -1,4 +1,3 @@
-using System;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Api.Endpoints.Events;
 using Elsa.Api.Endpoints.Workflows;
@@ -37,7 +36,7 @@ app.Services.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
-app.MapGet("/", (Delegate)(() => "Hello World!"));
+app.MapGet("/", () => "Hello World!");
 
 // Map Elsa API endpoints.
 app.MapWorkflowsResource(workflows => workflows

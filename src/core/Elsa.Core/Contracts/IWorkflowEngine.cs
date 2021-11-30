@@ -8,13 +8,13 @@ namespace Elsa.Contracts
 {
     public interface IWorkflowEngine
     {
-        Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowDefinition workflowDefinition, CancellationToken cancellationToken = default);
+        Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, CancellationToken cancellationToken = default);
         Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowExecutionContext workflowExecutionContext);
-        Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowDefinition workflowDefinition, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default);
+        Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default);
 
         WorkflowExecutionContext CreateWorkflowExecutionContext(
             IServiceProvider serviceProvider,
-            WorkflowDefinition workflow,
+            Workflow workflow,
             WorkflowState? workflowState = default,
             Bookmark? bookmark = default,
             ExecuteActivityDelegate? executeActivityDelegate = default,

@@ -6,6 +6,9 @@ using Proto.DependencyInjection;
 
 namespace Elsa.Runtime.ProtoActor.Actors
 {
+    /// <summary>
+    /// Dispatches a workflow instance for execution. The workflow instance will be executed by <see cref="WorkflowOperatorActor"/>.
+    /// </summary>
     public class WorkflowInstanceActor : IActor
     {
         public Task ReceiveAsync(IContext context) => context.Message switch

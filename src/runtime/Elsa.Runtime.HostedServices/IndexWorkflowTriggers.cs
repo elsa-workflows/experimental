@@ -1,9 +1,6 @@
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Models;
-using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,21 +31,15 @@ namespace Elsa.Runtime.HostedServices
 
         private async Task IndexAsync(ITriggerIndexer triggerIndexer, IWorkflowRegistry workflowRegistry, CancellationToken cancellationToken)
         {
-            const int limit = 100;
-            PagedList<WorkflowDefinition> pagedList;
             var stopwatch = new Stopwatch();
-            var currentBatch = 1;
 
-            _logger.LogInformation("Indexing workflow triggers in batches of {Limit}", limit);
+            _logger.LogInformation("Indexing workflow triggers");
             stopwatch.Start();
 
-            do
-            {
-                pagedList = await workflowRegistry.ListAsync(new PagerParameters(limit), cancellationToken);
-                var indexTasks = pagedList.Items.Select(x => triggerIndexer.IndexTriggersAsync(x, cancellationToken));
-                await Task.WhenAll(indexTasks);
-                _logger.LogInformation("Indexed batch {CurrentBatch}", currentBatch++);
-            } while (pagedList.Cursor != null);
+            var workflows = workflowRegistry.StreamAllAsync(cancellationToken);
+
+            await foreach (var workflow in workflows.WithCancellation(cancellationToken))
+                await triggerIndexer.IndexTriggersAsync(workflow, cancellationToken);
 
             stopwatch.Stop();
             _logger.LogInformation("Finished indexing workflow triggers in {ElapsedTime}", stopwatch.Elapsed);

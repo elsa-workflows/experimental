@@ -1,9 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
+using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
+using Elsa.Runtime.Models;
 using Elsa.Runtime.ProtoActor.Messages;
 using Elsa.State;
 using Proto;
@@ -11,6 +12,9 @@ using Proto.Cluster;
 
 namespace Elsa.Runtime.ProtoActor.Actors
 {
+    /// <summary>
+    /// Instantiates and dispatches a workflow instance for execution. The workflow instance will be executed by <see cref="WorkflowOperatorActor"/>.
+    /// </summary>
     public class WorkflowDefinitionActor : IActor
     {
         private readonly IWorkflowRegistry _workflowRegistry;
@@ -61,13 +65,13 @@ namespace Elsa.Runtime.ProtoActor.Actors
 
         private async Task<WorkflowInstance> CreateWorkflowInstanceAsync(string workflowDefinitionId, CancellationToken cancellationToken)
         {
-            var workflowDefinition = (await _workflowRegistry.GetByIdAsync(workflowDefinitionId, cancellationToken))!;
+            var workflow = (await _workflowRegistry.FindByIdAsync(workflowDefinitionId, VersionOptions.Published, cancellationToken))!;
             var workflowInstanceId = Guid.NewGuid().ToString();
         
             var workflowInstance = new WorkflowInstance
             {
                 Id = workflowInstanceId,
-                Version = workflowDefinition.Version,
+                Version = workflow.Metadata.Identity.Version,
                 DefinitionId = workflowDefinitionId,
                 WorkflowState = new WorkflowState
                 {

@@ -1,13 +1,14 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Models;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Runtime.Models;
 
 namespace Elsa.Runtime.Contracts
 {
     public interface IWorkflowRegistry
     {
-        Task<WorkflowDefinition?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
-        Task<PagedList<WorkflowDefinition>> ListAsync(PagerParameters pagerParameters, CancellationToken cancellationToken);
+        Task<Workflow?> FindByIdAsync(string id, VersionOptions versionOptions, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<Workflow> StreamAllAsync(CancellationToken cancellationToken = default);
     }
 }

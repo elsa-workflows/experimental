@@ -13,6 +13,6 @@ namespace Elsa.Contracts
         IWorkflowDefinitionBuilder WithVersion(int version);
         IWorkflowDefinitionBuilder WithRoot(IActivity root);
         IWorkflowDefinitionBuilder AddTrigger(ITrigger trigger);
-        WorkflowDefinition BuildWorkflow();
+        Workflow BuildWorkflow();
     }
 }
