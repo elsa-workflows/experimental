@@ -83,6 +83,7 @@ namespace Elsa.Api.Core.Services
             foreach (var propertyInfo in properties)
             {
                 var inputAttribute = propertyInfo.GetCustomAttribute<InputAttribute>();
+                var descriptionAttribute = propertyInfo.GetCustomAttribute<DescriptionAttribute>();
                 var wrappedPropertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
 
                 yield return new ActivityInputDescriptor
@@ -91,7 +92,7 @@ namespace Elsa.Api.Core.Services
                     wrappedPropertyType,
                     GetUIHint(wrappedPropertyType, inputAttribute),
                     inputAttribute?.DisplayName ?? propertyInfo.Name.Humanize(LetterCasing.Title),
-                    inputAttribute?.Description,
+                    descriptionAttribute?.Description,
                     _optionsResolver.GetOptions(propertyInfo),
                     inputAttribute?.Category,
                     inputAttribute?.Order ?? 0,

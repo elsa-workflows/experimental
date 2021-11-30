@@ -40,6 +40,7 @@ export namespace Components {
         "expand": boolean;
         "headerText": string;
         "hide": () => Promise<void>;
+        "selectedTab"?: TabDefinition;
         "show": () => Promise<void>;
         "tabs": Array<TabDefinition>;
     }
@@ -140,6 +141,7 @@ declare namespace LocalJSX {
         "expand"?: boolean;
         "headerText"?: string;
         "onCollapsed"?: (event: CustomEvent<any>) => void;
+        "selectedTab"?: TabDefinition;
         "tabs"?: Array<TabDefinition>;
     }
     interface ElsaTriggerContainer {

@@ -17,10 +17,10 @@ namespace Elsa.Attributes
         /// </summary>
         public string? DisplayName { get; set; }
         
-        /// <summary>
-        /// A brief description about this property for workflow tooling to use when displaying activity editors.
-        /// </summary>
-        public string? Description { get; set; }
+        // /// <summary>
+        // /// A brief description about this property for workflow tooling to use when displaying activity editors.
+        // /// </summary>
+        // public string? Description { get; set; }
         
         /// <summary>
         /// A category to group this property with.

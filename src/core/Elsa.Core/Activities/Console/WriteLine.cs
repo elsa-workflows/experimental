@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using Elsa.Models;
 
 namespace Elsa.Activities.Console
@@ -25,6 +26,8 @@ namespace Elsa.Activities.Console
         public WriteLine(Literal<string> literal) => Text = new Input<string>(literal);
         public WriteLine(DelegateReference delegateExpression) => Text = new Input<string>(delegateExpression);
         public WriteLine(Input<string> text) => Text = text;
+        
+        [Description("The text to write.")]
         public Input<string> Text { get; set; } = default!;
 
         protected override void Execute(ActivityExecutionContext context)

@@ -10,6 +10,7 @@ export class ElsaSlideOverPanel {
   @Prop() public headerText: string;
   @Prop() public tabs: Array<TabDefinition> = [];
   @Prop() public expand: boolean;
+  @Prop({mutable: true}) public selectedTab?: TabDefinition;
 
   @Event() public collapsed: EventEmitter;
 
@@ -59,6 +60,11 @@ export class ElsaSlideOverPanel {
     }
   };
 
+  private onTabClick(e: Event, tab: TabDefinition) {
+    e.preventDefault();
+    this.selectedTab = tab;
+  }
+
   private renderPanel() {
     const isVisible = this.isVisible;
     const isHiding = this.isHiding;
@@ -66,6 +72,7 @@ export class ElsaSlideOverPanel {
     const backdropClass = !isHiding && isVisible ? 'opacity-50' : 'opacity-0';
     const panelClass = !isHiding && isVisible ? 'max-w-2xl w-2xl' : 'max-w-0 w-0';
     const tabs = this.tabs;
+    const selectedTab = this.selectedTab;
 
     return (
       <div class={`fixed inset-0 overflow-hidden z-10 ${wrapperClass}`} aria-labelledby="slide-over-title" role="dialog"
@@ -108,8 +115,10 @@ export class ElsaSlideOverPanel {
                     <div class="border-b border-gray-200">
                       <nav class="-mb-px flex" aria-label="Tabs">
                         {tabs.map(tab => {
+                          const cssClass = tab == selectedTab ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
                           return <a href="#"
-                                    class="border-blue-500 text-blue-600 py-4 px-1 text-center border-b-2 font-medium text-sm flex-1">
+                                    onClick={e => this.onTabClick(e, tab)}
+                                    class={`${cssClass} py-4 px-1 text-center border-b-2 font-medium text-sm flex-1`}>
                             {tab.displayText}
                           </a>
                         })}
@@ -119,7 +128,12 @@ export class ElsaSlideOverPanel {
                     <div class="flex-1 relative">
 
                       <div class="absolute inset-0 overflow-y-scroll">
-                        {tabs.map(tab => tab.content())}
+                        {tabs.map(tab => {
+                          const cssClass = tab == selectedTab ? '' : 'hidden';
+                          return <div class={cssClass}>
+                            {tab.content()}
+                          </div>
+                        })}
                       </div>
                     </div>
                   </div>

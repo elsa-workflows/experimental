@@ -29,36 +29,63 @@ export class ElsaActivityPropertiesEditor {
 
     const propertiesTab: TabDefinition = {
       displayText: 'Properties',
-      content: () => this.renderPropertiesTab(activity, activityDescriptor)
+      content: () => ElsaActivityPropertiesEditor.renderPropertiesTab(activity, activityDescriptor)
     };
 
-    const tabs = !!activityDescriptor ? [propertiesTab] : [];
+    const commonTab: TabDefinition = {
+      displayText: 'Common',
+      content: () => ElsaActivityPropertiesEditor.renderCommonTab(activity, activityDescriptor)
+    };
+
+    const tabs = !!activityDescriptor ? [propertiesTab, commonTab] : [];
     const expanded = !!activity;
+    const selectedTab = tabs.length > 0 ? tabs[0] : null;
 
     return (
-      <elsa-slide-over-panel expand={expanded} headerText={title} tabs={tabs} ref={el => this.slideOverPanel = el}
+      <elsa-slide-over-panel expand={expanded} headerText={title} tabs={tabs} selectedTab={selectedTab}
+                             ref={el => this.slideOverPanel = el}
                              onCollapsed={() => this.onPanelCollapsed()}/>
     );
   }
 
-  private renderPropertiesTab(activity: Activity, activityDescriptor: ActivityDescriptor) {
+  private static renderPropertiesTab(activity: Activity, activityDescriptor: ActivityDescriptor) {
 
     const inputProperties = activityDescriptor.inputProperties;
 
     return <div>
       {inputProperties.map(inputProperty => {
         const displayName = inputProperty.displayName || inputProperty.name;
+        const description = inputProperty.description;
+        const fieldName = inputProperty.name;
+        const fieldId = inputProperty.name;
+
         return <div class="p-4">
-          <label htmlFor="activity-name" class="block text-sm font-medium text-gray-700">
+          <label htmlFor={fieldId} class="block text-sm font-medium text-gray-700">
             {displayName}
           </label>
           <div class="mt-1">
-            <input type="text" name="activity-name" id="activity-name"
+            <input type="text" name={fieldName} id={fieldId}
                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
           </div>
-          {inputProperty.description ? <p class="mt-2 text-sm text-gray-500">The name of the activity.</p> : undefined}
+          {description ? <p class="mt-2 text-sm text-gray-500">{description}</p> : undefined}
         </div>
       })}
+    </div>
+  }
+
+  private static renderCommonTab(activity: Activity, activityDescriptor: ActivityDescriptor) {
+
+    return <div>
+      <div class="p-4">
+        <label htmlFor="ActivityName" class="block text-sm font-medium text-gray-700">
+          Name
+        </label>
+        <div class="mt-1">
+          <input type="text" name="ActivityName" id="ActivityName"
+                 class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
+        </div>
+        <p class="mt-2 text-sm text-gray-500">The technical name of the activity.</p>
+      </div>
     </div>
   }
 
