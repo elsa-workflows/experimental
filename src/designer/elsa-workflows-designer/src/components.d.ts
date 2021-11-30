@@ -48,6 +48,7 @@ export namespace Components {
     interface ElsaTriggerContainer {
     }
     interface ElsaWorkflowEditor {
+        "activityDescriptors": Array<ActivityDescriptor>;
     }
 }
 declare global {
@@ -151,6 +152,7 @@ declare namespace LocalJSX {
     interface ElsaTriggerContainer {
     }
     interface ElsaWorkflowEditor {
+        "activityDescriptors"?: Array<ActivityDescriptor>;
     }
     interface IntrinsicElements {
         "elsa-activity-picker": ElsaActivityPicker;

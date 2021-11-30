@@ -1,7 +1,8 @@
-import {Component, h, Listen, State} from "@stencil/core";
+import {Component, h, Listen, Prop, State} from "@stencil/core";
 import {PanelOrientation, PanelStateChangedArgs} from "../elsa-panel/models";
 import {Activity, ActivityDescriptor, ActivityEditRequestArgs} from "../../../models";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
+import ShellTunnel from "../elsa-shell/state";
 import {Container} from "typedi";
 import {ElsaApiClientProvider} from "../../../services/elsa-api-client-provider";
 
@@ -15,8 +16,9 @@ export class ElsaWorkflowEditor {
   private container: HTMLDivElement;
   private activityPicker: HTMLElsaActivityPickerElement;
   private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
-  private activityDescriptors: Array<ActivityDescriptor> = [];
   private applyActivityChanges: (activity: Activity) => void;
+
+  @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
 
   @State() private activityUnderEdit?: Activity;
 
@@ -37,9 +39,9 @@ export class ElsaWorkflowEditor {
   }
 
   async componentWillLoad() {
-    const elsaClientProvider = Container.get(ElsaApiClientProvider);
-    const client = await elsaClientProvider.getClient();
-    this.activityDescriptors = await client.activityDescriptorsApi.list();
+    // const elsaClientProvider = Container.get(ElsaApiClientProvider);
+    // const client = await elsaClientProvider.getClient();
+    // this.activityDescriptors = await client.activityDescriptorsApi.list();
   }
 
   private updateLayout = async () => {
@@ -108,3 +110,5 @@ export class ElsaWorkflowEditor {
     );
   }
 }
+
+ShellTunnel.injectProps(ElsaWorkflowEditor, ['activityDescriptors']);

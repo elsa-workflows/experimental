@@ -1,13 +1,12 @@
 ﻿import axios, {AxiosInstance, AxiosRequestConfig} from "axios";
 import {Service as MiddlewareService} from 'axios-middleware';
 import {EventBus} from './event-bus';
-import {ActivityDescriptor, ActivityDescriptorResponse,} from "../models";
-import {EventTypes} from "../models/events";
+import {ActivityDescriptor, ActivityDescriptorResponse, EventTypes} from "../models";
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
 import {ServerSettings} from "./server-settings";
 
-async function createHttpClient(baseAddress: string): Promise<AxiosInstance> {
+export async function createHttpClient(baseAddress: string): Promise<AxiosInstance> {
   const config: AxiosRequestConfig = {
     baseURL: baseAddress
   };
@@ -23,7 +22,7 @@ async function createHttpClient(baseAddress: string): Promise<AxiosInstance> {
   return httpClient;
 }
 
-async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
+export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
 
   const httpClient: AxiosInstance = await createHttpClient(serverUrl);
 
@@ -46,16 +45,14 @@ export interface ActivitiesApi {
 }
 
 @Service()
-export class ElsaApiClientProvider
-{
+export class ElsaApiClientProvider {
   private elsaClient: ElsaClient;
 
   constructor(private serverSettings: ServerSettings) {
   }
 
-  public async getClient(): Promise<ElsaClient>
-  {
-    if(!!this.elsaClient)
+  public async getClient(): Promise<ElsaClient> {
+    if (!!this.elsaClient)
       return this.elsaClient;
 
     return this.elsaClient = await createElsaClient(this.serverSettings.baseAddress);
