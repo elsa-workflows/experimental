@@ -1,5 +1,5 @@
 import {Component, Event, EventEmitter, h, Method, Prop, State, Watch} from "@stencil/core";
-import {TabDefinition} from "./models";
+import {ActionDefinition, ActionType, TabDefinition} from "./models";
 
 @Component({
   tag: 'elsa-slide-over-panel'
@@ -9,8 +9,9 @@ export class ElsaSlideOverPanel {
 
   @Prop() public headerText: string;
   @Prop() public tabs: Array<TabDefinition> = [];
-  @Prop() public expand: boolean;
   @Prop({mutable: true}) public selectedTab?: TabDefinition;
+  @Prop() public actions: Array<ActionDefinition> = [];
+  @Prop() public expand: boolean;
 
   @Event() public collapsed: EventEmitter;
 
@@ -73,6 +74,7 @@ export class ElsaSlideOverPanel {
     const panelClass = !isHiding && isVisible ? 'max-w-2xl w-2xl' : 'max-w-0 w-0';
     const tabs = this.tabs;
     const selectedTab = this.selectedTab;
+    const actions = this.actions;
 
     return (
       <div class={`fixed inset-0 overflow-hidden z-10 ${wrapperClass}`} aria-labelledby="slide-over-title" role="dialog"
@@ -140,14 +142,26 @@ export class ElsaSlideOverPanel {
 
                   <div class="flex-shrink-0 px-4 border-t border-gray-200 py-5 sm:px-6">
                     <div class="space-x-3 flex justify-end">
-                      <button type="button"
-                              class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Cancel
-                      </button>
-                      <button type="submit"
-                              class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Create
-                      </button>
+                      {actions.map(action => {
+
+                        if (action.display)
+                          return action.display(action);
+
+                        const cssClass = action.isPrimary ? 'text-white bg-blue-600 hover:bg-blue-700 border-transparent' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50';
+                        const buttonType = action.type == ActionType.Submit ? 'submit' : 'button';
+                        const cancelHandler = async () => await this.hide();
+
+                        const emptyHandler = () => {
+                        };
+
+                        const clickHandler = !!action.onClick ? action.onClick : action.type == ActionType.Cancel ? cancelHandler : emptyHandler;
+
+                        return <button type={buttonType}
+                                       onClick={e => clickHandler(e, action)}
+                                       class={`${cssClass} py-2 px-4 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}>
+                          {action.text}
+                        </button>
+                      })}
                     </div>
                   </div>
                 </form>

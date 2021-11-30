@@ -1,6 +1,6 @@
 import {Component, h, Method, Prop} from "@stencil/core";
 import WorkflowEditorTunnel from "./state";
-import {TabDefinition} from "../elsa-slide-over-panel/models";
+import {ActionDefinition, ActionType, DefaultActions, TabDefinition} from "../elsa-slide-over-panel/models";
 import {Activity, ActivityDescriptor} from "../../../models";
 
 @Component({
@@ -40,9 +40,11 @@ export class ElsaActivityPropertiesEditor {
     const tabs = !!activityDescriptor ? [propertiesTab, commonTab] : [];
     const expanded = !!activity;
     const selectedTab = tabs.length > 0 ? tabs[0] : null;
+    const actions = [DefaultActions.Cancel, DefaultActions.Save];
 
     return (
       <elsa-slide-over-panel expand={expanded} headerText={title} tabs={tabs} selectedTab={selectedTab}
+                             actions={actions}
                              ref={el => this.slideOverPanel = el}
                              onCollapsed={() => this.onPanelCollapsed()}/>
     );

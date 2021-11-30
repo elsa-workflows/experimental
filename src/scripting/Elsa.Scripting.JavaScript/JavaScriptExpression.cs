@@ -6,12 +6,12 @@ namespace Elsa.Scripting.JavaScript
 {
     public class JavaScriptExpression : IExpression
     {
-        public JavaScriptExpression(string expression)
+        public JavaScriptExpression(string scriptExpression)
         {
-            Expression = expression;
+            ScriptExpression = scriptExpression;
         }
         
-        public string Expression { get; }
+        public string ScriptExpression { get; }
     }
     
     public class JavaScriptExpressionHandler : IExpressionHandler
@@ -21,7 +21,7 @@ namespace Elsa.Scripting.JavaScript
             var javaScriptExpression = (JavaScriptExpression)expression;
             
             // TODO: evaluate expression.
-            return new ValueTask<object?>(javaScriptExpression.Expression);
+            return new ValueTask<object?>(javaScriptExpression.ScriptExpression);
         }
     }
 }

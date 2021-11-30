@@ -10,7 +10,7 @@ import { Activity, ActivityDescriptor } from "./models";
 import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
 import { PanelOrientation, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
-import { TabDefinition } from "./components/designer/elsa-slide-over-panel/models";
+import { ActionDefinition, TabDefinition } from "./components/designer/elsa-slide-over-panel/models";
 export namespace Components {
     interface ElsaActivityPicker {
         "activityDescriptors": Array<ActivityDescriptor>;
@@ -37,6 +37,7 @@ export namespace Components {
         "serverUrl": string;
     }
     interface ElsaSlideOverPanel {
+        "actions": Array<ActionDefinition>;
         "expand": boolean;
         "headerText": string;
         "hide": () => Promise<void>;
@@ -138,6 +139,7 @@ declare namespace LocalJSX {
         "serverUrl"?: string;
     }
     interface ElsaSlideOverPanel {
+        "actions"?: Array<ActionDefinition>;
         "expand"?: boolean;
         "headerText"?: string;
         "onCollapsed"?: (event: CustomEvent<any>) => void;

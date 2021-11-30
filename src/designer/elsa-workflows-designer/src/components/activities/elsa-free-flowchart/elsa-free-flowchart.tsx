@@ -60,7 +60,6 @@ export class ElsaFreeFlowchart implements ActivityComponent {
   }
 
   private onNodeDoubleClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
-    debugger;
     const activity = e.node.data as Activity;
     this.activityEditRequested.emit(activity);
   };
