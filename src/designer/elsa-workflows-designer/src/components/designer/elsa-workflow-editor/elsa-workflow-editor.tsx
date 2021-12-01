@@ -3,6 +3,7 @@ import {PanelPosition, PanelStateChangedArgs} from "../elsa-panel/models";
 import {Activity, ActivityDescriptor, ActivityEditRequestArgs} from "../../../models";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
 import ShellTunnel from "../elsa-shell/state";
+import {ActivityPropertyChangedArgs, DeleteActivityRequestedArgs} from "./elsa-activity-properties-editor";
 
 @Component({
   tag: 'elsa-workflow-editor',
@@ -15,6 +16,7 @@ export class ElsaWorkflowEditor {
   private activityPicker: HTMLElsaActivityPickerElement;
   private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
   private applyActivityChanges: (activity: Activity) => void;
+  private deleteActivity: (activity: Activity) => void;
 
   @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
 
@@ -34,6 +36,7 @@ export class ElsaWorkflowEditor {
   async handleActivityEditRequested(e: CustomEvent<ActivityEditRequestArgs>) {
     this.activityUnderEdit = e.detail.activity;
     this.applyActivityChanges = e.detail.applyChanges;
+    this.deleteActivity = e.detail.deleteActivity;
   }
 
   private updateLayout = async () => {
@@ -65,10 +68,15 @@ export class ElsaWorkflowEditor {
     await this.canvas.addActivity({descriptor: activityDescriptor, x: e.offsetX, y: e.offsetY});
   }
 
-  private onActivityUpdated = (e: CustomEvent<Activity>) => {
+  private onActivityPropertyChanged = (e: CustomEvent<ActivityPropertyChangedArgs>) => {
     this.activityUnderEdit = null;
-    const updatedActivity = e.detail;
+    const updatedActivity = e.detail.activity;
     this.applyActivityChanges(updatedActivity);
+  }
+
+  private onDeleteActivityRequested(e: CustomEvent<DeleteActivityRequestedArgs>) {
+    this.deleteActivity(e.detail.activity);
+    this.activityUnderEdit = null;
   }
 
   render() {
@@ -101,7 +109,8 @@ export class ElsaWorkflowEditor {
                       position={PanelPosition.Right}
                       onExpandedStateChanged={e => this.onActivityEditorPanelStateChanged(e.detail)}>
             <elsa-activity-properties-editor activity={activityUnderEdit}
-                                             onActivityUpdated={e => this.onActivityUpdated(e)}
+                                             onActivityPropertyChanged={e => this.onActivityPropertyChanged(e)}
+                                             onDeleteActivityRequested={e => this.onDeleteActivityRequested(e)}
                                              ref={el => this.activityPropertiesEditor = el}/>
           </elsa-panel>
 

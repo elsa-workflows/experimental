@@ -69,7 +69,8 @@ export class ElsaFreeFlowchart implements ActivityComponent {
 
     const args: ActivityEditRequestArgs = {
       activity: activity,
-      applyChanges: a => node.data = a
+      applyChanges: a => node.data = a,
+      deleteActivity: a => node.remove({deep: true})
     };
 
     this.activityEditRequested.emit(args);

@@ -1,5 +1,5 @@
 import {Component, Event, EventEmitter, h, Method, Prop, State, Watch} from "@stencil/core";
-import {ActionDefinition, ActionType, TabDefinition} from "./models";
+import {ActionDefinition, ActionType, TabDefinition} from "../../../models";
 
 @Component({
   tag: 'elsa-slide-over-panel'

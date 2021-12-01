@@ -6,12 +6,12 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
-import { Activity, ActivityDescriptor, ActivityEditRequestArgs, ActivityInput } from "./models";
+import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivityEditRequestArgs, ActivityInput, TabDefinition } from "./models";
+import { ActivityPropertyChangedArgs, DeleteActivityRequestedArgs } from "./components/designer/elsa-workflow-editor/elsa-activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
-import { ActionDefinition, TabDefinition } from "./components/designer/elsa-form-panel/models";
+import { TabChangedArgs } from "./components/designer/elsa-form-panel/elsa-form-panel";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
-import { ActionDefinition as ActionDefinition1, TabDefinition as TabDefinition1 } from "./components/designer/elsa-slide-over-panel/models";
 export namespace Components {
     interface ElsaActivityPicker {
         "activityDescriptors": Array<ActivityDescriptor>;
@@ -30,7 +30,7 @@ export namespace Components {
     interface ElsaFormPanel {
         "actions": Array<ActionDefinition>;
         "headerText": string;
-        "selectedTab"?: TabDefinition;
+        "selectedTabIndex"?: number;
         "tabs": Array<TabDefinition>;
     }
     interface ElsaFreeFlowchart {
@@ -140,15 +140,19 @@ declare namespace LocalJSX {
     interface ElsaActivityPropertiesEditor {
         "activity"?: Activity;
         "activityDescriptors"?: Array<ActivityDescriptor>;
+        "onActivityPropertyChanged"?: (event: CustomEvent<ActivityPropertyChangedArgs>) => void;
         "onActivityUpdated"?: (event: CustomEvent<Activity>) => void;
+        "onDeleteActivityRequested"?: (event: CustomEvent<DeleteActivityRequestedArgs>) => void;
     }
     interface ElsaCanvas {
     }
     interface ElsaFormPanel {
         "actions"?: Array<ActionDefinition>;
         "headerText"?: string;
+        "onActionInvoked"?: (event: CustomEvent<ActionInvokedArgs>) => void;
+        "onSelectedTabIndexChanged"?: (event: CustomEvent<TabChangedArgs>) => void;
         "onSubmitted"?: (event: CustomEvent<FormData>) => void;
-        "selectedTab"?: TabDefinition;
+        "selectedTabIndex"?: number;
         "tabs"?: Array<TabDefinition>;
     }
     interface ElsaFreeFlowchart {
