@@ -10,26 +10,13 @@
   <script nomodule src="/build/elsa-workflows-designer.js"></script>
 </head>
 <body>
-
-<!--If you want to interact with the Elsa Server yourself, use the Workflow Editor component directly-->
-<elsa-workflow-editor id="workflowEditor"></elsa-workflow-editor>
-
-<script type="module">
-  // This script block serves as an example to demonstrate vanilla JS interaction with the workflow editor.
-  // It will also work when using React, Angular, Vue, Svelte, Blazor and any other framework.
-  import {createElsaClient} from '/build/index.esm.js';
-
-  // Create an Elsa API client.
-  const client = await createElsaClient('https://localhost:5001');
-
-  // Load available activities from server.
-  const activityDescriptors = await client.activityDescriptorsApi.list();
-
-  // Get a reference to the workflow editor element.
-  const workflowEditor = document.getElementById('workflowEditor');
-
-  // Set available activities.
-  workflowEditor.activityDescriptors = activityDescriptors;
-</script>
+<!--Use the Shell component to handle automatic interaction with the Elsa Server API-->
+<elsa-shell server="https://localhost:5001">
+    <elsa-workflow-toolbar></elsa-workflow-toolbar>
+    <div class="absolute inset-0" style="top: 70px;">
+      <elsa-workflow-editor></elsa-workflow-editor>
+    </div>
+<!--  <elsa-workflow-editor></elsa-workflow-editor>-->
+</elsa-shell>
 </body>
 </html>

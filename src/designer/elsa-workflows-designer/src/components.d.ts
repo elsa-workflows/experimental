@@ -57,6 +57,11 @@ export namespace Components {
     interface ElsaWorkflowEditor {
         "activityDescriptors": Array<ActivityDescriptor>;
     }
+    interface ElsaWorkflowPublishButton {
+        "publishing": boolean;
+    }
+    interface ElsaWorkflowToolbar {
+    }
 }
 declare global {
     interface HTMLElsaActivityPickerElement extends Components.ElsaActivityPicker, HTMLStencilElement {
@@ -119,6 +124,18 @@ declare global {
         prototype: HTMLElsaWorkflowEditorElement;
         new (): HTMLElsaWorkflowEditorElement;
     };
+    interface HTMLElsaWorkflowPublishButtonElement extends Components.ElsaWorkflowPublishButton, HTMLStencilElement {
+    }
+    var HTMLElsaWorkflowPublishButtonElement: {
+        prototype: HTMLElsaWorkflowPublishButtonElement;
+        new (): HTMLElsaWorkflowPublishButtonElement;
+    };
+    interface HTMLElsaWorkflowToolbarElement extends Components.ElsaWorkflowToolbar, HTMLStencilElement {
+    }
+    var HTMLElsaWorkflowToolbarElement: {
+        prototype: HTMLElsaWorkflowToolbarElement;
+        new (): HTMLElsaWorkflowToolbarElement;
+    };
     interface HTMLElementTagNameMap {
         "elsa-activity-picker": HTMLElsaActivityPickerElement;
         "elsa-activity-properties-editor": HTMLElsaActivityPropertiesEditorElement;
@@ -130,6 +147,8 @@ declare global {
         "elsa-slide-over-panel": HTMLElsaSlideOverPanelElement;
         "elsa-trigger-container": HTMLElsaTriggerContainerElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
+        "elsa-workflow-publish-button": HTMLElsaWorkflowPublishButtonElement;
+        "elsa-workflow-toolbar": HTMLElsaWorkflowToolbarElement;
     }
 }
 declare namespace LocalJSX {
@@ -179,6 +198,15 @@ declare namespace LocalJSX {
     interface ElsaWorkflowEditor {
         "activityDescriptors"?: Array<ActivityDescriptor>;
     }
+    interface ElsaWorkflowPublishButton {
+        "onExportClicked"?: (event: CustomEvent<any>) => void;
+        "onImportClicked"?: (event: CustomEvent<File>) => void;
+        "onPublishClicked"?: (event: CustomEvent<any>) => void;
+        "onUnPublishClicked"?: (event: CustomEvent<any>) => void;
+        "publishing"?: boolean;
+    }
+    interface ElsaWorkflowToolbar {
+    }
     interface IntrinsicElements {
         "elsa-activity-picker": ElsaActivityPicker;
         "elsa-activity-properties-editor": ElsaActivityPropertiesEditor;
@@ -190,6 +218,8 @@ declare namespace LocalJSX {
         "elsa-slide-over-panel": ElsaSlideOverPanel;
         "elsa-trigger-container": ElsaTriggerContainer;
         "elsa-workflow-editor": ElsaWorkflowEditor;
+        "elsa-workflow-publish-button": ElsaWorkflowPublishButton;
+        "elsa-workflow-toolbar": ElsaWorkflowToolbar;
     }
 }
 export { LocalJSX as JSX };
@@ -206,6 +236,8 @@ declare module "@stencil/core" {
             "elsa-slide-over-panel": LocalJSX.ElsaSlideOverPanel & JSXBase.HTMLAttributes<HTMLElsaSlideOverPanelElement>;
             "elsa-trigger-container": LocalJSX.ElsaTriggerContainer & JSXBase.HTMLAttributes<HTMLElsaTriggerContainerElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;
+            "elsa-workflow-publish-button": LocalJSX.ElsaWorkflowPublishButton & JSXBase.HTMLAttributes<HTMLElsaWorkflowPublishButtonElement>;
+            "elsa-workflow-toolbar": LocalJSX.ElsaWorkflowToolbar & JSXBase.HTMLAttributes<HTMLElsaWorkflowToolbarElement>;
         }
     }
 }

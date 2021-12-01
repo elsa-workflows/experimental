@@ -2,7 +2,7 @@ import {Component, h, Listen, Prop, State} from "@stencil/core";
 import {PanelPosition, PanelStateChangedArgs} from "../elsa-panel/models";
 import {Activity, ActivityDescriptor, ActivityEditRequestArgs} from "../../../models";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
-import ShellTunnel from "../elsa-shell/state";
+import ShellTunnel from "../../shell/elsa-shell/state";
 import {ActivityPropertyChangedArgs, DeleteActivityRequestedArgs} from "./elsa-activity-properties-editor";
 
 @Component({
@@ -90,7 +90,7 @@ export class ElsaWorkflowEditor {
 
     return (
       <WorkflowEditorTunnel.Provider state={tunnelState}>
-        <div class="absolute top-0 left-0 bottom-0 right-0" ref={el => this.container = el}>
+        <div class="absolute inset-0" ref={el => this.container = el}>
           <elsa-panel class="elsa-activity-picker-container"
                       position={PanelPosition.Left}
                       onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
