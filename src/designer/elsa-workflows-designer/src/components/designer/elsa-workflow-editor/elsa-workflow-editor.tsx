@@ -1,9 +1,18 @@
-import {Component, h, Listen, Prop, State} from "@stencil/core";
+import {Component, h, Listen, Prop, State, Event, EventEmitter} from "@stencil/core";
+import _, {debounce} from 'lodash';
+import {v4 as uuid} from 'uuid';
 import {PanelPosition, PanelStateChangedArgs} from "../elsa-panel/models";
-import {Activity, ActivityDescriptor, ActivityEditRequestArgs} from "../../../models";
+import {Activity, ActivityDescriptor, ActivityEditRequestArgs, GraphUpdatedArgs, Workflow} from "../../../models";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
-import ShellTunnel from "../../shell/elsa-shell/state";
-import {ActivityPropertyChangedArgs, DeleteActivityRequestedArgs} from "./elsa-activity-properties-editor";
+import ShellTunnel from "../../shell/elsa-server-shell/state";
+import {
+  ActivityUpdatedArgs,
+  DeleteActivityRequestedArgs
+} from "./elsa-activity-properties-editor";
+
+export interface WorkflowUpdatedArgs {
+  workflow: Workflow;
+}
 
 @Component({
   tag: 'elsa-workflow-editor',
@@ -17,8 +26,21 @@ export class ElsaWorkflowEditor {
   private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
   private applyActivityChanges: (activity: Activity) => void;
   private deleteActivity: (activity: Activity) => void;
+  private readonly saveChangesDebounced: (e: CustomEvent<GraphUpdatedArgs>) => void;
+
+  constructor() {
+    this.saveChangesDebounced = _.debounce(this.saveChanges, 1000);
+  }
 
   @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
+
+  @Prop() workflow: Workflow = {
+    root: null,
+    metadata: {identity: {id: uuid(), version: 1}, publication: {isLatest: true, isPublished: false}},
+    triggers: []
+  };
+
+  @Event() workflowUpdated: EventEmitter<WorkflowUpdatedArgs>
 
   @State() private activityUnderEdit?: Activity;
 
@@ -39,11 +61,25 @@ export class ElsaWorkflowEditor {
     this.deleteActivity = e.detail.deleteActivity;
   }
 
-  private updateLayout = async () => {
+  @Listen('graphUpdated')
+  handleGraphUpdated(e: CustomEvent<GraphUpdatedArgs>) {
+    this.saveChangesDebounced(e);
+  }
+
+  saveChanges = (e: CustomEvent<GraphUpdatedArgs>) => {
+    const root = e.detail.exportGraph();
+    const workflow = this.workflow;
+
+    workflow.root = root;
+
+    this.workflowUpdated.emit({workflow});
+  };
+
+  updateLayout = async () => {
     await this.canvas.updateLayout();
   };
 
-  private updateContainerLayout = async (panelClassName: string, panelExpanded: boolean) => {
+  updateContainerLayout = async (panelClassName: string, panelExpanded: boolean) => {
 
     if (panelExpanded)
       this.container.classList.remove(panelClassName);
@@ -53,33 +89,32 @@ export class ElsaWorkflowEditor {
     await this.updateLayout();
   }
 
-  private onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-picker-closed', e.expanded)
-  private onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('trigger-container-closed', e.expanded)
-  private onActivityEditorPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-editor-closed', e.expanded)
+  onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-picker-closed', e.expanded)
+  onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('trigger-container-closed', e.expanded)
+  onActivityEditorPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-editor-closed', e.expanded)
 
-  private static onDragOver(e: DragEvent) {
+  static onDragOver(e: DragEvent) {
     e.preventDefault();
   }
 
-  private async onDrop(e: DragEvent) {
+  async onDrop(e: DragEvent) {
     const json = e.dataTransfer.getData('activity-descriptor');
     const activityDescriptor: ActivityDescriptor = JSON.parse(json);
 
     await this.canvas.addActivity({descriptor: activityDescriptor, x: e.offsetX, y: e.offsetY});
   }
 
-  private onActivityPropertyChanged = (e: CustomEvent<ActivityPropertyChangedArgs>) => {
-    this.activityUnderEdit = null;
+  onActivityUpdated = (e: CustomEvent<ActivityUpdatedArgs>) => {
     const updatedActivity = e.detail.activity;
     this.applyActivityChanges(updatedActivity);
   }
 
-  private onDeleteActivityRequested(e: CustomEvent<DeleteActivityRequestedArgs>) {
+  onDeleteActivityRequested(e: CustomEvent<DeleteActivityRequestedArgs>) {
     this.deleteActivity(e.detail.activity);
     this.activityUnderEdit = null;
   }
 
-  render() {
+  public render() {
 
     const tunnelState: WorkflowEditorState = {
       workflowDefinitionId: null,
@@ -109,7 +144,7 @@ export class ElsaWorkflowEditor {
                       position={PanelPosition.Right}
                       onExpandedStateChanged={e => this.onActivityEditorPanelStateChanged(e.detail)}>
             <elsa-activity-properties-editor activity={activityUnderEdit}
-                                             onActivityPropertyChanged={e => this.onActivityPropertyChanged(e)}
+                                             onActivityUpdated={e => this.onActivityUpdated(e)}
                                              onDeleteActivityRequested={e => this.onDeleteActivityRequested(e)}
                                              ref={el => this.activityPropertiesEditor = el}/>
           </elsa-panel>

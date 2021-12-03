@@ -5,14 +5,13 @@ using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Elsa.Api.Endpoints.Workflows
+namespace Elsa.Api.Endpoints.Workflows;
+
+public static partial class Workflows
 {
-    public static class Dispatch
+    public static async Task<IResult> DispatchAsync(string id, IWorkflowRegistry workflowRegistry, HttpResponse response, CancellationToken cancellationToken)
     {
-        public static async Task<IResult> HandleAsync(string id, IWorkflowRegistry workflowRegistry, HttpResponse response, CancellationToken cancellationToken)
-        {
-            var workflow = await workflowRegistry.FindByIdAsync(id, VersionOptions.Published, cancellationToken);
-            return workflow == null ? Results.NotFound() : new DispatchWorkflowResult(workflow);
-        }
+        var workflow = await workflowRegistry.FindByIdAsync(id, VersionOptions.Published, cancellationToken);
+        return workflow == null ? Results.NotFound() : new DispatchWorkflowResult(workflow);
     }
 }

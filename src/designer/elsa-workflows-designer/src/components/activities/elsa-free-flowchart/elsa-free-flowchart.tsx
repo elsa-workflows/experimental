@@ -1,15 +1,15 @@
-import {Component, Element, Event, EventEmitter, h, Host, Method} from '@stencil/core';
-import {Collection, EdgeView, Graph, Node, NodeView, Shape} from '@antv/x6';
+import {Component, Element, Event, EventEmitter, h, Method} from '@stencil/core';
+import {Edge, Graph, Node, NodeView} from '@antv/x6';
 import {v4 as uuid} from 'uuid';
+import _, {first} from 'lodash';
 import '../../../models/shapes';
 import '../../../models/ports';
 import {ActivityComponent} from "../activity-component";
 import {AddActivityArgs} from "../../designer/elsa-canvas/elsa-canvas";
-import {Activity, ActivityEditRequestArgs, ActivityInput} from "../../../models";
+import {Activity, ActivityEditRequestArgs, ActivityInput, GraphUpdatedArgs} from "../../../models";
 import {createGraph} from "./graph-factory";
 import {createNode} from "./node-factory";
-import NodeEventArgs = Collection.NodeEventArgs;
-import EventArgs = EdgeView.EventArgs;
+import {Connection, FreeFlowchart} from "./models";
 import PositionEventArgs = NodeView.PositionEventArgs;
 
 @Component({
@@ -24,6 +24,7 @@ export class ElsaFreeFlowchart implements ActivityComponent {
   private target: Node;
 
   @Event() activityEditRequested: EventEmitter<ActivityEditRequestArgs>;
+  @Event() graphUpdated: EventEmitter<GraphUpdatedArgs>;
 
   @Method()
   public async updateLayout(): Promise<void> {
@@ -42,7 +43,6 @@ export class ElsaFreeFlowchart implements ActivityComponent {
       id: uuid(),
       activityType: descriptor.activityType,
       metadata: {},
-      input: new Map<string, ActivityInput>()
     };
 
     const node = createNode(graph, descriptor, activity, x, y);
@@ -55,15 +55,38 @@ export class ElsaFreeFlowchart implements ActivityComponent {
     const graph = this.graph = createGraph(this.container);
 
     graph.on('node:click', this.onNodeClick);
+    graph.on('edge:connected', this.onEdgeConnected);
+
+    graph.on('node:change:*', this.onGraphChanged);
+    graph.on('node:added', this.onGraphChanged);
+    graph.on('node:removed', this.onGraphChanged);
+    graph.on('edge:added', this.onGraphChanged);
+    graph.on('edge:removed', this.onGraphChanged);
+    graph.on('edge:connected', this.onGraphChanged);
 
     await this.updateLayout();
   }
 
-  private applyActivityChanges = (activity: Activity) => {
+  exportGraphInternal = (): Activity => {
+    const graph = this.graph;
+    const graphModel = graph.toJSON();
+    const activities = graphModel.cells.filter(x => x.shape == 'activity').map(x => x.data as Activity);
+    const connections = graphModel.cells.filter(x => x.shape == 'edge' && !!x.data).map(x => x.data as Connection);
 
-  };
+    const flowchart: FreeFlowchart = {
+      activityType: 'FreeFlowchart',
+      metadata: {},
+      activities: activities,
+      connections: connections,
+      id: "1",
+      start: _.first(activities),
+      variables: []
+    }
 
-  private onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
+    return flowchart;
+  }
+
+  onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
     const node = e.node;
     const activity = node.data as Activity;
 
@@ -75,6 +98,23 @@ export class ElsaFreeFlowchart implements ActivityComponent {
 
     this.activityEditRequested.emit(args);
   };
+
+  onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {
+    const edge = e.edge;
+    const isNew = e.isNew;
+
+    edge.data = {
+      source: edge.getSourceNode().data as Activity,
+      target: edge.getTargetNode().data as Activity,
+      outboundPort: edge.getTargetNode().getPort(edge.getTargetPortId()).id
+    };
+  }
+
+  onGraphChanged = async (e: any) => {
+    console.debug('changed');
+
+    this.graphUpdated.emit({exportGraph: this.exportGraphInternal});
+  }
 
   render() {
     return (

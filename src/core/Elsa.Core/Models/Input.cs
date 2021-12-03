@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Elsa.Contracts;
 using Elsa.Expressions;
 
@@ -35,6 +36,10 @@ namespace Elsa.Models
         }
 
         public Input(Literal<T> literal) : base(new LiteralExpression(literal.Value), literal, typeof(T))
+        {
+        }
+        
+        public Input(Literal literal) : base(new LiteralExpression(literal.Value), literal, typeof(T))
         {
         }
 

@@ -11,10 +11,11 @@ export interface Trigger extends Node {
 export interface Activity extends Node {
   activityType: string;
   metadata: any;
-  input: Map<string, ActivityInput>;
+
+  [name: string]: any;
 }
 
-export interface Container extends Node {
+export interface Container extends Activity {
   activities: Array<Activity>;
   variables: Array<Variable>;
 }
@@ -27,4 +28,25 @@ export interface Variable {
 export interface ActivityInput {
   type: Type;
   expression: Expression;
+}
+
+export interface Workflow {
+  metadata: WorkflowMetadata;
+  root: Activity;
+  triggers: Array<Trigger>;
+}
+
+export interface WorkflowMetadata {
+  identity: WorkflowIdentity;
+  publication: WorkflowPublication;
+}
+
+export interface WorkflowIdentity {
+  id: string;
+  version: number;
+}
+
+export interface WorkflowPublication {
+  isLatest: boolean;
+  isPublished: boolean;
 }

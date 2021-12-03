@@ -1,7 +1,7 @@
 ﻿import axios, {AxiosInstance, AxiosRequestConfig} from "axios";
 import {Service as MiddlewareService} from 'axios-middleware';
 import {EventBus} from './event-bus';
-import {ActivityDescriptor, ActivityDescriptorResponse, EventTypes} from "../models";
+import {ActivityDescriptor, ActivityDescriptorResponse, EventTypes, Workflow} from "../models";
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
 import {ServerSettings} from "./server-settings";
@@ -27,21 +27,32 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
   const httpClient: AxiosInstance = await createHttpClient(serverUrl);
 
   return {
-    activityDescriptorsApi: {
-      list: async () => {
+    activityDescriptors: {
+      async list(): Promise<Array<ActivityDescriptor>> {
         const response = await httpClient.get<ActivityDescriptorResponse>('api/activity-descriptors');
         return response.data.activityDescriptors;
       }
     },
+    workflows: {
+      async post(workflow: Workflow): Promise<Workflow> {
+        const response = await httpClient.post<Workflow>('api/workflows', workflow);
+        return response.data;
+      }
+    }
   };
 }
 
 export interface ElsaClient {
-  activityDescriptorsApi: ActivitiesApi;
+  activityDescriptors: ActivityDescriptorsApi;
+  workflows: WorkflowsApi;
 }
 
-export interface ActivitiesApi {
+export interface ActivityDescriptorsApi {
   list(): Promise<Array<ActivityDescriptor>>;
+}
+
+export interface WorkflowsApi {
+  post(workflow: Workflow): Promise<Workflow>;
 }
 
 @Service()

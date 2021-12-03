@@ -39,11 +39,11 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => "Hello World!");
 
 // Map Elsa API endpoints.
-app.MapWorkflowsResource(workflows => workflows
+app.MapWorkflows(workflows => workflows
     .Execute()
-    .MapDispatch());
+    .Dispatch());
 
-app.MapEventsResource(events => events
+app.MapEvents(events => events
     .Trigger());
 
 // Register Elsa HTTP activity middleware.

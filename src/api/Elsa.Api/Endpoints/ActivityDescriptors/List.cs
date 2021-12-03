@@ -5,25 +5,24 @@ using Elsa.Api.Converters;
 using Elsa.Api.Core.Contracts;
 using Microsoft.AspNetCore.Http;
 
-namespace Elsa.Api.Endpoints.ActivityDescriptors
+namespace Elsa.Api.Endpoints.ActivityDescriptors;
+
+public static partial class ActivityDescriptors
 {
-    public static class List
+    public static IResult ListAsync(IActivityDescriptorRegistry registry, IWellKnownTypeRegistry wellKnownTypeRegistry)
     {
-        public static IResult HandleAsync(IActivityDescriptorRegistry registry, IWellKnownTypeRegistry wellKnownTypeRegistry)
+        var descriptors = registry.ListAll().ToList();
+
+        var model = new
         {
-            var descriptors = registry.ListAll().ToList();
+            ActivityDescriptors = descriptors
+        };
 
-            var model = new
-            {
-                ActivityDescriptors = descriptors
-            };
-
-            return Results.Json(model, new JsonSerializerOptions
-            {
-                Converters = { new TypeJsonConverter(wellKnownTypeRegistry) },
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-            });
-        }
+        return Results.Json(model, new JsonSerializerOptions
+        {
+            Converters = { new TypeJsonConverter(wellKnownTypeRegistry) },
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+        });
     }
 }

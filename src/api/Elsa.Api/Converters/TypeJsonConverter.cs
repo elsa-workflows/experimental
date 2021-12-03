@@ -7,6 +7,9 @@ using Elsa.Api.Core.Contracts;
 
 namespace Elsa.Api.Converters
 {
+    /// <summary>
+    /// Serializes <see cref="Type"/> objects to a simple alias representing said type.
+    /// </summary>
     public class TypeJsonConverter : JsonConverter<Type>
     {
         private readonly IWellKnownTypeRegistry _wellKnownTypeRegistry;

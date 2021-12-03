@@ -13,21 +13,28 @@ namespace Elsa.Api.Endpoints.Workflows
             _endpoints = endpoints;
         }
 
-        public WorkflowsResource Execute()
+        public WorkflowsResource Post()
         {
-            _endpoints.MapPost("api/workflows/{id}/execute", Workflows.Execute.HandleAsync);
+            _endpoints.MapPost("api/workflows", Workflows.PostAsync);
             return this;
         }
-        
-        public WorkflowsResource MapDispatch()
+
+        public WorkflowsResource Execute()
         {
-            _endpoints.MapPost("api/workflows/{id}/dispatch", Dispatch.HandleAsync);
+            _endpoints.MapPost("api/workflows/{id}/execute", Workflows.ExecuteAsync);
+            return this;
+        }
+
+        public WorkflowsResource Dispatch()
+        {
+            _endpoints.MapPost("api/workflows/{id}/dispatch", Workflows.DispatchAsync);
             return this;
         }
     }
-    
+
     public static class WorkflowsResourceExtensions
     {
-        public static void MapWorkflowsResource(this IEndpointRouteBuilder endpoints, Action<WorkflowsResource> configureResource) => configureResource(new(endpoints));
+        public static void MapWorkflows(this IEndpointRouteBuilder endpoints, Action<WorkflowsResource> configureResource) => configureResource(new(endpoints));
+        public static void MapWorkflows(this IEndpointRouteBuilder endpoints) => endpoints.MapWorkflows(x => x.Post().Execute().Dispatch());
     }
 }

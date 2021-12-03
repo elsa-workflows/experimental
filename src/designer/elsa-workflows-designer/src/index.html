@@ -10,13 +10,13 @@
   <script nomodule src="/build/elsa-workflows-designer.js"></script>
 </head>
 <body>
-<!--Use the Shell component to handle automatic interaction with the Elsa Server API-->
-<elsa-shell server="https://localhost:5001">
+<!--Use the Server Shell component to handle automatic interaction with the Elsa Server API-->
+<elsa-server-shell server="https://localhost:5001">
     <elsa-workflow-toolbar></elsa-workflow-toolbar>
     <div class="absolute inset-0" style="top: 63px;">
       <elsa-workflow-editor></elsa-workflow-editor>
     </div>
 <!--  <elsa-workflow-editor></elsa-workflow-editor>-->
-</elsa-shell>
+</elsa-server-shell>
 </body>
 </html>

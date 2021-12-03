@@ -21,9 +21,9 @@ namespace Elsa.Samples.Console1.Workflows
                 Else = new WriteLine("Enjoy your soda!")
             };
             var step4 = new WriteLine("Done");
-            var connection1 = new Connection(step1, step2);
-            var connection2 = new Connection(step2, step3);
-            var connection3 = new Connection(step3, step4);
+            var connection1 = new Connection(step1, step2, "Done");
+            var connection2 = new Connection(step2, step3, "Done");
+            var connection3 = new Connection(step3, step4, "Done");
             flowchart.Start = step1;
             flowchart.Activities.Add(step2);
             flowchart.Activities.Add(step3);

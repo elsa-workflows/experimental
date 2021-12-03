@@ -62,9 +62,9 @@ app.UseCors();
 app.MapGet("/", () => "Hello World!");
 
 // Map Elsa API endpoints.
-app.MapWorkflowsResource(resource => resource.Execute());
-app.MapEventsResource(resource => resource.Trigger());
-app.MapActivityDescriptorsResource(resource => resource.List());
+app.MapWorkflows();
+app.MapEvents();
+app.MapActivityDescriptors();
 
 // Register Elsa HTTP activity middleware.
 app.UseHttpActivities();

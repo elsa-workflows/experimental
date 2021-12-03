@@ -1,19 +1,21 @@
-import {Component, h, Prop, Watch} from "@stencil/core";
+import {Component, h, Listen, Prop, Watch} from "@stencil/core";
 import 'reflect-metadata';
 import {Container} from "typedi";
 import {ServerSettings} from "../../../services/server-settings";
-import {ElsaApiClientProvider} from "../../../services/elsa-api-client-provider";
+import {ElsaApiClientProvider, ElsaClient} from "../../../services/elsa-api-client-provider";
 import ShellTunnel, {ShellState} from "./state";
 import {ActivityDescriptor} from "../../../models";
+import {WorkflowUpdatedArgs} from "../../designer/elsa-workflow-editor/elsa-workflow-editor";
 
 @Component({
-  tag: 'elsa-shell'
+  tag: 'elsa-server-shell'
 })
-export class ElsaShell {
+export class ElsaServerShell {
 
   @Prop({attribute: 'server'})
   public serverUrl: string;
   private activityDescriptors: Array<ActivityDescriptor>;
+  private elsaClient: ElsaClient;
 
   @Watch('serverUrl')
   handleServerUrl(value: string) {
@@ -21,12 +23,17 @@ export class ElsaShell {
     settings.baseAddress = value;
   }
 
+  @Listen('workflowUpdated')
+  async handleWorkflowUpdated(e: CustomEvent<WorkflowUpdatedArgs>) {
+    await this.elsaClient.workflows.post(e.detail.workflow);
+  }
+
   async componentWillLoad() {
     this.handleServerUrl(this.serverUrl);
 
     const elsaClientProvider = Container.get(ElsaApiClientProvider);
-    const client = await elsaClientProvider.getClient();
-    this.activityDescriptors = await client.activityDescriptorsApi.list();
+    this.elsaClient = await elsaClientProvider.getClient();
+    this.activityDescriptors = await this.elsaClient.activityDescriptors.list();
   }
 
   render() {

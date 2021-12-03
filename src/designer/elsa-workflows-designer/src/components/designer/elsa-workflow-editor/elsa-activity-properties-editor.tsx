@@ -1,21 +1,19 @@
 import {Component, Event, EventEmitter, h, Method, Prop, State} from "@stencil/core";
+import _, {camelCase} from 'lodash';
 import WorkflowEditorTunnel from "./state";
 import {
-  DefaultActions,
-  TabDefinition,
-  ActionInvokedArgs,
+  ActionDefinition,
   Activity,
   ActivityDescriptor,
   ActivityInput,
+  DefaultActions,
   LiteralExpression,
-  ActionDefinition
+  TabDefinition
 } from "../../../models";
 import {TabChangedArgs} from "../elsa-form-panel/elsa-form-panel";
 
-export interface ActivityPropertyChangedArgs {
+export interface ActivityUpdatedArgs {
   activity: Activity;
-  propertyName: string;
-  input: ActivityInput;
 }
 
 export interface DeleteActivityRequestedArgs {
@@ -32,12 +30,10 @@ export class ElsaActivityPropertiesEditor {
   @Prop({mutable: true}) activityDescriptors: Array<ActivityDescriptor> = [];
   @Prop({mutable: true}) activity?: Activity;
 
-  @Event() activityUpdated: EventEmitter<Activity>;
-  @Event() activityPropertyChanged: EventEmitter<ActivityPropertyChangedArgs>;
+  @Event() activityUpdated: EventEmitter<ActivityUpdatedArgs>;
   @Event() deleteActivityRequested: EventEmitter<DeleteActivityRequestedArgs>;
 
   @State() private selectedTabIndex: number = 0;
-
 
   @Method()
   public async show(): Promise<void> {
@@ -61,22 +57,23 @@ export class ElsaActivityPropertiesEditor {
 
     const commonTab: TabDefinition = {
       displayText: 'Common',
-      content: () => ElsaActivityPropertiesEditor.renderCommonTab(activity, activityDescriptor)
+      content: () => this.renderCommonTab(activity, activityDescriptor)
     };
 
     const tabs = !!activityDescriptor ? [propertiesTab, commonTab] : [];
-    const expanded = !!activity;
     const actions = [DefaultActions.Delete(this.onDeleteActivity)];
 
     return (
-      <elsa-form-panel headerText={title} tabs={tabs} selectedTabIndex={this.selectedTabIndex}
-                       onSelectedTabIndexChanged={e => this.onSelectedTabIndexChanged(e)}
-                       actions={actions}/>
+      <elsa-form-panel
+        headerText={title} tabs={tabs} selectedTabIndex={this.selectedTabIndex}
+        onSelectedTabIndexChanged={e => this.onSelectedTabIndexChanged(e)}
+        actions={actions}/>
     );
   }
 
   public componentDidRender() {
-    const firstTextInputElement = this.inputPropertiesContainer.querySelector('input');
+
+    const firstTextInputElement = this.inputPropertiesContainer?.querySelector('input');
 
     if (!firstTextInputElement)
       return;
@@ -85,50 +82,26 @@ export class ElsaActivityPropertiesEditor {
   }
 
   private findActivityDescriptor = (): ActivityDescriptor => !!this.activity ? this.activityDescriptors.find(x => x.activityType == this.activity.activityType) : null;
-  private onPanelCollapsed = () => this.activity = null;
-
-  private onSubmit = (e: CustomEvent<FormData>) => {
-    const activity = {...this.activity}; // Copy activity.
-    const activityDescriptor = this.findActivityDescriptor();
-    const inputProperties = activityDescriptor.inputProperties;
-    const formData = e.detail;
-
-    // Update common properties.
-    activity.id = formData.get('ActivityId').toString();
-
-    // Update each activity input property.
-    for (const inputProperty of inputProperties) {
-      const propertyName = inputProperty.name;
-      const propertyValue = formData.get(propertyName);
-
-      const input: ActivityInput = {
-        type: 'string',
-        expression: {
-          type: 'LiteralExpression',
-          value: propertyValue
-        }
-      };
-
-      activity.input.set(propertyName, input);
-    }
-
-    // Publish event.
-    this.activityUpdated.emit(activity);
-
-    // Close editor.
-    this.activity = null;
-  };
 
   private onSelectedTabIndexChanged(e: CustomEvent<TabChangedArgs>) {
     this.selectedTabIndex = e.detail.selectedTabIndex;
   }
 
+  private onActivityIdChanged(e: any) {
+    const activity = this.activity;
+    const inputElement = e.target as HTMLInputElement;
+
+    activity.id = inputElement.value;
+    this.activityUpdated.emit({activity: activity});
+  }
+
   private onPropertyEditorChanged(e: any, propertyName: string) {
-    const activity = {...this.activity};
+    const activity = this.activity;
     const inputElement = e.target as HTMLInputElement;
     const value = inputElement.value;
+    const camelCasePropertyName = _.camelCase(propertyName);
 
-    const input: ActivityInput = {
+    activity[camelCasePropertyName] = {
       type: 'string',
       expression: {
         type: 'Literal',
@@ -136,15 +109,7 @@ export class ElsaActivityPropertiesEditor {
       }
     };
 
-    activity.input.set(propertyName, input);
-
-    const args: ActivityPropertyChangedArgs = {
-      activity: activity,
-      propertyName: propertyName,
-      input: input
-    };
-
-    this.activityPropertyChanged.emit(args);
+    this.activityUpdated.emit({activity: activity});
   }
 
   private onDeleteActivity = (e: any, action: ActionDefinition) => this.deleteActivityRequested.emit({activity: this.activity});
@@ -160,16 +125,16 @@ export class ElsaActivityPropertiesEditor {
         const description = inputProperty.description;
         const fieldName = inputProperty.name;
         const fieldId = inputProperty.name;
-        const input = activity.input.get(propertyName) as ActivityInput;
-
+        const input = activity[propertyName] as ActivityInput;
         const value = (input?.expression as LiteralExpression)?.value;
+        const key = `${activity.id}_${propertyName}`;
 
         return <div class="p-4" ref={el => this.inputPropertiesContainer = el}>
           <label htmlFor={fieldId} class="block text-sm font-medium text-gray-700">
             {displayName}
           </label>
           <div class="mt-1">
-            <input type="text" name={fieldName} id={fieldId} value={value}
+            <input key={key} type="text" name={fieldName} id={fieldId} value={value}
                    onChange={e => this.onPropertyEditorChanged(e, propertyName)}
                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
           </div>
@@ -179,7 +144,7 @@ export class ElsaActivityPropertiesEditor {
     </div>
   }
 
-  private static renderCommonTab(activity: Activity, activityDescriptor: ActivityDescriptor) {
+  private renderCommonTab(activity: Activity, activityDescriptor: ActivityDescriptor) {
 
     const activityId = activity.id;
 
@@ -190,6 +155,7 @@ export class ElsaActivityPropertiesEditor {
         </label>
         <div class="mt-1">
           <input type="text" name="ActivityId" id="ActivityId" value={activityId}
+                 onChange={e => this.onActivityIdChanged(e)}
                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
         </div>
         <p class="mt-2 text-sm text-gray-500">The ID of the activity.</p>
