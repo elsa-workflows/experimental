@@ -1,9 +1,5 @@
-import {Component, Event, EventEmitter, h, Method, Prop, State, Watch} from "@stencil/core";
-import {ActionDefinition, ActionInvokedArgs, ActionType, TabDefinition} from "../../../models";
-
-export interface TabChangedArgs {
-  selectedTabIndex: number;
-}
+import {Component, Event, EventEmitter, h, Prop} from "@stencil/core";
+import {ActionDefinition, ActionInvokedArgs, ActionType, TabChangedArgs, TabDefinition} from "../../../models";
 
 @Component({
   tag: 'elsa-form-panel'

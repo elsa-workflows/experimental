@@ -7,10 +7,9 @@ import {
   ActivityDescriptor,
   ActivityInput,
   DefaultActions,
-  LiteralExpression,
+  LiteralExpression, TabChangedArgs,
   TabDefinition
 } from "../../../models";
-import {TabChangedArgs} from "../elsa-form-panel/elsa-form-panel";
 
 export interface ActivityUpdatedArgs {
   activity: Activity;

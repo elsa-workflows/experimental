@@ -3,6 +3,10 @@ export interface TabDefinition {
   content: () => any;
 }
 
+export interface TabChangedArgs {
+  selectedTabIndex: number;
+}
+
 export enum ActionType {
   Button,
   Submit,

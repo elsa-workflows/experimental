@@ -6,10 +6,9 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Graph } from "@antv/x6";
-import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivityEditRequestArgs, GraphUpdatedArgs, TabDefinition, Workflow } from "./models";
+import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivityEditRequestArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, TriggerDescriptor, Workflow } from "./models";
 import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/designer/elsa-workflow-editor/elsa-activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
-import { TabChangedArgs } from "./components/designer/elsa-form-panel/elsa-form-panel";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
 import { WorkflowUpdatedArgs } from "./components/designer/elsa-workflow-editor/elsa-workflow-editor";
@@ -17,6 +16,7 @@ export namespace Components {
     interface ElsaActivityPicker {
         "activityDescriptors": Array<ActivityDescriptor>;
         "graph": Graph;
+        "triggerDescriptors": Array<TriggerDescriptor>;
     }
     interface ElsaActivityPropertiesEditor {
         "activity"?: Activity;
@@ -157,6 +157,7 @@ declare namespace LocalJSX {
     interface ElsaActivityPicker {
         "activityDescriptors"?: Array<ActivityDescriptor>;
         "graph"?: Graph;
+        "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
     interface ElsaActivityPropertiesEditor {
         "activity"?: Activity;
