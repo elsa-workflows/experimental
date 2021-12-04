@@ -52,16 +52,17 @@ namespace Elsa.Api.Converters
         public override void Write(Utf8JsonWriter writer, Input<T> value, JsonSerializerOptions options)
         {
             var expression = value.Expression;
+            var expressionType = expression.GetType();
             var targetType = value.TargetType;
+            var expressionSyntaxDescriptor = _expressionSyntaxRegistry.Find(x => x.Type == expressionType);
+            
+            if (expressionSyntaxDescriptor == null)
+                throw new Exception($"Syntax descriptor with expression type {expressionType} not found in registry");
 
             var model = new
             {
                 TargetType = targetType,
-                Expression = new
-                {
-                    ExpressionType = "Literal",
-                    Value = (expression as LiteralExpression)!.Value
-                }
+                Expression = expressionSyntaxDescriptor.CreateSerializableObject(new SerializableObjectConstructorContext(expression))
             };
 
             JsonSerializer.Serialize(writer, model, options);

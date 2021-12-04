@@ -16,8 +16,14 @@ namespace Elsa.Api.Core.Providers
             var literal = new ExpressionSyntaxDescriptor
             {
                 Syntax = "Literal",
+                Type = typeof(LiteralExpression),
                 CreateExpression = CreateLiteralExpression,
-                CreateLocationReference = context => new Literal(context.GetExpression<LiteralExpression>().Value)
+                CreateLocationReference = context => new Literal(context.GetExpression<LiteralExpression>().Value),
+                CreateSerializableObject = context => new
+                {
+                    ExpressionType = "Literal",
+                    Value = context.GetExpression<LiteralExpression>().Value
+                }
             };
 
             return ValueTask.FromResult<IEnumerable<ExpressionSyntaxDescriptor>>(new[] { literal });
