@@ -1,11 +1,10 @@
 using System;
 
-namespace Elsa.Attributes
+namespace Elsa.Attributes;
+
+[AttributeUsage(AttributeTargets.Property)]
+public class OutboundAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class OutboundAttribute : Attribute
-    {
-        public string? Name { get; set; }
-        public string? DisplayName { get; set; }
-    }
+    public string? Name { get; set; }
+    public string? DisplayName { get; set; }
 }

@@ -1,11 +1,10 @@
 using Elsa.Models;
 using Elsa.State;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IWorkflowStateSerializer
 {
-    public interface IWorkflowStateSerializer
-    {
-        WorkflowState ReadState(WorkflowExecutionContext workflowExecutionContext);
-        void WriteState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state);
-    }
+    WorkflowState ReadState(WorkflowExecutionContext workflowExecutionContext);
+    void WriteState(WorkflowExecutionContext workflowExecutionContext, WorkflowState state);
 }

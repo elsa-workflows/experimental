@@ -1,6 +1,5 @@
-namespace Elsa.Dsl.Models
+namespace Elsa.Dsl.Models;
+
+public class WorkflowDefinitionInterpreterSettings
 {
-    public class WorkflowDefinitionInterpreterSettings
-    {
-    }
 }

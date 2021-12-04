@@ -1,9 +1,8 @@
 using Elsa.Models;
 
-namespace Elsa.Dsl.Contracts
+namespace Elsa.Dsl.Contracts;
+
+public interface IDslEngine
 {
-    public interface IDslEngine
-    {
-        Workflow Parse(string script);
-    }
+    Workflow Parse(string script);
 }

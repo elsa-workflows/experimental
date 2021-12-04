@@ -2,34 +2,33 @@ using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
 
-namespace Elsa.Pipelines.WorkflowExecution.Components
+namespace Elsa.Pipelines.WorkflowExecution.Components;
+
+public static class UseActivitySchedulerMiddlewareExtensions
 {
-    public static class UseActivitySchedulerMiddlewareExtensions
-    {
-        public static IWorkflowExecutionBuilder UseActivityScheduler(this IWorkflowExecutionBuilder builder) => builder.UseMiddleware<ActivitySchedulerMiddleware>();
-    }
+    public static IWorkflowExecutionBuilder UseActivityScheduler(this IWorkflowExecutionBuilder builder) => builder.UseMiddleware<ActivitySchedulerMiddleware>();
+}
     
-    public class ActivitySchedulerMiddleware : IWorkflowExecutionMiddleware
+public class ActivitySchedulerMiddleware : IWorkflowExecutionMiddleware
+{
+    private readonly WorkflowMiddlewareDelegate _next;
+    public ActivitySchedulerMiddleware(WorkflowMiddlewareDelegate next) => _next = next;
+
+    public async ValueTask InvokeAsync(WorkflowExecutionContext context)
     {
-        private readonly WorkflowMiddlewareDelegate _next;
-        public ActivitySchedulerMiddleware(WorkflowMiddlewareDelegate next) => _next = next;
+        var scheduler = context.Scheduler;
 
-        public async ValueTask InvokeAsync(WorkflowExecutionContext context)
+        // As long as there are activities scheduled, keep executing them.
+        while (scheduler.HasAny)
         {
-            var scheduler = context.Scheduler;
+            // Pop next work item for execution.
+            var currentWorkItem = scheduler.Pop();
 
-            // As long as there are activities scheduled, keep executing them.
-            while (scheduler.HasAny)
-            {
-                // Pop next work item for execution.
-                var currentWorkItem = scheduler.Pop();
-
-                // Execute work item.
-                await currentWorkItem.Execute();
-            }
-
-            // Invoke next middleware.
-            await _next(context);
+            // Execute work item.
+            await currentWorkItem.Execute();
         }
+
+        // Invoke next middleware.
+        await _next(context);
     }
 }

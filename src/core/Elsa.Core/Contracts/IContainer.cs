@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Elsa.Models;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IContainer : IActivity
 {
-    public interface IContainer : IActivity
-    {
-        ICollection<Variable> Variables { get; }
-    }
+    ICollection<Variable> Variables { get; }
 }

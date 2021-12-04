@@ -9,50 +9,49 @@ using Elsa.Attributes;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Elsa.Api.Core.Services
+namespace Elsa.Api.Core.Services;
+
+public class ActivityPropertyOptionsResolver : IActivityPropertyOptionsResolver
 {
-    public class ActivityPropertyOptionsResolver : IActivityPropertyOptionsResolver
+    private readonly IServiceProvider _serviceProvider;
+
+    public ActivityPropertyOptionsResolver(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
+        _serviceProvider = serviceProvider;
+    }
 
-        public ActivityPropertyOptionsResolver(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+    public object? GetOptions(PropertyInfo activityPropertyInfo)
+    {
+        var inputAttribute = activityPropertyInfo.GetCustomAttribute<InputAttribute>();
 
-        public object? GetOptions(PropertyInfo activityPropertyInfo)
-        {
-            var inputAttribute = activityPropertyInfo.GetCustomAttribute<InputAttribute>();
+        if (inputAttribute == null)
+            return null;
 
-            if (inputAttribute == null)
-                return null;
+        if (inputAttribute.OptionsProvider == null)
+            return inputAttribute.Options ?? (TryGetEnumOptions(activityPropertyInfo, out var items) ? items : null);
 
-            if (inputAttribute.OptionsProvider == null)
-                return inputAttribute.Options ?? (TryGetEnumOptions(activityPropertyInfo, out var items) ? items : null);
+        var providerType = inputAttribute.OptionsProvider;
 
-            var providerType = inputAttribute.OptionsProvider;
+        using var scope = _serviceProvider.CreateScope();
+        var provider = (IActivityPropertyOptionsProvider) ActivatorUtilities.GetServiceOrCreateInstance(scope.ServiceProvider, providerType);
+        return provider.GetOptions(activityPropertyInfo);
+    }
 
-            using var scope = _serviceProvider.CreateScope();
-            var provider = (IActivityPropertyOptionsProvider) ActivatorUtilities.GetServiceOrCreateInstance(scope.ServiceProvider, providerType);
-            return provider.GetOptions(activityPropertyInfo);
-        }
+    private bool TryGetEnumOptions(PropertyInfo activityPropertyInfo, out IList<SelectListItem>? items)
+    {
+        var isNullable = activityPropertyInfo.PropertyType.IsNullableType();
+        var propertyType = isNullable ? activityPropertyInfo.PropertyType.GetTypeOfNullable() : activityPropertyInfo.PropertyType;
 
-        private bool TryGetEnumOptions(PropertyInfo activityPropertyInfo, out IList<SelectListItem>? items)
-        {
-            var isNullable = activityPropertyInfo.PropertyType.IsNullableType();
-            var propertyType = isNullable ? activityPropertyInfo.PropertyType.GetTypeOfNullable() : activityPropertyInfo.PropertyType;
+        items = null;
 
-            items = null;
-
-            if (!propertyType.IsEnum)
-                return false;
+        if (!propertyType.IsEnum)
+            return false;
             
-            items = propertyType.GetEnumNames().Select(x => new SelectListItem(x.Humanize(LetterCasing.Title), x)).ToList();
+        items = propertyType.GetEnumNames().Select(x => new SelectListItem(x.Humanize(LetterCasing.Title), x)).ToList();
 
-            if (isNullable)
-                items.Insert(0, new SelectListItem("-", ""));
+        if (isNullable)
+            items.Insert(0, new SelectListItem("-", ""));
 
-            return true;
-        }
+        return true;
     }
 }

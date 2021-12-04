@@ -11,138 +11,142 @@ using Elsa.Api.Core.Extensions;
 using Elsa.Api.Core.Models;
 using Elsa.Attributes;
 using Elsa.Contracts;
+using Elsa.Helpers;
 using Elsa.Models;
 using Humanizer;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Elsa.Api.Core.Services
+namespace Elsa.Api.Core.Services;
+
+public class ActivityDescriber : IActivityDescriber
 {
-    public class ActivityDescriber : IActivityDescriber
+    private readonly IActivityPropertyOptionsResolver _optionsResolver;
+    private readonly IActivityPropertyDefaultValueResolver _defaultValueResolver;
+    private readonly IActivityFactory _activityFactory;
+
+    public ActivityDescriber(IActivityPropertyOptionsResolver optionsResolver, IActivityPropertyDefaultValueResolver defaultValueResolver, IActivityFactory activityFactory)
     {
-        private readonly IActivityPropertyOptionsResolver _optionsResolver;
-        private readonly IActivityPropertyDefaultValueResolver _defaultValueResolver;
-        private readonly IActivityFactory _activityFactory;
+        _optionsResolver = optionsResolver;
+        _defaultValueResolver = defaultValueResolver;
+        _activityFactory = activityFactory;
+    }
 
-        public ActivityDescriber(IActivityPropertyOptionsResolver optionsResolver, IActivityPropertyDefaultValueResolver defaultValueResolver, IActivityFactory activityFactory)
-        {
-            _optionsResolver = optionsResolver;
-            _defaultValueResolver = defaultValueResolver;
-            _activityFactory = activityFactory;
-        }
+    public ValueTask<ActivityDescriptor> DescribeActivityAsync(Type activityType, CancellationToken cancellationToken = default)
+    {
+        var ns = ActivityTypeNameHelper.GenerateActivityTypeNamespace(activityType);
+        var typeName = activityType.Name;
+        var fullTypeName = ActivityTypeNameHelper.GenerateActivityTypeName(activityType, ns);
+        var displayNameAttr = activityType.GetCustomAttribute<DisplayNameAttribute>();
+        var displayName = displayNameAttr?.DisplayName ?? typeName.Humanize(LetterCasing.Title);
+        var categoryAttr = activityType.GetCustomAttribute<CategoryAttribute>();
+        var category = categoryAttr?.Category ?? GetCategoryFromNamespace(ns) ?? "Miscellaneous";
+        var descriptionAttr = activityType.GetCustomAttribute<DescriptionAttribute>();
+        var description = descriptionAttr?.Description;
 
-        public ValueTask<ActivityDescriptor> DescribeActivityAsync(Type activityType, CancellationToken cancellationToken = default)
-        {
-            var ns = activityType.Namespace != null ? activityType.Namespace.StartsWith("Elsa.Activities.") ? activityType.Namespace["Elsa.Activities.".Length..] : activityType.Namespace : null;
-            var typeName = activityType.Name;
-            var fullTypeName = ns != null ? $"{ns}.{typeName}" : typeName;
-            var displayNameAttr = activityType.GetCustomAttribute<DisplayNameAttribute>();
-            var displayName = displayNameAttr?.DisplayName ?? typeName.Humanize(LetterCasing.Title);
-            var categoryAttr = activityType.GetCustomAttribute<CategoryAttribute>();
-            var category = categoryAttr?.Category ?? GetCategoryFromNamespace(ns) ?? "Miscellaneous";
-            var descriptionAttr = activityType.GetCustomAttribute<DescriptionAttribute>();
-            var description = descriptionAttr?.Description;
-
-            var outboundPorts =
-                from prop in activityType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                where typeof(IActivity).IsAssignableFrom(prop.PropertyType) || typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
-                let portAttr = prop.GetCustomAttribute<OutboundAttribute>()
-                where portAttr != null
-                select new Port
-                {
-                    Name = portAttr.Name ?? prop.Name,
-                    DisplayName = portAttr.DisplayName ?? portAttr.Name ?? prop.Name
-                };
-
-            var properties = activityType.GetProperties();
-            var inputProperties = properties.Where(x => typeof(Input).IsAssignableFrom(x.PropertyType)).ToList();
-            var outputProperties = properties.Where(x => typeof(Output).IsAssignableFrom(x.PropertyType)).ToList();
-
-            var descriptor = new ActivityDescriptor
+        var outboundPorts =
+            from prop in activityType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            where typeof(IActivity).IsAssignableFrom(prop.PropertyType) || typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
+            let portAttr = prop.GetCustomAttribute<OutboundAttribute>()
+            where portAttr != null
+            select new Port
             {
-                Category = category,
-                Description = description,
-                ActivityType = fullTypeName,
-                DisplayName = displayName,
-                OutboundPorts = outboundPorts.ToList(),
-                InputProperties = DescribeInputProperties(inputProperties).ToList(),
-                OutputProperties = DescribeOutputProperties(outputProperties).ToList(),
-                Constructor = context => _activityFactory.Create(activityType, context)
+                Name = portAttr.Name ?? prop.Name,
+                DisplayName = portAttr.DisplayName ?? portAttr.Name ?? prop.Name
             };
 
-            return ValueTask.FromResult(descriptor);
-        }
+        var properties = activityType.GetProperties();
+        var inputProperties = properties.Where(x => typeof(Input).IsAssignableFrom(x.PropertyType)).ToList();
+        var outputProperties = properties.Where(x => typeof(Output).IsAssignableFrom(x.PropertyType)).ToList();
 
-        private string? GetCategoryFromNamespace(string? ns)
+        var descriptor = new ActivityDescriptor
         {
-            if (string.IsNullOrWhiteSpace(ns))
-                return null;
-
-            var index = ns.LastIndexOf('.');
-
-            return index < 0 ? ns : ns[index..];
-        }
-
-        private IEnumerable<ActivityInputDescriptor> DescribeInputProperties(IEnumerable<PropertyInfo> properties)
-        {
-            foreach (var propertyInfo in properties)
+            Category = category,
+            Description = description,
+            ActivityType = fullTypeName,
+            DisplayName = displayName,
+            OutboundPorts = outboundPorts.ToList(),
+            InputProperties = DescribeInputProperties(inputProperties).ToList(),
+            OutputProperties = DescribeOutputProperties(outputProperties).ToList(),
+            Constructor = context =>
             {
-                var inputAttribute = propertyInfo.GetCustomAttribute<InputAttribute>();
-                var descriptionAttribute = propertyInfo.GetCustomAttribute<DescriptionAttribute>();
-                var wrappedPropertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
-
-                yield return new ActivityInputDescriptor
-                (
-                    inputAttribute?.Name ?? propertyInfo.Name,
-                    wrappedPropertyType,
-                    GetUIHint(wrappedPropertyType, inputAttribute),
-                    inputAttribute?.DisplayName ?? propertyInfo.Name.Humanize(LetterCasing.Title),
-                    descriptionAttribute?.Description,
-                    _optionsResolver.GetOptions(propertyInfo),
-                    inputAttribute?.Category,
-                    inputAttribute?.Order ?? 0,
-                    _defaultValueResolver.GetDefaultValue(propertyInfo),
-                    inputAttribute?.DefaultSyntax,
-                    inputAttribute?.SupportedSyntaxes,
-                    inputAttribute?.IsReadOnly ?? false,
-                    inputAttribute?.IsBrowsable ?? true
-                );
+                var activity = _activityFactory.Create(activityType, context);
+                activity.ActivityType = fullTypeName;
+                return activity;
             }
-        }
+        };
 
-        private IEnumerable<ActivityOutputDescriptor> DescribeOutputProperties(IEnumerable<PropertyInfo> properties)
+        return ValueTask.FromResult(descriptor);
+    }
+
+    private string? GetCategoryFromNamespace(string? ns)
+    {
+        if (string.IsNullOrWhiteSpace(ns))
+            return null;
+
+        var index = ns.LastIndexOf('.');
+
+        return index < 0 ? ns : ns[index..];
+    }
+
+    private IEnumerable<ActivityInputDescriptor> DescribeInputProperties(IEnumerable<PropertyInfo> properties)
+    {
+        foreach (var propertyInfo in properties)
         {
-            foreach (var propertyInfo in properties)
-            {
-                var activityPropertyAttribute = propertyInfo.GetCustomAttribute<OutputAttribute>();
-                var wrappedPropertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
+            var inputAttribute = propertyInfo.GetCustomAttribute<InputAttribute>();
+            var descriptionAttribute = propertyInfo.GetCustomAttribute<DescriptionAttribute>();
+            var wrappedPropertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
 
-                yield return new ActivityOutputDescriptor
-                (
-                    (activityPropertyAttribute?.Name ?? propertyInfo.Name).Pascalize(),
-                    wrappedPropertyType,
-                    activityPropertyAttribute?.Description
-                );
-            }
+            yield return new ActivityInputDescriptor
+            (
+                inputAttribute?.Name ?? propertyInfo.Name,
+                wrappedPropertyType,
+                GetUIHint(wrappedPropertyType, inputAttribute),
+                inputAttribute?.DisplayName ?? propertyInfo.Name.Humanize(LetterCasing.Title),
+                descriptionAttribute?.Description,
+                _optionsResolver.GetOptions(propertyInfo),
+                inputAttribute?.Category,
+                inputAttribute?.Order ?? 0,
+                _defaultValueResolver.GetDefaultValue(propertyInfo),
+                inputAttribute?.DefaultSyntax,
+                inputAttribute?.SupportedSyntaxes,
+                inputAttribute?.IsReadOnly ?? false,
+                inputAttribute?.IsBrowsable ?? true
+            );
         }
+    }
 
-        private string GetUIHint(Type wrappedPropertyType, InputAttribute? inputAttribute)
+    private IEnumerable<ActivityOutputDescriptor> DescribeOutputProperties(IEnumerable<PropertyInfo> properties)
+    {
+        foreach (var propertyInfo in properties)
         {
-            if (inputAttribute?.UIHint != null)
-                return inputAttribute.UIHint;
+            var activityPropertyAttribute = propertyInfo.GetCustomAttribute<OutputAttribute>();
+            var wrappedPropertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
 
-            if (wrappedPropertyType == typeof(bool) || wrappedPropertyType == typeof(bool?))
-                return ActivityInputUIHints.Checkbox;
+            yield return new ActivityOutputDescriptor
+            (
+                (activityPropertyAttribute?.Name ?? propertyInfo.Name).Pascalize(),
+                wrappedPropertyType,
+                activityPropertyAttribute?.Description
+            );
+        }
+    }
 
-            if (wrappedPropertyType == typeof(string))
-                return ActivityInputUIHints.SingleLine;
+    private string GetUIHint(Type wrappedPropertyType, InputAttribute? inputAttribute)
+    {
+        if (inputAttribute?.UIHint != null)
+            return inputAttribute.UIHint;
 
-            if (typeof(IEnumerable).IsAssignableFrom(wrappedPropertyType))
-                return ActivityInputUIHints.Dropdown;
+        if (wrappedPropertyType == typeof(bool) || wrappedPropertyType == typeof(bool?))
+            return ActivityInputUIHints.Checkbox;
 
-            if (wrappedPropertyType.IsEnum || wrappedPropertyType.IsNullableType() && wrappedPropertyType.GetTypeOfNullable().IsEnum)
-                return ActivityInputUIHints.Dropdown;
-
+        if (wrappedPropertyType == typeof(string))
             return ActivityInputUIHints.SingleLine;
-        }
+
+        if (typeof(IEnumerable).IsAssignableFrom(wrappedPropertyType))
+            return ActivityInputUIHints.Dropdown;
+
+        if (wrappedPropertyType.IsEnum || wrappedPropertyType.IsNullableType() && wrappedPropertyType.GetTypeOfNullable().IsEnum)
+            return ActivityInputUIHints.Dropdown;
+
+        return ActivityInputUIHints.SingleLine;
     }
 }

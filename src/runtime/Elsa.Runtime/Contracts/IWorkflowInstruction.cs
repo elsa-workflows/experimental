@@ -1,6 +1,5 @@
-namespace Elsa.Runtime.Contracts
+namespace Elsa.Runtime.Contracts;
+
+public interface IWorkflowInstruction
 {
-    public interface IWorkflowInstruction
-    {
-    }
 }

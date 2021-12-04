@@ -6,36 +6,35 @@ using Elsa.Models;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Models;
 
-namespace Elsa.Runtime.Services
+namespace Elsa.Runtime.Services;
+
+public class WorkflowRegistry : IWorkflowRegistry
 {
-    public class WorkflowRegistry : IWorkflowRegistry
+    private readonly IEnumerable<IWorkflowProvider> _workflowProviders;
+
+    public WorkflowRegistry(IEnumerable<IWorkflowProvider> workflowProviders) => _workflowProviders = workflowProviders;
+
+    public async Task<Workflow?> FindByIdAsync(string id, VersionOptions versionOptions, CancellationToken cancellationToken = default)
     {
-        private readonly IEnumerable<IWorkflowProvider> _workflowProviders;
-
-        public WorkflowRegistry(IEnumerable<IWorkflowProvider> workflowProviders) => _workflowProviders = workflowProviders;
-
-        public async Task<Workflow?> FindByIdAsync(string id, VersionOptions versionOptions, CancellationToken cancellationToken = default)
+        foreach (var workflowProvider in _workflowProviders)
         {
-            foreach (var workflowProvider in _workflowProviders)
-            {
-                var workflow = await workflowProvider.FindByIdAsync(id, versionOptions, cancellationToken);
+            var workflow = await workflowProvider.FindByIdAsync(id, versionOptions, cancellationToken);
 
-                if (workflow != null)
-                    return workflow;
-            }
-
-            return default!;
+            if (workflow != null)
+                return workflow;
         }
 
-        public async IAsyncEnumerable<Workflow> StreamAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
-        {
-            foreach (var workflowProvider in _workflowProviders)
-            {
-                var workflows = workflowProvider.StreamAllAsync(cancellationToken);
+        return default!;
+    }
 
-                await foreach (var workflow in workflows.WithCancellation(cancellationToken))
-                    yield return workflow;
-            }
+    public async IAsyncEnumerable<Workflow> StreamAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        foreach (var workflowProvider in _workflowProviders)
+        {
+            var workflows = workflowProvider.StreamAllAsync(cancellationToken);
+
+            await foreach (var workflow in workflows.WithCancellation(cancellationToken))
+                yield return workflow;
         }
     }
 }

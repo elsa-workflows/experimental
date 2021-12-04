@@ -1,11 +1,10 @@
 using Elsa.Models;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IIdentityGraphService
 {
-    public interface IIdentityGraphService
-    {
-        void AssignIdentities(Workflow workflow);
-        void AssignIdentities(IActivity root);
-        void AssignIdentities(ActivityNode root);
-    }
+    void AssignIdentities(Workflow workflow);
+    void AssignIdentities(IActivity root);
+    void AssignIdentities(ActivityNode root);
 }

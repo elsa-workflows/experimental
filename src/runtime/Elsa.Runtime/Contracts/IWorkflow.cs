@@ -1,9 +1,8 @@
 using Elsa.Contracts;
 
-namespace Elsa.Runtime.Contracts
+namespace Elsa.Runtime.Contracts;
+
+public interface IWorkflow
 {
-    public interface IWorkflow
-    {
-        void Build(IWorkflowDefinitionBuilder workflow);
-    }
+    void Build(IWorkflowDefinitionBuilder workflow);
 }

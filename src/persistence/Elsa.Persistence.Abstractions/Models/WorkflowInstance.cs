@@ -1,12 +1,11 @@
 using Elsa.State;
 
-namespace Elsa.Persistence.Abstractions.Models
+namespace Elsa.Persistence.Abstractions.Models;
+
+public record WorkflowInstance
 {
-    public record WorkflowInstance
-    {
-        public string Id { get; set; } = default!;
-        public string DefinitionId { get; set; } = default!;
-        public int Version { get; set; }
-        public WorkflowState WorkflowState { get; set; } = default!;
-    }
+    public string Id { get; set; } = default!;
+    public string DefinitionId { get; set; } = default!;
+    public int Version { get; set; }
+    public WorkflowState WorkflowState { get; set; } = default!;
 }

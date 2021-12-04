@@ -1,14 +1,13 @@
 using System;
 
-namespace Elsa.Models
+namespace Elsa.Models;
+
+[Flags]
+public enum TypeKind
 {
-    [Flags]
-    public enum TypeKind
-    {
-        Unknown = 0,
-        Primitive = 1,
-        Object = 2,
-        Activity = 4,
-        Trigger = 8
-    }
+    Unknown = 0,
+    Primitive = 1,
+    Object = 2,
+    Activity = 4,
+    Trigger = 8
 }

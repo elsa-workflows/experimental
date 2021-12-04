@@ -1,7 +1,6 @@
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface INode
 {
-    public interface INode
-    {
-        string Id { get; set; }
-    }
+    string Id { get; set; }
 }

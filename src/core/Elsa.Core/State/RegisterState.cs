@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using Elsa.Models;
 
-namespace Elsa.State
-{
-    public class RegisterState
-    {
-        public RegisterState(IDictionary<string, RegisterLocation> locations)
-        {
-            Locations = locations;
-        }
+namespace Elsa.State;
 
-        public IDictionary<string, RegisterLocation> Locations { get; set; }
+public class RegisterState
+{
+    public RegisterState(IDictionary<string, RegisterLocation> locations)
+    {
+        Locations = locations;
     }
+
+    public IDictionary<string, RegisterLocation> Locations { get; set; }
 }

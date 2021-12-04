@@ -1,4 +1,3 @@
-namespace Elsa.Models
-{
-    public record DispatchWorkflowResult();
-}
+namespace Elsa.Models;
+
+public record DispatchWorkflowResult();

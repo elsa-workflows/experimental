@@ -1,9 +1,8 @@
 using Elsa.Contracts;
 
-namespace Elsa.Services
+namespace Elsa.Services;
+
+public class ActivitySchedulerFactory : IActivitySchedulerFactory
 {
-    public class ActivitySchedulerFactory : IActivitySchedulerFactory
-    {
-        public IActivityScheduler CreateScheduler() => new ActivityScheduler();
-    }
+    public IActivityScheduler CreateScheduler() => new ActivityScheduler();
 }

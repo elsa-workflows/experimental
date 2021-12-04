@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Elsa.Runtime.Contracts;
 
-namespace Elsa.Runtime.Stimuli
-{
-    public record StandardStimulus(string ActivityTypeName, string? Hash = default, IDictionary<string, object?>? Data = default) : IStimulus;
-}
+namespace Elsa.Runtime.Stimuli;
+
+public record StandardStimulus(string ActivityTypeName, string? Hash = default, IDictionary<string, object?>? Data = default) : IStimulus;

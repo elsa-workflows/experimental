@@ -1,35 +1,35 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Helpers;
 
-namespace Elsa.Models
+namespace Elsa.Models;
+
+public abstract class Activity : IActivity
 {
-    public abstract class Activity : IActivity
+    protected Activity() => ActivityType = ActivityTypeNameHelper.GenerateActivityTypeName(GetType());
+    protected Activity(string activityType) => ActivityType = activityType;
+
+    public string Id { get; set; } = default!;
+    public string ActivityType { get; set; }
+    public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
+
+    public virtual ValueTask ExecuteAsync(ActivityExecutionContext context)
     {
-        protected Activity() => ActivityType = GetType().Name;
-        protected Activity(string activityType) => ActivityType = activityType;
-
-        public string Id { get; set; } = default!;
-        public string ActivityType { get; set; }
-        public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
-
-        public virtual ValueTask ExecuteAsync(ActivityExecutionContext context)
-        {
-            Execute(context);
-            return ValueTask.CompletedTask;
-        }
-
-        protected virtual void Execute(ActivityExecutionContext context)
-        {
-        }
+        Execute(context);
+        return ValueTask.CompletedTask;
     }
 
-    public abstract class ActivityWithResult : Activity
+    protected virtual void Execute(ActivityExecutionContext context)
     {
-        public Output? Result { get; set; }
     }
+}
 
-    public abstract class Activity<T> : ActivityWithResult
-    {
-    }
+public abstract class ActivityWithResult : Activity
+{
+    public Output? Result { get; set; }
+}
+
+public abstract class Activity<T> : ActivityWithResult
+{
 }

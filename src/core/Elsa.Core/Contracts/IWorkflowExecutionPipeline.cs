@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using Elsa.Models;
 using Elsa.Pipelines.WorkflowExecution;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IWorkflowExecutionPipeline
 {
-    public interface IWorkflowExecutionPipeline
-    {
-        WorkflowMiddlewareDelegate Setup(Action<IWorkflowExecutionBuilder> setup);
-        WorkflowMiddlewareDelegate Pipeline { get; }
-        Task ExecuteAsync(WorkflowExecutionContext context);
-    }
+    WorkflowMiddlewareDelegate Setup(Action<IWorkflowExecutionBuilder> setup);
+    WorkflowMiddlewareDelegate Pipeline { get; }
+    Task ExecuteAsync(WorkflowExecutionContext context);
 }

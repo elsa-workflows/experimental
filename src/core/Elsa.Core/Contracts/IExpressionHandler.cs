@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using Elsa.Models;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IExpressionHandler
 {
-    public interface IExpressionHandler
-    {
-        ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context);
-    }
+    ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context);
 }

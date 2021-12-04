@@ -1,5 +1,6 @@
 using Elsa.Activities.Console;
 using Elsa.Activities.Http.Extensions;
+using Elsa.Activities.Workflows;
 using Elsa.Api.Core.Extensions;
 using Elsa.Api.Endpoints.ActivityDescriptors;
 using Elsa.Api.Endpoints.Events;
@@ -42,9 +43,11 @@ services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader()
 
 
 // Register available activities.
-services.AddActivity<WriteLine>();
-services.AddActivity<WriteLines>();
-services.AddActivity<ReadLine>();
+services
+    .AddActivity<WriteLine>()
+    .AddActivity<WriteLines>()
+    .AddActivity<ReadLine>()
+    .AddActivity<Flowchart>();
 
 // Configure middleware pipeline.
 var app = builder.Build();

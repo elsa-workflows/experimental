@@ -6,35 +6,34 @@ using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
 
-namespace Elsa.ActivityNodeResolvers
+namespace Elsa.ActivityNodeResolvers;
+
+public class OutboundActivityNodeResolver : IActivityNodeResolver
 {
-    public class OutboundActivityNodeResolver : IActivityNodeResolver
+    public int Priority => -1;
+    public bool GetSupportsActivity(IActivity activity) => activity is Activity;
+
+    public IEnumerable<IActivity> GetNodes(IActivity activity) =>
+        GetSinglePorts(activity)
+            .Where(x => x != null)
+            .Select(x => x!)
+            .ToHashSet();
+
+    private static IEnumerable<IActivity?> GetSinglePorts(IActivity activity)
     {
-        public int Priority => -1;
-        public bool GetSupportsActivity(IActivity activity) => activity is Activity;
+        var nodeType = activity.GetType();
 
-        public IEnumerable<IActivity> GetNodes(IActivity activity) =>
-            GetSinglePorts(activity)
-                .Where(x => x != null)
-                .Select(x => x!)
-                .ToHashSet();
+        var ports =
+            from prop in nodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            where typeof(IActivity).IsAssignableFrom(prop.PropertyType) || typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
+            let portAttr = prop.GetCustomAttribute<OutboundAttribute>()
+            where portAttr != null
+            let value = prop.GetValue(activity)
+            let isCollection = GetPropertyIsCollection(prop.PropertyType)
+            select isCollection ? (IEnumerable<IActivity>)value : new[] { (IActivity)value };
 
-        private static IEnumerable<IActivity?> GetSinglePorts(IActivity activity)
-        {
-            var nodeType = activity.GetType();
-
-            var ports =
-                from prop in nodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                where typeof(IActivity).IsAssignableFrom(prop.PropertyType) || typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
-                let portAttr = prop.GetCustomAttribute<OutboundAttribute>()
-                where portAttr != null
-                let value = prop.GetValue(activity)
-                let isCollection = GetPropertyIsCollection(prop.PropertyType)
-                select isCollection ? (IEnumerable<IActivity>)value : new[] { (IActivity)value };
-
-            return ports.SelectMany(x => x);
-        }
-
-        private static bool GetPropertyIsCollection(Type propertyType) => typeof(IEnumerable<IActivity>).IsAssignableFrom(propertyType);
+        return ports.SelectMany(x => x);
     }
+
+    private static bool GetPropertyIsCollection(Type propertyType) => typeof(IEnumerable<IActivity>).IsAssignableFrom(propertyType);
 }

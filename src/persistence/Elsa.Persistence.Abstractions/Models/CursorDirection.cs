@@ -1,8 +1,7 @@
-namespace Elsa.Persistence.Abstractions.Models
+namespace Elsa.Persistence.Abstractions.Models;
+
+public enum CursorDirection
 {
-    public enum CursorDirection
-    {
-        Next,
-        Previous
-    }
+    Next,
+    Previous
 }

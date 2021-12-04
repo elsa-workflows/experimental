@@ -1,7 +1,6 @@
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IActivitySchedulerFactory
 {
-    public interface IActivitySchedulerFactory
-    {
-        IActivityScheduler CreateScheduler();
-    }
+    IActivityScheduler CreateScheduler();
 }

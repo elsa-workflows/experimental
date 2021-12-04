@@ -1,10 +1,9 @@
 using Elsa.Models;
 
-namespace Elsa.Dsl.Abstractions
+namespace Elsa.Dsl.Abstractions;
+
+public interface ITypeSystem
 {
-    public interface ITypeSystem
-    {
-        void Register(TypeDescriptor descriptor);
-        TypeDescriptor? ResolveTypeName(string typeName);
-    }
+    void Register(TypeDescriptor descriptor);
+    TypeDescriptor? ResolveTypeName(string typeName);
 }

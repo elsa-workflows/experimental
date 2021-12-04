@@ -24,7 +24,7 @@ public class WorkflowSerializerOptionsProvider
         Converters =
         {
             new TypeJsonConverter(_wellKnownTypeRegistry),
-            new ActivityJsonConverter(_activityRegistry, _serviceProvider),
+            new ActivityJsonConverterFactory(_activityRegistry, _serviceProvider),
         }
     };
 }

@@ -1,9 +1,8 @@
 using System;
 
-namespace Elsa.Activities.Http
+namespace Elsa.Activities.Http;
+
+public class HttpRequestModel
 {
-    public class HttpRequestModel
-    {
-        public Uri Url { get; set; } = default!;
-    }
+    public Uri Url { get; set; } = default!;
 }

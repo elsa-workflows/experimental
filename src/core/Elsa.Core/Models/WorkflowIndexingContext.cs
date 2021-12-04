@@ -1,27 +1,26 @@
 using System.Collections.Generic;
 using Elsa.Contracts;
 
-namespace Elsa.Models
+namespace Elsa.Models;
+
+public class WorkflowIndexingContext
 {
-    public class WorkflowIndexingContext
+    public WorkflowIndexingContext(Workflow workflow)
     {
-        public WorkflowIndexingContext(Workflow workflow)
+        Workflow = workflow;
+    }
+
+    public Workflow Workflow { get; }
+    public IDictionary<ITrigger, Register> Registers { get; } = new Dictionary<ITrigger, Register>();
+
+    public Register GetOrCreateRegister(ITrigger activity)
+    {
+        if (!Registers.TryGetValue(activity, out var register))
         {
-            Workflow = workflow;
+            register = new Register();
+            Registers[activity] = register;
         }
 
-        public Workflow Workflow { get; }
-        public IDictionary<ITrigger, Register> Registers { get; } = new Dictionary<ITrigger, Register>();
-
-        public Register GetOrCreateRegister(ITrigger activity)
-        {
-            if (!Registers.TryGetValue(activity, out var register))
-            {
-                register = new Register();
-                Registers[activity] = register;
-            }
-
-            return register;
-        }
+        return register;
     }
 }

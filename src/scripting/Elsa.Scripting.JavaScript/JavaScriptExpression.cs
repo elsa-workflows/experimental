@@ -2,26 +2,25 @@ using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
 
-namespace Elsa.Scripting.JavaScript
+namespace Elsa.Scripting.JavaScript;
+
+public class JavaScriptExpression : IExpression
 {
-    public class JavaScriptExpression : IExpression
+    public JavaScriptExpression(string scriptExpression)
     {
-        public JavaScriptExpression(string scriptExpression)
-        {
-            ScriptExpression = scriptExpression;
-        }
-        
-        public string ScriptExpression { get; }
+        ScriptExpression = scriptExpression;
     }
+        
+    public string ScriptExpression { get; }
+}
     
-    public class JavaScriptExpressionHandler : IExpressionHandler
+public class JavaScriptExpressionHandler : IExpressionHandler
+{
+    public ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
     {
-        public ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
-        {
-            var javaScriptExpression = (JavaScriptExpression)expression;
+        var javaScriptExpression = (JavaScriptExpression)expression;
             
-            // TODO: evaluate expression.
-            return new ValueTask<object?>(javaScriptExpression.ScriptExpression);
-        }
+        // TODO: evaluate expression.
+        return new ValueTask<object?>(javaScriptExpression.ScriptExpression);
     }
 }

@@ -1,9 +1,8 @@
 using System;
 
-namespace Elsa.Attributes
+namespace Elsa.Attributes;
+
+[AttributeUsage(AttributeTargets.Property)]
+public class InboundAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class InboundAttribute : Attribute
-    {
-    }
 }

@@ -1,4 +1,3 @@
-namespace Elsa.Runtime.Models
-{
-    public record DispatchWorkflowDefinitionRequest(string Id, int Version);
-}
+namespace Elsa.Runtime.Models;
+
+public record DispatchWorkflowDefinitionRequest(string Id, int Version);

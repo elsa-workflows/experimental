@@ -2,27 +2,26 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace Elsa.Api.Endpoints.Events
+namespace Elsa.Api.Endpoints.Events;
+
+public class EventsResource
 {
-    public class EventsResource
+    private readonly IEndpointRouteBuilder _endpoints;
+
+    public EventsResource(IEndpointRouteBuilder endpoints)
     {
-        private readonly IEndpointRouteBuilder _endpoints;
-
-        public EventsResource(IEndpointRouteBuilder endpoints)
-        {
-            _endpoints = endpoints;
-        }
-
-        public EventsResource Trigger()
-        {
-            _endpoints.MapPost("api/events/{eventName}/trigger", Events.Trigger.Handle);
-            return this;
-        }
+        _endpoints = endpoints;
     }
+
+    public EventsResource Trigger()
+    {
+        _endpoints.MapPost("api/events/{eventName}/trigger", Events.Trigger.Handle);
+        return this;
+    }
+}
     
-    public static class EventsResourceExtensions
-    {
-        public static void MapEvents(this IEndpointRouteBuilder endpoints, Action<EventsResource> configureResource) => configureResource(new(endpoints));
-        public static void MapEvents(this IEndpointRouteBuilder endpoints) => endpoints.MapEvents(x => x.Trigger());
-    }
+public static class EventsResourceExtensions
+{
+    public static void MapEvents(this IEndpointRouteBuilder endpoints, Action<EventsResource> configureResource) => configureResource(new(endpoints));
+    public static void MapEvents(this IEndpointRouteBuilder endpoints) => endpoints.MapEvents(x => x.Trigger());
 }

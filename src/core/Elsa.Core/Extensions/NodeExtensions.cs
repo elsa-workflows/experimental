@@ -3,35 +3,34 @@ using System.Linq;
 using Elsa.Contracts;
 using Elsa.Models;
 
-namespace Elsa.Extensions
+namespace Elsa.Extensions;
+
+public static class NodeExtensions
 {
-    public static class NodeExtensions
+    public static IEnumerable<Input> GetInputs(this INode node)
     {
-        public static IEnumerable<Input> GetInputs(this INode node)
-        {
-            var inputProps = node.GetType().GetProperties().Where(x => typeof(Input).IsAssignableFrom(x.PropertyType)).ToList();
+        var inputProps = node.GetType().GetProperties().Where(x => typeof(Input).IsAssignableFrom(x.PropertyType)).ToList();
 
-            var query =
-                from inputProp in inputProps
-                select (Input?)inputProp.GetValue(node)
-                into input
-                where input != null
-                select input;
+        var query =
+            from inputProp in inputProps
+            select (Input?)inputProp.GetValue(node)
+            into input
+            where input != null
+            select input;
 
-            return query.Select(x => x!).ToList();
-        }
+        return query.Select(x => x!).ToList();
+    }
         
-        public static IEnumerable<ActivityNode> Flatten(this ActivityNode root)
+    public static IEnumerable<ActivityNode> Flatten(this ActivityNode root)
+    {
+        yield return root;
+
+        foreach (var node in root.Children)
         {
-            yield return root;
+            var children = node.Flatten();
 
-            foreach (var node in root.Children)
-            {
-                var children = node.Flatten();
-
-                foreach (var child in children)
-                    yield return child;
-            }
+            foreach (var child in children)
+                yield return child;
         }
     }
 }

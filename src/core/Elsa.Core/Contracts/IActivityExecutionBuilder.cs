@@ -1,12 +1,11 @@
 using System;
 using Elsa.Pipelines.ActivityExecution;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IActivityExecutionBuilder
 {
-    public interface IActivityExecutionBuilder
-    {
-        IServiceProvider ServiceProvider { get; }
-        IActivityExecutionBuilder Use(Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate> middleware);
-        public ActivityMiddlewareDelegate Build();
-    }
+    IServiceProvider ServiceProvider { get; }
+    IActivityExecutionBuilder Use(Func<ActivityMiddlewareDelegate, ActivityMiddlewareDelegate> middleware);
+    public ActivityMiddlewareDelegate Build();
 }

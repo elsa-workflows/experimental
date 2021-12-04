@@ -4,59 +4,58 @@ using System.Linq;
 using Elsa.Api.Core.Contracts;
 using Elsa.Api.Core.Models;
 
-namespace Elsa.Api.Core.Services
+namespace Elsa.Api.Core.Services;
+
+public class ActivityRegistry : IActivityRegistry
 {
-    public class ActivityRegistry : IActivityRegistry
+    private readonly IDictionary<object, ICollection<ActivityDescriptor>> _providedActivityDescriptors = new Dictionary<object, ICollection<ActivityDescriptor>>();
+    private readonly IDictionary<string, ActivityDescriptor> _activityDescriptors = new Dictionary<string, ActivityDescriptor>();
+
+    public void Add(object provider, ActivityDescriptor descriptor) => Add(descriptor, GetOrCreateDescriptors(provider));
+
+    public void AddMany(object provider, IEnumerable<ActivityDescriptor> descriptors)
     {
-        private readonly IDictionary<object, ICollection<ActivityDescriptor>> _providedActivityDescriptors = new Dictionary<object, ICollection<ActivityDescriptor>>();
-        private readonly IDictionary<string, ActivityDescriptor> _activityDescriptors = new Dictionary<string, ActivityDescriptor>();
+        var target = GetOrCreateDescriptors(provider);
 
-        public void Add(object provider, ActivityDescriptor descriptor) => Add(descriptor, GetOrCreateDescriptors(provider));
+        foreach (var descriptor in descriptors)
+            Add(descriptor, target);
+    }
 
-        public void AddMany(object provider, IEnumerable<ActivityDescriptor> descriptors)
-        {
-            var target = GetOrCreateDescriptors(provider);
+    public void Clear()
+    {
+        _activityDescriptors.Clear();
+        _providedActivityDescriptors.Clear();
+    }
 
-            foreach (var descriptor in descriptors)
-                Add(descriptor, target);
-        }
+    public void ClearProvider(object provider)
+    {
+        var descriptors = ListByProvider(provider).ToList();
 
-        public void Clear()
-        {
-            _activityDescriptors.Clear();
-            _providedActivityDescriptors.Clear();
-        }
+        foreach (var descriptor in descriptors)
+            _activityDescriptors.Remove(descriptor.ActivityType);
 
-        public void ClearProvider(object provider)
-        {
-            var descriptors = ListByProvider(provider).ToList();
+        _providedActivityDescriptors.Remove(provider);
+    }
 
-            foreach (var descriptor in descriptors)
-                _activityDescriptors.Remove(descriptor.ActivityType);
+    public IEnumerable<ActivityDescriptor> ListAll() => _activityDescriptors.Values;
+    public IEnumerable<ActivityDescriptor> ListByProvider(object provider) => _providedActivityDescriptors.TryGetValue(provider, out var descriptors) ? descriptors : ArraySegment<ActivityDescriptor>.Empty;
+    public ActivityDescriptor? Find(Func<ActivityDescriptor, bool> predicate) => _activityDescriptors.Values.FirstOrDefault(predicate);
+    public ActivityDescriptor? Find(string activityType) => _activityDescriptors.TryGetValue(activityType, out var descriptor) ? descriptor : null;
 
-            _providedActivityDescriptors.Remove(provider);
-        }
+    private void Add(ActivityDescriptor descriptor, ICollection<ActivityDescriptor> target)
+    {
+        _activityDescriptors.Add(descriptor.ActivityType, descriptor);
+        target.Add(descriptor);
+    }
 
-        public IEnumerable<ActivityDescriptor> ListAll() => _activityDescriptors.Values;
-        public IEnumerable<ActivityDescriptor> ListByProvider(object provider) => _providedActivityDescriptors.TryGetValue(provider, out var descriptors) ? descriptors : ArraySegment<ActivityDescriptor>.Empty;
-        public ActivityDescriptor? Find(Func<ActivityDescriptor, bool> predicate) => _activityDescriptors.Values.FirstOrDefault(predicate);
-        public ActivityDescriptor? Find(string activityType) => _activityDescriptors.TryGetValue(activityType, out var descriptor) ? descriptor : null;
-
-        private void Add(ActivityDescriptor descriptor, ICollection<ActivityDescriptor> target)
-        {
-            _activityDescriptors.Add(descriptor.ActivityType, descriptor);
-            target.Add(descriptor);
-        }
-
-        private ICollection<ActivityDescriptor> GetOrCreateDescriptors(object provider)
-        {
-            if (_providedActivityDescriptors.TryGetValue(provider, out var descriptors))
-                return descriptors;
-
-            descriptors = new List<ActivityDescriptor>();
-            _providedActivityDescriptors.Add(provider, descriptors);
-
+    private ICollection<ActivityDescriptor> GetOrCreateDescriptors(object provider)
+    {
+        if (_providedActivityDescriptors.TryGetValue(provider, out var descriptors))
             return descriptors;
-        }
+
+        descriptors = new List<ActivityDescriptor>();
+        _providedActivityDescriptors.Add(provider, descriptors);
+
+        return descriptors;
     }
 }

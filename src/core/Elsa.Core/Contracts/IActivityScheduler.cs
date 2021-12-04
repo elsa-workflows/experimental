@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using Elsa.Models;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IActivityScheduler
 {
-    public interface IActivityScheduler
-    {
-        bool HasAny { get; }
-        void Push(ActivityWorkItem workItem);
-        ActivityWorkItem Pop();
-        IEnumerable<ActivityWorkItem> List();
-    }
+    bool HasAny { get; }
+    void Push(ActivityWorkItem workItem);
+    ActivityWorkItem Pop();
+    IEnumerable<ActivityWorkItem> List();
 }

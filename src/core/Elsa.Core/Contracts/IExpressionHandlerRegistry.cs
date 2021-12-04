@@ -1,10 +1,9 @@
 using System;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IExpressionHandlerRegistry
 {
-    public interface IExpressionHandlerRegistry
-    {
-        void Register(Type expression, Type handler);
-        IExpressionHandler? GetHandler(IExpression input);
-    }
+    void Register(Type expression, Type handler);
+    IExpressionHandler? GetHandler(IExpression input);
 }

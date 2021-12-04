@@ -1,9 +1,8 @@
 using System.Reflection;
 
-namespace Elsa.Api.Core.Contracts
+namespace Elsa.Api.Core.Contracts;
+
+public interface IActivityPropertyDefaultValueResolver
 {
-    public interface IActivityPropertyDefaultValueResolver
-    {
-        object? GetDefaultValue(PropertyInfo activityPropertyInfo);
-    }
+    object? GetDefaultValue(PropertyInfo activityPropertyInfo);
 }

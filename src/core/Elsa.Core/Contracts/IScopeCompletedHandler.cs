@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using Elsa.Models;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IScopeCompletedHandler
 {
-    public interface IScopeCompletedHandler
-    {
-        ValueTask HandleAsync(ActivityExecutionContext context);
-    }
+    ValueTask HandleAsync(ActivityExecutionContext context);
 }

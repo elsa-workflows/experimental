@@ -8,121 +8,120 @@ using Elsa.Models;
 using Elsa.State;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Elsa.Services
+namespace Elsa.Services;
+
+public class WorkflowEngine : IWorkflowEngine
 {
-    public class WorkflowEngine : IWorkflowEngine
+    private static ValueTask Noop(ActivityExecutionContext context) => new();
+
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IActivityWalker _activityWalker;
+    private readonly IWorkflowExecutionPipeline _pipeline;
+    private readonly IWorkflowStateSerializer _workflowStateSerializer;
+    private readonly IIdentityGraphService _identityGraphService;
+    private readonly IActivitySchedulerFactory _schedulerFactory;
+
+    public WorkflowEngine(
+        IServiceScopeFactory serviceScopeFactory,
+        IActivityWalker activityWalker,
+        IWorkflowExecutionPipeline pipeline,
+        IWorkflowStateSerializer workflowStateSerializer,
+        IIdentityGraphService identityGraphService,
+        IActivitySchedulerFactory schedulerFactory)
     {
-        private static ValueTask Noop(ActivityExecutionContext context) => new();
+        _serviceScopeFactory = serviceScopeFactory;
+        _activityWalker = activityWalker;
+        _pipeline = pipeline;
+        _workflowStateSerializer = workflowStateSerializer;
+        _identityGraphService = identityGraphService;
+        _schedulerFactory = schedulerFactory;
+    }
 
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly IActivityWalker _activityWalker;
-        private readonly IWorkflowExecutionPipeline _pipeline;
-        private readonly IWorkflowStateSerializer _workflowStateSerializer;
-        private readonly IIdentityGraphService _identityGraphService;
-        private readonly IActivitySchedulerFactory _schedulerFactory;
+    public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, CancellationToken cancellationToken = default)
+    {
+        // Create a child scope.
+        using var scope = _serviceScopeFactory.CreateScope();
 
-        public WorkflowEngine(
-            IServiceScopeFactory serviceScopeFactory,
-            IActivityWalker activityWalker,
-            IWorkflowExecutionPipeline pipeline,
-            IWorkflowStateSerializer workflowStateSerializer,
-            IIdentityGraphService identityGraphService,
-            IActivitySchedulerFactory schedulerFactory)
+        // Setup a workflow execution context.
+        var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, default, default, default, cancellationToken);
+
+        // Schedule the first node.
+        var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
+        var workItem = new ActivityWorkItem(workflow.Root.Id, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
+        workflowExecutionContext.Scheduler.Push(workItem);
+
+        return await ExecuteAsync(workflowExecutionContext);
+    }
+
+    public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
+    {
+        // Create a child scope.
+        using var scope = _serviceScopeFactory.CreateScope();
+
+        // Create workflow execution context.
+        var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, bookmark, default, cancellationToken);
+
+        if (bookmark != null)
         {
-            _serviceScopeFactory = serviceScopeFactory;
-            _activityWalker = activityWalker;
-            _pipeline = pipeline;
-            _workflowStateSerializer = workflowStateSerializer;
-            _identityGraphService = identityGraphService;
-            _schedulerFactory = schedulerFactory;
-        }
+            // Construct bookmark.
+            var bookmarkedActivityContext = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
+            var bookmarkedActivity = bookmarkedActivityContext.Activity;
 
-        public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, CancellationToken cancellationToken = default)
-        {
-            // Create a child scope.
-            using var scope = _serviceScopeFactory.CreateScope();
+            // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
+            var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : Noop;
 
-            // Setup a workflow execution context.
-            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, default, default, default, cancellationToken);
-
-            // Schedule the first node.
+            // Schedule the activity to resume.
             var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
-            var workItem = new ActivityWorkItem(workflow.Root.Id, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
+            var workItem = new ActivityWorkItem(bookmarkedActivity.Id, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
             workflowExecutionContext.Scheduler.Push(workItem);
 
-            return await ExecuteAsync(workflowExecutionContext);
+            workflowExecutionContext.ExecuteDelegate = resumeDelegate;
         }
 
-        public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
+        return await ExecuteAsync(workflowExecutionContext);
+    }
+
+    public async Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowExecutionContext workflowExecutionContext)
+    {
+        // Execute the activity execution pipeline.
+        await _pipeline.ExecuteAsync(workflowExecutionContext);
+
+        // Extract workflow state.
+        var workflowState = _workflowStateSerializer.ReadState(workflowExecutionContext);
+
+        // Return workflow execution result containing state + bookmarks.
+        return new ExecuteWorkflowResult(workflowState, workflowExecutionContext.Bookmarks);
+    }
+
+    public WorkflowExecutionContext CreateWorkflowExecutionContext(
+        IServiceProvider serviceProvider,
+        Workflow workflow,
+        WorkflowState? workflowState,
+        Bookmark? bookmark,
+        ExecuteActivityDelegate? executeActivityDelegate,
+        CancellationToken cancellationToken)
+    {
+        var root = workflow.Root;
+
+        // Build graph.
+        var graph = _activityWalker.Walk(root);
+
+        // Assign identities.
+        _identityGraphService.AssignIdentities(graph);
+
+        // Create scheduler.
+        var scheduler = _schedulerFactory.CreateScheduler();
+
+        // Setup a workflow execution context.
+        var workflowExecutionContext = new WorkflowExecutionContext(serviceProvider, workflow, graph, scheduler, bookmark, executeActivityDelegate, cancellationToken);
+
+        // Restore workflow execution context from state, if provided.
+        if (workflowState != null)
         {
-            // Create a child scope.
-            using var scope = _serviceScopeFactory.CreateScope();
-
-            // Create workflow execution context.
-            var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, bookmark, default, cancellationToken);
-
-            if (bookmark != null)
-            {
-                // Construct bookmark.
-                var bookmarkedActivityContext = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
-                var bookmarkedActivity = bookmarkedActivityContext.Activity;
-
-                // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
-                var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : Noop;
-
-                // Schedule the activity to resume.
-                var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
-                var workItem = new ActivityWorkItem(bookmarkedActivity.Id, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
-                workflowExecutionContext.Scheduler.Push(workItem);
-
-                workflowExecutionContext.ExecuteDelegate = resumeDelegate;
-            }
-
-            return await ExecuteAsync(workflowExecutionContext);
+            var workflowStateService = serviceProvider.GetRequiredService<IWorkflowStateSerializer>();
+            workflowStateService.WriteState(workflowExecutionContext, workflowState);
         }
 
-        public async Task<ExecuteWorkflowResult> ExecuteAsync(WorkflowExecutionContext workflowExecutionContext)
-        {
-            // Execute the activity execution pipeline.
-            await _pipeline.ExecuteAsync(workflowExecutionContext);
-
-            // Extract workflow state.
-            var workflowState = _workflowStateSerializer.ReadState(workflowExecutionContext);
-
-            // Return workflow execution result containing state + bookmarks.
-            return new ExecuteWorkflowResult(workflowState, workflowExecutionContext.Bookmarks);
-        }
-
-        public WorkflowExecutionContext CreateWorkflowExecutionContext(
-            IServiceProvider serviceProvider,
-            Workflow workflow,
-            WorkflowState? workflowState,
-            Bookmark? bookmark,
-            ExecuteActivityDelegate? executeActivityDelegate,
-            CancellationToken cancellationToken)
-        {
-            var root = workflow.Root;
-
-            // Build graph.
-            var graph = _activityWalker.Walk(root);
-
-            // Assign identities.
-            _identityGraphService.AssignIdentities(graph);
-
-            // Create scheduler.
-            var scheduler = _schedulerFactory.CreateScheduler();
-
-            // Setup a workflow execution context.
-            var workflowExecutionContext = new WorkflowExecutionContext(serviceProvider, workflow, graph, scheduler, bookmark, executeActivityDelegate, cancellationToken);
-
-            // Restore workflow execution context from state, if provided.
-            if (workflowState != null)
-            {
-                var workflowStateService = serviceProvider.GetRequiredService<IWorkflowStateSerializer>();
-                workflowStateService.WriteState(workflowExecutionContext, workflowState);
-            }
-
-            return workflowExecutionContext;
-        }
+        return workflowExecutionContext;
     }
 }

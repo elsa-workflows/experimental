@@ -1,6 +1,5 @@
 using System;
 
-namespace Elsa.Models
-{
-    public record TypeDescriptor(string Name, Type Type, TypeKind Kind);
-}
+namespace Elsa.Models;
+
+public record TypeDescriptor(string Name, Type Type, TypeKind Kind);

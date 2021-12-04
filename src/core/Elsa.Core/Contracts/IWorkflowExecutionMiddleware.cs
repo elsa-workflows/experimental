@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using Elsa.Models;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IWorkflowExecutionMiddleware
 {
-    public interface IWorkflowExecutionMiddleware
-    {
-        ValueTask InvokeAsync(WorkflowExecutionContext context);
-    }
+    ValueTask InvokeAsync(WorkflowExecutionContext context);
 }

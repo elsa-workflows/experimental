@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using Elsa.Models;
 
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IScheduledNodeExecuted
 {
-    public interface IScheduledNodeExecuted
-    {
-        ValueTask HandleAsync(ActivityExecutionContext context, IActivity owner);
-    }
+    ValueTask HandleAsync(ActivityExecutionContext context, IActivity owner);
 }

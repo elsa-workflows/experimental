@@ -1,15 +1,14 @@
 using System;
 
-namespace Elsa.Attributes
+namespace Elsa.Attributes;
+
+[AttributeUsage(AttributeTargets.Class)]
+public class ActivityAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ActivityAttribute : Attribute
+    public ActivityAttribute(string? typeName = default)
     {
-        public ActivityAttribute(string? typeName = default)
-        {
-            TypeName = typeName;
-        }
-        
-        public string? TypeName { get; }
+        TypeName = typeName;
     }
+        
+    public string? TypeName { get; }
 }

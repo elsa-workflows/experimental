@@ -6,22 +6,21 @@ using Elsa.Runtime.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Elsa.Api.ApiResults
+namespace Elsa.Api.ApiResults;
+
+public class DispatchWorkflowResult : IResult
 {
-    public class DispatchWorkflowResult : IResult
+    public DispatchWorkflowResult(Workflow workflow) => Workflow = workflow;
+    public Workflow Workflow { get; }
+
+    public async Task ExecuteAsync(HttpContext httpContext)
     {
-        public DispatchWorkflowResult(Workflow workflow) => Workflow = workflow;
-        public Workflow Workflow { get; }
+        var response = httpContext.Response;
+        var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowInvoker>();
+        var ((id, version), _) = Workflow.Metadata;
+        var result = await workflowInvoker.DispatchAsync(new DispatchWorkflowDefinitionRequest(id, version));
 
-        public async Task ExecuteAsync(HttpContext httpContext)
-        {
-            var response = httpContext.Response;
-            var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowInvoker>();
-            var ((id, version), _) = Workflow.Metadata;
-            var result = await workflowInvoker.DispatchAsync(new DispatchWorkflowDefinitionRequest(id, version));
-
-            response.StatusCode = (int)HttpStatusCode.OK;
-            await response.WriteAsJsonAsync(result, httpContext.RequestAborted);
-        }
+        response.StatusCode = (int)HttpStatusCode.OK;
+        await response.WriteAsJsonAsync(result, httpContext.RequestAborted);
     }
 }

@@ -2,10 +2,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Models;
 
-namespace Elsa.Runtime.Contracts
+namespace Elsa.Runtime.Contracts;
+
+public interface ITriggerIndexer
 {
-    public interface ITriggerIndexer
-    {
-        Task IndexTriggersAsync(Workflow workflow, CancellationToken cancellationToken = default);
-    }
+    Task IndexTriggersAsync(Workflow workflow, CancellationToken cancellationToken = default);
 }

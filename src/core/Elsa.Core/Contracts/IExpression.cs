@@ -1,6 +1,5 @@
-namespace Elsa.Contracts
+namespace Elsa.Contracts;
+
+public interface IExpression
 {
-    public interface IExpression
-    {
-    }
 }

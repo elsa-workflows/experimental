@@ -1,31 +1,30 @@
-namespace Elsa.Models
+namespace Elsa.Models;
+
+public class Variable : RegisterLocationReference
 {
-    public class Variable : RegisterLocationReference
+    public Variable()
     {
-        public Variable()
-        {
-        }
-
-        public Variable(object? defaultValue)
-        {
-            DefaultValue = defaultValue;
-        }
-
-        public string? Name { get; set; }
-        public object? DefaultValue { get; }
-        public override RegisterLocation Declare() => new(DefaultValue);
     }
 
-    public class Variable<T> : Variable
+    public Variable(object? defaultValue)
     {
-        public Variable() : base(default(T))
-        {
-        }
+        DefaultValue = defaultValue;
+    }
 
-        public Variable(T value) : base(value ?? default)
-        {
-        }
+    public string? Name { get; set; }
+    public object? DefaultValue { get; }
+    public override RegisterLocation Declare() => new(DefaultValue);
+}
+
+public class Variable<T> : Variable
+{
+    public Variable() : base(default(T))
+    {
+    }
+
+    public Variable(T value) : base(value ?? default)
+    {
+    }
         
-        public new T? Get(ExpressionExecutionContext context) => (T?)base.Get(context);
-    }
+    public new T? Get(ExpressionExecutionContext context) => (T?)base.Get(context);
 }

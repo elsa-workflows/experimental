@@ -1,9 +1,8 @@
 using System.Reflection;
 
-namespace Elsa.Api.Core.Contracts
+namespace Elsa.Api.Core.Contracts;
+
+public interface IActivityPropertyOptionsResolver
 {
-    public interface IActivityPropertyOptionsResolver
-    {
-        object? GetOptions(PropertyInfo activityPropertyInfo);
-    }
+    object? GetOptions(PropertyInfo activityPropertyInfo);
 }
