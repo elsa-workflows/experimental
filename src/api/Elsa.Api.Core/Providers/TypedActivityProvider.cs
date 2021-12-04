@@ -11,12 +11,12 @@ using Microsoft.Extensions.Options;
 
 namespace Elsa.Api.Core.Providers
 {
-    public class TypedActivityDescriptorProvider : IActivityDescriptorProvider
+    public class TypedActivityProvider : IActivityProvider
     {
         private readonly IActivityDescriber _activityDescriber;
         private readonly ApiOptions _options;
 
-        public TypedActivityDescriptorProvider(IOptions<ApiOptions> options, IActivityDescriber activityDescriber)
+        public TypedActivityProvider(IOptions<ApiOptions> options, IActivityDescriber activityDescriber)
         {
             _activityDescriber = activityDescriber;
             _options = options.Value;

@@ -9,7 +9,7 @@ namespace Elsa.Api.Endpoints.ActivityDescriptors;
 
 public static partial class ActivityDescriptors
 {
-    public static IResult ListAsync(IActivityDescriptorRegistry registry, IWellKnownTypeRegistry wellKnownTypeRegistry)
+    public static IResult ListAsync(IActivityRegistry registry, IWellKnownTypeRegistry wellKnownTypeRegistry)
     {
         var descriptors = registry.ListAll().ToList();
 

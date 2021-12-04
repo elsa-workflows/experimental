@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Elsa.Api.Core.Contracts
 {
-    public interface IActivityDescriptorRegistryPopulator
+    public interface IActivityRegistryPopulator
     {
         ValueTask PopulateRegistryAsync(CancellationToken cancellationToken);
     }

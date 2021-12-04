@@ -13,6 +13,7 @@ using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
 using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Api.Core.Services
 {
@@ -20,11 +21,13 @@ namespace Elsa.Api.Core.Services
     {
         private readonly IActivityPropertyOptionsResolver _optionsResolver;
         private readonly IActivityPropertyDefaultValueResolver _defaultValueResolver;
+        private readonly IActivityFactory _activityFactory;
 
-        public ActivityDescriber(IActivityPropertyOptionsResolver optionsResolver, IActivityPropertyDefaultValueResolver defaultValueResolver)
+        public ActivityDescriber(IActivityPropertyOptionsResolver optionsResolver, IActivityPropertyDefaultValueResolver defaultValueResolver, IActivityFactory activityFactory)
         {
             _optionsResolver = optionsResolver;
             _defaultValueResolver = defaultValueResolver;
+            _activityFactory = activityFactory;
         }
 
         public ValueTask<ActivityDescriptor> DescribeActivityAsync(Type activityType, CancellationToken cancellationToken = default)
@@ -62,7 +65,8 @@ namespace Elsa.Api.Core.Services
                 DisplayName = displayName,
                 OutboundPorts = outboundPorts.ToList(),
                 InputProperties = DescribeInputProperties(inputProperties).ToList(),
-                OutputProperties = DescribeOutputProperties(outputProperties).ToList()
+                OutputProperties = DescribeOutputProperties(outputProperties).ToList(),
+                Constructor = context => _activityFactory.Create(activityType, context)
             };
 
             return ValueTask.FromResult(descriptor);

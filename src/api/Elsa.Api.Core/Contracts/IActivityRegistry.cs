@@ -4,7 +4,7 @@ using Elsa.Api.Core.Models;
 
 namespace Elsa.Api.Core.Contracts
 {
-    public interface IActivityDescriptorRegistry
+    public interface IActivityRegistry
     {
         void Add(object provider, ActivityDescriptor descriptor);
         void AddMany(object provider, IEnumerable<ActivityDescriptor> descriptors);

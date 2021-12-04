@@ -7,9 +7,9 @@ namespace Elsa.Api.HostedServices
 {
     public class RegisterActivityDescriptors : IHostedService
     {
-        private readonly IActivityDescriptorRegistryPopulator _activityDescriptorRegistryPopulator;
-        public RegisterActivityDescriptors(IActivityDescriptorRegistryPopulator activityDescriptorRegistryPopulator) => _activityDescriptorRegistryPopulator = activityDescriptorRegistryPopulator;
-        public async Task StartAsync(CancellationToken cancellationToken) => await _activityDescriptorRegistryPopulator.PopulateRegistryAsync(cancellationToken);
+        private readonly IActivityRegistryPopulator _activityRegistryPopulator;
+        public RegisterActivityDescriptors(IActivityRegistryPopulator activityRegistryPopulator) => _activityRegistryPopulator = activityRegistryPopulator;
+        public async Task StartAsync(CancellationToken cancellationToken) => await _activityRegistryPopulator.PopulateRegistryAsync(cancellationToken);
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

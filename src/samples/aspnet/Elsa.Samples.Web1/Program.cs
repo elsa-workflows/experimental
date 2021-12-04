@@ -40,6 +40,7 @@ services
 // Testing only: allow client app to connect from anywhere.
 services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 
+
 // Register available activities.
 services.AddActivity<WriteLine>();
 services.AddActivity<WriteLines>();

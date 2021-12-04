@@ -6,14 +6,14 @@ using Elsa.Api.Core.Contracts;
 namespace Elsa.Api.Core.Services
 {
     /// <summary>
-    /// Populates the <see cref="IActivityDescriptorRegistry"/> with descriptors provided by <see cref="IActivityDescriptorProvider"/>s. 
+    /// Populates the <see cref="IActivityRegistry"/> with descriptors provided by <see cref="IActivityProvider"/>s. 
     /// </summary>
-    public class ActivityDescriptorRegistryPopulator : IActivityDescriptorRegistryPopulator
+    public class ActivityRegistryPopulator : IActivityRegistryPopulator
     {
-        private readonly IEnumerable<IActivityDescriptorProvider> _providers;
-        private readonly IActivityDescriptorRegistry _registry;
+        private readonly IEnumerable<IActivityProvider> _providers;
+        private readonly IActivityRegistry _registry;
 
-        public ActivityDescriptorRegistryPopulator(IEnumerable<IActivityDescriptorProvider> providers, IActivityDescriptorRegistry registry)
+        public ActivityRegistryPopulator(IEnumerable<IActivityProvider> providers, IActivityRegistry registry)
         {
             _providers = providers;
             _registry = registry;

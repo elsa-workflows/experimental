@@ -1,5 +1,7 @@
 using System;
+using Elsa.Api.Core.Contracts;
 using Elsa.Api.Core.Options;
+using Elsa.Api.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Api.Core.Extensions

@@ -6,7 +6,7 @@ using Elsa.Api.Core.Models;
 
 namespace Elsa.Api.Core.Services
 {
-    public class ActivityDescriptorRegistry : IActivityDescriptorRegistry
+    public class ActivityRegistry : IActivityRegistry
     {
         private readonly IDictionary<object, ICollection<ActivityDescriptor>> _providedActivityDescriptors = new Dictionary<object, ICollection<ActivityDescriptor>>();
         private readonly IDictionary<string, ActivityDescriptor> _activityDescriptors = new Dictionary<string, ActivityDescriptor>();
