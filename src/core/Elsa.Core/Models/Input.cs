@@ -6,14 +6,14 @@ namespace Elsa.Models;
 
 public abstract class Input : Argument
 {
-    protected Input(IExpression expression, RegisterLocationReference locationReference, Type targetType) : base(locationReference)
+    protected Input(IExpression expression, RegisterLocationReference locationReference, Type type) : base(locationReference)
     {
         Expression = expression;
-        TargetType = targetType;
+        Type = type;
     }
 
     public IExpression Expression { get; }
-    public Type TargetType { get; set; }
+    public Type Type { get; set; }
 }
 
 public class Input<T> : Input

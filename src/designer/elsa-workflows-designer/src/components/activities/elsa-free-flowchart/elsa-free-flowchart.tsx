@@ -9,7 +9,7 @@ import {AddActivityArgs} from "../../designer/elsa-canvas/elsa-canvas";
 import {Activity, ActivityEditRequestArgs, ActivityInput, GraphUpdatedArgs} from "../../../models";
 import {createGraph} from "./graph-factory";
 import {createNode} from "./node-factory";
-import {Connection, FreeFlowchart} from "./models";
+import {Connection, Flowchart} from "./models";
 import PositionEventArgs = NodeView.PositionEventArgs;
 
 @Component({
@@ -73,13 +73,13 @@ export class ElsaFreeFlowchart implements ActivityComponent {
     const activities = graphModel.cells.filter(x => x.shape == 'activity').map(x => x.data as Activity);
     const connections = graphModel.cells.filter(x => x.shape == 'edge' && !!x.data).map(x => x.data as Connection);
 
-    const flowchart: FreeFlowchart = {
-      activityType: 'FreeFlowchart',
+    const flowchart: Flowchart = {
+      activityType: 'Workflows.Flowchart',
       metadata: {},
       activities: activities,
       connections: connections,
       id: "1",
-      start: _.first(activities),
+      start: _.first(activities)?.id,
       variables: []
     }
 
@@ -102,11 +102,15 @@ export class ElsaFreeFlowchart implements ActivityComponent {
   onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {
     const edge = e.edge;
     const isNew = e.isNew;
+    const targetNode = edge.getTargetNode();
+    const sourceActivity = edge.getSourceNode().data as Activity;
+    const targetActivity = targetNode.data as Activity;
+    const outboundPort = targetNode.getPort(edge.getTargetPortId()).id;
 
     edge.data = {
-      source: edge.getSourceNode().data as Activity,
-      target: edge.getTargetNode().data as Activity,
-      outboundPort: edge.getTargetNode().getPort(edge.getTargetPortId()).id
+      source: sourceActivity.id,
+      target: targetActivity.id,
+      outboundPort: outboundPort
     };
   }
 

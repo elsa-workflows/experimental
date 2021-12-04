@@ -1,12 +1,12 @@
-import {Activity, Container} from "../../../models";
+import {Container} from "../../../models";
 
-export interface FreeFlowchart extends Container {
-  start: Activity;
+export interface Flowchart extends Container {
+  start: string;
   connections: Array<Connection>;
 }
 
 export interface Connection {
-  source: Activity;
-  target: Activity;
+  source: string;
+  target: string;
   outboundPort: string;
 }

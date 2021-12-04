@@ -5,6 +5,7 @@ import {ActivityDescriptor, ActivityDescriptorResponse, EventTypes, Workflow} fr
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
 import {ServerSettings} from "./server-settings";
+import {Flowchart} from "../components/activities/elsa-free-flowchart/models";
 
 export async function createHttpClient(baseAddress: string): Promise<AxiosInstance> {
   const config: AxiosRequestConfig = {

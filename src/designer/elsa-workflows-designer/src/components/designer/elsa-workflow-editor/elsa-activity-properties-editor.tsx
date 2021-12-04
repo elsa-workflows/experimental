@@ -121,11 +121,12 @@ export class ElsaActivityPropertiesEditor {
     return <div>
       {inputProperties.map(inputProperty => {
         const propertyName = inputProperty.name;
+        const camelCasePropertyName = _.camelCase(propertyName);
         const displayName = inputProperty.displayName || propertyName;
         const description = inputProperty.description;
         const fieldName = inputProperty.name;
         const fieldId = inputProperty.name;
-        const input = activity[propertyName] as ActivityInput;
+        const input = activity[camelCasePropertyName] as ActivityInput;
         const value = (input?.expression as LiteralExpression)?.value;
         const key = `${activity.id}_${propertyName}`;
 

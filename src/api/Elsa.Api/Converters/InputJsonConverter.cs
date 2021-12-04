@@ -26,12 +26,12 @@ public class InputJsonConverter<T> : JsonConverter<Input<T>>
         if (!JsonDocument.TryParseValue(ref reader, out var doc))
             throw new JsonException("Failed to parse JsonDocument");
 
-        if (!doc.RootElement.TryGetProperty("targetType", out var inputTargetTypeElement))
+        if (!doc.RootElement.TryGetProperty("type", out var inputTargetTypeElement))
             throw new JsonException("Failed to extract input type property");
             
         var expressionElement = doc.RootElement.GetProperty("expression");
 
-        if (!expressionElement.TryGetProperty("expressionType", out var expressionTypeNameElement))
+        if (!expressionElement.TryGetProperty("type", out var expressionTypeNameElement))
             throw new JsonException("Failed to extract expression type property");
 
         var expressionTypeName = expressionTypeNameElement.GetString()!;
@@ -52,7 +52,7 @@ public class InputJsonConverter<T> : JsonConverter<Input<T>>
     {
         var expression = value.Expression;
         var expressionType = expression.GetType();
-        var targetType = value.TargetType;
+        var targetType = value.Type;
         var expressionSyntaxDescriptor = _expressionSyntaxRegistry.Find(x => x.Type == expressionType);
             
         if (expressionSyntaxDescriptor == null)
