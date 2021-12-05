@@ -1,7 +1,7 @@
 import {Component, h, Prop, State, Watch} from "@stencil/core";
 import {Addon, Graph} from '@antv/x6';
 import groupBy from 'lodash/groupBy';
-import {ActivityDescriptor, ActivityKind, TriggerDescriptor} from '../../../models';
+import {ActivityDescriptor, ActivityTraits, TriggerDescriptor} from '../../../models';
 import WorkflowEditorTunnel from "./state";
 import {TriggerDescriptorView} from "./elsa-trigger-descriptor-view";
 import {ActivityDescriptorView} from "./elsa-activity-descriptor-view";
@@ -67,7 +67,8 @@ export class ElsaActivityPicker {
 
   private static onActivityStartDrag(e: DragEvent, activity: ActivityDescriptor) {
     const json = JSON.stringify(activity);
-    const isTrigger = activity.kind == ActivityKind.Trigger;
+    const isTrigger = (activity.traits & ActivityTraits.Trigger) == ActivityTraits.Trigger;
+
     e.dataTransfer.setData('activity-descriptor', json);
 
     if (isTrigger) {

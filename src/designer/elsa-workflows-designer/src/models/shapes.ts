@@ -1,4 +1,6 @@
 import {Cell, Graph, Shape} from "@antv/x6";
+import {Activity} from "./core";
+import {ActivityDescriptor, ActivityTraits} from "./api";
 
 export class ActivityNode extends Shape.HTML {
   get text() {
@@ -7,6 +9,22 @@ export class ActivityNode extends Shape.HTML {
 
   set text(value: string) {
     this.store.set('text', value);
+  }
+
+  get activity() {
+    return this.store.get<Activity>('activity');
+  }
+
+  set activity(value: Activity) {
+    this.store.set('activity', value);
+  }
+
+  get activityDescriptor() {
+    return this.store.get<ActivityDescriptor>('activityDescriptor');
+  }
+
+  set activityDescriptor(value: ActivityDescriptor) {
+    this.store.set('activityDescriptor', value);
   }
 
   init() {
@@ -45,12 +63,19 @@ export class ActivityNode extends Shape.HTML {
   }
 
   createHtml() {
-    const text = this.text;
+    const activityDescriptor = this.activityDescriptor;
+    const activity = this.activity;
+    const text = activityDescriptor?.displayName;
+    const isTrigger = (activityDescriptor?.traits & ActivityTraits.Trigger) == ActivityTraits.Trigger;
+    const borderColor = isTrigger ? 'border-green-600' : 'border-blue-600';
+    const backgroundColor = isTrigger ? 'bg-green-400' : 'bg-blue-400';
+    const iconBackgroundColor = isTrigger ? 'bg-green-500' : 'bg-blue-500';
+
     return (`
           <div>
-            <div class="activity-wrapper border border-solid border-blue-600 rounded bg-blue-400 text-white overflow-hidden">
+            <div class="activity-wrapper border ${borderColor} ${backgroundColor} rounded text-white overflow-hidden">
               <div class="flex flex-row">
-                <div class="flex flex-shrink items-center bg-blue-500">
+                <div class="flex flex-shrink items-center ${iconBackgroundColor}">
                   <div class="px-2 py-1">
                     <svg class="h-6 w-6 text-white" width="24" height="24" viewBox="0 0 24 24"
                          stroke-width="2"

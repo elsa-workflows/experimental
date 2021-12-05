@@ -1,4 +1,5 @@
 using Elsa.Activities.Console;
+using Elsa.Activities.Http;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Activities.Workflows;
 using Elsa.Api.Core.Extensions;
@@ -47,6 +48,7 @@ services
     .AddActivity<WriteLine>()
     .AddActivity<WriteLines>()
     .AddActivity<ReadLine>()
+    .AddActivity<HttpTrigger>()
     .AddActivity<Flowchart>();
 
 // Configure middleware pipeline.

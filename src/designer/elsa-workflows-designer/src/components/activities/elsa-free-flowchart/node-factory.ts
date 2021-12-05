@@ -4,7 +4,8 @@ import {Activity, ActivityDescriptor} from "../../../models";
 export function createNode(graph: Graph, activityDescriptor: ActivityDescriptor, activity: Activity, x: number, y: number): Node<Node.Properties> {
   return graph.createNode({
     shape: 'activity',
-    text: activityDescriptor.displayName,
+    activity: activity,
+    activityDescriptor: activityDescriptor,
     x: x,
     y: y,
     data: activity,

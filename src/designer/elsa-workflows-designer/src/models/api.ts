@@ -8,7 +8,7 @@ export interface ActivityDescriptor {
   activityType: string;
   displayName: string;
   category: string;
-  kind: ActivityKind;
+  traits: ActivityTraits;
   inputProperties: Array<ActivityInputDescriptor>
 }
 
@@ -18,9 +18,9 @@ export interface TriggerDescriptor {
   category: string;
 }
 
-export enum ActivityKind {
-  Action,
-  Trigger
+export enum ActivityTraits {
+  Action = 1,
+  Trigger = 2
 }
 
 export interface ActivityPropertyDescriptor {
