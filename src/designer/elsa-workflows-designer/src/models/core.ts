@@ -6,6 +6,7 @@ export interface Node {
 }
 
 export interface Trigger extends Node {
+  triggerType: string;
 }
 
 export interface Activity extends Node {

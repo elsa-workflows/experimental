@@ -2,13 +2,13 @@ using System;
 
 namespace Elsa.Api.Core.Models;
 
-public class ActivityOutputDescriptor : ActivityPropertyDescriptor
+public class OutputDescriptor : PropertyDescriptor
 {
-    public ActivityOutputDescriptor()
+    public OutputDescriptor()
     {
     }
 
-    public ActivityOutputDescriptor(
+    public OutputDescriptor(
         string name,
         Type type,
         string? description = default)

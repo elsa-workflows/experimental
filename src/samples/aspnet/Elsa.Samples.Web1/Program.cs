@@ -5,6 +5,7 @@ using Elsa.Activities.Workflows;
 using Elsa.Api.Core.Extensions;
 using Elsa.Api.Endpoints.ActivityDescriptors;
 using Elsa.Api.Endpoints.Events;
+using Elsa.Api.Endpoints.TriggerDescriptors;
 using Elsa.Api.Endpoints.Workflows;
 using Elsa.Api.Extensions;
 using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
@@ -42,7 +43,6 @@ services
 // Testing only: allow client app to connect from anywhere.
 services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 
-
 // Register available activities.
 services
     .AddActivity<WriteLine>()
@@ -50,6 +50,10 @@ services
     .AddActivity<ReadLine>()
     .AddActivity<HttpTrigger>()
     .AddActivity<Flowchart>();
+
+// Register available triggers.
+services
+    .AddTrigger<HttpTrigger>();
 
 // Configure middleware pipeline.
 var app = builder.Build();
@@ -71,6 +75,7 @@ app.MapGet("/", () => "Hello World!");
 app.MapWorkflows();
 app.MapEvents();
 app.MapActivityDescriptors();
+app.MapTriggerDescriptors();
 
 // Register Elsa HTTP activity middleware.
 app.UseHttpActivities();

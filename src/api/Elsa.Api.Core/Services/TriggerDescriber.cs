@@ -17,22 +17,22 @@ using Humanizer;
 
 namespace Elsa.Api.Core.Services;
 
-public class ActivityDescriber : IActivityDescriber
+public class TriggerDescriber : ITriggerDescriber
 {
     private readonly IPropertyOptionsResolver _optionsResolver;
     private readonly IPropertyDefaultValueResolver _defaultValueResolver;
-    private readonly IActivityFactory _activityFactory;
+    private readonly ITriggerFactory _activityFactory;
 
-    public ActivityDescriber(IPropertyOptionsResolver optionsResolver, IPropertyDefaultValueResolver defaultValueResolver, IActivityFactory activityFactory)
+    public TriggerDescriber(IPropertyOptionsResolver optionsResolver, IPropertyDefaultValueResolver defaultValueResolver, ITriggerFactory activityFactory)
     {
         _optionsResolver = optionsResolver;
         _defaultValueResolver = defaultValueResolver;
         _activityFactory = activityFactory;
     }
 
-    public ValueTask<ActivityDescriptor> DescribeActivityAsync(Type activityType, CancellationToken cancellationToken = default)
+    public ValueTask<TriggerDescriptor> DescribeTriggerAsync(Type activityType, CancellationToken cancellationToken = default)
     {
-        var ns = TypeNameHelper.GenerateActivityTypeNamespace(activityType);
+        var ns = TypeNameHelper.GenerateTriggerTypeNamespace(activityType);
         var typeName = activityType.Name;
         var fullTypeName = TypeNameHelper.GenerateTypeName(activityType, ns);
         var displayNameAttr = activityType.GetCustomAttribute<DisplayNameAttribute>();
@@ -41,44 +41,27 @@ public class ActivityDescriber : IActivityDescriber
         var category = categoryAttr?.Category ?? TypeNameHelper.GetCategoryFromNamespace(ns) ?? "Miscellaneous";
         var descriptionAttr = activityType.GetCustomAttribute<DescriptionAttribute>();
         var description = descriptionAttr?.Description;
-
-        var outboundPorts =
-            from prop in activityType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            where typeof(IActivity).IsAssignableFrom(prop.PropertyType) || typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
-            let portAttr = prop.GetCustomAttribute<OutboundAttribute>()
-            where portAttr != null
-            select new Port
-            {
-                Name = portAttr.Name ?? prop.Name,
-                DisplayName = portAttr.DisplayName ?? portAttr.Name ?? prop.Name
-            };
-
         var properties = activityType.GetProperties();
         var inputProperties = properties.Where(x => typeof(Input).IsAssignableFrom(x.PropertyType)).ToList();
-        var outputProperties = properties.Where(x => typeof(Output).IsAssignableFrom(x.PropertyType)).ToList();
-        var isTrigger = activityType.IsAssignableTo(typeof(ITrigger));
 
-        var descriptor = new ActivityDescriptor
+        var descriptor = new TriggerDescriptor
         {
             Category = category,
             Description = description,
-            ActivityType = fullTypeName,
+            TriggerType = fullTypeName,
             DisplayName = displayName,
-            Traits = isTrigger ? ActivityTraits.Trigger : ActivityTraits.Action,
-            OutboundPorts = outboundPorts.ToList(),
             InputProperties = DescribeInputProperties(inputProperties).ToList(),
-            OutputProperties = DescribeOutputProperties(outputProperties).ToList(),
             Constructor = context =>
             {
                 var activity = _activityFactory.Create(activityType, context);
-                activity.ActivityType = fullTypeName;
+                activity.TriggerType = fullTypeName;
                 return activity;
             }
         };
 
         return ValueTask.FromResult(descriptor);
     }
-    
+
     private IEnumerable<InputDescriptor> DescribeInputProperties(IEnumerable<PropertyInfo> properties)
     {
         foreach (var propertyInfo in properties)
@@ -91,7 +74,7 @@ public class ActivityDescriber : IActivityDescriber
             (
                 inputAttribute?.Name ?? propertyInfo.Name,
                 wrappedPropertyType,
-                GetUIHint(wrappedPropertyType, inputAttribute),
+                InputUIHints.GetUIHint(wrappedPropertyType, inputAttribute),
                 inputAttribute?.DisplayName ?? propertyInfo.Name.Humanize(LetterCasing.Title),
                 descriptionAttribute?.Description,
                 _optionsResolver.GetOptions(propertyInfo),
@@ -104,41 +87,5 @@ public class ActivityDescriber : IActivityDescriber
                 inputAttribute?.IsBrowsable ?? true
             );
         }
-    }
-
-    private IEnumerable<OutputDescriptor> DescribeOutputProperties(IEnumerable<PropertyInfo> properties)
-    {
-        foreach (var propertyInfo in properties)
-        {
-            var activityPropertyAttribute = propertyInfo.GetCustomAttribute<OutputAttribute>();
-            var wrappedPropertyType = propertyInfo.PropertyType.GenericTypeArguments[0];
-
-            yield return new OutputDescriptor
-            (
-                (activityPropertyAttribute?.Name ?? propertyInfo.Name).Pascalize(),
-                wrappedPropertyType,
-                activityPropertyAttribute?.Description
-            );
-        }
-    }
-
-    private string GetUIHint(Type wrappedPropertyType, InputAttribute? inputAttribute)
-    {
-        if (inputAttribute?.UIHint != null)
-            return inputAttribute.UIHint;
-
-        if (wrappedPropertyType == typeof(bool) || wrappedPropertyType == typeof(bool?))
-            return InputUIHints.Checkbox;
-
-        if (wrappedPropertyType == typeof(string))
-            return InputUIHints.SingleLine;
-
-        if (typeof(IEnumerable).IsAssignableFrom(wrappedPropertyType))
-            return InputUIHints.Dropdown;
-
-        if (wrappedPropertyType.IsEnum || wrappedPropertyType.IsNullableType() && wrappedPropertyType.GetTypeOfNullable().IsEnum)
-            return InputUIHints.Dropdown;
-
-        return InputUIHints.SingleLine;
     }
 }

@@ -16,8 +16,8 @@ public class ActivityDescriptor
     public ActivityTraits Traits { get; set; } = ActivityTraits.Action;
     public ICollection<Port> InboundPorts { get; init; } = new List<Port>();
     public ICollection<Port> OutboundPorts { get; init; } = new List<Port>();
-    public ICollection<ActivityInputDescriptor> InputProperties { get; init; } = new List<ActivityInputDescriptor>();
-    public ICollection<ActivityOutputDescriptor> OutputProperties { get; init; } = new List<ActivityOutputDescriptor>();
+    public ICollection<InputDescriptor> InputProperties { get; init; } = new List<InputDescriptor>();
+    public ICollection<OutputDescriptor> OutputProperties { get; init; } = new List<OutputDescriptor>();
 }
 
 public record ActivityConstructorContext(JsonElement Element, JsonSerializerOptions SerializerOptions);

@@ -18,16 +18,22 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IActivityDescriber, ActivityDescriber>()
             .AddSingleton<IActivityRegistry, ActivityRegistry>()
             .AddSingleton<IActivityRegistryPopulator, ActivityRegistryPopulator>()
-            .AddSingleton<IActivityPropertyDefaultValueResolver, ActivityPropertyDefaultValueResolver>()
-            .AddSingleton<IActivityPropertyOptionsResolver, ActivityPropertyOptionsResolver>()
+            .AddSingleton<IPropertyDefaultValueResolver, PropertyDefaultValueResolver>()
+            .AddSingleton<IPropertyOptionsResolver, PropertyOptionsResolver>()
             .AddSingleton<IActivityProvider, TypedActivityProvider>()
-            .AddSingleton<IWellKnownTypeRegistry, WellKnownTypeRegistry>()
             .AddSingleton<IActivityFactory, ActivityFactory>()
+            .AddSingleton<ITriggerDescriber, TriggerDescriber>()
+            .AddSingleton<ITriggerRegistry, TriggerRegistry>()
+            .AddSingleton<ITriggerRegistryPopulator, TriggerRegistryPopulator>()
+            .AddSingleton<ITriggerFactory, TriggerFactory>()
+            .AddSingleton<ITriggerProvider, TypedTriggerProvider>()
+            .AddSingleton<IWellKnownTypeRegistry, WellKnownTypeRegistry>()
+            
             .AddSingleton<IExpressionSyntaxRegistry, ExpressionSyntaxRegistry>()
             .AddSingleton<IExpressionSyntaxProvider, DefaultExpressionSyntaxProvider>()
             .AddSingleton<IExpressionSyntaxRegistryPopulator, ExpressionSyntaxRegistryPopulator>()
             .AddSingleton<WorkflowSerializerOptionsProvider>()
-            .AddHostedService<RegisterActivityDescriptors>()
+            .AddHostedService<RegisterDescriptors>()
             .AddHostedService<RegisterExpressionSyntaxDescriptors>();
     }
 }

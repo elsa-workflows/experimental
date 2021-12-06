@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Api.Core.Services;
 
-public class ActivityPropertyDefaultValueResolver : IActivityPropertyDefaultValueResolver
+public class PropertyDefaultValueResolver : IPropertyDefaultValueResolver
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public ActivityPropertyDefaultValueResolver(IServiceProvider serviceProvider)
+    public PropertyDefaultValueResolver(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }

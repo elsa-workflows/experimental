@@ -8,6 +8,20 @@ namespace Elsa.Models;
 
 public class Trigger : Activity, ITrigger
 {
+    protected Trigger()
+    {
+    }
+
+    protected Trigger(string triggerType) : base(triggerType)
+    {
+    }
+
+    public string TriggerType
+    {
+        get => ActivityType;
+        set => ActivityType = value;
+    }
+
     public virtual ValueTask<IEnumerable<object>> GetHashInputsAsync(TriggerIndexingContext context, CancellationToken cancellationToken = default)
     {
         var hashes = GetHashInputs(context);

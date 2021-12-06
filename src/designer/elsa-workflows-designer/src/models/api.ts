@@ -12,6 +12,10 @@ export interface ActivityDescriptor {
   inputProperties: Array<ActivityInputDescriptor>
 }
 
+export interface TriggerDescriptorResponse {
+  triggerDescriptors: Array<TriggerDescriptor>;
+}
+
 export interface TriggerDescriptor {
   triggerType: string;
   displayName: string;

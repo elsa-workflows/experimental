@@ -1,14 +1,23 @@
-import {Component, h, Listen, Prop, State, Event, EventEmitter} from "@stencil/core";
-import _, {debounce} from 'lodash';
+import {Component, h, Listen, Prop, State, Event, EventEmitter, Method} from "@stencil/core";
+import {debounce} from 'lodash';
 import {v4 as uuid} from 'uuid';
+import {Container} from "typedi";
 import {PanelPosition, PanelStateChangedArgs} from "../elsa-panel/models";
-import {Activity, ActivityDescriptor, ActivityEditRequestArgs, GraphUpdatedArgs, Workflow} from "../../../models";
+import {
+  Activity,
+  ActivityDescriptor,
+  ActivityEditRequestArgs,
+  GraphUpdatedArgs,
+  TriggerDescriptor,
+  Workflow
+} from "../../../models";
 import WorkflowEditorTunnel, {WorkflowEditorState} from "./state";
 import ShellTunnel from "../../shell/elsa-server-shell/state";
 import {
   ActivityUpdatedArgs,
   DeleteActivityRequestedArgs
 } from "./elsa-activity-properties-editor";
+import {ActivityDriverRegistry} from "../../../services";
 
 export interface WorkflowUpdatedArgs {
   workflow: Workflow;
@@ -22,17 +31,18 @@ export class ElsaWorkflowEditor {
 
   private canvas: HTMLElsaCanvasElement;
   private container: HTMLDivElement;
-  private activityPicker: HTMLElsaActivityPickerElement;
+  private toolbox: HTMLElsaToolboxElement;
   private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
   private applyActivityChanges: (activity: Activity) => void;
   private deleteActivity: (activity: Activity) => void;
   private readonly saveChangesDebounced: (e: CustomEvent<GraphUpdatedArgs>) => void;
 
   constructor() {
-    this.saveChangesDebounced = _.debounce(this.saveChanges, 1000);
+    this.saveChangesDebounced = debounce(this.saveChanges, 1000);
   }
 
   @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
+  @Prop() triggerDescriptors: Array<TriggerDescriptor> = [];
 
   @Prop() workflow: Workflow = {
     root: null,
@@ -64,6 +74,12 @@ export class ElsaWorkflowEditor {
   @Listen('graphUpdated')
   handleGraphUpdated(e: CustomEvent<GraphUpdatedArgs>) {
     this.saveChangesDebounced(e);
+  }
+
+  @Method()
+  async registerActivityDrivers(register: (registry: ActivityDriverRegistry) => void): Promise<void> {
+    const registry = Container.get(ActivityDriverRegistry);
+    register(registry);
   }
 
   saveChanges = (e: CustomEvent<GraphUpdatedArgs>) => {
@@ -118,7 +134,8 @@ export class ElsaWorkflowEditor {
 
     const tunnelState: WorkflowEditorState = {
       workflowDefinitionId: null,
-      activityDescriptors: this.activityDescriptors
+      activityDescriptors: this.activityDescriptors,
+      triggerDescriptors: this.triggerDescriptors
     };
 
     const activityUnderEdit = this.activityUnderEdit;
@@ -129,7 +146,7 @@ export class ElsaWorkflowEditor {
           <elsa-panel class="elsa-activity-picker-container"
                       position={PanelPosition.Left}
                       onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
-            <elsa-activity-picker ref={el => this.activityPicker = el}/>
+            <elsa-toolbox ref={el => this.toolbox = el}/>
           </elsa-panel>
           <elsa-panel class="elsa-trigger-container"
                       onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
@@ -155,4 +172,4 @@ export class ElsaWorkflowEditor {
   }
 }
 
-ShellTunnel.injectProps(ElsaWorkflowEditor, ['activityDescriptors']);
+ShellTunnel.injectProps(ElsaWorkflowEditor, ['activityDescriptors', 'triggerDescriptors']);

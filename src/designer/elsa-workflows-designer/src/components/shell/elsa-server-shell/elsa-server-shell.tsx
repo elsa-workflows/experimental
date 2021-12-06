@@ -1,10 +1,9 @@
 import {Component, h, Listen, Prop, Watch} from "@stencil/core";
 import 'reflect-metadata';
 import {Container} from "typedi";
-import {ServerSettings} from "../../../services/server-settings";
-import {ElsaApiClientProvider, ElsaClient} from "../../../services/elsa-api-client-provider";
+import {ElsaApiClientProvider, ElsaClient, ServerSettings} from "../../../services";
 import ShellTunnel, {ShellState} from "./state";
-import {ActivityDescriptor} from "../../../models";
+import {ActivityDescriptor, TriggerDescriptor} from "../../../models";
 import {WorkflowUpdatedArgs} from "../../designer/elsa-workflow-editor/elsa-workflow-editor";
 
 @Component({
@@ -15,6 +14,7 @@ export class ElsaServerShell {
   @Prop({attribute: 'server'})
   public serverUrl: string;
   private activityDescriptors: Array<ActivityDescriptor>;
+  private triggerDescriptors: Array<TriggerDescriptor>;
   private elsaClient: ElsaClient;
 
   @Watch('serverUrl')
@@ -33,13 +33,15 @@ export class ElsaServerShell {
 
     const elsaClientProvider = Container.get(ElsaApiClientProvider);
     this.elsaClient = await elsaClientProvider.getClient();
-    this.activityDescriptors = await this.elsaClient.activityDescriptors.list();
+    this.activityDescriptors = await this.elsaClient.descriptors.activities.list();
+    this.triggerDescriptors = await this.elsaClient.descriptors.triggers.list();
   }
 
   render() {
 
     const tunnelState: ShellState = {
-      activityDescriptors: this.activityDescriptors
+      activityDescriptors: this.activityDescriptors,
+      triggerDescriptors: this.triggerDescriptors
     };
 
     return <ShellTunnel.Provider state={tunnelState}>

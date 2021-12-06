@@ -15,7 +15,7 @@ public class ActivityDescriptorsResource
 
     public ActivityDescriptorsResource List()
     {
-        _endpoints.MapGet("api/activity-descriptors", ActivityDescriptors.ListAsync);
+        _endpoints.MapGet("api/descriptors/activities", ActivityDescriptors.ListAsync);
         return this;
     }
 }

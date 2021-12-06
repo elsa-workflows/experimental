@@ -11,30 +11,30 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Api.Core.Services;
 
-public class ActivityPropertyOptionsResolver : IActivityPropertyOptionsResolver
+public class PropertyOptionsResolver : IPropertyOptionsResolver
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public ActivityPropertyOptionsResolver(IServiceProvider serviceProvider)
+    public PropertyOptionsResolver(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
 
-    public object? GetOptions(PropertyInfo activityPropertyInfo)
+    public object? GetOptions(PropertyInfo propertyInfo)
     {
-        var inputAttribute = activityPropertyInfo.GetCustomAttribute<InputAttribute>();
+        var inputAttribute = propertyInfo.GetCustomAttribute<InputAttribute>();
 
         if (inputAttribute == null)
             return null;
 
         if (inputAttribute.OptionsProvider == null)
-            return inputAttribute.Options ?? (TryGetEnumOptions(activityPropertyInfo, out var items) ? items : null);
+            return inputAttribute.Options ?? (TryGetEnumOptions(propertyInfo, out var items) ? items : null);
 
         var providerType = inputAttribute.OptionsProvider;
 
         using var scope = _serviceProvider.CreateScope();
         var provider = (IActivityPropertyOptionsProvider) ActivatorUtilities.GetServiceOrCreateInstance(scope.ServiceProvider, providerType);
-        return provider.GetOptions(activityPropertyInfo);
+        return provider.GetOptions(propertyInfo);
     }
 
     private bool TryGetEnumOptions(PropertyInfo activityPropertyInfo, out IList<SelectListItem>? items)

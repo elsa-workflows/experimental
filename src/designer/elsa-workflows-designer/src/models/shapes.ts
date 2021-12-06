@@ -1,6 +1,9 @@
 import {Cell, Graph, Shape} from "@antv/x6";
 import {Activity} from "./core";
-import {ActivityDescriptor, ActivityTraits} from "./api";
+import {ActivityDescriptor} from "./api";
+import {Container} from "typedi";
+import {ActivityDriverRegistry} from "../services/activity-driver-registry";
+import {ActivityDisplayContext} from "../services/activity-driver";
 
 export class ActivityNode extends Shape.HTML {
   get text() {
@@ -50,6 +53,11 @@ export class ActivityNode extends Shape.HTML {
   }
 
   updateSize() {
+    const activityDescriptor = this.activityDescriptor as ActivityDescriptor;
+
+    if(!activityDescriptor)
+      return;
+
     const wrapper = document.createElement('div');
     wrapper.className = 'w-full flex items-center pl-10 pr-2 py-2';
     wrapper.innerHTML = this.createHtml();
@@ -63,37 +71,19 @@ export class ActivityNode extends Shape.HTML {
   }
 
   createHtml() {
-    const activityDescriptor = this.activityDescriptor;
-    const activity = this.activity;
-    const text = activityDescriptor?.displayName;
-    const isTrigger = (activityDescriptor?.traits & ActivityTraits.Trigger) == ActivityTraits.Trigger;
-    const borderColor = isTrigger ? 'border-green-600' : 'border-blue-600';
-    const backgroundColor = isTrigger ? 'bg-green-400' : 'bg-blue-400';
-    const iconBackgroundColor = isTrigger ? 'bg-green-500' : 'bg-blue-500';
+    const activityDescriptor = this.activityDescriptor as ActivityDescriptor;
+    const activity = this.activity as Activity;
+    const activityType = activityDescriptor.activityType;
+    const driverRegistry = Container.get(ActivityDriverRegistry);
+    const driver = driverRegistry.createDriver(activityType);
 
-    return (`
-          <div>
-            <div class="activity-wrapper border ${borderColor} ${backgroundColor} rounded text-white overflow-hidden">
-              <div class="flex flex-row">
-                <div class="flex flex-shrink items-center ${iconBackgroundColor}">
-                  <div class="px-2 py-1">
-                    <svg class="h-6 w-6 text-white" width="24" height="24" viewBox="0 0 24 24"
-                         stroke-width="2"
-                         stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <path stroke="none" d="M0 0h24v24H0z"/>
-                      <path d="M7 18a4.6 4.4 0 0 1 0 -9h0a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-12"/>
-                    </svg>
-                  </div>
-                </div>
-                <div class="flex items-center">
-                  <div class="px-4 py-1">
-                    ${text}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `);
+    const displayContext: ActivityDisplayContext = {
+      activity: activity,
+      activityDescriptor: activityDescriptor,
+      displayType: "designer"
+    };
+
+    return driver.display(displayContext);
   }
 }
 

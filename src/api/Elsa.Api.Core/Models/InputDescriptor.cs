@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace Elsa.Api.Core.Models;
 
-public class ActivityInputDescriptor : ActivityPropertyDescriptor
+public class InputDescriptor : PropertyDescriptor
 {
-    public ActivityInputDescriptor()
+    public InputDescriptor()
     {
     }
 
-    public ActivityInputDescriptor(
+    public InputDescriptor(
         string name,
         Type type,
         string uiHint,
