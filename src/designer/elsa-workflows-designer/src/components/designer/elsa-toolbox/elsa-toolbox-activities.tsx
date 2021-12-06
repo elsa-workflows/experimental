@@ -4,6 +4,8 @@ import groupBy from 'lodash/groupBy';
 import {ActivityDescriptor, ActivityTraits, TriggerDescriptor} from '../../../models';
 import {ActivityDriverRegistry} from "../../../services";
 import {Container} from "typedi";
+import WorkflowEditorTunnel from "../elsa-workflow-editor/state";
+import {ElsaToolbox} from "./elsa-toolbox";
 
 interface ActivityCategoryModel {
   category: string;
@@ -17,6 +19,7 @@ interface ActivityCategoryModel {
 export class ElsaToolboxActivities {
   @Prop() graph: Graph;
   @Prop({mutable: true}) activityDescriptors: Array<ActivityDescriptor> = [];
+  @Prop({mutable: true}) triggerDescriptors: Array<TriggerDescriptor> = [];
   @State() activityCategoryModels: Array<ActivityCategoryModel> = [];
   private dnd: Addon.Dnd;
   private renderedActivities: Map<string, string>;
@@ -69,14 +72,16 @@ export class ElsaToolboxActivities {
     this.handleActivityDescriptorsChanged(this.activityDescriptors);
   }
 
-  private static onActivityStartDrag(e: DragEvent, activity: ActivityDescriptor) {
-    const json = JSON.stringify(activity);
-    const isTrigger = (activity.traits & ActivityTraits.Trigger) == ActivityTraits.Trigger;
+  private onActivityStartDrag(e: DragEvent, activityDescriptor: ActivityDescriptor) {
+    const json = JSON.stringify(activityDescriptor);
+    const triggerDescriptor = this.triggerDescriptors.find(x => x.triggerType == activityDescriptor.activityType);
+    const isTrigger = !!triggerDescriptor;
 
     e.dataTransfer.setData('activity-descriptor', json);
 
     if (isTrigger) {
-      e.dataTransfer.setData('trigger-descriptor', json);
+      const triggerDescriptorJson = JSON.stringify(triggerDescriptor);
+      e.dataTransfer.setData('trigger-descriptor', triggerDescriptorJson);
     }
   }
 
@@ -117,7 +122,7 @@ export class ElsaToolboxActivities {
                 return (
                   <div class="w-full flex items-center pl-10 pr-2 py-2">
                     <div class="cursor-move"
-                         onDragStart={e => ElsaToolboxActivities.onActivityStartDrag(e, activityDescriptor)}>
+                         onDragStart={e => this.onActivityStartDrag(e, activityDescriptor)}>
                       <div innerHTML={activityHtml} draggable={true}/>
                     </div>
                   </div>
@@ -131,3 +136,5 @@ export class ElsaToolboxActivities {
     </nav>
   }
 }
+
+WorkflowEditorTunnel.injectProps(ElsaToolboxActivities, ['activityDescriptors', 'triggerDescriptors']);

@@ -30,18 +30,18 @@ public class TriggerDescriber : ITriggerDescriber
         _activityFactory = activityFactory;
     }
 
-    public ValueTask<TriggerDescriptor> DescribeTriggerAsync(Type activityType, CancellationToken cancellationToken = default)
+    public ValueTask<TriggerDescriptor> DescribeTriggerAsync(Type triggerType, CancellationToken cancellationToken = default)
     {
-        var ns = TypeNameHelper.GenerateTriggerTypeNamespace(activityType);
-        var typeName = activityType.Name;
-        var fullTypeName = TypeNameHelper.GenerateTypeName(activityType, ns);
-        var displayNameAttr = activityType.GetCustomAttribute<DisplayNameAttribute>();
+        var ns = TypeNameHelper.GenerateNamespace(triggerType);
+        var typeName = triggerType.Name;
+        var fullTypeName = TypeNameHelper.GenerateTypeName(triggerType, ns);
+        var displayNameAttr = triggerType.GetCustomAttribute<DisplayNameAttribute>();
         var displayName = displayNameAttr?.DisplayName ?? typeName.Humanize(LetterCasing.Title);
-        var categoryAttr = activityType.GetCustomAttribute<CategoryAttribute>();
+        var categoryAttr = triggerType.GetCustomAttribute<CategoryAttribute>();
         var category = categoryAttr?.Category ?? TypeNameHelper.GetCategoryFromNamespace(ns) ?? "Miscellaneous";
-        var descriptionAttr = activityType.GetCustomAttribute<DescriptionAttribute>();
+        var descriptionAttr = triggerType.GetCustomAttribute<DescriptionAttribute>();
         var description = descriptionAttr?.Description;
-        var properties = activityType.GetProperties();
+        var properties = triggerType.GetProperties();
         var inputProperties = properties.Where(x => typeof(Input).IsAssignableFrom(x.PropertyType)).ToList();
 
         var descriptor = new TriggerDescriptor
@@ -53,7 +53,7 @@ public class TriggerDescriber : ITriggerDescriber
             InputProperties = DescribeInputProperties(inputProperties).ToList(),
             Constructor = context =>
             {
-                var activity = _activityFactory.Create(activityType, context);
+                var activity = _activityFactory.Create(triggerType, context);
                 activity.TriggerType = fullTypeName;
                 return activity;
             }

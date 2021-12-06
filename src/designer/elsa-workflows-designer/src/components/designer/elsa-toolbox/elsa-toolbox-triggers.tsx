@@ -1,7 +1,7 @@
 import {Component, h, Prop, State, Watch} from "@stencil/core";
 import {Addon, Graph} from '@antv/x6';
 import groupBy from 'lodash/groupBy';
-import {TriggerDescriptor} from '../../../models';
+import {ActivityDescriptor, TriggerDescriptor, Workflow} from '../../../models';
 import WorkflowEditorTunnel from "../elsa-workflow-editor/state";
 import {Container} from "typedi";
 import {TriggerDriverRegistry} from "../../../services/trigger-driver-registry";
@@ -18,6 +18,7 @@ interface TriggerCategoryModel {
 export class ElsaToolboxTriggers {
   @Prop() graph: Graph;
   @Prop({mutable: true}) triggerDescriptors: Array<TriggerDescriptor> = [];
+  @Prop({mutable: true}) activityDescriptors: Array<ActivityDescriptor> = [];
   @State() triggerCategoryModels: Array<TriggerCategoryModel> = [];
   private dnd: Addon.Dnd;
   private renderedTriggers: Map<string, string>;
@@ -70,14 +71,17 @@ export class ElsaToolboxTriggers {
     this.handleTriggerDescriptorsChanged(this.triggerDescriptors);
   }
 
-  private static onTriggerStartDrag(e: DragEvent, trigger: TriggerDescriptor) {
-    const json = JSON.stringify(trigger);
-    const isActivity = false;
+  private onTriggerStartDrag(e: DragEvent, triggerDescriptor: TriggerDescriptor) {
+    const json = JSON.stringify(triggerDescriptor);
+    const activityDescriptor = this.activityDescriptors.find(x => x.activityType == triggerDescriptor.triggerType);
+    const isActivity = !!activityDescriptor;
 
     e.dataTransfer.setData('trigger-descriptor', json);
 
-    if (isActivity)
-      e.dataTransfer.setData('activity-descriptor', json);
+    if (isActivity) {
+      const activityJson = JSON.stringify(activityDescriptor);
+      e.dataTransfer.setData('activity-descriptor', activityJson);
+    }
   }
 
   private onToggleTriggerCategory(categoryModel: TriggerCategoryModel) {
@@ -116,7 +120,7 @@ export class ElsaToolboxTriggers {
 
                 return (
                   <div class="w-full flex items-center pl-10 pr-2 py-2">
-                    <div class="cursor-move" onDragStart={e => ElsaToolboxTriggers.onTriggerStartDrag(e, trigger)}>
+                    <div class="cursor-move" onDragStart={e => this.onTriggerStartDrag(e, trigger)}>
                       <div innerHTML={triggerHtml} draggable={true}/>
                     </div>
                   </div>
@@ -130,7 +134,6 @@ export class ElsaToolboxTriggers {
 
     </nav>
   }
-
 }
 
-WorkflowEditorTunnel.injectProps(ElsaToolboxTriggers, ['triggerDescriptors']);
+WorkflowEditorTunnel.injectProps(ElsaToolboxTriggers, ['activityDescriptors', 'triggerDescriptors']);

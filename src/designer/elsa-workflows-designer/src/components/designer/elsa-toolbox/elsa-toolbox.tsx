@@ -1,15 +1,11 @@
 import {Component, h, Prop, State} from "@stencil/core";
-import {Addon, Graph} from '@antv/x6';
-import {ActivityDescriptor, TriggerDescriptor} from '../../../models';
-import WorkflowEditorTunnel from '../elsa-workflow-editor/state';
+import {Graph} from '@antv/x6';
 
 @Component({
   tag: 'elsa-toolbox',
 })
 export class ElsaToolbox {
   @Prop() graph: Graph;
-  @Prop({mutable: true}) activityDescriptors: Array<ActivityDescriptor> = [];
-  @Prop({mutable: true}) triggerDescriptors: Array<TriggerDescriptor> = [];
   @State() selectedTabIndex: number = 0;
 
   private onTabSelected = (e: Event, index: number) => {
@@ -45,14 +41,14 @@ export class ElsaToolbox {
           </nav>
         </div>
 
-        <elsa-toolbox-activities graph={this.graph} activityDescriptors={this.activityDescriptors}
-                                 class={selectedTabIndex == 0 ? '' : 'hidden'}/>
+        <elsa-toolbox-activities
+          graph={this.graph}
+          class={selectedTabIndex == 0 ? '' : 'hidden'}/>
 
-        <elsa-toolbox-triggers graph={this.graph} triggerDescriptors={this.triggerDescriptors}
-                               class={selectedTabIndex == 1 ? '' : 'hidden'}/>
+        <elsa-toolbox-triggers
+          graph={this.graph}
+          class={selectedTabIndex == 1 ? '' : 'hidden'}/>
       </div>
     );
   }
 }
-
-WorkflowEditorTunnel.injectProps(ElsaToolbox, ['activityDescriptors', 'triggerDescriptors']);

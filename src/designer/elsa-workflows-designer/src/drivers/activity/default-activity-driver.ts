@@ -1,5 +1,5 @@
-import {ActivityTraits} from "../../models";
-import {ActivityDisplayContext, ActivityDriver} from "../../services/activity-driver";
+import {ActivityTraits} from '../../models';
+import {ActivityDisplayContext, ActivityDriver} from '../../services';
 
 export class DefaultActivityDriver implements ActivityDriver {
     display(context: ActivityDisplayContext): any {

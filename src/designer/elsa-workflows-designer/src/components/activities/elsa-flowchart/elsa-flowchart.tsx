@@ -4,7 +4,7 @@ import {v4 as uuid} from 'uuid';
 import _, {first} from 'lodash';
 import '../../../models/shapes';
 import '../../../models/ports';
-import {ActivityComponent} from "../activity-component";
+import {ContainerActivityComponent} from "../container-activity-component";
 import {AddActivityArgs} from "../../designer/elsa-canvas/elsa-canvas";
 import {Activity, ActivityEditRequestArgs, ActivityInput, GraphUpdatedArgs} from "../../../models";
 import {createGraph} from "./graph-factory";
@@ -13,10 +13,10 @@ import {Connection, Flowchart} from "./models";
 import PositionEventArgs = NodeView.PositionEventArgs;
 
 @Component({
-  tag: 'elsa-free-flowchart',
-  styleUrl: 'elsa-free-flowchart.scss',
+  tag: 'elsa-flowchart',
+  styleUrl: 'elsa-flowchart.scss',
 })
-export class ElsaFreeFlowchart implements ActivityComponent {
+export class ElsaFlowchart implements ContainerActivityComponent {
 
   @Element() el: HTMLElement;
   private container: HTMLElement;
@@ -49,6 +49,11 @@ export class ElsaFreeFlowchart implements ActivityComponent {
     graph.addNode(node);
 
     const json = graph.toJSON();
+  }
+
+  @Method()
+  public async exportGraph(): Promise<Activity> {
+    return this.exportGraphInternal();
   }
 
   public async componentDidLoad() {

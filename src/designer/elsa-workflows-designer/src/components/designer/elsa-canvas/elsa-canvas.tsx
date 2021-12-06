@@ -1,6 +1,6 @@
 import {Component, h, Event, Method, Element, EventEmitter, Listen} from '@stencil/core';
-import {ActivityComponent} from "../../activities/activity-component";
-import {ActivityDescriptor} from "../../../models";
+import {ContainerActivityComponent} from "../../activities/container-activity-component";
+import {Activity, ActivityDescriptor} from "../../../models";
 
 export interface AddActivityArgs {
   descriptor: ActivityDescriptor;
@@ -14,7 +14,7 @@ export interface AddActivityArgs {
 })
 export class ElsaCanvas {
 
-  private root: ActivityComponent;
+  private root: ContainerActivityComponent;
 
   @Method()
   public async addActivity(args: AddActivityArgs): Promise<void> {
@@ -26,10 +26,15 @@ export class ElsaCanvas {
     await this.root.updateLayout();
   }
 
+  @Method()
+  public async exportGraph(): Promise<Activity> {
+    return await this.root.exportGraph();
+  }
+
   render() {
     return (
       <div class="absolute left-0 top-0 right-0 bottom-0">
-        <elsa-free-flowchart ref={el => this.root = el} class="absolute left-0 top-0 right-0 bottom-0"/>
+        <elsa-flowchart ref={el => this.root = el} class="absolute left-0 top-0 right-0 bottom-0"/>
       </div>
     );
   }

@@ -18,6 +18,7 @@ import {
   DeleteActivityRequestedArgs
 } from "./elsa-activity-properties-editor";
 import {ActivityDriverRegistry} from "../../../services";
+import {TriggersUpdatedArgs} from "../elsa-trigger-container/elsa-trigger-container";
 
 export interface WorkflowUpdatedArgs {
   workflow: Workflow;
@@ -35,7 +36,7 @@ export class ElsaWorkflowEditor {
   private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
   private applyActivityChanges: (activity: Activity) => void;
   private deleteActivity: (activity: Activity) => void;
-  private readonly saveChangesDebounced: (e: CustomEvent<GraphUpdatedArgs>) => void;
+  private readonly saveChangesDebounced: () => void;
 
   constructor() {
     this.saveChangesDebounced = debounce(this.saveChanges, 1000);
@@ -73,7 +74,12 @@ export class ElsaWorkflowEditor {
 
   @Listen('graphUpdated')
   handleGraphUpdated(e: CustomEvent<GraphUpdatedArgs>) {
-    this.saveChangesDebounced(e);
+    this.saveChangesDebounced();
+  }
+
+  @Listen('triggersUpdated')
+  handleTriggersUpdated(e: CustomEvent<TriggersUpdatedArgs>) {
+    this.saveChangesDebounced();
   }
 
   @Method()
@@ -82,8 +88,8 @@ export class ElsaWorkflowEditor {
     register(registry);
   }
 
-  saveChanges = (e: CustomEvent<GraphUpdatedArgs>) => {
-    const root = e.detail.exportGraph();
+  saveChanges = async (): Promise<void> => {
+    const root = await this.canvas.exportGraph();
     const workflow = this.workflow;
 
     workflow.root = root;
@@ -133,7 +139,7 @@ export class ElsaWorkflowEditor {
   public render() {
 
     const tunnelState: WorkflowEditorState = {
-      workflowDefinitionId: null,
+      workflow: this.workflow,
       activityDescriptors: this.activityDescriptors,
       triggerDescriptors: this.triggerDescriptors
     };
@@ -151,7 +157,7 @@ export class ElsaWorkflowEditor {
           <elsa-panel class="elsa-trigger-container"
                       onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
                       position={PanelPosition.Top}>
-            <elsa-trigger-container/>
+            <elsa-trigger-container triggerDescriptors={this.triggerDescriptors}/>
           </elsa-panel>
           <elsa-canvas class="absolute" ref={el => this.canvas = el}
                        onDragOver={e => ElsaWorkflowEditor.onDragOver(e)}

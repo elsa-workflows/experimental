@@ -4,11 +4,9 @@ namespace Elsa.Helpers;
 
 public static class TypeNameHelper
 {
-    private const string DefaultActivityNamespace = "Elsa.Activities.";
-    private const string DefaultTriggerNamespace = "Elsa.Triggers.";
+    private static readonly string[] WellknownNamespaces = new[]{"Elsa.Activities", "Elsa.Triggers"};
 
-    public static string? GenerateActivityTypeNamespace(Type activityType) => GenerateTypeNamespace(activityType, DefaultActivityNamespace);
-    public static string? GenerateTriggerTypeNamespace(Type triggerType) => GenerateTypeNamespace(triggerType, DefaultTriggerNamespace);
+    public static string? GenerateNamespace(Type activityType) => GenerateTypeNamespace(activityType);
 
     public static string GenerateTypeName(Type type, string? ns)
     {
@@ -16,15 +14,9 @@ public static class TypeNameHelper
         return ns != null ? $"{ns}.{typeName}" : typeName;
     }
 
-    public static string GenerateActivityTypeName(Type type)
+    public static string GenerateTypeName(Type type)
     {
-        var ns = GenerateActivityTypeNamespace(type);
-        return GenerateTypeName(type, ns);
-    }
-
-    public static string GenerateTriggerTypeName(Type type)
-    {
-        var ns = GenerateTriggerTypeNamespace(type);
+        var ns = GenerateNamespace(type);
         return GenerateTypeName(type, ns);
     }
 
@@ -38,10 +30,15 @@ public static class TypeNameHelper
         return index < 0 ? ns : ns[(index + 1)..];
     }
 
-    private static string? GenerateTypeNamespace(Type type, string defaultNamespace) =>
-        type.Namespace != null
-            ? type.Namespace.StartsWith(defaultNamespace)
-                ? type.Namespace[defaultNamespace.Length..]
-                : type.Namespace
-            : null;
+    private static string? GenerateTypeNamespace(Type type)
+    {
+        if(type.Namespace == null)
+            return null;
+        
+        foreach (var wellknownNamespace in WellknownNamespaces)
+            if (type.Namespace.StartsWith(wellknownNamespace))
+                return type.Namespace[(wellknownNamespace.Length + 1)..];
+
+        return type.Namespace;
+    }
 }

@@ -11,6 +11,7 @@ import { AddActivityArgs } from "./components/designer/elsa-canvas/elsa-canvas";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/elsa-canvas/elsa-canvas";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/elsa-panel/models";
 import { Graph } from "@antv/x6";
+import { TriggersUpdatedArgs } from "./components/designer/elsa-trigger-container/elsa-trigger-container";
 import { WorkflowUpdatedArgs } from "./components/designer/elsa-workflow-editor/elsa-workflow-editor";
 import { ActivityDriverRegistry } from "./services";
 export namespace Components {
@@ -22,6 +23,12 @@ export namespace Components {
     }
     interface ElsaCanvas {
         "addActivity": (args: AddActivityArgs) => Promise<void>;
+        "exportGraph": () => Promise<Activity>;
+        "updateLayout": () => Promise<void>;
+    }
+    interface ElsaFlowchart {
+        "addActivity": (args: AddActivityArgs) => Promise<void>;
+        "exportGraph": () => Promise<Activity>;
         "updateLayout": () => Promise<void>;
     }
     interface ElsaFormPanel {
@@ -50,19 +57,21 @@ export namespace Components {
         "tabs": Array<TabDefinition>;
     }
     interface ElsaToolbox {
-        "activityDescriptors": Array<ActivityDescriptor>;
         "graph": Graph;
-        "triggerDescriptors": Array<TriggerDescriptor>;
     }
     interface ElsaToolboxActivities {
         "activityDescriptors": Array<ActivityDescriptor>;
         "graph": Graph;
+        "triggerDescriptors": Array<TriggerDescriptor>;
     }
     interface ElsaToolboxTriggers {
+        "activityDescriptors": Array<ActivityDescriptor>;
         "graph": Graph;
         "triggerDescriptors": Array<TriggerDescriptor>;
     }
     interface ElsaTriggerContainer {
+        "triggerDescriptors": Array<TriggerDescriptor>;
+        "workflow": Workflow;
     }
     interface ElsaWorkflowEditor {
         "activityDescriptors": Array<ActivityDescriptor>;
@@ -88,6 +97,12 @@ declare global {
     var HTMLElsaCanvasElement: {
         prototype: HTMLElsaCanvasElement;
         new (): HTMLElsaCanvasElement;
+    };
+    interface HTMLElsaFlowchartElement extends Components.ElsaFlowchart, HTMLStencilElement {
+    }
+    var HTMLElsaFlowchartElement: {
+        prototype: HTMLElsaFlowchartElement;
+        new (): HTMLElsaFlowchartElement;
     };
     interface HTMLElsaFormPanelElement extends Components.ElsaFormPanel, HTMLStencilElement {
     }
@@ -164,6 +179,7 @@ declare global {
     interface HTMLElementTagNameMap {
         "elsa-activity-properties-editor": HTMLElsaActivityPropertiesEditorElement;
         "elsa-canvas": HTMLElsaCanvasElement;
+        "elsa-flowchart": HTMLElsaFlowchartElement;
         "elsa-form-panel": HTMLElsaFormPanelElement;
         "elsa-free-flowchart": HTMLElsaFreeFlowchartElement;
         "elsa-panel": HTMLElsaPanelElement;
@@ -186,6 +202,10 @@ declare namespace LocalJSX {
         "onDeleteActivityRequested"?: (event: CustomEvent<DeleteActivityRequestedArgs>) => void;
     }
     interface ElsaCanvas {
+    }
+    interface ElsaFlowchart {
+        "onActivityEditRequested"?: (event: CustomEvent<ActivityEditRequestArgs>) => void;
+        "onGraphUpdated"?: (event: CustomEvent<GraphUpdatedArgs>) => void;
     }
     interface ElsaFormPanel {
         "actions"?: Array<ActionDefinition>;
@@ -217,19 +237,22 @@ declare namespace LocalJSX {
         "tabs"?: Array<TabDefinition>;
     }
     interface ElsaToolbox {
-        "activityDescriptors"?: Array<ActivityDescriptor>;
         "graph"?: Graph;
-        "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
     interface ElsaToolboxActivities {
         "activityDescriptors"?: Array<ActivityDescriptor>;
         "graph"?: Graph;
+        "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
     interface ElsaToolboxTriggers {
+        "activityDescriptors"?: Array<ActivityDescriptor>;
         "graph"?: Graph;
         "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
     interface ElsaTriggerContainer {
+        "onTriggersUpdated"?: (event: CustomEvent<TriggersUpdatedArgs>) => void;
+        "triggerDescriptors"?: Array<TriggerDescriptor>;
+        "workflow"?: Workflow;
     }
     interface ElsaWorkflowEditor {
         "activityDescriptors"?: Array<ActivityDescriptor>;
@@ -249,6 +272,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "elsa-activity-properties-editor": ElsaActivityPropertiesEditor;
         "elsa-canvas": ElsaCanvas;
+        "elsa-flowchart": ElsaFlowchart;
         "elsa-form-panel": ElsaFormPanel;
         "elsa-free-flowchart": ElsaFreeFlowchart;
         "elsa-panel": ElsaPanel;
@@ -269,6 +293,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "elsa-activity-properties-editor": LocalJSX.ElsaActivityPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaActivityPropertiesEditorElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
+            "elsa-flowchart": LocalJSX.ElsaFlowchart & JSXBase.HTMLAttributes<HTMLElsaFlowchartElement>;
             "elsa-form-panel": LocalJSX.ElsaFormPanel & JSXBase.HTMLAttributes<HTMLElsaFormPanelElement>;
             "elsa-free-flowchart": LocalJSX.ElsaFreeFlowchart & JSXBase.HTMLAttributes<HTMLElsaFreeFlowchartElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;

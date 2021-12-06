@@ -7,7 +7,7 @@ namespace Elsa.Models;
 
 public abstract class Activity : IActivity
 {
-    protected Activity() => ActivityType = TypeNameHelper.GenerateActivityTypeName(GetType());
+    protected Activity() => ActivityType = TypeNameHelper.GenerateTypeName(GetType());
     protected Activity(string activityType) => ActivityType = activityType;
 
     public string Id { get; set; } = default!;

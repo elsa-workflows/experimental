@@ -32,7 +32,7 @@ public class ActivityDescriber : IActivityDescriber
 
     public ValueTask<ActivityDescriptor> DescribeActivityAsync(Type activityType, CancellationToken cancellationToken = default)
     {
-        var ns = TypeNameHelper.GenerateActivityTypeNamespace(activityType);
+        var ns = TypeNameHelper.GenerateNamespace(activityType);
         var typeName = activityType.Name;
         var fullTypeName = TypeNameHelper.GenerateTypeName(activityType, ns);
         var displayNameAttr = activityType.GetCustomAttribute<DisplayNameAttribute>();

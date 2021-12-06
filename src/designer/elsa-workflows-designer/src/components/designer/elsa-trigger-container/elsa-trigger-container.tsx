@@ -1,15 +1,23 @@
-import {Component, h, State} from '@stencil/core';
+import {Component, EventEmitter, h, Prop, State, Event} from '@stencil/core';
 import {v4 as uuid} from 'uuid';
-import {Trigger, TriggerDescriptor} from "../../../models";
+import {Trigger, TriggerDescriptor, Workflow} from "../../../models";
 import {Container} from "typedi";
 import {TriggerDriverRegistry} from "../../../services/trigger-driver-registry";
+import WorkflowEditorTunnel from "../elsa-workflow-editor/state";
+
+export interface TriggersUpdatedArgs {
+  triggers: Array<Trigger>;
+  workflow: Workflow;
+}
 
 @Component({
   tag: 'elsa-trigger-container',
 })
 export class ElsaTriggerContainer {
-  @State() triggers: Array<Trigger> = [];
-  @State() triggerDescriptors: Array<TriggerDescriptor> = [];
+  @Prop({mutable: true}) public triggerDescriptors: Array<TriggerDescriptor> = [];
+  @Prop({mutable: true}) public workflow: Workflow;
+  @Event() public triggersUpdated: EventEmitter<TriggersUpdatedArgs>;
+  @State() private triggers: Array<Trigger> = [];
   private renderedTriggers: Map<string, string> = new Map<string, string>();
 
   static onDragOver(e: DragEvent) {
@@ -21,7 +29,7 @@ export class ElsaTriggerContainer {
 
   public componentWillRender() {
     const triggerDescriptors = this.triggerDescriptors;
-    const triggers = this.triggers;
+    const triggers = this.workflow?.triggers || [];
     const triggerDriverRegistry = Container.get(TriggerDriverRegistry);
     const renderedTriggers = new Map<string, string>();
 
@@ -56,8 +64,10 @@ export class ElsaTriggerContainer {
       triggerType: triggerDescriptor.triggerType
     };
 
-    this.triggers = [...this.triggers, trigger];
-    this.triggerDescriptors = [...this.triggerDescriptors, triggerDescriptor];
+    const triggers = [...this.workflow.triggers, trigger];
+    this.workflow.triggers = triggers;
+    this.triggers = triggers;
+    this.triggersUpdated.emit({triggers: triggers, workflow: this.workflow});
   }
 
   private renderTriggers() {
@@ -75,7 +85,7 @@ export class ElsaTriggerContainer {
     }
 
     return <div class="flex p-4 pt-8 space-x-4">
-      {this.triggers.map((trigger, index) => {
+      {triggers.map((trigger, index) => {
         const html = renderedTriggers.get(trigger.id);
         return (
           <div class="flex-none">
@@ -87,3 +97,5 @@ export class ElsaTriggerContainer {
   }
 
 }
+
+WorkflowEditorTunnel.injectProps(ElsaTriggerContainer, ['triggerDescriptors', 'workflow']);
