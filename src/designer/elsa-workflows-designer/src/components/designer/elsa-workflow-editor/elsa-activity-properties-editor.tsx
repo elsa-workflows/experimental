@@ -70,16 +70,6 @@ export class ElsaActivityPropertiesEditor {
     );
   }
 
-  public componentDidRender() {
-
-    const firstTextInputElement = this.inputPropertiesContainer?.querySelector('input');
-
-    if (!firstTextInputElement)
-      return;
-
-    firstTextInputElement.focus({preventScroll: false});
-  }
-
   private findActivityDescriptor = (): ActivityDescriptor => !!this.activity ? this.activityDescriptors.find(x => x.activityType == this.activity.activityType) : null;
 
   private onSelectedTabIndexChanged(e: CustomEvent<TabChangedArgs>) {
