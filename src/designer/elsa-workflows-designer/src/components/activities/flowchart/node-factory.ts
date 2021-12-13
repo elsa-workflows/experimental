@@ -12,12 +12,7 @@ export function createNode(graph: Graph, activityDescriptor: ActivityDescriptor,
     ports: [
       {
         id: 'inbound1',
-        group: 'in',
-        attrs: {
-          text: {
-            text: 'In'
-          }
-        }
+        group: 'in'
       },
       {
         id: 'outbound1',

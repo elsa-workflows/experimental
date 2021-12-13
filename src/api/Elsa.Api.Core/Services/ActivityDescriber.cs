@@ -65,7 +65,7 @@ public class ActivityDescriber : IActivityDescriber
             ActivityType = fullTypeName,
             DisplayName = displayName,
             Traits = isTrigger ? ActivityTraits.Trigger : ActivityTraits.Action,
-            OutboundPorts = outboundPorts.ToList(),
+            OutPorts = outboundPorts.ToList(),
             InputProperties = DescribeInputProperties(inputProperties).ToList(),
             OutputProperties = DescribeOutputProperties(outputProperties).ToList(),
             Constructor = context =>

@@ -1,4 +1,5 @@
 using Elsa.Activities.Console;
+using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Activities.Workflows;
@@ -48,6 +49,7 @@ services
     .AddActivity<WriteLine>()
     .AddActivity<WriteLines>()
     .AddActivity<ReadLine>()
+    .AddActivity<If>()
     .AddActivity<HttpTrigger>()
     .AddActivity<Flowchart>();
 
