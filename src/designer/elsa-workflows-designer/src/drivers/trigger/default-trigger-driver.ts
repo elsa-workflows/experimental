@@ -3,7 +3,6 @@ import {TriggerDisplayContext, TriggerDriver} from "../../services/trigger-drive
 export class DefaultTriggerDriver implements TriggerDriver {
     display(context: TriggerDisplayContext): any {
         const triggerDescriptor = context.triggerDescriptor;
-        const trigger = context.trigger;
         const text = triggerDescriptor?.displayName;
         const borderColor = 'border-green-600';
         const backgroundColor = 'bg-green-400';

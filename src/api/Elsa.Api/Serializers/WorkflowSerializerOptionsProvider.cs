@@ -20,7 +20,7 @@ public class WorkflowSerializerOptionsProvider
         _serviceProvider = serviceProvider;
     }
 
-    public JsonSerializerOptions CreateSerializerOptions() => new JsonSerializerOptions
+    public JsonSerializerOptions CreateSerializerOptions() => new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =

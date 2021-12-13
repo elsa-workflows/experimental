@@ -1,5 +1,5 @@
-import {AddActivityArgs} from "../designer/elsa-canvas/elsa-canvas";
-import {Activity} from "../../models";
+import {AddActivityArgs} from '../designer/canvas/canvas';
+import {Activity} from '../../models';
 
 export interface ContainerActivityComponent {
   updateLayout(): Promise<void>;

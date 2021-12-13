@@ -1,4 +1,4 @@
-﻿import { createStore } from "@stencil/store";
+﻿import { createStore } from '@stencil/store';
 
 const { state, onChange } = createStore({
   serverAddress: '',
