@@ -1,4 +1,5 @@
 import {Graph, Node, Shape} from '@antv/x6';
+import './ports';
 
 export function createGraph(container: HTMLElement): Graph {
   const graph = new Graph({
@@ -45,12 +46,13 @@ export function createGraph(container: HTMLElement): Graph {
       allowPort: true,
       highlight: true,
       router: 'manhattan',
-      connector: {
-        name: 'rounded',
-        args: {
-          radius: 20
-        },
-      },
+      connector: 'algo-connector',
+      // connector: {
+      //   name: 'rounded',
+      //   args: {
+      //     radius: 20
+      //   },
+      // },
       snap: {
         radius: 20,
       },
@@ -74,13 +76,17 @@ export function createGraph(container: HTMLElement): Graph {
 
       },
       createEdge() {
-        return new Shape.Edge({
-          attrs: {
-            line: {
-              stroke: '#7b7b7b',
-            },
-          },
+        return graph.createEdge({
+          shape: 'dag-edge',
+          zIndex: -1,
         })
+        // return new Shape.Edge({
+        //   attrs: {
+        //     line: {
+        //       stroke: '#7b7b7b',
+        //     },
+        //   },
+        // })
       }
     },
     onPortRendered(args) {
