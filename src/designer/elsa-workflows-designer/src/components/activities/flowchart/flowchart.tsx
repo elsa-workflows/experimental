@@ -2,11 +2,11 @@ import {Component, Element, Event, EventEmitter, h, Method} from '@stencil/core'
 import {Edge, Graph, Node, NodeView} from '@antv/x6';
 import {v4 as uuid} from 'uuid';
 import _ from 'lodash';
-import '../../../models/shapes';
-import '../../../models/ports';
+import './shapes';
+import './ports';
 import {ContainerActivityComponent} from '../container-activity-component';
 import {AddActivityArgs} from '../../designer/canvas/canvas';
-import {Activity, ActivitySelectedArgs, GraphUpdatedArgs} from '../../../models';
+import {Activity, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs} from '../../../models';
 import {createGraph} from './graph-factory';
 import {createNode} from './node-factory';
 import {Connection, Flowchart} from './models';
@@ -24,6 +24,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
   private target: Node;
 
   @Event() activitySelected: EventEmitter<ActivitySelectedArgs>;
+  @Event() containerSelected: EventEmitter<ContainerSelectedArgs>;
   @Event() graphUpdated: EventEmitter<GraphUpdatedArgs>;
 
   @Method()
@@ -59,6 +60,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
   public async componentDidLoad() {
     const graph = this.graph = createGraph(this.container);
 
+    graph.on('blank:click', this.onGraphClick);
     graph.on('node:click', this.onNodeClick);
     graph.on('edge:connected', this.onEdgeConnected);
 
@@ -88,6 +90,8 @@ export class FlowchartComponent implements ContainerActivityComponent {
       variables: []
     };
   }
+
+  onGraphClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => this.containerSelected.emit({});
 
   onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
     const node = e.node;

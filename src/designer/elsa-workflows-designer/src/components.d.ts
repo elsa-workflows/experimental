@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow } from "./models";
+import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow } from "./models";
 import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/designer/activity-properties-editor/activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/canvas/canvas";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/canvas/canvas";
@@ -209,6 +209,7 @@ declare namespace LocalJSX {
     }
     interface ElsaFlowchart {
         "onActivitySelected"?: (event: CustomEvent<ActivitySelectedArgs>) => void;
+        "onContainerSelected"?: (event: CustomEvent<ContainerSelectedArgs>) => void;
         "onGraphUpdated"?: (event: CustomEvent<GraphUpdatedArgs>) => void;
     }
     interface ElsaFormPanel {

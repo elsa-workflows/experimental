@@ -6,7 +6,7 @@ import {PanelPosition, PanelStateChangedArgs} from '../panel/models';
 import {
   Activity,
   ActivityDescriptor,
-  ActivitySelectedArgs,
+  ActivitySelectedArgs, ContainerSelectedArgs,
   GraphUpdatedArgs, Trigger,
   TriggerDescriptor,
   Workflow
@@ -69,6 +69,13 @@ export class WorkflowEditor {
     this.selectedActivity = null;
   }
 
+  @Listen('containerSelected')
+  async handleContainerSelected(e: CustomEvent<ContainerSelectedArgs>) {
+    this.selectedActivity = null;
+    this.selectedTrigger = null;
+    await this.triggerContainer.deselectAll();
+  }
+
   @Listen('activitySelected')
   async handleActivitySelected(e: CustomEvent<ActivitySelectedArgs>) {
     this.selectedActivity = e.detail.activity;
@@ -126,7 +133,8 @@ export class WorkflowEditor {
           <elsa-panel class="elsa-trigger-container"
                       onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
                       position={PanelPosition.Top}>
-            <elsa-trigger-container triggerDescriptors={this.triggerDescriptors} ref={el => this.triggerContainer = el}/>
+            <elsa-trigger-container triggerDescriptors={this.triggerDescriptors}
+                                    ref={el => this.triggerContainer = el}/>
           </elsa-panel>
           <elsa-canvas class="absolute" ref={el => this.canvas = el}
                        onDragOver={e => WorkflowEditor.onDragOver(e)}

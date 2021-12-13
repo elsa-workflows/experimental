@@ -1,9 +1,7 @@
-import {Cell, Graph, Shape} from "@antv/x6";
-import {Activity} from "./core";
-import {ActivityDescriptor} from "./api";
-import {Container} from "typedi";
-import {ActivityDriverRegistry} from "../services/activity-driver-registry";
-import {ActivityDisplayContext} from "../services/activity-driver";
+import {Cell, Graph, Shape} from '@antv/x6';
+import {Container} from 'typedi';
+import {Activity, ActivityDescriptor} from '../../../models';
+import {ActivityDriverRegistry, ActivityDisplayContext} from '../../../services';
 
 export class ActivityNode extends Shape.HTML {
   get text() {
@@ -55,7 +53,7 @@ export class ActivityNode extends Shape.HTML {
   updateSize() {
     const activityDescriptor = this.activityDescriptor as ActivityDescriptor;
 
-    if(!activityDescriptor)
+    if (!activityDescriptor)
       return;
 
     const wrapper = document.createElement('div');

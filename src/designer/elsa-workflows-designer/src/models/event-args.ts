@@ -6,6 +6,9 @@ export interface ActivitySelectedArgs {
   deleteActivity: (activity: Activity) => void;
 }
 
+export interface ContainerSelectedArgs {
+}
+
 export interface GraphUpdatedArgs {
   exportGraph: () => Activity;
 }
