@@ -1,6 +1,6 @@
 import {Activity} from "./core";
 
-export interface ActivityEditRequestArgs {
+export interface ActivitySelectedArgs {
   activity: Activity;
   applyChanges: (activity: Activity) => void;
   deleteActivity: (activity: Activity) => void;

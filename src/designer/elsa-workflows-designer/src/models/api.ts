@@ -1,4 +1,4 @@
-import {Type} from "./shared";
+import {Type} from './shared';
 
 export interface ActivityDescriptorResponse {
   activityDescriptors: Array<ActivityDescriptor>;
@@ -9,7 +9,7 @@ export interface ActivityDescriptor {
   displayName: string;
   category: string;
   traits: ActivityTraits;
-  inputProperties: Array<ActivityInputDescriptor>
+  inputProperties: Array<InputDescriptor>
 }
 
 export interface TriggerDescriptorResponse {
@@ -20,6 +20,7 @@ export interface TriggerDescriptor {
   triggerType: string;
   displayName: string;
   category: string;
+  inputProperties: Array<InputDescriptor>;
 }
 
 export enum ActivityTraits {
@@ -36,7 +37,7 @@ export interface ActivityPropertyDescriptor {
   isBrowsable?: boolean;
 }
 
-export interface ActivityInputDescriptor extends ActivityPropertyDescriptor {
+export interface InputDescriptor extends ActivityPropertyDescriptor {
   uiHint: string;
   options?: any;
   category?: string;

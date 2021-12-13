@@ -1,12 +1,12 @@
 import {Component, Element, Event, EventEmitter, h, Method} from '@stencil/core';
 import {Edge, Graph, Node, NodeView} from '@antv/x6';
 import {v4 as uuid} from 'uuid';
-import _, {first} from 'lodash';
+import _ from 'lodash';
 import '../../../models/shapes';
 import '../../../models/ports';
 import {ContainerActivityComponent} from '../container-activity-component';
 import {AddActivityArgs} from '../../designer/canvas/canvas';
-import {Activity, ActivityEditRequestArgs, GraphUpdatedArgs} from '../../../models';
+import {Activity, ActivitySelectedArgs, GraphUpdatedArgs} from '../../../models';
 import {createGraph} from './graph-factory';
 import {createNode} from './node-factory';
 import {Connection, Flowchart} from './models';
@@ -23,7 +23,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
   private graph: Graph;
   private target: Node;
 
-  @Event() activityEditRequested: EventEmitter<ActivityEditRequestArgs>;
+  @Event() activitySelected: EventEmitter<ActivitySelectedArgs>;
   @Event() graphUpdated: EventEmitter<GraphUpdatedArgs>;
 
   @Method()
@@ -78,7 +78,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
     const activities = graphModel.cells.filter(x => x.shape == 'activity').map(x => x.data as Activity);
     const connections = graphModel.cells.filter(x => x.shape == 'edge' && !!x.data).map(x => x.data as Connection);
 
-    const flowchart: Flowchart = {
+    return {
       activityType: 'Workflows.Flowchart',
       metadata: {},
       activities: activities,
@@ -86,22 +86,20 @@ export class FlowchartComponent implements ContainerActivityComponent {
       id: "1",
       start: _.first(activities)?.id,
       variables: []
-    }
-
-    return flowchart;
+    };
   }
 
   onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
     const node = e.node;
     const activity = node.data as Activity;
 
-    const args: ActivityEditRequestArgs = {
+    const args: ActivitySelectedArgs = {
       activity: activity,
       applyChanges: a => node.data = a,
       deleteActivity: a => node.remove({deep: true})
     };
 
-    this.activityEditRequested.emit(args);
+    this.activitySelected.emit(args);
   };
 
   onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {

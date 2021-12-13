@@ -6,8 +6,8 @@ import {PanelPosition, PanelStateChangedArgs} from '../panel/models';
 import {
   Activity,
   ActivityDescriptor,
-  ActivityEditRequestArgs,
-  GraphUpdatedArgs,
+  ActivitySelectedArgs,
+  GraphUpdatedArgs, Trigger,
   TriggerDescriptor,
   Workflow
 } from '../../../models';
@@ -18,7 +18,8 @@ import {
   DeleteActivityRequestedArgs
 } from '../activity-properties-editor/activity-properties-editor';
 import {ActivityDriverRegistry} from '../../../services';
-import {TriggersUpdatedArgs} from '../trigger-container/trigger-container';
+import {TriggerSelectedArgs, TriggersUpdatedArgs} from '../trigger-container/trigger-container';
+import {DeleteTriggerRequestedArgs, TriggerUpdatedArgs} from "../trigger-properties-editor/trigger-properties-editor";
 
 export interface WorkflowUpdatedArgs {
   workflow: Workflow;
@@ -33,9 +34,11 @@ export class WorkflowEditor {
   private canvas: HTMLElsaCanvasElement;
   private container: HTMLDivElement;
   private toolbox: HTMLElsaToolboxElement;
-  private activityPropertiesEditor: HTMLElsaActivityPropertiesEditorElement;
+  private triggerContainer: HTMLElsaTriggerContainerElement;
   private applyActivityChanges: (activity: Activity) => void;
   private deleteActivity: (activity: Activity) => void;
+  private applyTriggerChanges: (trigger: Trigger) => void;
+  private deleteTrigger: (trigger: Trigger) => void;
   private readonly saveChangesDebounced: () => void;
 
   constructor() {
@@ -53,7 +56,8 @@ export class WorkflowEditor {
 
   @Event() workflowUpdated: EventEmitter<WorkflowUpdatedArgs>
 
-  @State() private activityUnderEdit?: Activity;
+  @State() private selectedActivity?: Activity;
+  @State() private selectedTrigger?: Trigger;
 
   @Listen('resize', {target: 'window'})
   async handResize() {
@@ -62,14 +66,29 @@ export class WorkflowEditor {
 
   @Listen('collapsed')
   async handPanelCollapsed() {
-    this.activityUnderEdit = null;
+    this.selectedActivity = null;
   }
 
-  @Listen('activityEditRequested')
-  async handleActivityEditRequested(e: CustomEvent<ActivityEditRequestArgs>) {
-    this.activityUnderEdit = e.detail.activity;
+  @Listen('activitySelected')
+  async handleActivitySelected(e: CustomEvent<ActivitySelectedArgs>) {
+    this.selectedActivity = e.detail.activity;
+    this.selectedTrigger = null;
+    await this.triggerContainer.deselectAll();
     this.applyActivityChanges = e.detail.applyChanges;
     this.deleteActivity = e.detail.deleteActivity;
+  }
+
+  @Listen('triggerSelected')
+  async handleTriggerSelected(e: CustomEvent<TriggerSelectedArgs>) {
+    this.selectedTrigger = e.detail.trigger;
+    this.selectedActivity = null;
+    this.applyTriggerChanges = e.detail.applyChanges;
+    this.deleteTrigger = e.detail.deleteTrigger;
+  }
+
+  @Listen('triggerDeselected')
+  async handleTriggerDeselected(e: CustomEvent<TriggerSelectedArgs>) {
+    this.selectedTrigger = null;
   }
 
   @Listen('graphUpdated')
@@ -88,54 +107,6 @@ export class WorkflowEditor {
     register(registry);
   }
 
-  saveChanges = async (): Promise<void> => {
-    const root = await this.canvas.exportGraph();
-    const workflow = this.workflow;
-
-    workflow.root = root;
-
-    this.workflowUpdated.emit({workflow});
-  };
-
-  updateLayout = async () => {
-    await this.canvas.updateLayout();
-  };
-
-  updateContainerLayout = async (panelClassName: string, panelExpanded: boolean) => {
-
-    if (panelExpanded)
-      this.container.classList.remove(panelClassName);
-    else
-      this.container.classList.toggle(panelClassName, true);
-
-    await this.updateLayout();
-  }
-
-  onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-picker-closed', e.expanded)
-  onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('trigger-container-closed', e.expanded)
-  onActivityEditorPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-editor-closed', e.expanded)
-
-  static onDragOver(e: DragEvent) {
-    e.preventDefault();
-  }
-
-  async onDrop(e: DragEvent) {
-    const json = e.dataTransfer.getData('activity-descriptor');
-    const activityDescriptor: ActivityDescriptor = JSON.parse(json);
-
-    await this.canvas.addActivity({descriptor: activityDescriptor, x: e.offsetX, y: e.offsetY});
-  }
-
-  onActivityUpdated = (e: CustomEvent<ActivityUpdatedArgs>) => {
-    const updatedActivity = e.detail.activity;
-    this.applyActivityChanges(updatedActivity);
-  }
-
-  onDeleteActivityRequested(e: CustomEvent<DeleteActivityRequestedArgs>) {
-    this.deleteActivity(e.detail.activity);
-    this.activityUnderEdit = null;
-  }
-
   public render() {
 
     const tunnelState: WorkflowEditorState = {
@@ -143,8 +114,6 @@ export class WorkflowEditor {
       activityDescriptors: this.activityDescriptors,
       triggerDescriptors: this.triggerDescriptors
     };
-
-    const activityUnderEdit = this.activityUnderEdit;
 
     return (
       <WorkflowEditorTunnel.Provider state={tunnelState}>
@@ -157,7 +126,7 @@ export class WorkflowEditor {
           <elsa-panel class="elsa-trigger-container"
                       onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
                       position={PanelPosition.Top}>
-            <elsa-trigger-container triggerDescriptors={this.triggerDescriptors}/>
+            <elsa-trigger-container triggerDescriptors={this.triggerDescriptors} ref={el => this.triggerContainer = el}/>
           </elsa-panel>
           <elsa-canvas class="absolute" ref={el => this.canvas = el}
                        onDragOver={e => WorkflowEditor.onDragOver(e)}
@@ -166,16 +135,87 @@ export class WorkflowEditor {
           <elsa-panel class="elsa-activity-editor-container"
                       position={PanelPosition.Right}
                       onExpandedStateChanged={e => this.onActivityEditorPanelStateChanged(e.detail)}>
-            <elsa-activity-properties-editor activity={activityUnderEdit}
-                                             onActivityUpdated={e => this.onActivityUpdated(e)}
-                                             onDeleteActivityRequested={e => this.onDeleteActivityRequested(e)}
-                                             ref={el => this.activityPropertiesEditor = el}/>
+            {this.renderSelectedObject()}
           </elsa-panel>
 
         </div>
       </WorkflowEditorTunnel.Provider>
     );
   }
+
+  private renderSelectedObject = () => {
+    if (!!this.selectedTrigger)
+      return <elsa-trigger-properties-editor
+        trigger={this.selectedTrigger}
+        onTriggerUpdated={e => this.onTriggerUpdated(e)}
+        onDeleteTriggerRequested={e => this.onDeleteTriggerRequested(e)}/>
+
+    if (!!this.selectedActivity)
+      return <elsa-activity-properties-editor
+        activity={this.selectedActivity}
+        onActivityUpdated={e => this.onActivityUpdated(e)}
+        onDeleteActivityRequested={e => this.onDeleteActivityRequested(e)}/>
+
+    return <div/>;
+  }
+
+  private saveChanges = async (): Promise<void> => {
+    const root = await this.canvas.exportGraph();
+    const workflow = this.workflow;
+
+    workflow.root = root;
+
+    this.workflowUpdated.emit({workflow});
+  };
+
+  private updateLayout = async () => {
+    await this.canvas.updateLayout();
+  };
+
+  private updateContainerLayout = async (panelClassName: string, panelExpanded: boolean) => {
+
+    if (panelExpanded)
+      this.container.classList.remove(panelClassName);
+    else
+      this.container.classList.toggle(panelClassName, true);
+
+    await this.updateLayout();
+  }
+
+  private onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-picker-closed', e.expanded)
+  private onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('trigger-container-closed', e.expanded)
+  private onActivityEditorPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-editor-closed', e.expanded)
+
+  private static onDragOver(e: DragEvent) {
+    e.preventDefault();
+  }
+
+  private async onDrop(e: DragEvent) {
+    const json = e.dataTransfer.getData('activity-descriptor');
+    const activityDescriptor: ActivityDescriptor = JSON.parse(json);
+
+    await this.canvas.addActivity({descriptor: activityDescriptor, x: e.offsetX, y: e.offsetY});
+  }
+
+  private onActivityUpdated = (e: CustomEvent<ActivityUpdatedArgs>) => {
+    const updatedActivity = e.detail.activity;
+    this.applyActivityChanges(updatedActivity);
+  }
+
+  private onDeleteActivityRequested = (e: CustomEvent<DeleteActivityRequestedArgs>) => {
+    this.deleteActivity(e.detail.activity);
+    this.selectedActivity = null;
+  };
+
+  private onTriggerUpdated = (e: CustomEvent<TriggerUpdatedArgs>) => {
+    const updatedTrigger = e.detail.trigger;
+    this.applyTriggerChanges(updatedTrigger);
+  }
+
+  private onDeleteTriggerRequested = (e: CustomEvent<DeleteTriggerRequestedArgs>) => {
+    this.deleteTrigger(e.detail.trigger);
+    this.selectedTrigger = null;
+  };
 }
 
 ShellTunnel.injectProps(WorkflowEditor, ['activityDescriptors', 'triggerDescriptors']);

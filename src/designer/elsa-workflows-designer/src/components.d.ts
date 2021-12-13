@@ -5,13 +5,14 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivityEditRequestArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, TriggerDescriptor, Workflow } from "./models";
+import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow } from "./models";
 import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/designer/activity-properties-editor/activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/canvas/canvas";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/canvas/canvas";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/panel/models";
 import { Graph } from "@antv/x6";
-import { TriggersUpdatedArgs } from "./components/designer/trigger-container/trigger-container";
+import { TriggerDeselectedArgs, TriggerSelectedArgs, TriggersUpdatedArgs } from "./components/designer/trigger-container/trigger-container";
+import { DeleteTriggerRequestedArgs, TriggerUpdatedArgs } from "./components/designer/trigger-properties-editor/trigger-properties-editor";
 import { WorkflowUpdatedArgs } from "./components/designer/workflow-editor/workflow-editor";
 import { ActivityDriverRegistry } from "./services";
 export namespace Components {
@@ -66,8 +67,15 @@ export namespace Components {
         "triggerDescriptors": Array<TriggerDescriptor>;
     }
     interface ElsaTriggerContainer {
+        "deselectAll": () => Promise<void>;
         "triggerDescriptors": Array<TriggerDescriptor>;
         "workflow": Workflow;
+    }
+    interface ElsaTriggerPropertiesEditor {
+        "hide": () => Promise<void>;
+        "show": () => Promise<void>;
+        "trigger"?: Trigger;
+        "triggerDescriptors": Array<TriggerDescriptor>;
     }
     interface ElsaWorkflowEditor {
         "activityDescriptors": Array<ActivityDescriptor>;
@@ -148,6 +156,12 @@ declare global {
         prototype: HTMLElsaTriggerContainerElement;
         new (): HTMLElsaTriggerContainerElement;
     };
+    interface HTMLElsaTriggerPropertiesEditorElement extends Components.ElsaTriggerPropertiesEditor, HTMLStencilElement {
+    }
+    var HTMLElsaTriggerPropertiesEditorElement: {
+        prototype: HTMLElsaTriggerPropertiesEditorElement;
+        new (): HTMLElsaTriggerPropertiesEditorElement;
+    };
     interface HTMLElsaWorkflowEditorElement extends Components.ElsaWorkflowEditor, HTMLStencilElement {
     }
     var HTMLElsaWorkflowEditorElement: {
@@ -178,6 +192,7 @@ declare global {
         "elsa-toolbox-activities": HTMLElsaToolboxActivitiesElement;
         "elsa-toolbox-triggers": HTMLElsaToolboxTriggersElement;
         "elsa-trigger-container": HTMLElsaTriggerContainerElement;
+        "elsa-trigger-properties-editor": HTMLElsaTriggerPropertiesEditorElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
         "elsa-workflow-publish-button": HTMLElsaWorkflowPublishButtonElement;
         "elsa-workflow-toolbar": HTMLElsaWorkflowToolbarElement;
@@ -193,7 +208,7 @@ declare namespace LocalJSX {
     interface ElsaCanvas {
     }
     interface ElsaFlowchart {
-        "onActivityEditRequested"?: (event: CustomEvent<ActivityEditRequestArgs>) => void;
+        "onActivitySelected"?: (event: CustomEvent<ActivitySelectedArgs>) => void;
         "onGraphUpdated"?: (event: CustomEvent<GraphUpdatedArgs>) => void;
     }
     interface ElsaFormPanel {
@@ -235,9 +250,17 @@ declare namespace LocalJSX {
         "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
     interface ElsaTriggerContainer {
+        "onTriggerDeselected"?: (event: CustomEvent<TriggerDeselectedArgs>) => void;
+        "onTriggerSelected"?: (event: CustomEvent<TriggerSelectedArgs>) => void;
         "onTriggersUpdated"?: (event: CustomEvent<TriggersUpdatedArgs>) => void;
         "triggerDescriptors"?: Array<TriggerDescriptor>;
         "workflow"?: Workflow;
+    }
+    interface ElsaTriggerPropertiesEditor {
+        "onDeleteTriggerRequested"?: (event: CustomEvent<DeleteTriggerRequestedArgs>) => void;
+        "onTriggerUpdated"?: (event: CustomEvent<TriggerUpdatedArgs>) => void;
+        "trigger"?: Trigger;
+        "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
     interface ElsaWorkflowEditor {
         "activityDescriptors"?: Array<ActivityDescriptor>;
@@ -266,6 +289,7 @@ declare namespace LocalJSX {
         "elsa-toolbox-activities": ElsaToolboxActivities;
         "elsa-toolbox-triggers": ElsaToolboxTriggers;
         "elsa-trigger-container": ElsaTriggerContainer;
+        "elsa-trigger-properties-editor": ElsaTriggerPropertiesEditor;
         "elsa-workflow-editor": ElsaWorkflowEditor;
         "elsa-workflow-publish-button": ElsaWorkflowPublishButton;
         "elsa-workflow-toolbar": ElsaWorkflowToolbar;
@@ -286,6 +310,7 @@ declare module "@stencil/core" {
             "elsa-toolbox-activities": LocalJSX.ElsaToolboxActivities & JSXBase.HTMLAttributes<HTMLElsaToolboxActivitiesElement>;
             "elsa-toolbox-triggers": LocalJSX.ElsaToolboxTriggers & JSXBase.HTMLAttributes<HTMLElsaToolboxTriggersElement>;
             "elsa-trigger-container": LocalJSX.ElsaTriggerContainer & JSXBase.HTMLAttributes<HTMLElsaTriggerContainerElement>;
+            "elsa-trigger-properties-editor": LocalJSX.ElsaTriggerPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaTriggerPropertiesEditorElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;
             "elsa-workflow-publish-button": LocalJSX.ElsaWorkflowPublishButton & JSXBase.HTMLAttributes<HTMLElsaWorkflowPublishButtonElement>;
             "elsa-workflow-toolbar": LocalJSX.ElsaWorkflowToolbar & JSXBase.HTMLAttributes<HTMLElsaWorkflowToolbarElement>;
