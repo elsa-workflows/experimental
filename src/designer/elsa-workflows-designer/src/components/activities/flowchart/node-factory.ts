@@ -15,6 +15,9 @@ export function createNode(graph: Graph, activityDescriptor: ActivityDescriptor,
   if (outPorts.length == 0)
     outPorts = [{name: 'Done', displayName: 'Done'}];
 
+  if (outPorts.length == 1)
+    outPorts[0].displayName = null;
+
   const inPortModels = inPorts.map(x => ({
     id: x.name,
     group: 'in',

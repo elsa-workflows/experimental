@@ -3,12 +3,16 @@ using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Activities.Workflows;
+using Elsa.Api.Core.Contracts;
 using Elsa.Api.Core.Extensions;
 using Elsa.Api.Endpoints.ActivityDescriptors;
 using Elsa.Api.Endpoints.Events;
 using Elsa.Api.Endpoints.TriggerDescriptors;
 using Elsa.Api.Endpoints.Workflows;
 using Elsa.Api.Extensions;
+using Elsa.Dsl.Abstractions;
+using Elsa.Dsl.Extensions;
+using Elsa.Models;
 using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Pipelines.WorkflowExecution.Components;
@@ -61,6 +65,13 @@ services
 var app = builder.Build();
 var serviceProvider = app.Services;
 
+// Add type aliases for prettier JSON serialization.
+var wellKnownTypeRegistry = serviceProvider.GetRequiredService<IWellKnownTypeRegistry>();
+wellKnownTypeRegistry.RegisterType<int>("int");
+wellKnownTypeRegistry.RegisterType<float>("float");
+wellKnownTypeRegistry.RegisterType<bool>("boolean");
+wellKnownTypeRegistry.RegisterType<string>("string");
+
 // Configure workflow engine execution pipeline.
 serviceProvider.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
     .PersistWorkflows()
@@ -70,7 +81,10 @@ serviceProvider.ConfigureDefaultWorkflowExecutionPipeline(pipeline => pipeline
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
+// CORS.
 app.UseCors();
+
+// Root.
 app.MapGet("/", () => "Hello World!");
 
 // Map Elsa API endpoints.

@@ -10,7 +10,6 @@ using Elsa.Models;
 
 namespace Elsa.Activities.Workflows;
 
-[JsonConverter(typeof(FlowchartJsonConverter))]
 [Category("Workflows")]
 public class Flowchart : Container
 {

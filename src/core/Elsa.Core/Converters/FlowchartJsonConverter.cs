@@ -5,11 +5,19 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Elsa.Activities.Workflows;
 using Elsa.Contracts;
+using Elsa.Extensions;
 
 namespace Elsa.Converters;
 
 public class FlowchartJsonConverter : JsonConverter<Flowchart>
 {
+    private readonly IActivityWalker _activityWalker;
+
+    public FlowchartJsonConverter(IActivityWalker activityWalker)
+    {
+        _activityWalker = activityWalker;
+    }
+
     public override Flowchart? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (!JsonDocument.TryParseValue(ref reader, out var doc))
@@ -20,11 +28,11 @@ public class FlowchartJsonConverter : JsonConverter<Flowchart>
         var activitiesElement = doc.RootElement.GetProperty("activities");
         var id = doc.RootElement.GetProperty("id").GetString()!;
         var startId = doc.RootElement.TryGetProperty("start", out var startElement) ? startElement.GetString() : default;
-        var activities = activitiesElement.Deserialize<IActivity[]>(options) ?? Array.Empty<IActivity>();
+        var rootActivities = activitiesElement.Deserialize<IActivity[]>(options) ?? Array.Empty<IActivity>();
         var metadata = metadataElement.Deserialize<IDictionary<string, object>>(options) ?? new Dictionary<string, object>();
-        var start = activities.FirstOrDefault(x => x.Id == startId) ?? activities.FirstOrDefault();
-
+        var start = rootActivities.FirstOrDefault(x => x.Id == startId) ?? rootActivities.FirstOrDefault();
         var connectionSerializerOptions = new JsonSerializerOptions(options);
+        var activities = WalkActivityTree(rootActivities).ToList();
         var activityDictionary = activities.ToDictionary(x => x.Id);
         connectionSerializerOptions.Converters.Add(new ConnectionJsonConverter(activityDictionary));
 
@@ -34,7 +42,7 @@ public class FlowchartJsonConverter : JsonConverter<Flowchart>
         {
             Id = id,
             Metadata = metadata,
-            Activities = activities,
+            Activities = rootActivities,
             Connections = connections,
             Start = start,
         };
@@ -59,4 +67,8 @@ public class FlowchartJsonConverter : JsonConverter<Flowchart>
 
         JsonSerializer.Serialize(writer, model, connectionSerializerOptions);
     }
+
+    private IEnumerable<IActivity> WalkActivityTree(IEnumerable<IActivity> rootActivities) => rootActivities
+        .Select(rootActivity => _activityWalker.Walk(rootActivity))
+        .SelectMany(node => node.Flatten().Select(x => x.Activity));
 }
