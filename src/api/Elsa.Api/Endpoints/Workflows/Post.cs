@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Api.Serializers;
+using Elsa.Api.Serialization;
 using Elsa.Models;
 using Microsoft.AspNetCore.Http;
 

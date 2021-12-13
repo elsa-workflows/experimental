@@ -46,7 +46,7 @@ export function createGraph(container: HTMLElement): Graph {
       allowPort: true,
       highlight: true,
       router: 'manhattan',
-      connector: 'algo-connector',
+      connector: 'elsa-connector',
       // connector: {
       //   name: 'rounded',
       //   args: {
@@ -73,20 +73,12 @@ export function createGraph(container: HTMLElement): Graph {
         const port = node.getPort(portId)
         return !(port && port.connected);
 
-
       },
       createEdge() {
         return graph.createEdge({
-          shape: 'dag-edge',
+          shape: 'elsa-edge',
           zIndex: -1,
         })
-        // return new Shape.Edge({
-        //   attrs: {
-        //     line: {
-        //       stroke: '#7b7b7b',
-        //     },
-        //   },
-        // })
       }
     },
     onPortRendered(args) {

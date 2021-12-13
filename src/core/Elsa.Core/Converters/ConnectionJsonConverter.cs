@@ -23,23 +23,25 @@ public class ConnectionJsonConverter : JsonConverter<Connection>
 
         var sourceId = doc.RootElement.GetProperty("source").GetString()!;
         var targetId = doc.RootElement.GetProperty("target").GetString()!;
-        var outboundPort = doc.RootElement.GetProperty("outboundPort").GetString()!;
+        var sourcePort = doc.RootElement.GetProperty("sourcePort").GetString()!;
+        var targetPort = doc.RootElement.GetProperty("targetPort").GetString()!;
 
         var source = _activities[sourceId];
         var target = _activities[targetId];
 
-        return new Connection(source, target, outboundPort);
+        return new Connection(source, target, sourcePort, targetPort);
     }
 
     public override void Write(Utf8JsonWriter writer, Connection value, JsonSerializerOptions options)
     {
-        var (activity, target, outboundPort) = value;
+        var (activity, target, sourcePort, targetPort) = value;
         
         var model = new
         {
             Source = activity.Id,
             Target = target.Id,
-            OutboundPort = outboundPort
+            SourcePort = sourcePort,
+            TargetPort = targetPort
         };
 
         JsonSerializer.Serialize(writer, model, options);

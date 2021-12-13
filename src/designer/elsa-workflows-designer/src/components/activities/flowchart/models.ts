@@ -8,5 +8,6 @@ export interface Flowchart extends Container {
 export interface Connection {
   source: string;
   target: string;
-  outboundPort: string;
+  sourcePort: string;
+  targetPort: string;
 }

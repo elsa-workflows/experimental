@@ -1,9 +1,9 @@
 using System;
 using System.Text.Json;
-using Elsa.Api.Converters;
 using Elsa.Api.Core.Contracts;
+using Elsa.Api.Serialization.Converters;
 
-namespace Elsa.Api.Serializers;
+namespace Elsa.Api.Serialization;
 
 public class WorkflowSerializerOptionsProvider
 {

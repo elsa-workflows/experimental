@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Elsa.Api.Core.Contracts;
 
-namespace Elsa.Api.Converters;
+namespace Elsa.Api.Serialization.Converters;
 
 /// <summary>
 /// Serializes <see cref="Type"/> objects to a simple alias representing said type.

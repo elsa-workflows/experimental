@@ -2,7 +2,7 @@ using Elsa.Api.Core.Contracts;
 using Elsa.Api.Core.Providers;
 using Elsa.Api.Core.Services;
 using Elsa.Api.HostedServices;
-using Elsa.Api.Serializers;
+using Elsa.Api.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Api.Extensions;

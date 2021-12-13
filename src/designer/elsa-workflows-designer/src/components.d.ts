@@ -28,6 +28,7 @@ export namespace Components {
         "updateLayout": () => Promise<void>;
     }
     interface ElsaFlowchart {
+        "activityDescriptors": Array<ActivityDescriptor>;
         "addActivity": (args: AddActivityArgs) => Promise<void>;
         "exportGraph": () => Promise<Activity>;
         "updateLayout": () => Promise<void>;
@@ -208,6 +209,7 @@ declare namespace LocalJSX {
     interface ElsaCanvas {
     }
     interface ElsaFlowchart {
+        "activityDescriptors"?: Array<ActivityDescriptor>;
         "onActivitySelected"?: (event: CustomEvent<ActivitySelectedArgs>) => void;
         "onContainerSelected"?: (event: CustomEvent<ContainerSelectedArgs>) => void;
         "onGraphUpdated"?: (event: CustomEvent<GraphUpdatedArgs>) => void;

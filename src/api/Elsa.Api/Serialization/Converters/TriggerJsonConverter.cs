@@ -5,7 +5,7 @@ using Elsa.Api.Core.Contracts;
 using Elsa.Api.Core.Models;
 using Elsa.Contracts;
 
-namespace Elsa.Api.Converters;
+namespace Elsa.Api.Serialization.Converters;
 
 /// <summary>
 /// (De)serializes objects of type <see cref="ITrigger"/>.

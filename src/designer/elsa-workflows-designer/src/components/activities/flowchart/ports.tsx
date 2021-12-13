@@ -32,7 +32,7 @@ Graph.registerPortLayout('dynamicIn', (portsPositionArgs, elemBBox) => {
 });
 
 Graph.registerConnector(
-  'algo-connector',
+  'elsa-connector',
   (s, e) => {
     const offset = 0;
     const deltaY = Math.abs(e.y - s.y)
@@ -53,7 +53,7 @@ Graph.registerConnector(
 );
 
 Graph.registerEdge(
-  'dag-edge',
+  'elsa-edge',
   {
     inherit: 'edge',
     attrs: {

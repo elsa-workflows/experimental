@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using Elsa.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Elsa.Api.Converters;
+namespace Elsa.Api.Serialization.Converters;
 
 public class InputJsonConverterFactory : JsonConverterFactory
 {

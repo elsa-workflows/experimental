@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using Elsa.Api.Core.Contracts;
 using Elsa.Contracts;
 
-namespace Elsa.Api.Converters;
+namespace Elsa.Api.Serialization.Converters;
 
 public class TriggerJsonConverterFactory : JsonConverterFactory
 {

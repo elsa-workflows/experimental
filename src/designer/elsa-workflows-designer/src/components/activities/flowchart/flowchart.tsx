@@ -1,16 +1,23 @@
-import {Component, Element, Event, EventEmitter, h, Method} from '@stencil/core';
+import {Component, Element, Event, EventEmitter, h, Method, Prop} from '@stencil/core';
 import {Edge, Graph, Node, NodeView} from '@antv/x6';
 import {v4 as uuid} from 'uuid';
-import _ from 'lodash';
+import {camelCase, first} from 'lodash';
 import './shapes';
 import './ports';
 import {ContainerActivityComponent} from '../container-activity-component';
 import {AddActivityArgs} from '../../designer/canvas/canvas';
-import {Activity, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs} from '../../../models';
+import {
+  Activity,
+  ActivityDescriptor,
+  ActivitySelectedArgs,
+  ContainerSelectedArgs,
+  GraphUpdatedArgs
+} from '../../../models';
 import {createGraph} from './graph-factory';
 import {createNode} from './node-factory';
 import {Connection, Flowchart} from './models';
 import PositionEventArgs = NodeView.PositionEventArgs;
+import WorkflowEditorTunnel from '../../designer/state';
 
 @Component({
   tag: 'elsa-flowchart',
@@ -18,10 +25,12 @@ import PositionEventArgs = NodeView.PositionEventArgs;
 })
 export class FlowchartComponent implements ContainerActivityComponent {
 
+  @Prop({mutable: true}) public activityDescriptors: Array<ActivityDescriptor> = [];
+
   @Element() el: HTMLElement;
-  private container: HTMLElement;
-  private graph: Graph;
-  private target: Node;
+  container: HTMLElement;
+  graph: Graph;
+  target: Node;
 
   @Event() activitySelected: EventEmitter<ActivitySelectedArgs>;
   @Event() containerSelected: EventEmitter<ContainerSelectedArgs>;
@@ -78,15 +87,40 @@ export class FlowchartComponent implements ContainerActivityComponent {
     const graph = this.graph;
     const graphModel = graph.toJSON();
     const activities = graphModel.cells.filter(x => x.shape == 'activity').map(x => x.data as Activity);
-    const connections = graphModel.cells.filter(x => x.shape == 'edge' && !!x.data).map(x => x.data as Connection);
+    const connections = graphModel.cells.filter(x => x.shape == 'elsa-edge' && !!x.data).map(x => x.data as Connection);
+    const remainingConnections: Array<Connection> = []; // The connections remaining after transposition.
+    let remainingActivities: Array<Activity> = [...activities]; // The activities remaining after transposition.
+    const activityDescriptors = this.activityDescriptors;
+
+    // Transpose connections to activity outbound properties where applicable.
+
+    for (const connection of connections) {
+      const source = activities.find(x => x.id == connection.source);
+      const target = activities.find(x => x.id == connection.target);
+      const sourceDescriptor = activityDescriptors.find(x => x.activityType == source.activityType);
+      const targetDescriptor = activityDescriptors.find(x => x.activityType == target.activityType);
+      const matchingTargetPort = sourceDescriptor.outPorts.find(x => x.name == connection.sourcePort);
+
+      if (!!matchingTargetPort) {
+        // Assign the target activity directly to the out port of the source activity.
+        const outPortPropName = camelCase(connection.sourcePort);
+        source[outPortPropName] = target;
+
+        // Remove the target activity from the list.
+        remainingActivities = remainingActivities.filter(x => x != target);
+      } else {
+        // Keep this connection.
+        remainingConnections.push(connection);
+      }
+    }
 
     return {
       activityType: 'Workflows.Flowchart',
       metadata: {},
-      activities: activities,
-      connections: connections,
+      activities: remainingActivities,
+      connections: remainingConnections,
       id: "1",
-      start: _.first(activities)?.id,
+      start: first(activities)?.id,
       variables: []
     };
   }
@@ -109,16 +143,22 @@ export class FlowchartComponent implements ContainerActivityComponent {
   onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {
     const edge = e.edge;
     const isNew = e.isNew;
+    const sourceNode = edge.getSourceNode();
     const targetNode = edge.getTargetNode();
     const sourceActivity = edge.getSourceNode().data as Activity;
     const targetActivity = targetNode.data as Activity;
-    const outboundPort = targetNode.getPort(edge.getTargetPortId()).id;
+    const sourcePort = sourceNode.getPort(edge.getSourcePortId()).id;
+    const targetPort = targetNode.getPort(edge.getTargetPortId()).id;
 
-    edge.data = {
+    // noinspection UnnecessaryLocalVariableJS
+    const connection: Connection = {
       source: sourceActivity.id,
+      sourcePort: sourcePort,
       target: targetActivity.id,
-      outboundPort: outboundPort
+      targetPort: targetPort
     };
+
+    edge.data = connection;
   }
 
   onGraphChanged = async (e: any) => {
@@ -135,3 +175,5 @@ export class FlowchartComponent implements ContainerActivityComponent {
     );
   }
 }
+
+WorkflowEditorTunnel.injectProps(FlowchartComponent, ['activityDescriptors']);

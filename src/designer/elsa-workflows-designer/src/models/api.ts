@@ -10,6 +10,8 @@ export interface ActivityDescriptor {
   category: string;
   traits: ActivityTraits;
   inputProperties: Array<InputDescriptor>
+  inPorts: Array<Port>;
+  outPorts: Array<Port>;
 }
 
 export interface TriggerDescriptorResponse {
@@ -48,4 +50,9 @@ export interface InputDescriptor extends ActivityPropertyDescriptor {
 }
 
 export interface ActivityOutputDescriptor extends ActivityPropertyDescriptor {
+}
+
+export interface Port {
+  name: string;
+  displayName: string;
 }

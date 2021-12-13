@@ -1,8 +1,8 @@
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Elsa.Api.Converters;
 using Elsa.Api.Core.Contracts;
+using Elsa.Api.Serialization.Converters;
 using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Api.Endpoints.ActivityDescriptors;
