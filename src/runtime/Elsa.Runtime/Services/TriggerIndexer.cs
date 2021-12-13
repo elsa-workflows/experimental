@@ -8,6 +8,7 @@ using Elsa.Contracts;
 using Elsa.Extensions;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Contracts;
+using Elsa.Persistence.Abstractions.Entities;
 using Elsa.Persistence.Abstractions.Models;
 using Elsa.Runtime.Contracts;
 

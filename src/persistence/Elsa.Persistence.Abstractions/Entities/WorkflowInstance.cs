@@ -1,10 +1,9 @@
 using Elsa.State;
 
-namespace Elsa.Persistence.Abstractions.Models;
+namespace Elsa.Persistence.Abstractions.Entities;
 
-public record WorkflowInstance
+public class WorkflowInstance : Entity
 {
-    public string Id { get; set; } = default!;
     public string DefinitionId { get; set; } = default!;
     public int Version { get; set; }
     public WorkflowState WorkflowState { get; set; } = default!;

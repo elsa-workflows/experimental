@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Elsa.Persistence.Abstractions.Entities;
 using Elsa.Persistence.Abstractions.Models;
 
 namespace Elsa.Persistence.Abstractions.Contracts;

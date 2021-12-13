@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 
-namespace Elsa.Persistence.Abstractions.Models;
+namespace Elsa.Persistence.Abstractions.Entities;
 
-public class WorkflowBookmark
+public class WorkflowBookmark : Entity
 {
-    public string Id { get; set; } = default!;
     public string Name { get; set; } = default!;
     public string? Hash { get; set; }
     public string WorkflowDefinitionId { get; set; } = default!;

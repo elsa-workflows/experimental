@@ -1,8 +1,7 @@
-namespace Elsa.Persistence.Abstractions.Models;
+namespace Elsa.Persistence.Abstractions.Entities;
 
-public class WorkflowTrigger
+public class WorkflowTrigger : Entity
 {
-    public string Id { get; set; } = default!;
     public string WorkflowId { get; set; } = default!;
     public string Name { get; set; } = default!;
     public string? Hash { get; set; }
