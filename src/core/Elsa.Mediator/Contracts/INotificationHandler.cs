@@ -1,6 +1,10 @@
 namespace Elsa.Mediator.Contracts;
 
-public interface INotificationHandler<in T> where T : INotification
+public interface INotificationHandler
+{
+}
+
+public interface INotificationHandler<in T> : INotificationHandler where T : INotification
 {
     Task HandleAsync(T notification);
 }

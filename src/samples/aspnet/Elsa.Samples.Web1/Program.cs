@@ -12,6 +12,7 @@ using Elsa.Api.Endpoints.Workflows;
 using Elsa.Api.Extensions;
 using Elsa.Dsl.Abstractions;
 using Elsa.Dsl.Extensions;
+using Elsa.Mediator.Extensions;
 using Elsa.Models;
 using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Persistence.InMemory.Extensions;
@@ -30,9 +31,11 @@ var services = builder.Services;
 // Add services.
 services
     .AddElsa()
+    .AddMediator()
     .AddInMemoryWorkflowInstanceStore()
     .AddInMemoryBookmarkStore()
     .AddInMemoryTriggerStore()
+    .AddInMemoryCommands()
     .IndexWorkflowTriggers()
     .AddHttpActivityServices()
     .AddWorkflowApiServices()

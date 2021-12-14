@@ -11,10 +11,15 @@ public static class ServiceCollectionExtensions
         return services.AddSingleton<IMediator, DefaultMediator>();
     }
 
+    public static IServiceCollection AddCommandHandler<THandler, TCommand>(this IServiceCollection services)
+        where THandler : class, ICommandHandler<TCommand>
+        where TCommand : ICommand =>
+        services.AddCommandHandler<THandler, TCommand, Unit>();
+
     public static IServiceCollection AddCommandHandler<THandler, TCommand, TResult>(this IServiceCollection services)
         where THandler : class, ICommandHandler<TCommand, TResult>
         where TCommand : ICommand<TResult>
     {
-        return services.AddSingleton<ICommandHandler<TCommand, TResult>, THandler>();
+        return services.AddSingleton<ICommandHandler, THandler>();
     }
 }
