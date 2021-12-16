@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Persistence.Abstractions.Contracts;
+using Elsa.Persistence.Contracts;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Instructions;

@@ -1,8 +1,8 @@
 using Elsa.Activities.Http.Extensions;
 using Elsa.Api.Endpoints.Events;
 using Elsa.Api.Endpoints.Workflows;
-using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Persistence.InMemory.Extensions;
+using Elsa.Persistence.Middleware.WorkflowExecution;
 using Elsa.Pipelines.WorkflowExecution.Components;
 using Elsa.Runtime.ProtoActor.Extensions;
 using Elsa.Samples.Web2.Workflows;

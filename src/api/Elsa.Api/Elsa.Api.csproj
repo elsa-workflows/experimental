@@ -11,8 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\core\Elsa.Management\Elsa.Management.csproj" />
       <ProjectReference Include="..\..\runtime\Elsa.Runtime\Elsa.Runtime.csproj" />
-      <ProjectReference Include="..\Elsa.Api.Core\Elsa.Api.Core.csproj" />
     </ItemGroup>
 
 </Project>

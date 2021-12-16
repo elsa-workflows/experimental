@@ -1,5 +1,5 @@
 using System;
 
-namespace Elsa.Persistence.Abstractions.Models;
+namespace Elsa.Persistence.Models;
 
 public record Cursor(string Id, DateTime Sort);

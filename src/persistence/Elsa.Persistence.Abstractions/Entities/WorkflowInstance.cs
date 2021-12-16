@@ -1,6 +1,6 @@
 using Elsa.State;
 
-namespace Elsa.Persistence.Abstractions.Entities;
+namespace Elsa.Persistence.Entities;
 
 public class WorkflowInstance : Entity
 {

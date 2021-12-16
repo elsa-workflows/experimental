@@ -1,4 +1,4 @@
-namespace Elsa.Persistence.Abstractions.Entities;
+namespace Elsa.Persistence.Entities;
 
 public class WorkflowTrigger : Entity
 {

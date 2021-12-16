@@ -3,16 +3,12 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <RootNamespace>Elsa.Persistence</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\core\Elsa.Core\Elsa.Core.csproj" />
       <ProjectReference Include="..\..\core\Elsa.Mediator\Elsa.Mediator.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Middleware\ActivityExecution" />
-      <Folder Include="Specifications" />
     </ItemGroup>
 
 </Project>

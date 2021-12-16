@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Elsa.Persistence.Abstractions.Entities;
+namespace Elsa.Persistence.Entities;
 
 public class WorkflowBookmark : Entity
 {

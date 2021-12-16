@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Elsa.Builders;
 using Elsa.Contracts;
 using Elsa.Models;
+using Elsa.Persistence.Extensions;
+using Elsa.Persistence.Models;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Extensions;
-using Elsa.Runtime.Models;
 using Elsa.Runtime.Options;
 using Microsoft.Extensions.Options;
 

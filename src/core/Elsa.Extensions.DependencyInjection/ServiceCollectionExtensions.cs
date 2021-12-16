@@ -7,7 +7,7 @@ using Elsa.Dsl.Services;
 using Elsa.Expressions;
 using Elsa.Extensions;
 using Elsa.Options;
-using Elsa.Persistence.Abstractions.Contracts;
+using Elsa.Persistence.Contracts;
 using Elsa.Pipelines.ActivityExecution;
 using Elsa.Pipelines.WorkflowExecution;
 using Elsa.Runtime.Contracts;
@@ -44,6 +44,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IActivityNodeResolver, OutboundActivityNodeResolver>()
             .AddSingleton<ITypeSystem, TypeSystem>()
             .AddSingleton<IHasher, Hasher>()
+            .AddSingleton<ISystemClock, SystemClock>()
 
             // DSL.
             .AddDsl()

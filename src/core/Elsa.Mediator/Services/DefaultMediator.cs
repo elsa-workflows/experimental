@@ -18,7 +18,7 @@ public class DefaultMediator : IMediator
         _notificationHandlers = notificationHandlers;
     }
 
-    public async Task<T> SendRequestAsync<T>(IRequest<T> request, CancellationToken cancellationToken = default)
+    public async Task<T> RequestAsync<T>(IRequest<T> request, CancellationToken cancellationToken = default)
     {
         // Find all handlers for the specified request.
         var requestType = request.GetType();
@@ -34,12 +34,12 @@ public class DefaultMediator : IMediator
 
         var handler = handlers.First();
         var handleMethod = handlerType.GetMethod("HandleAsync")!;
-        var task = (Task<T>)handleMethod.Invoke(handler, new object?[] { request })!;
+        var task = (Task<T>)handleMethod.Invoke(handler, new object?[] { request, cancellationToken })!;
 
         return await task;
     }
 
-    public async Task<T> SendCommandAsync<T>(ICommand<T> command, CancellationToken cancellationToken = default)
+    public async Task<T> ExecuteAsync<T>(ICommand<T> command, CancellationToken cancellationToken = default)
     {
         // Find all handlers for the specified command.
         var commandType = command.GetType();
@@ -55,12 +55,12 @@ public class DefaultMediator : IMediator
 
         var handler = handlers.First();
         var handleMethod = handlerType.GetMethod("HandleAsync")!;
-        var task = (Task<T>)handleMethod.Invoke(handler, new object?[] { command })!;
+        var task = (Task<T>)handleMethod.Invoke(handler, new object?[] { command, cancellationToken })!;
 
         return await task;
     }
 
-    public async Task PublishNotificationAsync(INotification notification, CancellationToken cancellationToken = default)
+    public async Task PublishAsync(INotification notification, CancellationToken cancellationToken = default)
     {
         // Find all handlers for the specified notification.
         var notificationType = notification.GetType();
@@ -70,7 +70,7 @@ public class DefaultMediator : IMediator
 
         foreach (var handler in handlers)
         {
-            var task = (Task)handleMethod.Invoke(handler, new object?[] { notification })!;
+            var task = (Task)handleMethod.Invoke(handler, new object?[] { notification, cancellationToken })!;
             await task;
         }
     }

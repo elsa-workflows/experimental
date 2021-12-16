@@ -3,19 +3,16 @@ using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Activities.Workflows;
-using Elsa.Api.Core.Contracts;
-using Elsa.Api.Core.Extensions;
 using Elsa.Api.Endpoints.ActivityDescriptors;
 using Elsa.Api.Endpoints.Events;
 using Elsa.Api.Endpoints.TriggerDescriptors;
 using Elsa.Api.Endpoints.Workflows;
 using Elsa.Api.Extensions;
-using Elsa.Dsl.Abstractions;
-using Elsa.Dsl.Extensions;
+using Elsa.Management.Contracts;
+using Elsa.Management.Extensions;
 using Elsa.Mediator.Extensions;
-using Elsa.Models;
-using Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
 using Elsa.Persistence.InMemory.Extensions;
+using Elsa.Persistence.Middleware.WorkflowExecution;
 using Elsa.Pipelines.WorkflowExecution.Components;
 using Elsa.Runtime.ProtoActor.Extensions;
 using Elsa.Samples.Web1.Activities;
@@ -32,11 +29,9 @@ var services = builder.Services;
 services
     .AddElsa()
     .AddMediator()
-    .AddInMemoryWorkflowInstanceStore()
-    .AddInMemoryBookmarkStore()
-    .AddInMemoryTriggerStore()
-    .AddInMemoryCommands()
+    .AddInMemoryPersistence()
     .IndexWorkflowTriggers()
+    .AddElsaManagement()
     .AddHttpActivityServices()
     .AddWorkflowApiServices()
     .AddProtoActorWorkflowHost()

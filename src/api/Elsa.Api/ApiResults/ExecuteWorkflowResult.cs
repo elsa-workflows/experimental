@@ -17,7 +17,8 @@ public class ExecuteWorkflowResult : IResult
     {
         var response = httpContext.Response;
         var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowInvoker>();
-        var ((id, version), _) = Workflow.Metadata;
+        var id = Workflow.Metadata.Identity.Id;
+        var version = Workflow.Metadata.Identity.Version;
         var executeRequest = new ExecuteWorkflowDefinitionRequest(id, version); 
         var result = await workflowInvoker.ExecuteAsync(executeRequest, CancellationToken.None);
 

@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Api.Core.Contracts;
+using Elsa.Management.Contracts;
 using Microsoft.Extensions.Hosting;
 
 namespace Elsa.Api.HostedServices;

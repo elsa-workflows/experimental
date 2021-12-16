@@ -1,11 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Persistence.Abstractions.Contracts;
-using Elsa.Persistence.Abstractions.Entities;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Persistence.Contracts;
+using Elsa.Persistence.Entities;
+using Elsa.Persistence.Models;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Models;
 using Elsa.Runtime.ProtoActor.Messages;
 using Elsa.State;
 using Proto;

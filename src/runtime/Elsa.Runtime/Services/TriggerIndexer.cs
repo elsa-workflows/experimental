@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Extensions;
 using Elsa.Models;
-using Elsa.Persistence.Abstractions.Contracts;
-using Elsa.Persistence.Abstractions.Entities;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Persistence.Contracts;
+using Elsa.Persistence.Entities;
 using Elsa.Runtime.Contracts;
 
 namespace Elsa.Runtime.Services;

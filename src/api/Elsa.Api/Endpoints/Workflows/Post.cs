@@ -1,33 +1,52 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Api.Serialization;
-using Elsa.Mediator.Contracts;
+using Elsa.Management.Contracts;
+using Elsa.Management.Serialization;
 using Elsa.Models;
-using Elsa.Persistence.Abstractions.Commands;
-using Elsa.Persistence.Abstractions.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Api.Endpoints.Workflows;
 
 public static partial class Workflows
 {
-    public static async Task<IResult> PostAsync(HttpContext httpContext, WorkflowSerializerOptionsProvider serializerOptionsProvider, IMediator mediator, CancellationToken cancellationToken)
+    public record SaveWorkflowRequest(Workflow Workflow, bool Publish);
+
+    public static async Task<IResult> PostAsync(HttpContext httpContext, WorkflowSerializerOptionsProvider serializerOptionsProvider, IWorkflowPublisher workflowPublisher, CancellationToken cancellationToken)
     {
         var serializerOptions = serializerOptionsProvider.CreateSerializerOptions();
-        var workflow = (await httpContext.Request.ReadFromJsonAsync<Workflow>(serializerOptions, cancellationToken))!;
+        var model = (await httpContext.Request.ReadFromJsonAsync<SaveWorkflowRequest>(serializerOptions, cancellationToken))!;
+        var workflow = model.Workflow;
+        var metadata = workflow.Metadata;
+        var definitionId = metadata.Identity.Id;
+        var definition = !string.IsNullOrWhiteSpace(definitionId) ? await workflowPublisher.GetDraftAsync(definitionId, cancellationToken) : default;
+        var isNew = definition == null;
 
-        var workflowDefinition = new WorkflowDefinition
+        if (definition == null)
         {
-            Id = Guid.NewGuid().ToString("N"),
-            DefinitionId = workflow.Metadata.Identity.Id,
-            Version = workflow.Metadata.Identity.Version,
-            CreatedAt = DateTime.UtcNow,
-            Root = workflow.Root,
-            Triggers = workflow.Triggers
-        };
+            definition = workflowPublisher.New();
 
-        await mediator.SendCommandAsync(new SaveWorkflowDefinition(workflowDefinition), cancellationToken);
-        return Results.Json(workflow, serializerOptions);
+            if (!string.IsNullOrWhiteSpace(definitionId))
+                definition.DefinitionId = definitionId;
+        }
+
+        definition.Root = workflow.Root;
+        definition.Triggers = workflow.Triggers;
+
+        if (model.Publish)
+            await workflowPublisher.PublishAsync(definition, cancellationToken);
+        else
+            await workflowPublisher.SaveDraftAsync(definition, cancellationToken);
+
+        // Synchronize workflow model with updated definition.
+        workflow = workflow with
+        {
+            Metadata = new WorkflowMetadata(
+                new WorkflowIdentity(definition.DefinitionId, definition.Version), 
+                new WorkflowPublication(definition.IsLatest, definition.IsPublished), workflow.Metadata.Name)
+        }; 
+        
+        var statusCode = isNew ? StatusCodes.Status201Created : StatusCodes.Status200OK;
+
+        return Results.Json(workflow, serializerOptions, statusCode: statusCode);
     }
 }

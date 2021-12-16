@@ -1,5 +1,5 @@
 using System.Linq;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Persistence.Models;
 
 namespace Elsa.Runtime.Extensions;
 

@@ -3,12 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Persistence.Abstractions.Contracts;
-using Elsa.Persistence.Abstractions.Entities;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Persistence.Contracts;
+using Elsa.Persistence.Entities;
 using Elsa.Pipelines.WorkflowExecution;
 
-namespace Elsa.Persistence.Abstractions.Middleware.WorkflowExecution;
+namespace Elsa.Persistence.Middleware.WorkflowExecution;
 
 public static class PersistWorkflowInstanceMiddlewareExtensions
 {

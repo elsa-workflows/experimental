@@ -2,9 +2,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Persistence.Abstractions.Contracts;
-using Elsa.Persistence.Abstractions.Entities;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Persistence.Contracts;
+using Elsa.Persistence.Entities;
 
 namespace Elsa.Persistence.InMemory.Services;
 

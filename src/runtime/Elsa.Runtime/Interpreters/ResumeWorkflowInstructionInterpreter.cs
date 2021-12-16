@@ -2,11 +2,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
-using Elsa.Persistence.Abstractions.Contracts;
+using Elsa.Persistence.Contracts;
+using Elsa.Persistence.Models;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Instructions;
-using Elsa.Runtime.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Interpreters;

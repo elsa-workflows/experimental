@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Persistence.Abstractions.Entities;
-using Elsa.Persistence.Abstractions.Models;
+using Elsa.Persistence.Entities;
 
-namespace Elsa.Persistence.Abstractions.Contracts;
+namespace Elsa.Persistence.Contracts;
 
 public interface IWorkflowBookmarkStore
 {

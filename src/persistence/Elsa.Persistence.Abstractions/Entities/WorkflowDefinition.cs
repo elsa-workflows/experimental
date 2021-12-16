@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Elsa.Contracts;
 
-namespace Elsa.Persistence.Abstractions.Entities;
+namespace Elsa.Persistence.Entities;
 
 /// <summary>
 /// Represents a workflow definition.
@@ -14,4 +14,8 @@ public class WorkflowDefinition : Entity
     public int Version { get; set; } = 1;
     public IActivity Root { get; set; } = default!;
     public ICollection<ITrigger> Triggers { get; set; } = new List<ITrigger>();
+    public bool IsLatest { get; set; }
+    public bool IsPublished { get; set; }
+
+    public WorkflowDefinition ShallowClone() => (WorkflowDefinition)MemberwiseClone();
 }

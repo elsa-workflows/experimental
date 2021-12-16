@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Api.ApiResults;
+using Elsa.Persistence.Models;
 using Elsa.Runtime.Contracts;
-using Elsa.Runtime.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Api.Endpoints.Workflows;
