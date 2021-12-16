@@ -49,9 +49,7 @@ IServiceProvider CreateServices()
     services
         .AddElsa()
         .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
-        .AddInMemoryWorkflowInstanceStore()
-        .AddInMemoryBookmarkStore()
-        .AddInMemoryTriggerStore()
+        .AddInMemoryPersistence()
         .AddJavaScriptExpressions();
 
     return services.BuildServiceProvider();

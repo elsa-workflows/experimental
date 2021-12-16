@@ -6,8 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Extensions;
+using Elsa.Mediator.Contracts;
 using Elsa.Models;
-using Elsa.Persistence.Contracts;
+using Elsa.Persistence.Commands;
 using Elsa.Persistence.Entities;
 using Elsa.Runtime.Contracts;
 
@@ -16,17 +17,17 @@ namespace Elsa.Runtime.Services;
 public class TriggerIndexer : ITriggerIndexer
 {
     private readonly IExpressionEvaluator _expressionEvaluator;
+    private readonly IMediator _mediator;
     private readonly IHasher _hasher;
-    private readonly IWorkflowTriggerStore _workflowTriggerStore;
 
     public TriggerIndexer(
         IExpressionEvaluator expressionEvaluator,
-        IHasher hasher,
-        IWorkflowTriggerStore workflowTriggerStore)
+        IMediator mediator,
+        IHasher hasher)
     {
         _expressionEvaluator = expressionEvaluator;
+        _mediator = mediator;
         _hasher = hasher;
-        _workflowTriggerStore = workflowTriggerStore;
     }
 
     public async Task IndexTriggersAsync(Workflow workflow, CancellationToken cancellationToken = default)
@@ -35,7 +36,8 @@ public class TriggerIndexer : ITriggerIndexer
         var triggers = await GetTriggersAsync(workflow, cancellationToken).ToListAsync(cancellationToken);
 
         // Replace triggers for the specified workflow.
-        await _workflowTriggerStore.ReplaceTriggersAsync(workflow.Metadata.Identity.Id, triggers, cancellationToken);
+        var workflowId = workflow.Metadata.Identity.Id;
+        await _mediator.ExecuteAsync(new ReplaceWorkflowTriggers(workflowId, triggers), cancellationToken);
     }
 
     private async IAsyncEnumerable<WorkflowTrigger> GetTriggersAsync(Workflow workflow, [EnumeratorCancellation] CancellationToken cancellationToken = default)

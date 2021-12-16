@@ -5,9 +5,10 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Mediator.Contracts;
 using Elsa.Models;
-using Elsa.Persistence.Contracts;
 using Elsa.Persistence.Models;
+using Elsa.Persistence.Requests;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.ProtoActor.Messages;
 using Elsa.State;
@@ -21,13 +22,13 @@ namespace Elsa.Runtime.ProtoActor.Actors;
 /// </summary>
 public class WorkflowOperatorActor : IActor
 {
-    private readonly IWorkflowInstanceStore _workflowInstanceStore;
+    private readonly IMediator _mediator;
     private readonly IWorkflowRegistry _workflowRegistry;
     private readonly IWorkflowEngine _workflowEngine;
 
-    public WorkflowOperatorActor(IWorkflowInstanceStore workflowInstanceStore, IWorkflowRegistry workflowRegistry, IWorkflowEngine workflowEngine)
+    public WorkflowOperatorActor(IMediator mediator, IWorkflowRegistry workflowRegistry, IWorkflowEngine workflowEngine)
     {
-        _workflowInstanceStore = workflowInstanceStore;
+        _mediator = mediator;
         _workflowRegistry = workflowRegistry;
         _workflowEngine = workflowEngine;
     }
@@ -42,7 +43,7 @@ public class WorkflowOperatorActor : IActor
     {
         var workflowInstanceId = message.Id;
         var cancellationToken = context.CancellationToken;
-        var workflowInstance = await _workflowInstanceStore.GetByIdAsync(workflowInstanceId, cancellationToken);
+        var workflowInstance = await _mediator.RequestAsync(new FindWorkflowInstance(workflowInstanceId), cancellationToken);
 
         if (workflowInstance == null)
             throw new Exception($"No workflow instance found with ID {workflowInstanceId}");

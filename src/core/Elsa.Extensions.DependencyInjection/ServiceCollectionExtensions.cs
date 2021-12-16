@@ -7,7 +7,6 @@ using Elsa.Dsl.Services;
 using Elsa.Expressions;
 using Elsa.Extensions;
 using Elsa.Options;
-using Elsa.Persistence.Contracts;
 using Elsa.Pipelines.ActivityExecution;
 using Elsa.Pipelines.WorkflowExecution;
 using Elsa.Runtime.Contracts;
@@ -100,10 +99,4 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInstructionInterpreter<T>(this IServiceCollection services) where T : class, IWorkflowInstructionInterpreter => services.AddSingleton<IWorkflowInstructionInterpreter, T>();
     public static IServiceCollection ConfigureWorkflowRuntime(this IServiceCollection services, Action<WorkflowRuntimeOptions> configure) => services.Configure(configure);
     public static IServiceCollection IndexWorkflowTriggers(this IServiceCollection services) => services.AddHostedService<IndexWorkflowTriggers>();
-    public static IServiceCollection AddWorkflowInstanceStore<T>(this IServiceCollection services) where T : class, IWorkflowInstanceStore => services.AddSingleton<IWorkflowInstanceStore, T>();
-    public static IServiceCollection AddBookmarkStore<T>(this IServiceCollection services) where T : class, IWorkflowBookmarkStore => services.AddSingleton<IWorkflowBookmarkStore, T>();
-    public static IServiceCollection AddTriggerStore<T>(this IServiceCollection services) where T : class, IWorkflowTriggerStore => services.AddSingleton<IWorkflowTriggerStore, T>();
-    public static IServiceCollection AddWorkflowInstanceStore(this IServiceCollection services, IWorkflowInstanceStore store) => services.AddSingleton(store);
-    public static IServiceCollection AddBookmarkStore(this IServiceCollection services, IWorkflowBookmarkStore store) => services.AddSingleton(store);
-    public static IServiceCollection AddTriggerStore(this IServiceCollection services, IWorkflowTriggerStore store) => services.AddSingleton(store);
 }

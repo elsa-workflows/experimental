@@ -16,9 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddElsa()
-    .AddInMemoryWorkflowInstanceStore()
-    .AddInMemoryBookmarkStore()
-    .AddInMemoryTriggerStore()
+    .AddInMemoryPersistence()
     .IndexWorkflowTriggers()
     .AddHttpActivityServices()
     .AddProtoActorWorkflowHost()

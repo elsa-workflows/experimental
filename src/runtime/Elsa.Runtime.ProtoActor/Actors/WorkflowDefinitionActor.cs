@@ -1,7 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Persistence.Contracts;
+using Elsa.Mediator.Contracts;
+using Elsa.Persistence.Commands;
 using Elsa.Persistence.Entities;
 using Elsa.Persistence.Models;
 using Elsa.Runtime.Contracts;
@@ -9,6 +10,7 @@ using Elsa.Runtime.ProtoActor.Messages;
 using Elsa.State;
 using Proto;
 using Proto.Cluster;
+using Unit = Elsa.Runtime.ProtoActor.Messages.Unit;
 
 namespace Elsa.Runtime.ProtoActor.Actors;
 
@@ -18,12 +20,12 @@ namespace Elsa.Runtime.ProtoActor.Actors;
 public class WorkflowDefinitionActor : IActor
 {
     private readonly IWorkflowRegistry _workflowRegistry;
-    private readonly IWorkflowInstanceStore _workflowInstanceStore;
+    private readonly IMediator _mediator;
 
-    public WorkflowDefinitionActor(IWorkflowRegistry workflowRegistry, IWorkflowInstanceStore workflowInstanceStore)
+    public WorkflowDefinitionActor(IWorkflowRegistry workflowRegistry, IMediator mediator)
     {
         _workflowRegistry = workflowRegistry;
-        _workflowInstanceStore = workflowInstanceStore;
+        _mediator = mediator;
     }
 
     public Task ReceiveAsync(IContext context) => context.Message switch
@@ -79,7 +81,7 @@ public class WorkflowDefinitionActor : IActor
             }
         };
         
-        await _workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
+        await _mediator.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
         return workflowInstance;
     }
 }

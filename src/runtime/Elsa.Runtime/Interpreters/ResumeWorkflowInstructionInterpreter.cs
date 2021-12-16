@@ -1,9 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Mediator.Contracts;
 using Elsa.Models;
-using Elsa.Persistence.Contracts;
 using Elsa.Persistence.Models;
+using Elsa.Persistence.Requests;
 using Elsa.Runtime.Abstractions;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Instructions;
@@ -15,14 +16,14 @@ public class ResumeWorkflowInstructionInterpreter : WorkflowInstructionInterpret
 {
     private readonly IWorkflowEngine _workflowEngine;
     private readonly IWorkflowRegistry _workflowRegistry;
-    private readonly IWorkflowInstanceStore _workflowInstanceStore;
+    private readonly IMediator _mediator;
     private readonly ILogger _logger;
 
-    public ResumeWorkflowInstructionInterpreter(IWorkflowEngine workflowEngine, IWorkflowRegistry workflowRegistry, IWorkflowInstanceStore workflowInstanceStore, ILogger<ResumeWorkflowInstructionInterpreter> logger)
+    public ResumeWorkflowInstructionInterpreter(IWorkflowEngine workflowEngine, IWorkflowRegistry workflowRegistry, IMediator mediator, ILogger<ResumeWorkflowInstructionInterpreter> logger)
     {
         _workflowEngine = workflowEngine;
         _workflowRegistry = workflowRegistry;
-        _workflowInstanceStore = workflowInstanceStore;
+        _mediator = mediator;
         _logger = logger;
     }
 
@@ -31,8 +32,7 @@ public class ResumeWorkflowInstructionInterpreter : WorkflowInstructionInterpret
         var workflowBookmark = instruction.WorkflowBookmark;
         var workflowDefinitionId = workflowBookmark.WorkflowDefinitionId;
         var workflowInstanceId = workflowBookmark.WorkflowInstanceId;
-
-        var workflowInstance = await _workflowInstanceStore.GetByIdAsync(workflowInstanceId, cancellationToken);
+        var workflowInstance = await _mediator.RequestAsync(new FindWorkflowInstance(workflowInstanceId), cancellationToken);
 
         if (workflowInstance == null)
         {
@@ -42,7 +42,7 @@ public class ResumeWorkflowInstructionInterpreter : WorkflowInstructionInterpret
 
             return null;
         }
-            
+
         var workflow = await _workflowRegistry.FindByIdAsync(workflowDefinitionId, VersionOptions.SpecificVersion(workflowInstance.Version), cancellationToken);
 
         if (workflow == null)
@@ -50,7 +50,7 @@ public class ResumeWorkflowInstructionInterpreter : WorkflowInstructionInterpret
             _logger.LogWarning("Workflow bookmark {WorkflowBookmarkId} points to workflow definition ID {WorkflowDefinitionId}, but no such workflow definition was found", workflowBookmark.Id, workflowBookmark.WorkflowDefinitionId);
             return null;
         }
-            
+
         // Resume workflow instance.
         var bookmark = new Bookmark(workflowBookmark.Id, workflowBookmark.Name, workflowBookmark.Hash, workflowBookmark.ActivityId, workflowBookmark.ActivityInstanceId, workflowBookmark.Data, workflowBookmark.CallbackMethodName);
         var workflowState = workflowInstance.WorkflowState;

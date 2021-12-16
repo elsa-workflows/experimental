@@ -88,9 +88,7 @@ class Program
         services
             .AddElsa()
             .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
-            .AddInMemoryWorkflowInstanceStore()
-            .AddInMemoryBookmarkStore()
-            .AddInMemoryTriggerStore();
+            .AddInMemoryPersistence();
 
         return services.BuildServiceProvider();
     }
