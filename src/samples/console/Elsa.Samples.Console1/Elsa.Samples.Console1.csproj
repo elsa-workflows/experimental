@@ -13,11 +13,9 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\..\..\core\Elsa.Core\Elsa.Core.csproj" />
-      <ProjectReference Include="..\..\..\core\Elsa.Extensions.DependencyInjection\Elsa.Extensions.DependencyInjection.csproj" />
-      <ProjectReference Include="..\..\..\persistence\Elsa.Persistence.InMemory\Elsa.Persistence.InMemory.csproj" />
+      <ProjectReference Include="..\..\..\core\Elsa\Elsa.csproj" />
     </ItemGroup>
 
 </Project>

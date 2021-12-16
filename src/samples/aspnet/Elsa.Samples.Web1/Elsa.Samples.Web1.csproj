@@ -8,10 +8,8 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\activities\Elsa.Activities.Http\Elsa.Activities.Http.csproj" />
       <ProjectReference Include="..\..\..\api\Elsa.Api\Elsa.Api.csproj" />
-      <ProjectReference Include="..\..\..\core\Elsa.Extensions.DependencyInjection\Elsa.Extensions.DependencyInjection.csproj" />
-      <ProjectReference Include="..\..\..\persistence\Elsa.Persistence.InMemory\Elsa.Persistence.InMemory.csproj" />
+      <ProjectReference Include="..\..\..\core\Elsa\Elsa.csproj" />
       <ProjectReference Include="..\..\..\runtime\Elsa.Runtime.ProtoActor\Elsa.Runtime.ProtoActor.csproj" />
-      <ProjectReference Include="..\..\..\runtime\Elsa.Runtime\Elsa.Runtime.csproj" />
     </ItemGroup>
 
 </Project>
