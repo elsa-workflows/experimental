@@ -22,20 +22,16 @@ public static class PersistWorkflowInstanceMiddlewareExtensions
 public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
 {
     private readonly WorkflowMiddlewareDelegate _next;
-
-    private readonly IMediator _mediator;
-
-    //private readonly IWorkflowInstanceStore _workflowInstanceStore;
+    private readonly IRequestSender _requestSender;
+    private readonly ICommandSender _commandSender;
     private readonly IWorkflowStateSerializer _workflowStateSerializer;
-    //private readonly IWorkflowBookmarkStore _workflowBookmarkStore;
 
-    public PersistWorkflowInstanceMiddleware(WorkflowMiddlewareDelegate next, IMediator mediator, IWorkflowStateSerializer workflowStateSerializer)
+    public PersistWorkflowInstanceMiddleware(WorkflowMiddlewareDelegate next, IRequestSender requestSender, ICommandSender commandSender, IWorkflowStateSerializer workflowStateSerializer)
     {
         _next = next;
-        _mediator = mediator;
-        //_workflowInstanceStore = workflowInstanceStore;
+        _requestSender = requestSender;
+        _commandSender = commandSender;
         _workflowStateSerializer = workflowStateSerializer;
-        //_workflowBookmarkStore = workflowBookmarkStore;
     }
 
     public async ValueTask InvokeAsync(WorkflowExecutionContext context)
@@ -55,7 +51,7 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
         var cancellationToken = context.CancellationToken;
 
         // Get a copy of current bookmarks.
-        var existingBookmarks = await _mediator.RequestAsync(new FindWorkflowBookmarks(workflowInstance.Id), cancellationToken);
+        var existingBookmarks = await _requestSender.RequestAsync(new FindWorkflowBookmarks(workflowInstance.Id), cancellationToken);
         var bookmarksSnapshot = existingBookmarks.Select(x => new Bookmark(x.Id, x.Name, x.Hash, x.ActivityId, x.ActivityInstanceId, x.Data, x.CallbackMethodName)).ToList();
 
         // Exclude the current bookmark that initiated the creation of the workflow context, if any.
@@ -72,7 +68,7 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
         context.RegisterBookmarks(bookmarksSnapshot);
 
         // Persist workflow instance.
-        await _mediator.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
+        await _commandSender.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
 
         // Invoke next middleware.
         await _next(context);
@@ -81,11 +77,11 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
         workflowInstance.WorkflowState = _workflowStateSerializer.ReadState(context);
 
         // Persist updated workflow instance.
-        await _mediator.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
+        await _commandSender.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
 
         // Remove bookmarks that were in the snapshot but no longer present in context.
         removedBookmarkIds.AddRange(bookmarksSnapshot.Except(context.Bookmarks).Select(x => x.Id));
-        await _mediator.ExecuteAsync(new DeleteWorkflowBookmarks(removedBookmarkIds), cancellationToken);
+        await _commandSender.ExecuteAsync(new DeleteWorkflowBookmarks(removedBookmarkIds), cancellationToken);
 
         // Persist bookmarks, if any.
         var workflowBookmarks = context.Bookmarks.Select(x => new WorkflowBookmark
@@ -101,6 +97,6 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
             CallbackMethodName = x.CallbackMethodName
         }).ToList();
 
-        await _mediator.ExecuteAsync(new SaveWorkflowBookmarks(workflowBookmarks), cancellationToken);
+        await _commandSender.ExecuteAsync(new SaveWorkflowBookmarks(workflowBookmarks), cancellationToken);
     }
 }

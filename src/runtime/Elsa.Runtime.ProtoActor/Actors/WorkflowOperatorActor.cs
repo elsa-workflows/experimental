@@ -22,13 +22,13 @@ namespace Elsa.Runtime.ProtoActor.Actors;
 /// </summary>
 public class WorkflowOperatorActor : IActor
 {
-    private readonly IMediator _mediator;
+    private readonly IRequestSender _requestSender;
     private readonly IWorkflowRegistry _workflowRegistry;
     private readonly IWorkflowEngine _workflowEngine;
 
-    public WorkflowOperatorActor(IMediator mediator, IWorkflowRegistry workflowRegistry, IWorkflowEngine workflowEngine)
+    public WorkflowOperatorActor(IRequestSender requestSender, IWorkflowRegistry workflowRegistry, IWorkflowEngine workflowEngine)
     {
-        _mediator = mediator;
+        _requestSender = requestSender;
         _workflowRegistry = workflowRegistry;
         _workflowEngine = workflowEngine;
     }
@@ -43,7 +43,7 @@ public class WorkflowOperatorActor : IActor
     {
         var workflowInstanceId = message.Id;
         var cancellationToken = context.CancellationToken;
-        var workflowInstance = await _mediator.RequestAsync(new FindWorkflowInstance(workflowInstanceId), cancellationToken);
+        var workflowInstance = await _requestSender.RequestAsync(new FindWorkflowInstance(workflowInstanceId), cancellationToken);
 
         if (workflowInstance == null)
             throw new Exception($"No workflow instance found with ID {workflowInstanceId}");

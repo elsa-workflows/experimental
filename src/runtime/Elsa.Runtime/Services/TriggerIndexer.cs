@@ -17,12 +17,12 @@ namespace Elsa.Runtime.Services;
 public class TriggerIndexer : ITriggerIndexer
 {
     private readonly IExpressionEvaluator _expressionEvaluator;
-    private readonly IMediator _mediator;
+    private readonly ICommandSender _mediator;
     private readonly IHasher _hasher;
 
     public TriggerIndexer(
         IExpressionEvaluator expressionEvaluator,
-        IMediator mediator,
+        ICommandSender mediator,
         IHasher hasher)
     {
         _expressionEvaluator = expressionEvaluator;

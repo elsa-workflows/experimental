@@ -20,12 +20,12 @@ namespace Elsa.Runtime.ProtoActor.Actors;
 public class WorkflowDefinitionActor : IActor
 {
     private readonly IWorkflowRegistry _workflowRegistry;
-    private readonly IMediator _mediator;
+    private readonly ICommandSender _commandSender;
 
-    public WorkflowDefinitionActor(IWorkflowRegistry workflowRegistry, IMediator mediator)
+    public WorkflowDefinitionActor(IWorkflowRegistry workflowRegistry, ICommandSender commandSender)
     {
         _workflowRegistry = workflowRegistry;
-        _mediator = mediator;
+        _commandSender = commandSender;
     }
 
     public Task ReceiveAsync(IContext context) => context.Message switch
@@ -81,7 +81,7 @@ public class WorkflowDefinitionActor : IActor
             }
         };
         
-        await _mediator.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
+        await _commandSender.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
         return workflowInstance;
     }
 }

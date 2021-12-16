@@ -16,10 +16,10 @@ public class ResumeWorkflowInstructionInterpreter : WorkflowInstructionInterpret
 {
     private readonly IWorkflowEngine _workflowEngine;
     private readonly IWorkflowRegistry _workflowRegistry;
-    private readonly IMediator _mediator;
+    private readonly IRequestSender _mediator;
     private readonly ILogger _logger;
 
-    public ResumeWorkflowInstructionInterpreter(IWorkflowEngine workflowEngine, IWorkflowRegistry workflowRegistry, IMediator mediator, ILogger<ResumeWorkflowInstructionInterpreter> logger)
+    public ResumeWorkflowInstructionInterpreter(IWorkflowEngine workflowEngine, IWorkflowRegistry workflowRegistry, IRequestSender mediator, ILogger<ResumeWorkflowInstructionInterpreter> logger)
     {
         _workflowEngine = workflowEngine;
         _workflowRegistry = workflowRegistry;

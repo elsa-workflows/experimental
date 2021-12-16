@@ -12,8 +12,8 @@ namespace Elsa.Runtime.Stimuli.Handlers;
 
 public class TriggerWorkflowsStimulusHandler : StimulusHandler<StandardStimulus>
 {
-    private readonly IMediator _mediator;
-    public TriggerWorkflowsStimulusHandler(IMediator mediator) => _mediator = mediator;
+    private readonly IRequestSender _mediator;
+    public TriggerWorkflowsStimulusHandler(IRequestSender mediator) => _mediator = mediator;
 
     protected override async ValueTask<IEnumerable<IWorkflowInstruction>> GetInstructionsAsync(StandardStimulus stimulus, CancellationToken cancellationToken = default)
     {
