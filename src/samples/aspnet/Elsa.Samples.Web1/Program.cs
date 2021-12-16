@@ -91,7 +91,8 @@ app.MapEvents();
 app.MapActivityDescriptors();
 app.MapTriggerDescriptors();
 
-// Register Elsa HTTP activity middleware.
+// Register Elsa middleware.
+app.UseJsonSerializationErrorHandler();
 app.UseHttpActivities();
 
 // Run.
