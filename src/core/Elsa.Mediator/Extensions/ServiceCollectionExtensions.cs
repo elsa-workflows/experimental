@@ -1,5 +1,11 @@
 using System.Reflection;
 using Elsa.Mediator.Contracts;
+using Elsa.Mediator.Middleware.Command;
+using Elsa.Mediator.Middleware.Command.Contracts;
+using Elsa.Mediator.Middleware.Notification;
+using Elsa.Mediator.Middleware.Notification.Contracts;
+using Elsa.Mediator.Middleware.Request;
+using Elsa.Mediator.Middleware.Request.Contracts;
 using Elsa.Mediator.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,12 +15,16 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMediator(this IServiceCollection services)
     {
-        return services.AddSingleton<IMediator, DefaultMediator>();
+        return services
+            .AddSingleton<IMediator, DefaultMediator>()
+            .AddSingleton<IRequestPipeline, RequestPipeline>()
+            .AddSingleton<ICommandPipeline, CommandPipeline>()
+            .AddSingleton<INotificationPipeline, NotificationPipeline>();
     }
 
     public static IServiceCollection AddCommandHandler<THandler, TCommand>(this IServiceCollection services)
         where THandler : class, ICommandHandler<TCommand>
-        where TCommand : ICommand =>
+        where TCommand : ICommand<Unit> =>
         services.AddCommandHandler<THandler, TCommand, Unit>();
 
     public static IServiceCollection AddCommandHandler<THandler, TCommand, TResult>(this IServiceCollection services)

@@ -1,5 +1,9 @@
 namespace Elsa.Mediator.Contracts;
 
-public interface IRequest<T>
+public interface IRequest
+{
+}
+
+public interface IRequest<T> : IRequest
 {
 }

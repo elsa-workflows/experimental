@@ -4,7 +4,7 @@ public interface ICommandHandler
 {
 }
 
-public interface ICommandHandler<in TCommand, TResult> : ICommandHandler where TCommand : ICommand<TResult>
+public interface ICommandHandler<in TCommand, TResult> : ICommandHandler where TCommand : ICommand
 {
     Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken);
 }

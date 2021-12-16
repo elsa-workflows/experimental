@@ -1,9 +1,9 @@
 namespace Elsa.Mediator.Contracts;
 
-public interface ICommand<T>
+public interface ICommand
 {
 }
 
-public interface ICommand : ICommand<Unit>
+public interface ICommand<T> : ICommand
 {
 }
