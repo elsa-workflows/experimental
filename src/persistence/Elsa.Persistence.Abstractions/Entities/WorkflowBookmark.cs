@@ -8,6 +8,7 @@ public class WorkflowBookmark : Entity
     public string? Hash { get; set; }
     public string WorkflowDefinitionId { get; set; } = default!;
     public string WorkflowInstanceId { get; set; } = default!;
+    public string CorrelationId { get; set; } = default!;
     public string ActivityId { get; set; } = default!;
     public string ActivityInstanceId { get; set; } = default!;
     public IDictionary<string, object?>? Data { get; set; }

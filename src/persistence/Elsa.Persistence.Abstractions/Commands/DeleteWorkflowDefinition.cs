@@ -5,4 +5,4 @@ namespace Elsa.Persistence.Commands;
 /// <summary>
 /// Represents a command to delete all versions of the specified definition ID. 
 /// </summary>
-public record DeleteWorkflowDefinition(string DefinitionId) : ICommand;
+public record DeleteWorkflowDefinition(string DefinitionId) : ICommand<bool>;
