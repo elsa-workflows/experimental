@@ -11,4 +11,8 @@
       <ProjectReference Include="..\..\core\Elsa.Mediator\Elsa.Mediator.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="LinqKit" Version="1.1.27" />
+    </ItemGroup>
+
 </Project>

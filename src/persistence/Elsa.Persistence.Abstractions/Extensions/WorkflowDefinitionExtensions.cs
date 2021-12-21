@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Elsa.Persistence.Entities;
 using Elsa.Persistence.Models;
+using LinqKit;
 
 namespace Elsa.Persistence.Extensions;
 
@@ -37,4 +40,22 @@ public static class WorkflowDefinitionExtensions
         this IQueryable<WorkflowDefinition> query,
         VersionOptions versionOptions) =>
         query.Where(x => x.WithVersion(versionOptions)).OrderByDescending(x => x.Version);
+
+    public static Expression<Func<WorkflowDefinition, bool>> WithVersion(this Expression<Func<WorkflowDefinition, bool>> predicate, VersionOptions? version = default)
+    {
+        var versionOption = version ?? VersionOptions.Latest;
+
+        if (versionOption.IsDraft)
+            return predicate.And(x => !x.IsPublished);
+        if (versionOption.IsLatest)
+            return predicate.And(x => x.IsLatest);
+        if (versionOption.IsPublished)
+            return predicate.And(x => x.IsPublished);
+        if (versionOption.IsLatestOrPublished)
+            return predicate.And(x => x.IsPublished || x.IsLatest);
+        if (versionOption.Version > 0)
+            return predicate.And(x => x.Version == versionOption.Version);
+
+        return predicate;
+    }
 }

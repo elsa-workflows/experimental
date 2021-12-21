@@ -1,22 +1,19 @@
 using Elsa.Mediator.Contracts;
 using Elsa.Persistence.Commands;
 using Elsa.Persistence.Entities;
+using Elsa.Persistence.EntityFrameworkCore.Contracts;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Handlers.Commands;
 
 public class SaveWorkflowBookmarksHandler : ICommandHandler<SaveWorkflowBookmarks>
 {
-    private readonly InMemoryStore<WorkflowBookmark> _store;
+    private readonly IStore<WorkflowBookmark> _store;
+    public SaveWorkflowBookmarksHandler(IStore<WorkflowBookmark> store) => _store = store;
 
-    public SaveWorkflowBookmarksHandler(InMemoryStore<WorkflowBookmark> store)
+    public async Task<Unit> HandleAsync(SaveWorkflowBookmarks command, CancellationToken cancellationToken)
     {
-        _store = store;
-    }
+        await _store.SaveManyAsync(command.WorkflowBookmarks, cancellationToken);
 
-    public Task<Unit> HandleAsync(SaveWorkflowBookmarks command, CancellationToken cancellationToken)
-    {
-        _store.SaveMany(command.WorkflowBookmarks, x => x.Id);
-
-        return Task.FromResult(Unit.Instance);
+        return Unit.Instance;
     }
 }

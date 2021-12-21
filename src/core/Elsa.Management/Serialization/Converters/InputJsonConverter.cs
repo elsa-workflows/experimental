@@ -17,7 +17,7 @@ public class InputJsonConverter<T> : JsonConverter<Input<T>>
     {
         _expressionSyntaxRegistry = expressionSyntaxRegistry;
     }
-        
+
     public override bool CanConvert(Type typeToConvert) => typeof(Input).IsAssignableFrom(typeToConvert);
 
     public override Input<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -27,7 +27,7 @@ public class InputJsonConverter<T> : JsonConverter<Input<T>>
 
         if (!doc.RootElement.TryGetProperty("type", out var inputTargetTypeElement))
             throw new JsonException("Failed to extract input type property");
-            
+
         var expressionElement = doc.RootElement.GetProperty("expression");
 
         if (!expressionElement.TryGetProperty("type", out var expressionTypeNameElement))
@@ -42,7 +42,7 @@ public class InputJsonConverter<T> : JsonConverter<Input<T>>
         var context = new ExpressionConstructorContext(expressionElement, options);
         var expression = expressionSyntaxDescriptor.CreateExpression(context);
         var locationReference = expressionSyntaxDescriptor.CreateLocationReference(new LocationReferenceConstructorContext(expression));
-            
+
         var input = (Input<T>)Activator.CreateInstance(typeof(Input<T>), expression, locationReference)!;
         return input;
     }
@@ -53,13 +53,13 @@ public class InputJsonConverter<T> : JsonConverter<Input<T>>
         var expressionType = expression.GetType();
         var targetType = value.Type;
         var expressionSyntaxDescriptor = _expressionSyntaxRegistry.Find(x => x.Type == expressionType);
-            
+
         if (expressionSyntaxDescriptor == null)
             throw new Exception($"Syntax descriptor with expression type {expressionType} not found in registry");
 
         var model = new
         {
-            TargetType = targetType,
+            Type = targetType,
             Expression = expressionSyntaxDescriptor.CreateSerializableObject(new SerializableObjectConstructorContext(expression))
         };
 

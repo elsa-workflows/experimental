@@ -9,5 +9,5 @@ public class DeleteWorkflowBookmarksHandler : ICommandHandler<DeleteWorkflowBook
 {
     private readonly IStore<WorkflowBookmark> _store;
     public DeleteWorkflowBookmarksHandler(IStore<WorkflowBookmark> store) => _store = store;
-    public async Task<int> HandleAsync(DeleteWorkflowBookmarks command, CancellationToken cancellationToken) => await _store.DeleteManyAsync(command.BookmarkIds, cancellationToken);
+    public async Task<int> HandleAsync(DeleteWorkflowBookmarks command, CancellationToken cancellationToken) => await _store.DeleteWhereAsync(x => command.BookmarkIds.Contains(x.Id), cancellationToken);
 }

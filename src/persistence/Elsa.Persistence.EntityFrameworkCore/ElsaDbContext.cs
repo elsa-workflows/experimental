@@ -17,12 +17,16 @@ public class ElsaDbContext : DbContext
     protected virtual string Schema => ElsaSchema;
     public DbSet<WorkflowDefinition> WorkflowDefinitions { get; set; } = default!;
     public DbSet<WorkflowInstance> WorkflowInstances { get; set; } = default!;
+    public DbSet<WorkflowTrigger> WorkflowTriggers { get; set; } = default!;
     public DbSet<WorkflowBookmark> WorkflowBookmarks { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         if (!string.IsNullOrWhiteSpace(Schema))
-            modelBuilder.HasDefaultSchema(Schema);
+        {
+            if (!Database.IsSqlite())
+                modelBuilder.HasDefaultSchema(Schema);
+        }
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ElsaDbContext).Assembly);
 

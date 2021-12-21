@@ -18,7 +18,7 @@ public class DefaultExpressionSyntaxProvider : IExpressionSyntaxProvider
             CreateLocationReference = context => new Literal(context.GetExpression<LiteralExpression>().Value),
             CreateSerializableObject = context => new
             {
-                ExpressionType = "Literal",
+                Type = "Literal",
                 Value = context.GetExpression<LiteralExpression>().Value
             }
         };

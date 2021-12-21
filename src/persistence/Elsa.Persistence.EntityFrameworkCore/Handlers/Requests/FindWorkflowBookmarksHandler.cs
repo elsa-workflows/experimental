@@ -1,29 +1,23 @@
 using Elsa.Mediator.Contracts;
 using Elsa.Persistence.Entities;
+using Elsa.Persistence.EntityFrameworkCore.Contracts;
 using Elsa.Persistence.Requests;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Handlers.Requests;
 
 public class FindWorkflowBookmarksHandler : IRequestHandler<FindWorkflowBookmarks, IEnumerable<WorkflowBookmark>>
 {
-    private readonly InMemoryStore<WorkflowBookmark> _store;
+    private readonly IStore<WorkflowBookmark> _store;
+    public FindWorkflowBookmarksHandler(IStore<WorkflowBookmark> store) => _store = store;
 
-    public FindWorkflowBookmarksHandler(InMemoryStore<WorkflowBookmark> store)
-    {
-        _store = store;
-    }
+    public async Task<IEnumerable<WorkflowBookmark>> HandleAsync(FindWorkflowBookmarks request, CancellationToken cancellationToken) => await FindAsync(request, cancellationToken);
 
-    public Task<IEnumerable<WorkflowBookmark>> HandleAsync(FindWorkflowBookmarks request, CancellationToken cancellationToken)
-    {
-        var bookmarks = Find(request);
-        return Task.FromResult(bookmarks);
-    }
-
-    private IEnumerable<WorkflowBookmark> Find(FindWorkflowBookmarks request) => request.WorkflowInstanceId != null 
-        ? FindByWorkflowInstanceId(request.WorkflowInstanceId) 
-        : request.Name != null ? FindByName(request.Name, request.Hash) 
+    private async Task<IEnumerable<WorkflowBookmark>> FindAsync(FindWorkflowBookmarks request, CancellationToken cancellationToken) => request.WorkflowInstanceId != null
+        ? await FindByWorkflowInstanceIdAsync(request.WorkflowInstanceId, cancellationToken)
+        : request.Name != null
+            ? await FindByNameAsync(request.Name, request.Hash, cancellationToken)
             : Enumerable.Empty<WorkflowBookmark>();
 
-    private IEnumerable<WorkflowBookmark> FindByWorkflowInstanceId(string instanceId) => _store.FindMany(x => x.WorkflowInstanceId == instanceId).ToList();
-    private IEnumerable<WorkflowBookmark> FindByName(string name, string? hash) => _store.FindMany(x => x.Name == name && x.Hash == hash).ToList();
+    private async Task<IEnumerable<WorkflowBookmark>> FindByWorkflowInstanceIdAsync(string instanceId, CancellationToken cancellationToken) => await _store.FindManyAsync(x => x.WorkflowInstanceId == instanceId, cancellationToken);
+    private async Task<IEnumerable<WorkflowBookmark>> FindByNameAsync(string name, string? hash, CancellationToken cancellationToken) => await _store.FindManyAsync(x => x.Name == name && x.Hash == hash, cancellationToken);
 }

@@ -1,22 +1,21 @@
+using System.Linq.Expressions;
 using Elsa.Mediator.Contracts;
 using Elsa.Persistence.Entities;
+using Elsa.Persistence.EntityFrameworkCore.Contracts;
+using Elsa.Persistence.Extensions;
 using Elsa.Persistence.Requests;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Handlers.Requests;
 
 public class FindWorkflowDefinitionHandler : IRequestHandler<FindWorkflowDefinition, WorkflowDefinition?>
 {
-    private readonly InMemoryStore<WorkflowDefinition> _store;
+    private readonly IStore<WorkflowDefinition> _store;
+    public FindWorkflowDefinitionHandler(IStore<WorkflowDefinition> store) => _store = store;
 
-    public FindWorkflowDefinitionHandler(InMemoryStore<WorkflowDefinition> store)
+    public async Task<WorkflowDefinition?> HandleAsync(FindWorkflowDefinition request, CancellationToken cancellationToken)
     {
-        _store = store;
-    }
-
-    public Task<WorkflowDefinition?> HandleAsync(FindWorkflowDefinition request, CancellationToken cancellationToken)
-    {
-        var definition = _store.Find(x => x.DefinitionId == request.DefinitionId && x.WithVersion(request.VersionOptions));
-
-        return Task.FromResult(definition);
+        Expression<Func<WorkflowDefinition, bool>> predicate = x => x.DefinitionId == request.DefinitionId;
+        predicate = predicate.WithVersion(request.VersionOptions);
+        return await _store.FindAsync(predicate, cancellationToken);
     }
 }

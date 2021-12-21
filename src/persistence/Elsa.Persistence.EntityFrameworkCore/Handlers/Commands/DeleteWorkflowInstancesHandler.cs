@@ -14,8 +14,10 @@ public class DeleteWorkflowInstancesHandler : ICommandHandler<DeleteWorkflowInst
     {
         if (command.DefinitionId != null)
             return await _store.DeleteWhereAsync(x => x.DefinitionId == command.DefinitionId, cancellationToken);
-        
+
         if (command.InstanceIds != null)
-            return await _store.DeleteManyAsync(command.InstanceIds, cancellationToken);
+            return await _store.DeleteWhereAsync(x => command.InstanceIds.Contains(x.Id), cancellationToken);
+
+        return 0;
     }
 }

@@ -11,7 +11,8 @@ using Elsa.Api.Extensions;
 using Elsa.Management.Contracts;
 using Elsa.Management.Extensions;
 using Elsa.Mediator.Extensions;
-using Elsa.Persistence.InMemory.Extensions;
+using Elsa.Persistence.EntityFrameworkCore.Extensions;
+using Elsa.Persistence.EntityFrameworkCore.Sqlite;
 using Elsa.Persistence.Middleware.WorkflowExecution;
 using Elsa.Pipelines.WorkflowExecution.Components;
 using Elsa.Runtime.ProtoActor.Extensions;
@@ -29,7 +30,8 @@ var services = builder.Services;
 services
     .AddElsa()
     .AddMediator()
-    .AddInMemoryPersistence()
+    //.AddInMemoryPersistence()
+    .AddEntityFrameworkCorePersistence((_, ef) => ef.UseSqlite())
     .IndexWorkflowTriggers()
     .AddElsaManagement()
     .AddHttpActivityServices()

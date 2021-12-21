@@ -9,5 +9,5 @@ public class DeleteWorkflowDefinitionHandler : ICommandHandler<DeleteWorkflowDef
 {
     private readonly IStore<WorkflowDefinition> _store;
     public DeleteWorkflowDefinitionHandler(IStore<WorkflowDefinition> store) => _store = store;
-    public async Task<bool> HandleAsync(DeleteWorkflowDefinition command, CancellationToken cancellationToken) => await _store.DeleteAsync(command.DefinitionId, cancellationToken);
+    public async Task<bool> HandleAsync(DeleteWorkflowDefinition command, CancellationToken cancellationToken) => await _store.DeleteWhereAsync(x => x.DefinitionId == command.DefinitionId, cancellationToken) > 0;
 }
