@@ -5,9 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow } from "./models";
+import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow, WorkflowDefinitionSummary } from "./models";
 import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/designer/activity-properties-editor/activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/canvas/canvas";
+import { MenuItem } from "./components/shared/context-menu/models";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/canvas/canvas";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/panel/models";
 import { Graph } from "@antv/x6";
@@ -26,6 +27,9 @@ export namespace Components {
         "addActivity": (args: AddActivityArgs) => Promise<void>;
         "exportGraph": () => Promise<Activity>;
         "updateLayout": () => Promise<void>;
+    }
+    interface ElsaContextMenu {
+        "menuItems": Array<MenuItem>;
     }
     interface ElsaFlowchart {
         "activityDescriptors": Array<ActivityDescriptor>;
@@ -111,6 +115,12 @@ declare global {
     var HTMLElsaCanvasElement: {
         prototype: HTMLElsaCanvasElement;
         new (): HTMLElsaCanvasElement;
+    };
+    interface HTMLElsaContextMenuElement extends Components.ElsaContextMenu, HTMLStencilElement {
+    }
+    var HTMLElsaContextMenuElement: {
+        prototype: HTMLElsaContextMenuElement;
+        new (): HTMLElsaContextMenuElement;
     };
     interface HTMLElsaFlowchartElement extends Components.ElsaFlowchart, HTMLStencilElement {
     }
@@ -211,6 +221,7 @@ declare global {
     interface HTMLElementTagNameMap {
         "elsa-activity-properties-editor": HTMLElsaActivityPropertiesEditorElement;
         "elsa-canvas": HTMLElsaCanvasElement;
+        "elsa-context-menu": HTMLElsaContextMenuElement;
         "elsa-flowchart": HTMLElsaFlowchartElement;
         "elsa-form-panel": HTMLElsaFormPanelElement;
         "elsa-modal-dialog": HTMLElsaModalDialogElement;
@@ -237,6 +248,9 @@ declare namespace LocalJSX {
         "onDeleteActivityRequested"?: (event: CustomEvent<DeleteActivityRequestedArgs>) => void;
     }
     interface ElsaCanvas {
+    }
+    interface ElsaContextMenu {
+        "menuItems"?: Array<MenuItem>;
     }
     interface ElsaFlowchart {
         "activityDescriptors"?: Array<ActivityDescriptor>;
@@ -302,6 +316,7 @@ declare namespace LocalJSX {
         "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
     interface ElsaWorkflowDefinitionBrowser {
+        "onWorkflowDefinitionSelected"?: (event: CustomEvent<WorkflowDefinitionSummary>) => void;
     }
     interface ElsaWorkflowEditor {
         "activityDescriptors"?: Array<ActivityDescriptor>;
@@ -323,6 +338,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "elsa-activity-properties-editor": ElsaActivityPropertiesEditor;
         "elsa-canvas": ElsaCanvas;
+        "elsa-context-menu": ElsaContextMenu;
         "elsa-flowchart": ElsaFlowchart;
         "elsa-form-panel": ElsaFormPanel;
         "elsa-modal-dialog": ElsaModalDialog;
@@ -347,6 +363,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "elsa-activity-properties-editor": LocalJSX.ElsaActivityPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaActivityPropertiesEditorElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
+            "elsa-context-menu": LocalJSX.ElsaContextMenu & JSXBase.HTMLAttributes<HTMLElsaContextMenuElement>;
             "elsa-flowchart": LocalJSX.ElsaFlowchart & JSXBase.HTMLAttributes<HTMLElsaFlowchartElement>;
             "elsa-form-panel": LocalJSX.ElsaFormPanel & JSXBase.HTMLAttributes<HTMLElsaFormPanelElement>;
             "elsa-modal-dialog": LocalJSX.ElsaModalDialog & JSXBase.HTMLAttributes<HTMLElsaModalDialogElement>;

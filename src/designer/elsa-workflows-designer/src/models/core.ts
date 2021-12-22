@@ -1,5 +1,6 @@
 import {Type} from "./shared";
 import {Expression} from "./expressions";
+import {VersionOptions} from "./api";
 
 export interface Node {
   id: string;
@@ -51,3 +52,21 @@ export interface WorkflowPublication {
   isLatest: boolean;
   isPublished: boolean;
 }
+
+export const getVersionOptionsString = (versionOptions?: VersionOptions) => {
+
+  if (!versionOptions)
+    return '';
+
+  return versionOptions.allVersions
+    ? 'AllVersions'
+    : versionOptions.isDraft
+      ? 'Draft'
+      : versionOptions.isLatest
+        ? 'Latest'
+        : versionOptions.isPublished
+          ? 'Published'
+          : versionOptions.isLatestOrPublished
+            ? 'LatestOrPublished'
+            : versionOptions.version.toString();
+};

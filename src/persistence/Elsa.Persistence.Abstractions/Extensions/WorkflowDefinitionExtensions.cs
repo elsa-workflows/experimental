@@ -36,25 +36,34 @@ public static class WorkflowDefinitionExtensions
         VersionOptions versionOptions) =>
         query.Where(x => x.WithVersion(versionOptions)).OrderByDescending(x => x.Version);
 
-    public static IQueryable<WorkflowDefinition> WithVersion(
-        this IQueryable<WorkflowDefinition> query,
-        VersionOptions versionOptions) =>
-        query.Where(x => x.WithVersion(versionOptions)).OrderByDescending(x => x.Version);
-
-    public static Expression<Func<WorkflowDefinition, bool>> WithVersion(this Expression<Func<WorkflowDefinition, bool>> predicate, VersionOptions? version = default)
+    public static IQueryable<WorkflowDefinition> WithVersion(this IQueryable<WorkflowDefinition> query, VersionOptions versionOptions)
     {
-        var versionOption = version ?? VersionOptions.Latest;
+        if (versionOptions.IsDraft)
+            return query.Where(x => !x.IsPublished);
+        if (versionOptions.IsLatest)
+            return query.Where(x => x.IsLatest);
+        if (versionOptions.IsPublished)
+            return query.Where(x => x.IsPublished);
+        if (versionOptions.IsLatestOrPublished)
+            return query.Where(x => x.IsPublished || x.IsLatest);
+        if (versionOptions.Version > 0)
+            return query.Where(x => x.Version == versionOptions.Version);
 
-        if (versionOption.IsDraft)
+        return query;
+    }
+
+    public static Expression<Func<WorkflowDefinition, bool>> WithVersion(this Expression<Func<WorkflowDefinition, bool>> predicate, VersionOptions versionOptions)
+    {
+        if (versionOptions.IsDraft)
             return predicate.And(x => !x.IsPublished);
-        if (versionOption.IsLatest)
+        if (versionOptions.IsLatest)
             return predicate.And(x => x.IsLatest);
-        if (versionOption.IsPublished)
+        if (versionOptions.IsPublished)
             return predicate.And(x => x.IsPublished);
-        if (versionOption.IsLatestOrPublished)
+        if (versionOptions.IsLatestOrPublished)
             return predicate.And(x => x.IsPublished || x.IsLatest);
-        if (versionOption.Version > 0)
-            return predicate.And(x => x.Version == versionOption.Version);
+        if (versionOptions.Version > 0)
+            return predicate.And(x => x.Version == versionOptions.Version);
 
         return predicate;
     }

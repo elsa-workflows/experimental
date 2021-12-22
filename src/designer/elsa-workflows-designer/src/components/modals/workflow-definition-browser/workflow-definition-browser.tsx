@@ -1,13 +1,28 @@
-import {Component, Event, h, Host, Prop, State, Watch} from '@stencil/core';
-import {WorkflowDefinitionSummary} from "../../../models";
+import {Component, Event, EventEmitter, h, Host, Prop, State, Watch} from '@stencil/core';
+import {PagedList, VersionOptions, WorkflowDefinitionSummary} from "../../../models";
+import {Container} from "typedi";
+import {ElsaApiClientProvider, ElsaClient} from "../../../services";
 
 @Component({
   tag: 'elsa-workflow-definition-browser',
   shadow: false,
 })
 export class WorkflowDefinitionBrowser {
+  private elsaClient: ElsaClient;
 
-  @State() publishedWorkflowDefinitions: WorkflowDefinitionSummary[] = [];
+  @Event() public workflowDefinitionSelected: EventEmitter<WorkflowDefinitionSummary>;
+  @State() private workflowDefinitions: PagedList<WorkflowDefinitionSummary> = {items: [], totalCount: 0};
+  @State() private publishedWorkflowDefinitions: Array<WorkflowDefinitionSummary> = [];
+
+  public async componentWillLoad() {
+    const elsaClientProvider = Container.get(ElsaApiClientProvider);
+    this.elsaClient = await elsaClientProvider.getClient();
+  }
+
+  public async connectedCallback() {
+    //this.workflowDefinitions = await this.elsaClient.workflows.list({});
+    await this.loadWorkflowDefinitions();
+  }
 
   private async onPublishClick(e: Event, workflowDefinition: WorkflowDefinitionSummary) {
     // const elsaClient = await this.createClient();
@@ -15,13 +30,13 @@ export class WorkflowDefinitionBrowser {
     // await this.loadWorkflowDefinitions();
   }
 
-  async onUnPublishClick(e: Event, workflowDefinition: WorkflowDefinitionSummary) {
+  private async onUnPublishClick(e: Event, workflowDefinition: WorkflowDefinitionSummary) {
     // const elsaClient = await this.createClient();
     // await elsaClient.workflowDefinitionsApi.retract(workflowDefinition.definitionId);
     // await this.loadWorkflowDefinitions();
   }
 
-  async onDeleteClick(e: Event, workflowDefinition: WorkflowDefinitionSummary) {
+  private async onDeleteClick(e: Event, workflowDefinition: WorkflowDefinitionSummary) {
 
     // const result = await this.confirmDialog.show(t('DeleteConfirmationModel.Title'), t('DeleteConfirmationModel.Message'));
     //
@@ -33,32 +48,26 @@ export class WorkflowDefinitionBrowser {
     // await this.loadWorkflowDefinitions();
   }
 
-  async loadWorkflowDefinitions() {
-    // const elsaClient = await this.createClient();
-    // const page = 0;
-    // const pageSize = 50;
-    // const latestVersionOptions: VersionOptions = {isLatest: true};
-    // const publishedVersionOptions: VersionOptions = {isPublished: true};
-    // const latestWorkflowDefinitions = await elsaClient.workflowDefinitionsApi.list(page, pageSize, latestVersionOptions);
-    // const unpublishedWorkflowDefinitionIds = latestWorkflowDefinitions.items.filter(x => !x.isPublished).map(x => x.definitionId);
-    // this.publishedWorkflowDefinitions = await elsaClient.workflowDefinitionsApi.getMany(unpublishedWorkflowDefinitionIds, publishedVersionOptions);
-    // this.workflowDefinitions = latestWorkflowDefinitions;
+  private onWorkflowDefinitionClick = (e: MouseEvent, workflowDefinition: WorkflowDefinitionSummary) => {
+    e.preventDefault();
+    this.workflowDefinitionSelected.emit(workflowDefinition);
   }
 
-  createClient() {
-    //return createElsaClient(this.serverUrl);
+  private async loadWorkflowDefinitions() {
+    const elsaClient = this.elsaClient;
+    const page = 0;
+    const pageSize = 50;
+    const latestVersionOptions: VersionOptions = {isLatest: true};
+    const publishedVersionOptions: VersionOptions = {isPublished: true};
+    const latestWorkflowDefinitions = await elsaClient.workflows.list({page: page, pageSize: pageSize, versionOptions: {isLatest: true}});
+    const unpublishedWorkflowDefinitionIds = latestWorkflowDefinitions.items.filter(x => !x.isPublished).map(x => x.definitionId);
+    this.publishedWorkflowDefinitions = await elsaClient.workflows.getMany({definitionIds: unpublishedWorkflowDefinitionIds, versionOptions: publishedVersionOptions});
+    this.workflowDefinitions = latestWorkflowDefinitions;
   }
 
   render() {
 
-    const workflowDefinitions: Array<WorkflowDefinitionSummary> = [{
-      definitionId: '1',
-      isPublished: false,
-      id: '1',
-      version: 1,
-      name: 'Hello World',
-      isLatest: true
-    }];
+    const workflowDefinitions = this.workflowDefinitions;
 
     return (
       <Host class="block">
@@ -87,7 +96,7 @@ export class WorkflowDefinitionBrowser {
               </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-100">
-              {workflowDefinitions.map(workflowDefinition => {
+              {workflowDefinitions.items.map(workflowDefinition => {
                 const latestVersionNumber = workflowDefinition.version;
                 const {isPublished} = workflowDefinition;
                 const publishedVersion: WorkflowDefinitionSummary = isPublished ? workflowDefinition : this.publishedWorkflowDefinitions.find(x => x.definitionId == workflowDefinition.definitionId);
@@ -132,7 +141,7 @@ export class WorkflowDefinitionBrowser {
                   <tr>
                     <td class="px-6 py-3 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
                       <div class="flex items-center space-x-3 lg:pl-2">
-                        <a href="#" class="truncate hover:text-gray-600"><span>{workflowDisplayName}</span></a>
+                        <a onClick={e => this.onWorkflowDefinitionClick(e, workflowDefinition)} href="#" class="truncate hover:text-gray-600"><span>{workflowDisplayName}</span></a>
                       </div>
                     </td>
 
@@ -145,7 +154,7 @@ export class WorkflowDefinitionBrowser {
                     <td class="hidden md:table-cell px-6 py-3 whitespace-no-wrap text-sm leading-5 text-gray-500 text-right">{latestVersionNumber}</td>
                     <td class="hidden md:table-cell px-6 py-3 whitespace-no-wrap text-sm leading-5 text-gray-500 text-right">{publishedVersionNumber}</td>
                     <td class="pr-6">
-                      <context-menu menuItems={[
+                      <elsa-context-menu menuItems={[
                         {text: 'Edit', anchorUrl: '#', icon: editIcon},
                         isPublished ? {text: 'Unpublish', clickHandler: e => this.onUnPublishClick(e, workflowDefinition), icon: unPublishIcon} : {
                           text: 'Publish',

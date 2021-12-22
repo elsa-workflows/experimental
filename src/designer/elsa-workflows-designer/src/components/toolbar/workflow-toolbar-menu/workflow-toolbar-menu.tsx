@@ -1,6 +1,6 @@
 import {Component, Event, EventEmitter, Host, h, Listen, Prop, State} from '@stencil/core';
 import {leave, toggle} from 'el-transition'
-import {ActionDefinition, DefaultActions} from "../../../models";
+import {ActionDefinition, DefaultActions, WorkflowDefinitionSummary} from "../../../models";
 
 @Component({
   tag: 'elsa-workflow-toolbar-menu',
@@ -68,7 +68,7 @@ export class WorkflowToolbarMenu {
           </div>
         </div>
         <elsa-modal-dialog ref={el => this.workflowDefinitionBrowserDialog = el} actions={actions}>
-          <elsa-workflow-definition-browser />
+          <elsa-workflow-definition-browser/>
         </elsa-modal-dialog>
 
       </Host>

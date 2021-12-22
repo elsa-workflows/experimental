@@ -19,6 +19,18 @@ public class WorkflowsResource
         return this;
     }
 
+    public WorkflowsResource List()
+    {
+        _endpoints.MapGet("api/workflows", Workflows.ListAsync);
+        return this;
+    }
+    
+    public WorkflowsResource GetMany()
+    {
+        _endpoints.MapGet("api/workflows/set", Workflows.GetManyAsync);
+        return this;
+    }
+
     public WorkflowsResource Execute()
     {
         _endpoints.MapPost("api/workflows/{id}/execute", Workflows.ExecuteAsync);
@@ -35,5 +47,5 @@ public class WorkflowsResource
 public static class WorkflowsResourceExtensions
 {
     public static void MapWorkflows(this IEndpointRouteBuilder endpoints, Action<WorkflowsResource> configureResource) => configureResource(new(endpoints));
-    public static void MapWorkflows(this IEndpointRouteBuilder endpoints) => endpoints.MapWorkflows(x => x.Post().Execute().Dispatch());
+    public static void MapWorkflows(this IEndpointRouteBuilder endpoints) => endpoints.MapWorkflows(x => x.Post().Execute().Dispatch().List().GetMany());
 }

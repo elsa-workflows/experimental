@@ -1,5 +1,10 @@
+using System;
+using System.ComponentModel;
+using Elsa.Persistence.TypeConverters;
+
 namespace Elsa.Persistence.Models;
 
+[TypeConverter(typeof(VersionOptionsTypeConverter))]
 public struct VersionOptions
 {
     /// <summary>
@@ -45,6 +50,12 @@ public struct VersionOptions
             "LatestOrPublished" => LatestOrPublished,
             _ => SpecificVersion(int.Parse(value))
         };
+
+    public static bool TryParse(string value, out VersionOptions versionOptions)
+    {
+        versionOptions = FromString(value);
+        return true;
+    }
 
     /// <summary>
     /// Gets the latest version.

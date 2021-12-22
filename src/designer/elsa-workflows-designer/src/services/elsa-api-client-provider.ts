@@ -1,13 +1,14 @@
 ﻿import axios, {AxiosInstance, AxiosRequestConfig} from "axios";
 import {Service as MiddlewareService} from 'axios-middleware';
+import {collection} from 'lodash';
 import {EventBus} from './event-bus';
 import {
   ActivityDescriptor,
   ActivityDescriptorResponse,
-  EventTypes,
+  EventTypes, getVersionOptionsString, PagedList,
   TriggerDescriptor,
-  TriggerDescriptorResponse,
-  Workflow
+  TriggerDescriptorResponse, VersionOptions,
+  Workflow, WorkflowDefinitionSummary
 } from "../models";
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
@@ -52,6 +53,40 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
       async post(request: SaveWorkflowRequest): Promise<Workflow> {
         const response = await httpClient.post<Workflow>('api/workflows', request);
         return response.data;
+      },
+      async get(request: GetWorkflowRequest): Promise<Workflow> {
+        const response = await httpClient.get<Workflow>(`api/workflows/${request.id}`);
+        return response.data;
+      },
+      async list(request: ListWorkflowsRequest): Promise<PagedList<WorkflowDefinitionSummary>> {
+        const queryString = {};
+
+        if (!!request.versionOptions)
+          queryString['versionOptions'] = getVersionOptionsString(request.versionOptions);
+
+        if (!!request.page)
+          queryString['page'] = request.page;
+
+        if (!!request.pageSize)
+          queryString['pageSize'] = request.pageSize;
+
+        const queryStringItems = collection.map(queryString, (v, k) => `${k}=${v}`);
+        const queryStringText = queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
+        const response = await httpClient.get<PagedList<WorkflowDefinitionSummary>>(`api/workflows${queryStringText}`);
+        return response.data;
+      },
+      async getMany(request: GetManyWorkflowsRequest): Promise<Array<WorkflowDefinitionSummary>> {
+        const queryString = {};
+
+        if (!!request.versionOptions)
+          queryString['versionOptions'] = getVersionOptionsString(request.versionOptions);
+
+        queryString['definitionIds'] = request.definitionIds.join(',');
+
+        const queryStringItems = collection.map(queryString, (v, k) => `${k}=${v}`);
+        const queryStringText = queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
+        const response = await httpClient.get<Array<WorkflowDefinitionSummary>>(`api/workflows${queryStringText}`);
+        return response.data;
       }
     }
   };
@@ -77,11 +112,31 @@ export interface TriggerDescriptorsApi {
 
 export interface WorkflowsApi {
   post(request: SaveWorkflowRequest): Promise<Workflow>;
+
+  get(request: GetWorkflowRequest): Promise<Workflow>;
+
+  list(request: ListWorkflowsRequest): Promise<PagedList<WorkflowDefinitionSummary>>;
+  getMany(request: GetManyWorkflowsRequest): Promise<Array<WorkflowDefinitionSummary>>;
 }
 
 export interface SaveWorkflowRequest {
   workflow: Workflow;
   publish: boolean;
+}
+
+export interface GetWorkflowRequest {
+  id: string;
+}
+
+export interface ListWorkflowsRequest {
+  page?: number;
+  pageSize?: number;
+  versionOptions?: VersionOptions;
+}
+
+export interface GetManyWorkflowsRequest {
+  definitionIds?: Array<string>;
+  versionOptions?: VersionOptions;
 }
 
 @Service()

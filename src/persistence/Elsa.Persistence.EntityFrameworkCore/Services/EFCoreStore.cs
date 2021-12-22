@@ -11,7 +11,6 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : class
 {
     private readonly IDbContextFactory<ElsaDbContext> _dbContextFactory;
     private readonly IServiceProvider _serviceProvider;
-    //private readonly SemaphoreSlim _semaphore = new(1);
 
     public EFCoreStore(IDbContextFactory<ElsaDbContext> dbContextFactory, IServiceProvider serviceProvider)
     {
@@ -19,38 +18,18 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : class
         _serviceProvider = serviceProvider;
     }
 
+    public async Task<ElsaDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) => await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+
     public async Task SaveAsync(string id, TEntity entity, CancellationToken cancellationToken = default)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await using var dbContext = await CreateDbContextAsync(cancellationToken);
         OnSaving(dbContext, entity);
         await dbContext.BulkInsertOrUpdateAsync(new[] { entity }, config => { config.EnableShadowProperties = true; }, cancellationToken: cancellationToken);
-        
-        // await _semaphore.WaitAsync(cancellationToken);
-        //
-        // try
-        // {
-        //     await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
-        //     var set = dbContext.Set<TEntity>();
-        //     var existingEntity = await set.FindAsync(new object[] { id }, cancellationToken);
-        //
-        //     OnSaving(dbContext, entity);
-        //
-        //     if (existingEntity == null)
-        //         await set.AddAsync(entity, cancellationToken);
-        //     else
-        //         set.Attach(entity).State = EntityState.Modified;
-        //
-        //     await dbContext.SaveChangesAsync(cancellationToken);
-        // }
-        // finally
-        // {
-        //     _semaphore.Release();
-        // }
     }
 
     public async Task SaveManyAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await using var dbContext = await CreateDbContextAsync(cancellationToken);
         var entityList = entities.ToList();
         OnSaving(dbContext, entityList);
         await dbContext.BulkInsertOrUpdateAsync(entityList, config => { config.EnableShadowProperties = true; }, cancellationToken: cancellationToken);
@@ -58,7 +37,7 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : class
 
     public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await using var dbContext = await CreateDbContextAsync(cancellationToken);
         var set = dbContext.Set<TEntity>();
         var entity = await set.FirstOrDefaultAsync(predicate, cancellationToken);
         return OnLoading(dbContext, entity);
@@ -66,7 +45,7 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : class
 
     public async Task<IEnumerable<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await using var dbContext = await CreateDbContextAsync(cancellationToken);
         var set = dbContext.Set<TEntity>();
         var entities = await set.Where(predicate).ToListAsync(cancellationToken);
         return OnLoading(dbContext, entities);
@@ -74,7 +53,7 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : class
 
     public async Task<bool> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await using var dbContext = await CreateDbContextAsync(cancellationToken);
         var set = dbContext.Set<TEntity>();
         set.Attach(entity).State = EntityState.Deleted;
         return await dbContext.SaveChangesAsync(cancellationToken) == 1;
@@ -82,7 +61,7 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : class
 
     public async Task<int> DeleteWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await using var dbContext = await CreateDbContextAsync(cancellationToken);
         var set = dbContext.Set<TEntity>();
         return await set.Where(predicate).BatchDeleteWithWorkAroundAsync(dbContext, cancellationToken);
     }

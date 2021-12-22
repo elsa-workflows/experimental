@@ -65,3 +65,19 @@ export interface WorkflowDefinitionSummary {
   isPublished: boolean;
   isLatest: boolean;
 }
+
+export interface PagedList<T> {
+  items: Array<T>;
+  page?: number;
+  pageSize?: number;
+  totalCount: number;
+}
+
+export interface VersionOptions {
+  isLatest?: boolean;
+  isLatestOrPublished?: boolean;
+  isPublished?: boolean;
+  isDraft?: boolean;
+  allVersions?: boolean;
+  version?: number;
+}
