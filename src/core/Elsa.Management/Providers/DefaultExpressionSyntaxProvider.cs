@@ -28,7 +28,7 @@ public class DefaultExpressionSyntaxProvider : IExpressionSyntaxProvider
 
     private IExpression CreateLiteralExpression(ExpressionConstructorContext context)
     {
-        var expressionValue = context.Element.GetProperty("value").GetString();
+        var expressionValue = context.Element.GetProperty("value").ToString();
         var expression = new LiteralExpression(expressionValue);
         return expression;
     }

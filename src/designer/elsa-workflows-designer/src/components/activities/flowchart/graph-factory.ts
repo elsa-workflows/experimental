@@ -45,21 +45,21 @@ export function createGraph(container: HTMLElement): Graph {
       allowEdge: false,
       allowPort: true,
       highlight: true,
-      router: 'manhattan',
-      // router: {
-      //   name: 'metro',
-      //   args: {
-      //     startDirections: ['bottom'],
-      //     endDirections: ['top'],
-      //   },
-      // },
-      //connector: 'elsa-connector',
-      connector: {
-        name: 'rounded',
+      //router: 'manhattan',
+      router: {
+        name: 'metro',
         args: {
-          radius: 20
+          startDirections: ['bottom'],
+          endDirections: ['top'],
         },
       },
+      connector: 'elsa-connector',
+      // connector: {
+      //   name: 'rounded',
+      //   args: {
+      //     radius: 20
+      //   },
+      // },
       snap: {
         radius: 20,
       },

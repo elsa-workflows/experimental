@@ -49,8 +49,8 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
       }
     },
     workflows: {
-      async post(workflow: Workflow): Promise<Workflow> {
-        const response = await httpClient.post<Workflow>('api/workflows', workflow);
+      async post(request: SaveWorkflowRequest): Promise<Workflow> {
+        const response = await httpClient.post<Workflow>('api/workflows', request);
         return response.data;
       }
     }
@@ -76,7 +76,12 @@ export interface TriggerDescriptorsApi {
 }
 
 export interface WorkflowsApi {
-  post(workflow: Workflow): Promise<Workflow>;
+  post(request: SaveWorkflowRequest): Promise<Workflow>;
+}
+
+export interface SaveWorkflowRequest {
+  workflow: Workflow;
+  publish: boolean;
 }
 
 @Service()

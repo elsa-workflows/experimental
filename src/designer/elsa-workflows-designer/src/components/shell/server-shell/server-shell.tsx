@@ -25,7 +25,10 @@ export class ServerShell {
 
   @Listen('workflowUpdated')
   async handleWorkflowUpdated(e: CustomEvent<WorkflowUpdatedArgs>) {
-    await this.elsaClient.workflows.post(e.detail.workflow);
+    await this.elsaClient.workflows.post({
+      workflow: e.detail.workflow,
+      publish: false
+    });
   }
 
   async componentWillLoad() {
