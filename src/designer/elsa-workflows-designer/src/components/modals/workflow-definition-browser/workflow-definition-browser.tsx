@@ -15,12 +15,12 @@ export class WorkflowDefinitionBrowser {
   @State() private publishedWorkflowDefinitions: Array<WorkflowDefinitionSummary> = [];
 
   public async componentWillLoad() {
-    const elsaClientProvider = Container.get(ElsaApiClientProvider);
-    this.elsaClient = await elsaClientProvider.getClient();
+
   }
 
   public async connectedCallback() {
-    //this.workflowDefinitions = await this.elsaClient.workflows.list({});
+    const elsaClientProvider = Container.get(ElsaApiClientProvider);
+    this.elsaClient = await elsaClientProvider.getClient();
     await this.loadWorkflowDefinitions();
   }
 
@@ -68,6 +68,7 @@ export class WorkflowDefinitionBrowser {
   render() {
 
     const workflowDefinitions = this.workflowDefinitions;
+    const publishedWorkflowDefinitions = this.publishedWorkflowDefinitions;
 
     return (
       <Host class="block">
@@ -99,7 +100,7 @@ export class WorkflowDefinitionBrowser {
               {workflowDefinitions.items.map(workflowDefinition => {
                 const latestVersionNumber = workflowDefinition.version;
                 const {isPublished} = workflowDefinition;
-                const publishedVersion: WorkflowDefinitionSummary = isPublished ? workflowDefinition : this.publishedWorkflowDefinitions.find(x => x.definitionId == workflowDefinition.definitionId);
+                const publishedVersion: WorkflowDefinitionSummary = isPublished ? workflowDefinition : publishedWorkflowDefinitions.find(x => x.definitionId == workflowDefinition.definitionId);
                 const publishedVersionNumber = !!publishedVersion ? publishedVersion.version : '-';
                 let workflowDisplayName = workflowDefinition.name;
 

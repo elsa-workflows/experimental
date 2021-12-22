@@ -1,6 +1,6 @@
 ﻿import axios, {AxiosInstance, AxiosRequestConfig} from "axios";
 import {Service as MiddlewareService} from 'axios-middleware';
-import {collection} from 'lodash';
+import _, {collection} from 'lodash';
 import {EventBus} from './event-bus';
 import {
   ActivityDescriptor,
@@ -70,7 +70,7 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
         if (!!request.pageSize)
           queryString['pageSize'] = request.pageSize;
 
-        const queryStringItems = collection.map(queryString, (v, k) => `${k}=${v}`);
+        const queryStringItems = _.map(queryString, (v, k) => `${k}=${v}`);
         const queryStringText = queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
         const response = await httpClient.get<PagedList<WorkflowDefinitionSummary>>(`api/workflows${queryStringText}`);
         return response.data;
@@ -83,9 +83,9 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
 
         queryString['definitionIds'] = request.definitionIds.join(',');
 
-        const queryStringItems = collection.map(queryString, (v, k) => `${k}=${v}`);
+        const queryStringItems = _.map(queryString, (v, k) => `${k}=${v}`);
         const queryStringText = queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
-        const response = await httpClient.get<Array<WorkflowDefinitionSummary>>(`api/workflows${queryStringText}`);
+        const response = await httpClient.get<Array<WorkflowDefinitionSummary>>(`api/workflows/set${queryStringText}`);
         return response.data;
       }
     }
