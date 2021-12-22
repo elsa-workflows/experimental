@@ -56,3 +56,12 @@ export interface Port {
   name: string;
   displayName: string;
 }
+
+export interface WorkflowDefinitionSummary {
+  id: string;
+  definitionId: string;
+  version: number;
+  name?: string;
+  isPublished: boolean;
+  isLatest: boolean;
+}

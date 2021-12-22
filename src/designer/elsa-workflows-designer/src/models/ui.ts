@@ -31,14 +31,21 @@ export interface ActionInvokedArgs {
 
 export class DefaultActions {
 
-  public static Cancel = (handler: ActionClickArgs): ActionDefinition => ({
+  public static Cancel = (handler?: ActionClickArgs): ActionDefinition => ({
     text: 'Cancel',
     name: 'Cancel',
     type: ActionType.Cancel,
     onClick: handler
   });
 
-  public static Save = (handler: ActionClickArgs): ActionDefinition => ({
+  public static Close = (handler?: ActionClickArgs): ActionDefinition => ({
+    text: 'Close',
+    name: 'Close',
+    type: ActionType.Cancel,
+    onClick: handler
+  });
+
+  public static Save = (handler?: ActionClickArgs): ActionDefinition => ({
     text: 'Save',
     name: 'Save',
     type: ActionType.Submit,
@@ -46,7 +53,7 @@ export class DefaultActions {
     onClick: handler
   });
 
-  public static Delete = (handler: ActionClickArgs): ActionDefinition => ({
+  public static Delete = (handler?: ActionClickArgs): ActionDefinition => ({
     text: 'Delete',
     name: 'Delete',
     type: ActionType.Button,
