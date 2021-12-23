@@ -36,13 +36,14 @@ export class ServerShell {
   @Listen('workflowDefinitionSelected')
   private async handleWorkflowDefinitionSelected(e: CustomEvent<WorkflowDefinitionSummary>) {
 
+    debugger;
     const workflowEditorElement = this.workflowEditorElement;
 
-    if(!workflowEditorElement)
+    if (!workflowEditorElement)
       return;
 
-    const id = e.detail.id;
-    workflowEditorElement.workflow = await this.elsaClient.workflows.get({id: id});
+    const definitionId = e.detail.definitionId;
+    workflowEditorElement.workflow = await this.elsaClient.workflows.get({definitionId});
   }
 
   public async componentWillLoad() {

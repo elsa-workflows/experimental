@@ -1,6 +1,6 @@
 ﻿export interface MenuItem {
   text: string;
   anchorUrl?: string;
-  clickHandler?: (e: Event) => void;
+  clickHandler?: (e: MouseEvent) => void;
   icon?: any;
 }

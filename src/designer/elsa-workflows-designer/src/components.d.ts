@@ -88,6 +88,8 @@ export namespace Components {
         "triggerDescriptors": Array<TriggerDescriptor>;
     }
     interface ElsaWorkflowDefinitionBrowser {
+        "hide": () => Promise<void>;
+        "show": () => Promise<void>;
     }
     interface ElsaWorkflowEditor {
         "activityDescriptors": Array<ActivityDescriptor>;

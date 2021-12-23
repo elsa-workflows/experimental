@@ -4,48 +4,30 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Elsa.Api.Endpoints.Workflows;
 
-public class WorkflowsResource
+public class WorkflowsResource : ResourceBase<WorkflowsResource>
 {
-    private readonly IEndpointRouteBuilder _endpoints;
-
-    public WorkflowsResource(IEndpointRouteBuilder endpoints)
+    public WorkflowsResource(IEndpointRouteBuilder endpoints) : base(endpoints)
     {
-        _endpoints = endpoints;
     }
 
-    public WorkflowsResource Post()
-    {
-        _endpoints.MapPost("api/workflows", Workflows.PostAsync);
-        return this;
-    }
-
-    public WorkflowsResource List()
-    {
-        _endpoints.MapGet("api/workflows", Workflows.ListAsync);
-        return this;
-    }
-    
-    public WorkflowsResource GetMany()
-    {
-        _endpoints.MapGet("api/workflows/set", Workflows.GetManyAsync);
-        return this;
-    }
-
-    public WorkflowsResource Execute()
-    {
-        _endpoints.MapPost("api/workflows/{id}/execute", Workflows.ExecuteAsync);
-        return this;
-    }
-
-    public WorkflowsResource Dispatch()
-    {
-        _endpoints.MapPost("api/workflows/{id}/dispatch", Workflows.DispatchAsync);
-        return this;
-    }
+    public WorkflowsResource Post() => MapPost("api/workflows", Workflows.PostAsync);
+    public WorkflowsResource List() => MapGet("api/workflows", Workflows.ListAsync);
+    public WorkflowsResource GetMany() => MapGet("api/workflows/set", Workflows.GetManyAsync);
+    public WorkflowsResource Get() => MapGet("api/workflows/{definitionId}", Workflows.Get);
+    public WorkflowsResource Execute() => MapPost("api/workflows/{definitionId}/execute", Workflows.ExecuteAsync);
+    public WorkflowsResource Dispatch() => MapPost("api/workflows/{definitionId}/dispatch", Workflows.DispatchAsync);
 }
 
 public static class WorkflowsResourceExtensions
 {
     public static void MapWorkflows(this IEndpointRouteBuilder endpoints, Action<WorkflowsResource> configureResource) => configureResource(new(endpoints));
-    public static void MapWorkflows(this IEndpointRouteBuilder endpoints) => endpoints.MapWorkflows(x => x.Post().Execute().Dispatch().List().GetMany());
+
+    public static void MapWorkflows(this IEndpointRouteBuilder endpoints) => endpoints.MapWorkflows(x => x
+        .Post()
+        .Execute()
+        .Dispatch()
+        .List()
+        .GetMany()
+        .Get()
+    );
 }

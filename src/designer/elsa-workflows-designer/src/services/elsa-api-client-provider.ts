@@ -14,6 +14,11 @@ import 'reflect-metadata';
 import {Container, Service} from "typedi";
 import {ServerSettings} from "./server-settings";
 
+function serializeQueryString(queryString: object): string {
+  const queryStringItems = _.map(queryString, (v, k) => `${k}=${v}`);
+  return queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
+}
+
 export async function createHttpClient(baseAddress: string): Promise<AxiosInstance> {
   const config: AxiosRequestConfig = {
     baseURL: baseAddress
@@ -55,7 +60,13 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
         return response.data;
       },
       async get(request: GetWorkflowRequest): Promise<Workflow> {
-        const response = await httpClient.get<Workflow>(`api/workflows/${request.id}`);
+        const queryString = {};
+
+        if (!!request.versionOptions)
+          queryString['versionOptions'] = getVersionOptionsString(request.versionOptions);
+
+        const queryStringText = serializeQueryString(queryString);
+        const response = await httpClient.get<Workflow>(`api/workflows/${request.definitionId}${queryStringText}`);
         return response.data;
       },
       async list(request: ListWorkflowsRequest): Promise<PagedList<WorkflowDefinitionSummary>> {
@@ -70,8 +81,7 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
         if (!!request.pageSize)
           queryString['pageSize'] = request.pageSize;
 
-        const queryStringItems = _.map(queryString, (v, k) => `${k}=${v}`);
-        const queryStringText = queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
+        const queryStringText = serializeQueryString(queryString);
         const response = await httpClient.get<PagedList<WorkflowDefinitionSummary>>(`api/workflows${queryStringText}`);
         return response.data;
       },
@@ -83,8 +93,7 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
 
         queryString['definitionIds'] = request.definitionIds.join(',');
 
-        const queryStringItems = _.map(queryString, (v, k) => `${k}=${v}`);
-        const queryStringText = queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
+        const queryStringText = serializeQueryString(queryString);
         const response = await httpClient.get<Array<WorkflowDefinitionSummary>>(`api/workflows/set${queryStringText}`);
         return response.data;
       }
@@ -116,6 +125,7 @@ export interface WorkflowsApi {
   get(request: GetWorkflowRequest): Promise<Workflow>;
 
   list(request: ListWorkflowsRequest): Promise<PagedList<WorkflowDefinitionSummary>>;
+
   getMany(request: GetManyWorkflowsRequest): Promise<Array<WorkflowDefinitionSummary>>;
 }
 
@@ -125,7 +135,8 @@ export interface SaveWorkflowRequest {
 }
 
 export interface GetWorkflowRequest {
-  id: string;
+  definitionId: string;
+  versionOptions?: VersionOptions;
 }
 
 export interface ListWorkflowsRequest {

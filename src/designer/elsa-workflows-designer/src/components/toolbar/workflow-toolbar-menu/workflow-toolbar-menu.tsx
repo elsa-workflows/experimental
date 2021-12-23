@@ -1,6 +1,5 @@
 import {Component, Event, EventEmitter, Host, h, Listen, Prop, State} from '@stencil/core';
-import {leave, toggle} from 'el-transition'
-import {ActionDefinition, DefaultActions, WorkflowDefinitionSummary} from "../../../models";
+import {leave, toggle} from 'el-transition';
 
 @Component({
   tag: 'elsa-workflow-toolbar-menu',
@@ -9,7 +8,7 @@ import {ActionDefinition, DefaultActions, WorkflowDefinitionSummary} from "../..
 export class WorkflowToolbarMenu {
   private menu: HTMLElement;
   private element: HTMLElement;
-  private workflowDefinitionBrowserDialog: HTMLElsaModalDialogElement;
+  private workflowDefinitionBrowser: HTMLElsaWorkflowDefinitionBrowserElement;
 
   @Listen('click', {target: 'window'})
   private onWindowClicked(event: Event) {
@@ -29,14 +28,11 @@ export class WorkflowToolbarMenu {
 
   private onWorkflowDefinitionsClick = async (e: MouseEvent) => {
     e.preventDefault();
-    await this.workflowDefinitionBrowserDialog.show();
+    await this.workflowDefinitionBrowser.show();
     this.closeMenu();
   };
 
   render() {
-
-    const closeAction = DefaultActions.Close();
-    const actions = [closeAction];
 
     return (
       <Host class="block" ref={el => this.element = el}>
@@ -67,10 +63,7 @@ export class WorkflowToolbarMenu {
             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabindex="-1" id="user-menu-item-2">Settings</a>
           </div>
         </div>
-        <elsa-modal-dialog ref={el => this.workflowDefinitionBrowserDialog = el} actions={actions}>
-          <elsa-workflow-definition-browser/>
-        </elsa-modal-dialog>
-
+        <elsa-workflow-definition-browser ref={el => this.workflowDefinitionBrowser = el}/>
       </Host>
     );
   }

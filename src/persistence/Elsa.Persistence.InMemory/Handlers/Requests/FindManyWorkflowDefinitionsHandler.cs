@@ -13,12 +13,12 @@ using Elsa.Persistence.Requests;
 
 namespace Elsa.Persistence.InMemory.Handlers.Requests;
 
-public class GetManyWorkflowDefinitionsHandler : IRequestHandler<GetManyWorkflowDefinitions, IEnumerable<WorkflowDefinitionSummary>>
+public class FindManyWorkflowDefinitionsHandler : IRequestHandler<FindManyWorkflowDefinitions, IEnumerable<WorkflowDefinitionSummary>>
 {
     private readonly InMemoryStore<WorkflowDefinition> _store;
-    public GetManyWorkflowDefinitionsHandler(InMemoryStore<WorkflowDefinition> store) => _store = store;
+    public FindManyWorkflowDefinitionsHandler(InMemoryStore<WorkflowDefinition> store) => _store = store;
 
-    public Task<IEnumerable<WorkflowDefinitionSummary>> HandleAsync(GetManyWorkflowDefinitions request, CancellationToken cancellationToken)
+    public Task<IEnumerable<WorkflowDefinitionSummary>> HandleAsync(FindManyWorkflowDefinitions request, CancellationToken cancellationToken)
     {
         var query = _store.List();
 

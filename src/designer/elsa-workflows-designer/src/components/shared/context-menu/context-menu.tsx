@@ -29,7 +29,7 @@ export class ContextMenu {
     toggle(this.contextMenu);
   }
 
-  async onMenuItemClick(e: Event, menuItem: MenuItem) {
+  async onMenuItemClick(e: MouseEvent, menuItem: MenuItem) {
     e.preventDefault();
 
     if (!!menuItem.clickHandler)
