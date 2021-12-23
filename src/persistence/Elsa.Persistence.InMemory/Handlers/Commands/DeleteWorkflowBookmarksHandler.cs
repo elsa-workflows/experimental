@@ -7,7 +7,7 @@ using Elsa.Persistence.InMemory.Services;
 
 namespace Elsa.Persistence.InMemory.Handlers.Commands;
 
-public class DeleteWorkflowBookmarksHandler : ICommandHandler<DeleteWorkflowBookmarks>
+public class DeleteWorkflowBookmarksHandler : ICommandHandler<DeleteWorkflowBookmarks, int>
 {
     private readonly InMemoryStore<WorkflowBookmark> _store;
 
@@ -16,10 +16,10 @@ public class DeleteWorkflowBookmarksHandler : ICommandHandler<DeleteWorkflowBook
         _store = store;
     }
 
-    public Task<Unit> HandleAsync(DeleteWorkflowBookmarks command, CancellationToken cancellationToken)
+    public Task<int> HandleAsync(DeleteWorkflowBookmarks command, CancellationToken cancellationToken)
     {
-        _store.DeleteMany(command.BookmarkIds);
-        
-        return Task.FromResult(Unit.Instance);
+        var count = _store.DeleteMany(command.BookmarkIds);
+
+        return Task.FromResult(count);
     }
 }

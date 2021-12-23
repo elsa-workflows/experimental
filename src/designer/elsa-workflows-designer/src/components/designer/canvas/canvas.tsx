@@ -28,7 +28,12 @@ export class Canvas {
 
   @Method()
   public async exportGraph(): Promise<Activity> {
-    return await this.root.exportGraph();
+    return await this.root.exportRoot();
+  }
+
+  @Method()
+  public async importGraph(root: Activity): Promise<void> {
+    return await this.root.importRoot(root);
   }
 
   render() {

@@ -13,7 +13,7 @@ public class OutboundActivityNodeResolver : IActivityNodeResolver
     public int Priority => -1;
     public bool GetSupportsActivity(IActivity activity) => activity is Activity;
 
-    public IEnumerable<IActivity> GetNodes(IActivity activity) =>
+    public IEnumerable<IActivity> GetPorts(IActivity activity) =>
         GetSinglePorts(activity)
             .Where(x => x != null)
             .Select(x => x!)

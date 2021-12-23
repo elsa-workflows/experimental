@@ -1,7 +1,7 @@
 import {Graph, Node} from '@antv/x6';
 import {Activity, ActivityDescriptor, Port} from '../../../models';
 
-export function createNode(graph: Graph, activityDescriptor: ActivityDescriptor, activity: Activity, x: number, y: number): Node<Node.Properties> {
+export function createNode(activityDescriptor: ActivityDescriptor, activity: Activity, x: number, y: number): Node.Metadata {
 
   let inPorts: Array<Port> = [...activityDescriptor.inPorts];
   let outPorts: Array<Port> = [...activityDescriptor.outPorts];
@@ -40,7 +40,8 @@ export function createNode(graph: Graph, activityDescriptor: ActivityDescriptor,
 
   const portModels = [...inPortModels, ...outPortModels];
 
-  return graph.createNode({
+  return {
+    id: activity.id,
     shape: 'activity',
     activity: activity,
     activityDescriptor: activityDescriptor,
@@ -48,5 +49,15 @@ export function createNode(graph: Graph, activityDescriptor: ActivityDescriptor,
     y: y,
     data: activity,
     ports: portModels
-  });
+  } as Node.Metadata;
+
+  // return graph.createNode({
+  //   shape: 'activity',
+  //   activity: activity,
+  //   activityDescriptor: activityDescriptor,
+  //   x: x,
+  //   y: y,
+  //   data: activity,
+  //   ports: portModels
+  // });
 }

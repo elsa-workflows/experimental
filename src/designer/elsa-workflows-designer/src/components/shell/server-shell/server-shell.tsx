@@ -35,8 +35,6 @@ export class ServerShell {
 
   @Listen('workflowDefinitionSelected')
   private async handleWorkflowDefinitionSelected(e: CustomEvent<WorkflowDefinitionSummary>) {
-
-    debugger;
     const workflowEditorElement = this.workflowEditorElement;
 
     if (!workflowEditorElement)

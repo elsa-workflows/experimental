@@ -35,7 +35,7 @@ public class ActivityWalker : IActivityWalker
         if (resolver == null)
             return;
 
-        var ports = resolver.GetNodes(pair.Activity);
+        var ports = resolver.GetPorts(pair.Activity);
 
         foreach (var port in ports)
         {

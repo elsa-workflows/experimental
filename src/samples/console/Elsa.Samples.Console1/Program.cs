@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Mediator.Extensions;
 using Elsa.Models;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Persistence.Middleware.WorkflowExecution;
@@ -48,7 +49,7 @@ class Program
         var workflow13 = new Func<IActivity>(BlockingParallelForEachWorkflow.Create);
         var workflow14 = new Func<IActivity>(FreeFlowchartWorkflow.Create);
 
-        var workflowFactory = workflow14;
+        var workflowFactory = workflow2;
         var workflowGraph = workflowFactory();
         var workflow = Workflow.FromActivity(workflowGraph);
 
@@ -87,8 +88,9 @@ class Program
 
         services
             .AddElsa()
-            .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))
-            .AddInMemoryPersistence();
+            .AddMediator()
+            .AddInMemoryPersistence()
+            .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning));
 
         return services.BuildServiceProvider();
     }

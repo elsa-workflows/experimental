@@ -6,12 +6,12 @@ namespace Elsa.Mediator.Middleware.Command.Components;
 public class CommandHandlerInvokerMiddleware : ICommandMiddleware
 {
     private readonly CommandMiddlewareDelegate _next;
-    private readonly IEnumerable<ICommandHandler> _requestHandlers;
+    private readonly IEnumerable<ICommandHandler> _commandHandlers;
 
-    public CommandHandlerInvokerMiddleware(CommandMiddlewareDelegate next, IEnumerable<ICommandHandler> requestHandlers)
+    public CommandHandlerInvokerMiddleware(CommandMiddlewareDelegate next, IEnumerable<ICommandHandler> commandHandlers)
     {
         _next = next;
-        _requestHandlers = requestHandlers;
+        _commandHandlers = commandHandlers;
     }
 
     public async ValueTask InvokeAsync(CommandContext context)
@@ -21,7 +21,7 @@ public class CommandHandlerInvokerMiddleware : ICommandMiddleware
         var commandType = command.GetType();
         var resultType = context.ResultType;
         var handlerType = typeof(ICommandHandler<,>).MakeGenericType(commandType, resultType);
-        var handlers = _requestHandlers.Where(x => handlerType.IsInstanceOfType(x)).ToArray();
+        var handlers = _commandHandlers.Where(x => handlerType.IsInstanceOfType(x)).ToArray();
 
         if (!handlers.Any())
             throw new InvalidOperationException($"There is no handler to handle the {commandType.FullName} command");

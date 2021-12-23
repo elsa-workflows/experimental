@@ -1,31 +1,29 @@
-import {Component, Element, Event, EventEmitter, h, Method, Prop} from '@stencil/core';
-import {Edge, Graph, Node, NodeView} from '@antv/x6';
+import {Component, Element, Event, EventEmitter, h, Method, Prop, Watch} from '@stencil/core';
+import {Edge, Graph, Model, Node, NodeView} from '@antv/x6';
 import {v4 as uuid} from 'uuid';
 import {camelCase, first} from 'lodash';
 import './shapes';
 import './ports';
 import {ContainerActivityComponent} from '../container-activity-component';
 import {AddActivityArgs} from '../../designer/canvas/canvas';
-import {
-  Activity,
-  ActivityDescriptor,
-  ActivitySelectedArgs,
-  ContainerSelectedArgs,
-  GraphUpdatedArgs
-} from '../../../models';
+import {Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs} from '../../../models';
 import {createGraph} from './graph-factory';
 import {createNode} from './node-factory';
 import {Connection, Flowchart} from './models';
-import PositionEventArgs = NodeView.PositionEventArgs;
 import WorkflowEditorTunnel from '../../designer/state';
+import {ActivityNode, flatten, walkActivities} from "./activity-walker";
+import PositionEventArgs = NodeView.PositionEventArgs;
+import FromJSONData = Model.FromJSONData;
 
 @Component({
   tag: 'elsa-flowchart',
   styleUrl: 'flowchart.scss',
 })
 export class FlowchartComponent implements ContainerActivityComponent {
+  private rootId: string = uuid();
 
   @Prop({mutable: true}) public activityDescriptors: Array<ActivityDescriptor> = [];
+  @Prop({mutable: true}) public root?: Activity;
 
   @Element() el: HTMLElement;
   container: HTMLElement;
@@ -55,15 +53,23 @@ export class FlowchartComponent implements ContainerActivityComponent {
       metadata: {},
     };
 
-    const node = createNode(graph, descriptor, activity, x, y);
+    const node = createNode(descriptor, activity, x, y);
     graph.addNode(node);
-
-    const json = graph.toJSON();
   }
 
   @Method()
-  public async exportGraph(): Promise<Activity> {
-    return this.exportGraphInternal();
+  public async exportRoot(): Promise<Activity> {
+    return this.exportRootInternal();
+  }
+
+  @Method()
+  public async importRoot(root: Activity): Promise<void> {
+    return this.importRootInternal(root);
+  }
+
+  @Watch('root')
+  private onRootChange(value: Activity) {
+    this.importRootInternal(value);
   }
 
   public async componentDidLoad() {
@@ -83,7 +89,15 @@ export class FlowchartComponent implements ContainerActivityComponent {
     await this.updateLayout();
   }
 
-  exportGraphInternal = (): Activity => {
+  public render() {
+    return (
+      <div
+        class="absolute left-0 top-0 right-0 bottom-0"
+        ref={el => this.container = el}/>
+    );
+  }
+
+  private exportRootInternal = (): Activity => {
     const graph = this.graph;
     const graphModel = graph.toJSON();
     const activities = graphModel.cells.filter(x => x.shape == 'activity').map(x => x.data as Activity);
@@ -92,17 +106,15 @@ export class FlowchartComponent implements ContainerActivityComponent {
     let remainingActivities: Array<Activity> = [...activities]; // The activities remaining after transposition.
     const activityDescriptors = this.activityDescriptors;
 
-    // Transpose connections to activity outbound properties where applicable.
-
+    // Transpose connections to activity outbound port properties.
     for (const connection of connections) {
       const source = activities.find(x => x.id == connection.source);
       const target = activities.find(x => x.id == connection.target);
       const sourceDescriptor = activityDescriptors.find(x => x.activityType == source.activityType);
-      const targetDescriptor = activityDescriptors.find(x => x.activityType == target.activityType);
       const matchingTargetPort = sourceDescriptor.outPorts.find(x => x.name == connection.sourcePort);
 
       if (!!matchingTargetPort) {
-        // Assign the target activity directly to the out port of the source activity.
+        // Assign the target activity directly to the outbound port of the source activity.
         const outPortPropName = camelCase(connection.sourcePort);
         source[outPortPropName] = target;
 
@@ -119,15 +131,68 @@ export class FlowchartComponent implements ContainerActivityComponent {
       metadata: {},
       activities: remainingActivities,
       connections: remainingConnections,
-      id: "1",
+      id: this.rootId,
       start: first(activities)?.id,
       variables: []
-    };
+    } as Flowchart;
   }
 
-  onGraphClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => this.containerSelected.emit({});
+  private importRootInternal = (root: Activity) => {
 
-  onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
+    debugger;
+
+    // Update root ID.
+    this.rootId = root.id;
+
+    const graph = this.graph;
+    const descriptors = this.activityDescriptors;
+    //const flowchart = root as Flowchart;
+    const flowchartGraph = walkActivities(root, this.activityDescriptors);
+    const flowchartNodes = flatten(flowchartGraph);
+    const nodes: Array<Node.Metadata> = [];
+    let edges: Array<Edge.Metadata> = [];
+
+    let x = 50;
+    let y = 50;
+
+    for (const activityNode of flowchartNodes) {
+      const activity = activityNode.activity;
+      const descriptor = descriptors.find(x => x.activityType == activity.activityType)
+      const node = createNode(descriptor, activity, x, y);
+
+      nodes.push(node);
+
+      x += 75;
+      y += 75;
+
+      const childEdges = this.createEdges(activityNode);
+      edges = [...childEdges];
+    }
+
+    const model: FromJSONData = {nodes, edges};
+    graph.fromJSON(model, {silent: false})
+  };
+
+  private createEdges = (activityNode: ActivityNode): Array<Edge.Metadata> => {
+    let edges: Array<Edge.Metadata> = [];
+
+    for (const childNode of activityNode.children) {
+      const edge: Edge.Metadata = {
+        source: activityNode.activity.id,
+        target: childNode.activity.id,
+        sourcePort: activityNode.port,
+        targetPort: childNode.port
+      };
+
+      edges.push(edge);
+    }
+
+    return edges;
+  }
+
+  private onGraphClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => this.containerSelected.emit({});
+
+  private onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
     const node = e.node;
     const activity = node.data as Activity;
 
@@ -140,7 +205,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
     this.activitySelected.emit(args);
   };
 
-  onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {
+  private onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {
     const edge = e.edge;
     const isNew = e.isNew;
     const sourceNode = edge.getSourceNode();
@@ -150,29 +215,18 @@ export class FlowchartComponent implements ContainerActivityComponent {
     const sourcePort = sourceNode.getPort(edge.getSourcePortId()).id;
     const targetPort = targetNode.getPort(edge.getTargetPortId()).id;
 
-    // noinspection UnnecessaryLocalVariableJS
-    const connection: Connection = {
+    edge.data = {
       source: sourceActivity.id,
       sourcePort: sourcePort,
       target: targetActivity.id,
       targetPort: targetPort
     };
-
-    edge.data = connection;
   }
 
-  onGraphChanged = async (e: any) => {
+  private onGraphChanged = async (e: any) => {
     console.debug('changed');
 
-    this.graphUpdated.emit({exportGraph: this.exportGraphInternal});
-  }
-
-  render() {
-    return (
-      <div
-        class="absolute left-0 top-0 right-0 bottom-0"
-        ref={el => this.container = el}/>
-    );
+    this.graphUpdated.emit({exportGraph: this.exportRootInternal});
   }
 }
 

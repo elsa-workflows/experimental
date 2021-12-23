@@ -1,4 +1,4 @@
-import {Component, h, Listen, Prop, State, Event, EventEmitter, Method} from '@stencil/core';
+import {Component, h, Listen, Prop, State, Event, EventEmitter, Method, Watch} from '@stencil/core';
 import {debounce} from 'lodash';
 import {v4 as uuid} from 'uuid';
 import {Container} from "typedi";
@@ -20,6 +20,7 @@ import {
 import {ActivityDriverRegistry} from '../../../services';
 import {TriggerSelectedArgs, TriggersUpdatedArgs} from '../trigger-container/trigger-container';
 import {DeleteTriggerRequestedArgs, TriggerUpdatedArgs} from "../trigger-properties-editor/trigger-properties-editor";
+import {list} from "postcss";
 
 export interface WorkflowUpdatedArgs {
   workflow: Workflow;
@@ -106,6 +107,11 @@ export class WorkflowEditor {
   @Listen('triggersUpdated')
   handleTriggersUpdated(e: CustomEvent<TriggersUpdatedArgs>) {
     this.saveChangesDebounced();
+  }
+
+  @Watch('workflow')
+  async handleWorkflowChange(value: Workflow) {
+    this.canvas.importGraph(value.root);
   }
 
   @Method()

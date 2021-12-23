@@ -38,9 +38,15 @@ public class InMemoryStore<TEntity>
         return entries.Count;
     }
 
-    public void DeleteMany(IEnumerable<string> ids)
+    public int DeleteMany(IEnumerable<string> ids)
     {
+        var count = 0;
         foreach (var id in ids)
+        {
+            count++;
             Entities.Remove(id);
+        }
+
+        return count;
     }
 }
