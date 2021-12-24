@@ -5,11 +5,11 @@ namespace Elsa.Contracts;
 
 public interface IWorkflowDefinitionBuilder
 {
-    string? Id { get; }
+    string? DefinitionId { get; }
     int Version { get; }
     IActivity? Root { get; }
     ICollection<ITrigger> Triggers { get; }
-    IWorkflowDefinitionBuilder WithId(string id);
+    IWorkflowDefinitionBuilder WithDefinitionId(string definitionId);
     IWorkflowDefinitionBuilder WithVersion(int version);
     IWorkflowDefinitionBuilder WithRoot(IActivity root);
     IWorkflowDefinitionBuilder AddTrigger(ITrigger trigger);

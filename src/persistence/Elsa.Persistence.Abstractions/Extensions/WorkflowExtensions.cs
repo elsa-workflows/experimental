@@ -9,8 +9,8 @@ public static class WorkflowExtensions
 {
     public static bool WithVersion(this Workflow workflow, VersionOptions version)
     {
-        var metadata = workflow.Metadata;
-        var (identity, (isLatest, isPublished), _) = metadata;
+        var identity = workflow.Identity;
+        var (isLatest, isPublished) = workflow.Publication;
 
         if (version.IsDraft)
             return !isPublished;
@@ -30,10 +30,10 @@ public static class WorkflowExtensions
     public static IEnumerable<Workflow> WithVersion(
         this IEnumerable<Workflow> query,
         VersionOptions version) =>
-        query.Where(x => x.WithVersion(version)).OrderByDescending(x => x.Metadata.Identity.Version);
+        query.Where(x => x.WithVersion(version)).OrderByDescending(x => x.Identity.Version);
 
     public static IQueryable<Workflow> WithVersion(
         this IQueryable<Workflow> query,
         VersionOptions version) =>
-        query.Where(x => x.WithVersion(version)).OrderByDescending(x => x.Metadata.Identity.Version);
+        query.Where(x => x.WithVersion(version)).OrderByDescending(x => x.Identity.Version);
 }

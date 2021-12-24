@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Elsa.Activities.Workflows;
 using Elsa.Contracts;
 
-namespace Elsa.Converters;
+namespace Elsa.Management.Serialization.Converters;
 
 public class ConnectionJsonConverter : JsonConverter<Connection>
 {

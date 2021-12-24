@@ -11,14 +11,15 @@ namespace Elsa.Activities.Workflows;
 [Category("Workflows")]
 public class Flowchart : Container
 {
-    [Outbound]public IActivity? Start { get; set; } = default!;
+    //[Outbound]
+    public IActivity? Start { get; set; } = default!;
     public ICollection<Connection> Connections { get; set; } = new List<Connection>();
-        
+
     protected override void ScheduleChildren(ActivityExecutionContext context)
     {
         if (Start == null!)
             return;
-            
+
         context.ScheduleActivity(Start, OnChildCompleted);
     }
 
@@ -35,7 +36,7 @@ public class Flowchart : Container
 
         var outboundConnections = Connections.Where(x => x.Source == parent).ToList();
         var children = outboundConnections.Select(x => x.Target).ToList();
-            
+
         context.ScheduleActivities(children, OnChildCompleted);
     }
 }

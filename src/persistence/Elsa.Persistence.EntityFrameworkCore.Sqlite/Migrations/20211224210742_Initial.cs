@@ -75,7 +75,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Sqlite.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
-                    WorkflowId = table.Column<string>(type: "TEXT", nullable: false),
+                    WorkflowDefinitionId = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Hash = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -201,9 +201,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Sqlite.Migrations
                 column: "Name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkflowTrigger_WorkflowId",
+                name: "IX_WorkflowTrigger_WorkflowDefinitionId",
                 table: "WorkflowTriggers",
-                column: "WorkflowId");
+                column: "WorkflowDefinitionId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

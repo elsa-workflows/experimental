@@ -1,5 +1,6 @@
 using Elsa.Contracts;
 using Elsa.Management.Contracts;
+using Elsa.Management.Mappers;
 using Elsa.Management.Options;
 using Elsa.Management.Providers;
 using Elsa.Management.Serialization;
@@ -31,7 +32,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IExpressionSyntaxRegistry, ExpressionSyntaxRegistry>()
             .AddSingleton<IExpressionSyntaxProvider, DefaultExpressionSyntaxProvider>()
             .AddSingleton<IExpressionSyntaxRegistryPopulator, ExpressionSyntaxRegistryPopulator>()
-            .AddSingleton<WorkflowSerializerOptionsProvider>();
+            .AddSingleton<WorkflowSerializerOptionsProvider>()
+            .AddSingleton<WorkflowDefinitionMapper>();
     }
     
     public static IServiceCollection ConfigureApiOptions(this IServiceCollection services, Action<ApiOptions> configure) => services.Configure(configure);

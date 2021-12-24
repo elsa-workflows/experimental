@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Management.Contracts;
+using Elsa.Management.Mappers;
 using Elsa.Management.Serialization;
 using Elsa.Models;
 using Microsoft.AspNetCore.Http;
@@ -15,13 +16,14 @@ public static partial class Workflows
         HttpContext httpContext,
         WorkflowSerializerOptionsProvider serializerOptionsProvider,
         IWorkflowPublisher workflowPublisher,
+        WorkflowDefinitionMapper mapper,
         CancellationToken cancellationToken)
     {
         var serializerOptions = serializerOptionsProvider.CreateSerializerOptions();
         var model = (await httpContext.Request.ReadFromJsonAsync<SaveWorkflowRequest>(serializerOptions, cancellationToken))!;
         var workflow = model.Workflow;
-        var metadata = workflow.Metadata;
-        var definitionId = metadata.Identity.Id;
+        var identity = workflow.Identity;
+        var definitionId = identity.DefinitionId;
 
         // Get a workflow draft version.
         var definition = !string.IsNullOrWhiteSpace(definitionId)
@@ -50,12 +52,7 @@ public static partial class Workflows
             definition = await workflowPublisher.SaveDraftAsync(definition, cancellationToken);
 
         // Synchronize workflow model with updated definition.
-        workflow = workflow with
-        {
-            Metadata = new WorkflowMetadata(
-                new WorkflowIdentity(definition.DefinitionId, definition.Version),
-                new WorkflowPublication(definition.IsLatest, definition.IsPublished), workflow.Metadata.Name)
-        };
+        workflow = mapper.Map(definition);
 
         var statusCode = isNew ? StatusCodes.Status201Created : StatusCodes.Status200OK;
 

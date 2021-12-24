@@ -26,9 +26,9 @@ public class ConfigurationWorkflowProvider : IWorkflowProvider
         _workflows = CreateWorkflowDefinitions().ToList();
     }
 
-    public ValueTask<Workflow?> FindByIdAsync(string id, VersionOptions versionOptions, CancellationToken cancellationToken = default)
+    public ValueTask<Workflow?> FindByDefinitionIdAsync(string definitionId, VersionOptions versionOptions, CancellationToken cancellationToken = default)
     {
-        var result = _workflows.FirstOrDefault(x => x.Metadata.Identity.Id == id && x.WithVersion(versionOptions));
+        var result = _workflows.FirstOrDefault(x => x.Identity.DefinitionId == definitionId && x.WithVersion(versionOptions));
         return ValueTask.FromResult(result);
     }
 
@@ -39,7 +39,7 @@ public class ConfigurationWorkflowProvider : IWorkflowProvider
     private Workflow BuildWorkflowDefinition(IWorkflow workflowDeclaration)
     {
         var builder = new WorkflowDefinitionBuilder();
-        builder.WithId(workflowDeclaration.GetType().Name);
+        builder.WithDefinitionId(workflowDeclaration.GetType().Name);
         workflowDeclaration.Build(builder);
 
         var workflow = builder.BuildWorkflow();

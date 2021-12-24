@@ -11,7 +11,7 @@ import {createGraph} from './graph-factory';
 import {createNode} from './node-factory';
 import {Connection, Flowchart} from './models';
 import WorkflowEditorTunnel from '../../designer/state';
-import {ActivityNode, flatten, walkActivities} from "./activity-walker";
+import {ActivityNode, flattenList, walkActivities} from "./activity-walker";
 import PositionEventArgs = NodeView.PositionEventArgs;
 import FromJSONData = Model.FromJSONData;
 
@@ -126,9 +126,9 @@ export class FlowchartComponent implements ContainerActivityComponent {
       }
     }
 
+    debugger;
     return {
       activityType: 'Workflows.Flowchart',
-      metadata: {},
       activities: remainingActivities,
       connections: remainingConnections,
       id: this.rootId,
@@ -138,23 +138,20 @@ export class FlowchartComponent implements ContainerActivityComponent {
   }
 
   private importRootInternal = (root: Activity) => {
-
     debugger;
 
-    // Update root ID.
     this.rootId = root.id;
-
-    const graph = this.graph;
     const descriptors = this.activityDescriptors;
-    //const flowchart = root as Flowchart;
+    const flowchart = root as Flowchart;
     const flowchartGraph = walkActivities(root, this.activityDescriptors);
-    const flowchartNodes = flatten(flowchartGraph);
+    const flowchartNodes = flattenList(flowchartGraph.children);
     const nodes: Array<Node.Metadata> = [];
     let edges: Array<Edge.Metadata> = [];
 
     let x = 50;
     let y = 50;
 
+    // Create an X6 node for each activity.
     for (const activityNode of flowchartNodes) {
       const activity = activityNode.activity;
       const descriptor = descriptors.find(x => x.activityType == activity.activityType)
@@ -165,29 +162,48 @@ export class FlowchartComponent implements ContainerActivityComponent {
       x += 75;
       y += 75;
 
+      // Create X6 edges for each child activity.
       const childEdges = this.createEdges(activityNode);
       edges = [...childEdges];
     }
 
+    // Create X6 edges for each connection in the flowchart.
+    for (const connection of flowchart.connections) {
+      const edge: Edge.Metadata = this.createEdge(connection);
+      edges.push(edge);
+    }
+
     const model: FromJSONData = {nodes, edges};
-    graph.fromJSON(model, {silent: false})
+    this.graph.fromJSON(model, {silent: false})
   };
 
   private createEdges = (activityNode: ActivityNode): Array<Edge.Metadata> => {
     let edges: Array<Edge.Metadata> = [];
 
     for (const childNode of activityNode.children) {
-      const edge: Edge.Metadata = {
+      const edge = this.createEdge({
         source: activityNode.activity.id,
-        target: childNode.activity.id,
         sourcePort: activityNode.port,
+        target: childNode.activity.id,
         targetPort: childNode.port
-      };
+      });
 
       edges.push(edge);
     }
 
     return edges;
+  }
+
+  private createEdge = (connection: Connection): Edge.Metadata => {
+    return {
+      shape: 'elsa-edge',
+      zIndex: -1,
+      data: connection,
+      source: connection.source,
+      target: connection.target,
+      sourcePort: connection.sourcePort,
+      targetPort: connection.targetPort
+    };
   }
 
   private onGraphClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => this.containerSelected.emit({});
@@ -220,7 +236,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
       sourcePort: sourcePort,
       target: targetActivity.id,
       targetPort: targetPort
-    };
+    } as Connection;
   }
 
   private onGraphChanged = async (e: any) => {

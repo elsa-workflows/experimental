@@ -36,8 +36,8 @@ public class TriggerIndexer : ITriggerIndexer
         var triggers = await GetTriggersAsync(workflow, cancellationToken).ToListAsync(cancellationToken);
 
         // Replace triggers for the specified workflow.
-        var workflowId = workflow.Metadata.Identity.Id;
-        await _mediator.ExecuteAsync(new ReplaceWorkflowTriggers(workflowId, triggers), cancellationToken);
+        var definitionId = workflow.Identity.DefinitionId;
+        await _mediator.ExecuteAsync(new ReplaceWorkflowTriggers(definitionId, triggers), cancellationToken);
     }
 
     private async IAsyncEnumerable<WorkflowTrigger> GetTriggersAsync(Workflow workflow, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -75,7 +75,7 @@ public class TriggerIndexer : ITriggerIndexer
         var triggers = hashInputs.Select(x => new WorkflowTrigger
         {
             Id = Guid.NewGuid().ToString(),
-            WorkflowId = workflow.Metadata.Identity.Id,
+            WorkflowDefinitionId = workflow.Identity.DefinitionId,
             Name = trigger.GetType().Name,
             Hash = _hasher.Hash(x)
         });

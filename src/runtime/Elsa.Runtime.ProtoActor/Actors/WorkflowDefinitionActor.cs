@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Elsa.Contracts;
 using Elsa.Mediator.Contracts;
 using Elsa.Persistence.Commands;
 using Elsa.Persistence.Entities;
@@ -21,11 +22,13 @@ public class WorkflowDefinitionActor : IActor
 {
     private readonly IWorkflowRegistry _workflowRegistry;
     private readonly ICommandSender _commandSender;
+    private readonly ISystemClock _systemClock;
 
-    public WorkflowDefinitionActor(IWorkflowRegistry workflowRegistry, ICommandSender commandSender)
+    public WorkflowDefinitionActor(IWorkflowRegistry workflowRegistry, ICommandSender commandSender, ISystemClock systemClock)
     {
         _workflowRegistry = workflowRegistry;
         _commandSender = commandSender;
+        _systemClock = systemClock;
     }
 
     public Task ReceiveAsync(IContext context) => context.Message switch
@@ -73,8 +76,10 @@ public class WorkflowDefinitionActor : IActor
         var workflowInstance = new WorkflowInstance
         {
             Id = workflowInstanceId,
-            Version = workflow.Metadata.Identity.Version,
+            Version = workflow.Identity.Version,
             DefinitionId = workflowDefinitionId,
+            CreatedAt = _systemClock.UtcNow,
+            WorkflowStatus = WorkflowStatus.Idle,
             WorkflowState = new WorkflowState
             {
                 Id = workflowInstanceId

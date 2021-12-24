@@ -51,7 +51,9 @@ export class WorkflowEditor {
 
   @Prop() workflow: Workflow = {
     root: null,
-    metadata: {identity: {id: uuid(), version: 1}, publication: {isLatest: true, isPublished: false}},
+    identity: {id: uuid(), definitionId: uuid(), version: 1},
+    publication: {isLatest: true, isPublished: false},
+    metadata: {},
     triggers: []
   };
 
@@ -111,7 +113,8 @@ export class WorkflowEditor {
 
   @Watch('workflow')
   async handleWorkflowChange(value: Workflow) {
-    this.canvas.importGraph(value.root);
+    debugger;
+    await this.canvas.importGraph(value.root);
   }
 
   @Method()
@@ -179,6 +182,7 @@ export class WorkflowEditor {
 
     workflow.root = root;
 
+    debugger;
     this.workflowUpdated.emit({workflow});
   };
 

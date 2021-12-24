@@ -1,6 +1,7 @@
+using System;
+
 namespace Elsa.Models;
 
-public record WorkflowMetadata(WorkflowIdentity Identity, WorkflowPublication Publication, string? Name = default)
+public record WorkflowMetadata(string? Name = default, DateTime CreatedAt = default)
 {
-    public static WorkflowMetadata VersionOne => new(WorkflowIdentity.VersionOne, WorkflowPublication.LatestAndPublished);
 }

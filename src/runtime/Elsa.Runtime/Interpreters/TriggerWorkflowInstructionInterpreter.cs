@@ -26,7 +26,7 @@ public class TriggerWorkflowInstructionInterpreter : WorkflowInstructionInterpre
     protected override async ValueTask<ExecuteWorkflowInstructionResult?> ExecuteInstructionAsync(TriggerWorkflowInstruction instruction, CancellationToken cancellationToken = default)
     {
         var workflowTrigger = instruction.WorkflowTrigger;
-        var workflowId = workflowTrigger.WorkflowId;
+        var workflowId = workflowTrigger.WorkflowDefinitionId;
 
         // Get workflow to execute.
         var workflow = await FindWorkflowAsync(workflowId, cancellationToken);
@@ -35,7 +35,7 @@ public class TriggerWorkflowInstructionInterpreter : WorkflowInstructionInterpre
             return null;
 
         // Execute workflow.
-        var executeRequest = new ExecuteWorkflowDefinitionRequest(workflowId, workflow.Metadata.Identity.Version);
+        var executeRequest = new ExecuteWorkflowDefinitionRequest(workflowId, workflow.Identity.Version);
         var workflowExecutionResult = await _workflowInvoker.ExecuteAsync(executeRequest, cancellationToken);
 
         return new ExecuteWorkflowInstructionResult(workflow, workflowExecutionResult);
@@ -44,16 +44,16 @@ public class TriggerWorkflowInstructionInterpreter : WorkflowInstructionInterpre
     protected override async ValueTask<DispatchWorkflowInstructionResult?> DispatchInstructionAsync(TriggerWorkflowInstruction instruction, CancellationToken cancellationToken = default)
     {
         var workflowTrigger = instruction.WorkflowTrigger;
-        var workflowId = workflowTrigger.WorkflowId;
+        var definitionId = workflowTrigger.WorkflowDefinitionId;
 
         // Get workflow to dispatch.
-        var workflow = await FindWorkflowAsync(workflowId, cancellationToken);
+        var workflow = await FindWorkflowAsync(definitionId, cancellationToken);
 
         if (workflow == null)
             return null;
 
         // Execute workflow.
-        var dispatchRequest = new DispatchWorkflowDefinitionRequest(workflowId, workflow.Metadata.Identity.Version);
+        var dispatchRequest = new DispatchWorkflowDefinitionRequest(definitionId, workflow.Identity.Version);
         await _workflowInvoker.DispatchAsync(dispatchRequest, cancellationToken);
 
         return new DispatchWorkflowInstructionResult();

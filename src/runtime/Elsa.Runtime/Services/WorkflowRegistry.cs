@@ -18,7 +18,7 @@ public class WorkflowRegistry : IWorkflowRegistry
     {
         foreach (var workflowProvider in _workflowProviders)
         {
-            var workflow = await workflowProvider.FindByIdAsync(id, versionOptions, cancellationToken);
+            var workflow = await workflowProvider.FindByDefinitionIdAsync(id, versionOptions, cancellationToken);
 
             if (workflow != null)
                 return workflow;

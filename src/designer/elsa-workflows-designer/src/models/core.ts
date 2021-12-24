@@ -33,18 +33,21 @@ export interface ActivityInput {
 }
 
 export interface Workflow {
+  identity: WorkflowIdentity;
+  publication: WorkflowPublication;
   metadata: WorkflowMetadata;
   root: Activity;
   triggers: Array<Trigger>;
 }
 
 export interface WorkflowMetadata {
-  identity: WorkflowIdentity;
-  publication: WorkflowPublication;
+  name?: string;
+  createdAt?: Date;
 }
 
 export interface WorkflowIdentity {
   id: string;
+  definitionId: string;
   version: number;
 }
 

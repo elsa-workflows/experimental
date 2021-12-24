@@ -37,13 +37,13 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
     public async ValueTask InvokeAsync(WorkflowExecutionContext context)
     {
         var workflow = context.Workflow;
-        var (id, version) = workflow.Metadata.Identity;
+        var (definitionId, version, _) = workflow.Identity;
 
         // Setup a new workflow instance.
         var workflowInstance = new WorkflowInstance
         {
             Id = context.Id,
-            DefinitionId = id,
+            DefinitionId = definitionId,
             Version = version,
             WorkflowState = _workflowStateSerializer.ReadState(context)
         };
@@ -87,7 +87,7 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
         var workflowBookmarks = context.Bookmarks.Select(x => new WorkflowBookmark
         {
             Id = x.Id,
-            WorkflowDefinitionId = id,
+            WorkflowDefinitionId = definitionId,
             WorkflowInstanceId = workflowInstance.Id,
             Hash = x.Hash,
             Data = x.Data,

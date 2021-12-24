@@ -1,6 +1,6 @@
 namespace Elsa.Models;
 
-public record WorkflowIdentity(string Id, int Version)
+public record WorkflowIdentity(string DefinitionId, int Version, string Id)
 {
-    public static WorkflowIdentity VersionOne => new("1", 1);
+    public static WorkflowIdentity VersionOne => new("1", 1, "1");
 }

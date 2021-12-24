@@ -1,3 +1,4 @@
+import _, {camelCase} from "lodash";
 import {Activity, ActivityDescriptor, Container} from "../../../models";
 
 export interface ActivityNode {
@@ -20,13 +21,24 @@ export function walkActivities(root: Activity, descriptors: Array<ActivityDescri
   return graph;
 }
 
+// export function walkActivityList(activities: Array<Activity>, descriptors: Array<ActivityDescriptor>): Array<ActivityNode> {
+//   const collectedActivities = new Set<Activity>(activities);
+//   const activityNodes: Array<ActivityNode> = activities.map(x => ({activity: x, parents: [], children: []}));
+//   const collectedNodes = new Set<ActivityNode>(activityNodes);
+//   walkRecursive(graph, root, collectedActivities, collectedNodes, descriptors);
+//   return graph;
+// }
+
 export function flatten(root: ActivityNode): Array<ActivityNode> {
-  const list: Array<ActivityNode> = [root];
+  return flattenList([root]);
+}
 
-  for (const node of root.children) {
-    const children = flatten(node);
+export function flattenList(activities: Array<ActivityNode>): Array<ActivityNode> {
+  debugger;
+  const list: Array<ActivityNode> = [...activities];
 
-    for (const child of children)
+  for (const activity of activities) {
+    for (const child of activity.children)
       list.push(child);
   }
 
@@ -41,7 +53,7 @@ function walkRecursive(node: ActivityNode, activity: Activity, collectedActiviti
     let childNode = collectedNodesArray.find(x => x.activity == port.activity);
 
     if (!childNode) {
-      childNode = {activity: activity, children: [], parents: [], port: port.port};
+      childNode = {activity: port.activity, children: [], parents: [], port: port.port};
       collectedNodes.add(childNode);
     }
 
@@ -61,7 +73,8 @@ function getPorts(node: ActivityNode, activity: Activity, descriptors: Array<Act
   let ports: Array<ActivityPort> = [];
 
   for (const outPort of descriptor.outPorts) {
-    const outbound: Activity | Array<Activity> = activity[outPort.name];
+    const outPortName = _.camelCase(outPort.name);
+    const outbound: Activity | Array<Activity> = activity[outPortName];
 
     if (!!outbound) {
       if (Array.isArray(outbound)) {

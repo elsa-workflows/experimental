@@ -12,17 +12,16 @@ public class ExecuteWorkflowResult : IResult
 {
     public ExecuteWorkflowResult(Workflow workflow) => Workflow = workflow;
     public Workflow Workflow { get; }
-        
+
     public async Task ExecuteAsync(HttpContext httpContext)
     {
         var response = httpContext.Response;
         var workflowInvoker = httpContext.RequestServices.GetRequiredService<IWorkflowInvoker>();
-        var id = Workflow.Metadata.Identity.Id;
-        var version = Workflow.Metadata.Identity.Version;
-        var executeRequest = new ExecuteWorkflowDefinitionRequest(id, version); 
+        var (definitionId, version, _) = Workflow.Identity;
+        var executeRequest = new ExecuteWorkflowDefinitionRequest(definitionId, version);
         var result = await workflowInvoker.ExecuteAsync(executeRequest, CancellationToken.None);
 
-        if (!response.HasStarted) 
+        if (!response.HasStarted)
             await response.WriteAsJsonAsync(result, httpContext.RequestAborted);
     }
 }
