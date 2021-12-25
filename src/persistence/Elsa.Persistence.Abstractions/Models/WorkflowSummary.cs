@@ -3,7 +3,7 @@ using Elsa.Persistence.Entities;
 
 namespace Elsa.Persistence.Models;
 
-public class WorkflowDefinitionSummary
+public class WorkflowSummary
 {
     public string Id { get; set; } = default!;
     public string DefinitionId { get; set; } = default!;
@@ -13,7 +13,7 @@ public class WorkflowDefinitionSummary
     public bool IsLatest { get; set; }
     public bool IsPublished { get; set; }
 
-    public static WorkflowDefinitionSummary FromDefinition(WorkflowDefinition workflowDefinition) => new()
+    public static WorkflowSummary FromDefinition(WorkflowDefinition workflowDefinition) => new()
     {
         Id = workflowDefinition.Id,
         DefinitionId = workflowDefinition.DefinitionId,

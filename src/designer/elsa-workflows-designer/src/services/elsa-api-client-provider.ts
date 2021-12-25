@@ -56,6 +56,7 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
     },
     workflows: {
       async post(request: SaveWorkflowRequest): Promise<Workflow> {
+        debugger;
         const response = await httpClient.post<Workflow>('api/workflows', request);
         return response.data;
       },

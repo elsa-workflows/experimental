@@ -2,17 +2,25 @@ using Elsa.Mediator.Contracts;
 using Elsa.Persistence.Commands;
 using Elsa.Persistence.Entities;
 using Elsa.Persistence.EntityFrameworkCore.Contracts;
+using Elsa.Persistence.Mappers;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Handlers.Commands;
 
-public class SaveWorkflowDefinitionHandler : ICommandHandler<SaveWorkflowDefinition>
+public class SaveWorkflowDefinitionHandler : ICommandHandler<SaveWorkflow>
 {
     private readonly IStore<WorkflowDefinition> _store;
-    public SaveWorkflowDefinitionHandler(IStore<WorkflowDefinition> store) => _store = store;
+    private readonly WorkflowDefinitionMapper _mapper;
 
-    public async Task<Unit> HandleAsync(SaveWorkflowDefinition command, CancellationToken cancellationToken)
+    public SaveWorkflowDefinitionHandler(IStore<WorkflowDefinition> store, WorkflowDefinitionMapper mapper)
     {
-        await _store.SaveAsync(command.WorkflowDefinition.Id, command.WorkflowDefinition, cancellationToken);
+        _store = store;
+        _mapper = mapper;
+    }
+
+    public async Task<Unit> HandleAsync(SaveWorkflow command, CancellationToken cancellationToken)
+    {
+        var definition = _mapper.Map(command.Workflow)!;
+        await _store.SaveAsync(definition, cancellationToken);
         
         return Unit.Instance;
     }

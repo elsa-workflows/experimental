@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using EFCore.BulkExtensions;
+using Elsa.Persistence.Entities;
 using Elsa.Persistence.EntityFrameworkCore.Contracts;
 using Elsa.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Services;
 
-public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : class
+public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : Entity
 {
     private readonly IDbContextFactory<ElsaDbContext> _dbContextFactory;
     private readonly IServiceProvider _serviceProvider;
@@ -20,7 +21,7 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : class
 
     public async Task<ElsaDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) => await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
-    public async Task SaveAsync(string id, TEntity entity, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         await using var dbContext = await CreateDbContextAsync(cancellationToken);
         OnSaving(dbContext, entity);

@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Management.Contracts;
-using Elsa.Management.Mappers;
 using Elsa.Management.Serialization;
 using Elsa.Models;
+using Elsa.Persistence.Mappers;
 using Microsoft.AspNetCore.Http;
 
 namespace Elsa.Api.Endpoints.Workflows;
@@ -26,36 +26,32 @@ public static partial class Workflows
         var definitionId = identity.DefinitionId;
 
         // Get a workflow draft version.
-        var definition = !string.IsNullOrWhiteSpace(definitionId)
+        var draft = !string.IsNullOrWhiteSpace(definitionId)
             ? await workflowPublisher.GetDraftAsync(definitionId, cancellationToken)
             : default;
 
-        var isNew = definition == null;
+        var isNew = draft == null;
 
         // Create a new workflow in case no existing definition was found.
-        if (definition == null)
+        if (draft == null)
         {
-            definition = workflowPublisher.New();
+            draft = workflowPublisher.New();
 
             if (!string.IsNullOrWhiteSpace(definitionId))
-                definition.DefinitionId = definitionId;
+                draft = draft.WithDefinitionId(definitionId);
         }
 
-        // Update the definition with the received model. 
-        definition.Root = workflow.Root;
-        definition.Triggers = workflow.Triggers;
+        // Update the draft with the received model.
+        draft = draft with { Root = workflow.Root, Triggers = workflow.Triggers };
 
         // Publish?
         if (model.Publish)
-            definition = await workflowPublisher.PublishAsync(definition, cancellationToken);
+            draft = await workflowPublisher.PublishAsync(draft, cancellationToken);
         else
-            definition = await workflowPublisher.SaveDraftAsync(definition, cancellationToken);
-
-        // Synchronize workflow model with updated definition.
-        workflow = mapper.Map(definition);
+            draft = await workflowPublisher.SaveDraftAsync(draft, cancellationToken);
 
         var statusCode = isNew ? StatusCodes.Status201Created : StatusCodes.Status200OK;
 
-        return Results.Json(workflow, serializerOptions, statusCode: statusCode);
+        return Results.Json(draft, serializerOptions, statusCode: statusCode);
     }
 }

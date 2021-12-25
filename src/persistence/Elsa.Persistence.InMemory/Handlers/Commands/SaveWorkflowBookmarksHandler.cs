@@ -18,7 +18,7 @@ public class SaveWorkflowBookmarksHandler : ICommandHandler<SaveWorkflowBookmark
 
     public Task<Unit> HandleAsync(SaveWorkflowBookmarks command, CancellationToken cancellationToken)
     {
-        _store.SaveMany(command.WorkflowBookmarks, x => x.Id);
+        _store.SaveMany(command.WorkflowBookmarks);
 
         return Task.FromResult(Unit.Instance);
     }

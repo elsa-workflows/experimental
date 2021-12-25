@@ -21,5 +21,5 @@ public static class ServiceCollectionExtensions
             ;
     }
 
-    public static IServiceCollection AddInMemoryHandlers(this IServiceCollection services) => services.AddHandlersFrom<SaveWorkflowDefinitionHandler>();
+    public static IServiceCollection AddInMemoryHandlers(this IServiceCollection services) => services.AddHandlersFrom<SaveWorkflowHandler>();
 }

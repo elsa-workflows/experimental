@@ -182,7 +182,6 @@ export class WorkflowEditor {
 
     workflow.root = root;
 
-    debugger;
     this.workflowUpdated.emit({workflow});
   };
 

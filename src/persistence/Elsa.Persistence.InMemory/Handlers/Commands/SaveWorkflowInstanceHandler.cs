@@ -18,7 +18,7 @@ public class SaveWorkflowInstanceHandler : ICommandHandler<SaveWorkflowInstance>
 
     public Task<Unit> HandleAsync(SaveWorkflowInstance command, CancellationToken cancellationToken)
     {
-        _store.Save(command.WorkflowInstance.Id, command.WorkflowInstance);
+        _store.Save(command.WorkflowInstance);
         
         return Task.FromResult(Unit.Instance);
     }

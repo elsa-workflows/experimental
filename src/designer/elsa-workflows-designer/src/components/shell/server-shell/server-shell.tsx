@@ -41,6 +41,7 @@ export class ServerShell {
       return;
 
     const definitionId = e.detail.definitionId;
+    debugger;
     workflowEditorElement.workflow = await this.elsaClient.workflows.get({definitionId});
   }
 

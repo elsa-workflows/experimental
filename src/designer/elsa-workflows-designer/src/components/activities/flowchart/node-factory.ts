@@ -50,14 +50,4 @@ export function createNode(activityDescriptor: ActivityDescriptor, activity: Act
     data: activity,
     ports: portModels
   } as Node.Metadata;
-
-  // return graph.createNode({
-  //   shape: 'activity',
-  //   activity: activity,
-  //   activityDescriptor: activityDescriptor,
-  //   x: x,
-  //   y: y,
-  //   data: activity,
-  //   ports: portModels
-  // });
 }

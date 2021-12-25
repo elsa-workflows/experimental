@@ -21,20 +21,11 @@ export function walkActivities(root: Activity, descriptors: Array<ActivityDescri
   return graph;
 }
 
-// export function walkActivityList(activities: Array<Activity>, descriptors: Array<ActivityDescriptor>): Array<ActivityNode> {
-//   const collectedActivities = new Set<Activity>(activities);
-//   const activityNodes: Array<ActivityNode> = activities.map(x => ({activity: x, parents: [], children: []}));
-//   const collectedNodes = new Set<ActivityNode>(activityNodes);
-//   walkRecursive(graph, root, collectedActivities, collectedNodes, descriptors);
-//   return graph;
-// }
-
 export function flatten(root: ActivityNode): Array<ActivityNode> {
   return flattenList([root]);
 }
 
 export function flattenList(activities: Array<ActivityNode>): Array<ActivityNode> {
-  debugger;
   const list: Array<ActivityNode> = [...activities];
 
   for (const activity of activities) {

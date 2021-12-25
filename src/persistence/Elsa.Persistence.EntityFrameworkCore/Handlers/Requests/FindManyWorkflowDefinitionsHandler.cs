@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Handlers.Requests;
 
-public class FindManyWorkflowDefinitionsHandler : IRequestHandler<FindManyWorkflowDefinitions, IEnumerable<WorkflowDefinitionSummary>>
+public class FindManyWorkflowDefinitionsHandler : IRequestHandler<FindManyWorkflowDefinitions, IEnumerable<WorkflowSummary>>
 {
     private readonly IStore<WorkflowDefinition> _store;
     public FindManyWorkflowDefinitionsHandler(IStore<WorkflowDefinition> store) => _store = store;
 
-    public async Task<IEnumerable<WorkflowDefinitionSummary>> HandleAsync(FindManyWorkflowDefinitions request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<WorkflowSummary>> HandleAsync(FindManyWorkflowDefinitions request, CancellationToken cancellationToken)
     {
         await using var dbContext = await _store.CreateDbContextAsync(cancellationToken);
         var set = dbContext.WorkflowDefinitions;
@@ -24,6 +24,6 @@ public class FindManyWorkflowDefinitionsHandler : IRequestHandler<FindManyWorkfl
         
         query = query.Where(x => request.DefinitionIds.Contains(x.DefinitionId));
 
-        return query.OrderBy(x => x.Name).Select(x => WorkflowDefinitionSummary.FromDefinition(x)).ToList();
+        return query.OrderBy(x => x.Name).Select(x => WorkflowSummary.FromDefinition(x)).ToList();
     }
 }

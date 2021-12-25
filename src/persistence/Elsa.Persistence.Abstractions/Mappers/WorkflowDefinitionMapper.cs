@@ -1,12 +1,17 @@
+using System.Collections.Generic;
+using System.Linq;
 using Elsa.Models;
 using Elsa.Persistence.Entities;
 
-namespace Elsa.Management.Mappers;
+namespace Elsa.Persistence.Mappers;
 
 public class WorkflowDefinitionMapper
 {
-    public Workflow Map(WorkflowDefinition definition)
+    public Workflow? Map(WorkflowDefinition? definition)
     {
+        if (definition == null)
+            return null;
+
         return new Workflow(
             new WorkflowIdentity(definition.DefinitionId, definition.Version, definition.Id),
             new WorkflowPublication(definition.IsLatest, definition.IsPublished),
@@ -15,7 +20,7 @@ public class WorkflowDefinitionMapper
             definition.Triggers);
     }
 
-    public WorkflowDefinition Map(Workflow workflow) => Map(workflow, new WorkflowDefinition());
+    public WorkflowDefinition? Map(Workflow? workflow) => workflow == null ? null : Map(workflow, new WorkflowDefinition());
 
     public WorkflowDefinition Map(Workflow workflow, WorkflowDefinition definition)
     {
@@ -35,4 +40,6 @@ public class WorkflowDefinitionMapper
 
         return definition;
     }
+
+    public IEnumerable<Workflow> Map(IEnumerable<WorkflowDefinition> definitions) => definitions.Select(x => Map(x)!);
 }

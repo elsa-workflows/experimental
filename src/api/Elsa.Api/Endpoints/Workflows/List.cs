@@ -24,7 +24,7 @@ public static partial class Workflows
         var skip = page * pageSize;
         var take = pageSize;
         var parsedVersionOptions = versionOptions != null ? VersionOptions.FromString(versionOptions) : default;
-        var workflowSummaries = await requestSender.RequestAsync(new ListWorkflowDefinitions(parsedVersionOptions, skip, take), cancellationToken);
+        var workflowSummaries = await requestSender.RequestAsync(new ListWorkflowSummaries(parsedVersionOptions, skip, take), cancellationToken);
 
         return Results.Json(workflowSummaries, serializerOptions, statusCode: StatusCodes.Status200OK);
     }

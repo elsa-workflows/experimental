@@ -1,17 +1,17 @@
-using Elsa.Persistence.Entities;
+using Elsa.Models;
 
 namespace Elsa.Management.Contracts
 {
     public interface IWorkflowPublisher
     {
-        WorkflowDefinition New();
-        Task<WorkflowDefinition?> PublishAsync(string definitionId, CancellationToken cancellationToken = default);
-        Task<WorkflowDefinition> PublishAsync(WorkflowDefinition definition, CancellationToken cancellationToken = default);
-        Task<WorkflowDefinition?> RetractAsync(string definitionId, CancellationToken cancellationToken = default);
-        Task<WorkflowDefinition> RetractAsync(WorkflowDefinition definitionId, CancellationToken cancellationToken = default);
-        Task<WorkflowDefinition?> GetDraftAsync(string definitionId, CancellationToken cancellationToken= default);
-        Task<WorkflowDefinition> SaveDraftAsync(WorkflowDefinition definition, CancellationToken cancellationToken = default);
+        Workflow New();
+        Task<Workflow?> PublishAsync(string definitionId, CancellationToken cancellationToken = default);
+        Task<Workflow> PublishAsync(Workflow workflow, CancellationToken cancellationToken = default);
+        Task<Workflow?> RetractAsync(string definitionId, CancellationToken cancellationToken = default);
+        Task<Workflow> RetractAsync(Workflow workflow, CancellationToken cancellationToken = default);
+        Task<Workflow?> GetDraftAsync(string definitionId, CancellationToken cancellationToken= default);
+        Task<Workflow> SaveDraftAsync(Workflow workflow, CancellationToken cancellationToken = default);
         Task DeleteAsync(string definitionId, CancellationToken cancellationToken = default);
-        Task DeleteAsync(WorkflowDefinition definitionId, CancellationToken cancellationToken = default);
+        Task DeleteAsync(Workflow workflow, CancellationToken cancellationToken = default);
     }
 }

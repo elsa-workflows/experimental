@@ -1,7 +1,8 @@
 using Elsa.Mediator.Contracts;
+using Elsa.Models;
 using Elsa.Persistence.Entities;
 using Elsa.Persistence.Models;
 
 namespace Elsa.Persistence.Requests;
 
-public record FindWorkflowDefinition(string DefinitionId, VersionOptions VersionOptions) : IRequest<WorkflowDefinition?>;
+public record FindWorkflow(string DefinitionId, VersionOptions VersionOptions) : IRequest<Workflow?>;

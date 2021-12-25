@@ -3,8 +3,8 @@ using Elsa.Contracts;
 using Elsa.Management.Contracts;
 using Elsa.Management.Notifications;
 using Elsa.Mediator.Contracts;
+using Elsa.Models;
 using Elsa.Persistence.Commands;
-using Elsa.Persistence.Entities;
 using Elsa.Persistence.Models;
 using Elsa.Persistence.Requests;
 
@@ -23,123 +23,124 @@ namespace Elsa.Management.Services
             _systemClock = systemClock;
         }
 
-        public WorkflowDefinition New()
+        public Workflow New()
         {
             var id = _identityGenerator.GenerateId();
+            var definitionId = _identityGenerator.GenerateId();
             const int version = 1;
 
-            var definition = new WorkflowDefinition
-            {
-                Id = $"{id}-{version}",
-                DefinitionId = id,
-                Version = version,
-                IsLatest = true,
-                IsPublished = false,
-                Root = new Sequence(),
-                Triggers = new List<ITrigger>(),
-                CreatedAt = _systemClock.UtcNow
-            };
-
-            return definition;
+            return new Workflow(
+                new WorkflowIdentity(definitionId, version, id),
+                WorkflowPublication.LatestDraft,
+                new WorkflowMetadata(CreatedAt: _systemClock.UtcNow),
+                new Sequence(),
+                new List<ITrigger>());
         }
 
-        public async Task<WorkflowDefinition?> PublishAsync(string definitionId, CancellationToken cancellationToken = default)
+        public async Task<Workflow?> PublishAsync(string definitionId, CancellationToken cancellationToken = default)
         {
-            var definition = await _mediator.RequestAsync(new FindWorkflowDefinition(definitionId, VersionOptions.Latest), cancellationToken);
+            var workflow = await _mediator.RequestAsync(new FindWorkflow(definitionId, VersionOptions.Latest), cancellationToken);
 
-            if (definition == null)
+            if (workflow == null)
                 return null;
 
-            return await PublishAsync(definition, cancellationToken);
+            return await PublishAsync(workflow, cancellationToken);
         }
 
-        public async Task<WorkflowDefinition> PublishAsync(WorkflowDefinition definition, CancellationToken cancellationToken = default)
+        public async Task<Workflow> PublishAsync(Workflow workflow, CancellationToken cancellationToken = default)
         {
-            var definitionId = definition.DefinitionId;
+            var identity = workflow.Identity;
+            var definitionId = identity.DefinitionId;
 
             // Reset current latest and published definitions.
-            var publishedAndOrLatestDefinitions = await _mediator.RequestAsync(new FindLatestAndPublishedWorkflowDefinitions(definitionId), cancellationToken);
+            var publishedAndOrLatestWorkflows = await _mediator.RequestAsync(new FindLatestAndPublishedWorkflows(definitionId), cancellationToken);
 
-            foreach (var publishedAndOrLatestDefinition in publishedAndOrLatestDefinitions)
+            foreach (var publishedAndOrLatestWorkflow in publishedAndOrLatestWorkflows)
             {
-                publishedAndOrLatestDefinition.IsPublished = false;
-                publishedAndOrLatestDefinition.IsLatest = false;
-                await _mediator.ExecuteAsync(new SaveWorkflowDefinition(publishedAndOrLatestDefinition), cancellationToken);
+                var updatedDraft = publishedAndOrLatestWorkflow with
+                {
+                    Publication = WorkflowPublication.Draft
+                };
+
+                await _mediator.ExecuteAsync(new SaveWorkflow(updatedDraft), cancellationToken);
             }
 
-            if (definition.IsPublished)
-                definition.Version++;
-            else
-                definition.IsPublished = true;
+            workflow = workflow.Publication.IsPublished ? workflow.IncrementVersion() : workflow.WithPublished();
 
-            definition.IsLatest = true;
-            definition = Initialize(definition);
+            workflow.WithLatest();
+            workflow = Initialize(workflow);
 
-            await _mediator.PublishAsync(new WorkflowDefinitionPublishing(definition), cancellationToken);
-            await _mediator.ExecuteAsync(new SaveWorkflowDefinition(definition), cancellationToken);
-            await _mediator.PublishAsync(new WorkflowDefinitionPublished(definition), cancellationToken);
-            return definition;
+            await _mediator.PublishAsync(new WorkflowPublishing(workflow), cancellationToken);
+            await _mediator.ExecuteAsync(new SaveWorkflow(workflow), cancellationToken);
+            await _mediator.PublishAsync(new WorkflowPublished(workflow), cancellationToken);
+            return workflow;
         }
 
-        public async Task<WorkflowDefinition?> RetractAsync(string definitionId, CancellationToken cancellationToken = default)
+        public async Task<Workflow?> RetractAsync(string definitionId, CancellationToken cancellationToken = default)
         {
-            var definition = await _mediator.RequestAsync(new FindWorkflowDefinition(definitionId, VersionOptions.Published), cancellationToken);
+            var workflow = await _mediator.RequestAsync(new FindWorkflow(definitionId, VersionOptions.Published), cancellationToken);
 
-            if (definition == null)
+            if (workflow == null)
                 return null;
 
-            return await RetractAsync(definition, cancellationToken);
+            return await RetractAsync(workflow, cancellationToken);
         }
 
-        public async Task<WorkflowDefinition> RetractAsync(WorkflowDefinition definitionId, CancellationToken cancellationToken = default)
+        public async Task<Workflow> RetractAsync(Workflow workflow, CancellationToken cancellationToken = default)
         {
-            if (!definitionId.IsPublished)
+            if (!workflow.Publication.IsPublished)
                 throw new InvalidOperationException("Cannot unpublish an unpublished workflow definition.");
 
-            definitionId.IsPublished = false;
-            definitionId = Initialize(definitionId);
+            workflow.WithPublished(false);
+            workflow = Initialize(workflow);
 
-            await _mediator.PublishAsync(new WorkflowDefinitionRetracting(definitionId), cancellationToken);
-            await _mediator.ExecuteAsync(new SaveWorkflowDefinition(definitionId), cancellationToken);
-            await _mediator.PublishAsync(new WorkflowDefinitionRetracted(definitionId), cancellationToken);
-            return definitionId;
+            await _mediator.PublishAsync(new WorkflowRetracting(workflow), cancellationToken);
+            await _mediator.ExecuteAsync(new SaveWorkflow(workflow), cancellationToken);
+            await _mediator.PublishAsync(new WorkflowRetracted(workflow), cancellationToken);
+            return workflow;
         }
 
-        public async Task<WorkflowDefinition?> GetDraftAsync(string definitionId, CancellationToken cancellationToken = default)
+        public async Task<Workflow?> GetDraftAsync(string definitionId, CancellationToken cancellationToken = default)
         {
-            var definition = await _mediator.RequestAsync(new FindWorkflowDefinition(definitionId, VersionOptions.Latest), cancellationToken);
+            var workflow = await _mediator.RequestAsync(new FindWorkflow(definitionId, VersionOptions.Latest), cancellationToken);
 
-            if (definition == null)
+            if (workflow == null)
                 return null;
 
-            if (!definition.IsPublished)
-                return definition;
+            if (!workflow.Publication.IsPublished)
+                return workflow;
 
-            var draft = definition.ShallowClone();
-            draft.Id = _identityGenerator.GenerateId();
-            draft.IsPublished = false;
-            draft.IsLatest = true;
-            draft.Version++;
+            var draft = workflow with
+            {
+                Identity = new WorkflowIdentity(
+                    _identityGenerator.GenerateId(),
+                    workflow.Identity.Version + 1,
+                    _identityGenerator.GenerateId()),
+                Publication = WorkflowPublication.LatestDraft
+            };
 
             return draft;
         }
 
-        public async Task<WorkflowDefinition> SaveDraftAsync(WorkflowDefinition definition, CancellationToken cancellationToken = default)
+        public async Task<Workflow> SaveDraftAsync(Workflow workflow, CancellationToken cancellationToken = default)
         {
-            var draft = definition;
-            var latestVersion = await _mediator.RequestAsync(new FindWorkflowDefinition(definition.DefinitionId, VersionOptions.Latest), cancellationToken);
+            var draft = workflow;
+            var definitionId = workflow.Identity.DefinitionId;
+            var latestVersion = await _mediator.RequestAsync(new FindWorkflow(definitionId, VersionOptions.Latest), cancellationToken);
 
-            if (latestVersion is { IsPublished: true, IsLatest: true })
+            if (latestVersion?.Publication is { IsPublished: true, IsLatest: true })
             {
-                latestVersion.IsLatest = false;
-                await _mediator.ExecuteAsync(new SaveWorkflowDefinition(latestVersion), cancellationToken);
+                latestVersion.WithLatest(false);
+                await _mediator.ExecuteAsync(new SaveWorkflow(latestVersion), cancellationToken);
             }
 
-            draft.IsLatest = true;
-            draft.IsPublished = false;
+            draft = draft with
+            {
+                Publication = WorkflowPublication.LatestDraft
+            };
             draft = Initialize(draft);
 
-            await _mediator.ExecuteAsync(new SaveWorkflowDefinition(draft), cancellationToken);
+            await _mediator.ExecuteAsync(new SaveWorkflow(draft), cancellationToken);
             return draft;
         }
 
@@ -149,20 +150,20 @@ namespace Elsa.Management.Services
             await _mediator.ExecuteAsync(new DeleteWorkflowDefinition(definitionId), cancellationToken);
         }
 
-        public Task DeleteAsync(WorkflowDefinition definitionId, CancellationToken cancellationToken = default) => DeleteAsync(definitionId.Id, cancellationToken);
+        public Task DeleteAsync(Workflow workflow, CancellationToken cancellationToken = default) => DeleteAsync(workflow.Identity.DefinitionId, cancellationToken);
 
-        private WorkflowDefinition Initialize(WorkflowDefinition workflowDefinition)
+        private Workflow Initialize(Workflow workflow)
         {
-            if (workflowDefinition.Id == null!)
-                workflowDefinition.Id = _identityGenerator.GenerateId();
+            if (workflow.Identity.Id == null!)
+                workflow = workflow.WithId(_identityGenerator.GenerateId());
 
-            if (workflowDefinition.Version == 0)
-                workflowDefinition.Version = 1;
+            if (workflow.Identity.DefinitionId == null!)
+                workflow = workflow.WithDefinitionId(_identityGenerator.GenerateId());
 
-            if (workflowDefinition.DefinitionId == null!)
-                workflowDefinition.DefinitionId = _identityGenerator.GenerateId();
+            if (workflow.Identity.Version == 0)
+                workflow.WithVersion(1);
 
-            return workflowDefinition;
+            return workflow;
         }
     }
 }

@@ -1,21 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Elsa.Persistence.Entities;
 
 namespace Elsa.Persistence.InMemory.Services;
 
-public class InMemoryStore<TEntity>
+public class InMemoryStore<TEntity> where TEntity : Entity
 {
     private IDictionary<string, TEntity> Entities { get; set; } = new Dictionary<string, TEntity>();
-    public void Save(string id, TEntity entity) => Entities[id] = entity;
+    public void Save(TEntity entity) => Entities[entity.Id] = entity;
 
-    public void SaveMany(IEnumerable<TEntity> entities, Func<TEntity, string> idAccessor)
+    public void SaveMany(IEnumerable<TEntity> entities)
     {
-        foreach (var entity in entities)
-        {
-            var id = idAccessor(entity);
-            Save(id, entity);
-        }
+        foreach (var entity in entities) 
+            Save(entity);
     }
 
     public TEntity? Find(Func<TEntity, bool> predicate) => Entities.Values.Where(predicate).FirstOrDefault();

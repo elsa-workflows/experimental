@@ -21,7 +21,7 @@ public static partial class Workflows
     {
         var serializerOptions = serializerOptionsProvider.CreateSerializerOptions();
         var parsedVersionOptions = versionOptions != null ? VersionOptions.FromString(versionOptions) : VersionOptions.Latest;
-        var workflowDefinition = await requestSender.RequestAsync(new FindWorkflowDefinition(definitionId, parsedVersionOptions), cancellationToken);
-        return workflowDefinition == null ? Results.NotFound() : Results.Json(workflowDefinition, serializerOptions, statusCode: StatusCodes.Status200OK);
+        var workflow = await requestSender.RequestAsync(new FindWorkflow(definitionId, parsedVersionOptions), cancellationToken);
+        return workflow == null ? Results.NotFound() : Results.Json(workflow, serializerOptions, statusCode: StatusCodes.Status200OK);
     }
 }

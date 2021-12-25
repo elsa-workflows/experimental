@@ -50,7 +50,14 @@ export class FlowchartComponent implements ContainerActivityComponent {
     const activity: Activity = {
       id: uuid(),
       activityType: descriptor.activityType,
-      metadata: {},
+      metadata: {
+        designer: {
+          position: {
+            x,
+            y
+          }
+        }
+      },
     };
 
     const node = createNode(descriptor, activity, x, y);
@@ -78,6 +85,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
     graph.on('blank:click', this.onGraphClick);
     graph.on('node:click', this.onNodeClick);
     graph.on('edge:connected', this.onEdgeConnected);
+    graph.on('node:moved', this.onNodeMoved);
 
     graph.on('node:change:*', this.onGraphChanged);
     graph.on('node:added', this.onGraphChanged);
@@ -126,20 +134,18 @@ export class FlowchartComponent implements ContainerActivityComponent {
       }
     }
 
-    debugger;
     return {
       activityType: 'Workflows.Flowchart',
       activities: remainingActivities,
       connections: remainingConnections,
       id: this.rootId,
       start: first(activities)?.id,
+      metadata: {},
       variables: []
     } as Flowchart;
   }
 
   private importRootInternal = (root: Activity) => {
-    debugger;
-
     this.rootId = root.id;
     const descriptors = this.activityDescriptors;
     const flowchart = root as Flowchart;
@@ -148,19 +154,15 @@ export class FlowchartComponent implements ContainerActivityComponent {
     const nodes: Array<Node.Metadata> = [];
     let edges: Array<Edge.Metadata> = [];
 
-    let x = 50;
-    let y = 50;
-
     // Create an X6 node for each activity.
     for (const activityNode of flowchartNodes) {
       const activity = activityNode.activity;
+      const position = activity.metadata.designer?.position || {x: 100, y: 100};
+      const {x, y} = position;
       const descriptor = descriptors.find(x => x.activityType == activity.activityType)
       const node = createNode(descriptor, activity, x, y);
 
       nodes.push(node);
-
-      x += 75;
-      y += 75;
 
       // Create X6 edges for each child activity.
       const childEdges = this.createEdges(activityNode);
@@ -220,6 +222,23 @@ export class FlowchartComponent implements ContainerActivityComponent {
 
     this.activitySelected.emit(args);
   };
+
+  private onNodeMoved = (e: PositionEventArgs<JQuery.ClickEvent>) => {
+    const {node, x, y} = e;
+    const activity = node.data as Activity;
+
+    debugger;
+    activity.metadata = {
+      ...activity.metadata,
+      designer: {
+        position: {
+          x,
+          y
+        }
+      }
+    }
+  }
+
 
   private onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {
     const edge = e.edge;

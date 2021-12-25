@@ -1,10 +1,10 @@
 using Elsa.Contracts;
 using Elsa.Management.Contracts;
-using Elsa.Management.Mappers;
 using Elsa.Management.Options;
 using Elsa.Management.Providers;
 using Elsa.Management.Serialization;
 using Elsa.Management.Services;
+using Elsa.Persistence.Mappers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Management.Extensions;
