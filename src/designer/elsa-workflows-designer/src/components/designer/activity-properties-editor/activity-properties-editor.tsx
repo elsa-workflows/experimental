@@ -10,6 +10,7 @@ import {
   LiteralExpression, TabChangedArgs,
   TabDefinition
 } from '../../../models';
+import {Hint} from "../../forms/hint";
 
 export interface ActivityUpdatedArgs {
   activity: Activity;
@@ -104,10 +105,18 @@ export class ActivityPropertiesEditor {
   private onDeleteActivity = (e: any, action: ActionDefinition) => this.deleteActivityRequested.emit({activity: this.activity});
 
   private renderPropertiesTab(activity: Activity, activityDescriptor: ActivityDescriptor) {
-
+    const activityId = activity.id;
     const inputProperties = activityDescriptor.inputProperties;
 
     return <div>
+      <div class="p-4">
+        <label htmlFor="ActivityId">ID</label>
+        <div class="mt-1">
+          <input type="text" name="ActivityId" id="ActivityId" value={activityId} onChange={e => this.onActivityIdChanged(e)}/>
+        </div>
+        <Hint text="The ID of the activity."/>
+      </div>
+
       {inputProperties.map(inputProperty => {
         const propertyName = inputProperty.name;
         const camelCasePropertyName = camelCase(propertyName);
@@ -120,36 +129,21 @@ export class ActivityPropertiesEditor {
         const key = `${activity.id}_${propertyName}`;
 
         return <div class="p-4" ref={el => this.inputPropertiesContainer = el}>
-          <label htmlFor={fieldId} class="block text-sm font-medium text-gray-700">
+          <label htmlFor={fieldId}>
             {displayName}
           </label>
           <div class="mt-1">
             <input key={key} type="text" name={fieldName} id={fieldId} value={value}
-                   onChange={e => this.onPropertyEditorChanged(e, propertyName)}
-                   class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
+                   onChange={e => this.onPropertyEditorChanged(e, propertyName)}/>
           </div>
-          {description ? <p class="mt-2 text-sm text-gray-500">{description}</p> : undefined}
+          <Hint text={description}/>
         </div>
       })}
     </div>
   }
 
   private renderCommonTab(activity: Activity, activityDescriptor: ActivityDescriptor) {
-
-    const activityId = activity.id;
-
     return <div>
-      <div class="p-4">
-        <label htmlFor="ActivityId" class="block text-sm font-medium text-gray-700">
-          ID
-        </label>
-        <div class="mt-1">
-          <input type="text" name="ActivityId" id="ActivityId" value={activityId}
-                 onChange={e => this.onActivityIdChanged(e)}
-                 class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
-        </div>
-        <p class="mt-2 text-sm text-gray-500">The ID of the activity.</p>
-      </div>
     </div>
   }
 }

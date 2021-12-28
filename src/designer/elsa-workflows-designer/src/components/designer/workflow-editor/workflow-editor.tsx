@@ -21,6 +21,7 @@ import {ActivityDriverRegistry} from '../../../services';
 import {TriggerSelectedArgs, TriggersUpdatedArgs} from '../trigger-container/trigger-container';
 import {DeleteTriggerRequestedArgs, TriggerUpdatedArgs} from "../trigger-properties-editor/trigger-properties-editor";
 import {list} from "postcss";
+import {WorkflowPropsUpdatedArgs} from "../workflow-properties-editor/workflow-properties-editor";
 
 export interface WorkflowUpdatedArgs {
   workflow: Workflow;
@@ -149,7 +150,9 @@ export class WorkflowEditor {
           <elsa-panel class="elsa-activity-editor-container"
                       position={PanelPosition.Right}
                       onExpandedStateChanged={e => this.onActivityEditorPanelStateChanged(e.detail)}>
-            {this.renderSelectedObject()}
+            <div class="object-editor-container">
+              {this.renderSelectedObject()}
+            </div>
           </elsa-panel>
 
         </div>
@@ -170,7 +173,9 @@ export class WorkflowEditor {
         onActivityUpdated={e => this.onActivityUpdated(e)}
         onDeleteActivityRequested={e => this.onDeleteActivityRequested(e)}/>
 
-    return <div/>;
+    return <elsa-workflow-properties-editor
+      workflow={this.workflow}
+      onWorkflowPropsUpdated={e => this.onWorkflowPropsUpdated(e)}/>;
   }
 
   private saveChanges = async (): Promise<void> => {
@@ -198,7 +203,7 @@ export class WorkflowEditor {
 
   private onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-picker-closed', e.expanded)
   private onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('trigger-container-closed', e.expanded)
-  private onActivityEditorPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-editor-closed', e.expanded)
+  private onActivityEditorPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('object-editor-closed', e.expanded)
 
   private onTriggersUpdated = async (e: TriggersUpdatedArgs) => {
     this.workflow.triggers = e.triggers;
@@ -219,17 +224,21 @@ export class WorkflowEditor {
   private onActivityUpdated = (e: CustomEvent<ActivityUpdatedArgs>) => {
     const updatedActivity = e.detail.activity;
     this.applyActivityChanges(updatedActivity);
+    this.saveChangesDebounced();
   }
+
+  private onTriggerUpdated = (e: CustomEvent<TriggerUpdatedArgs>) => {
+    const updatedTrigger = e.detail.trigger;
+    this.applyTriggerChanges(updatedTrigger);
+    this.saveChangesDebounced();
+  }
+
+  private onWorkflowPropsUpdated = (e: CustomEvent<WorkflowPropsUpdatedArgs>) => this.saveChangesDebounced()
 
   private onDeleteActivityRequested = (e: CustomEvent<DeleteActivityRequestedArgs>) => {
     this.deleteActivity(e.detail.activity);
     this.selectedActivity = null;
   };
-
-  private onTriggerUpdated = (e: CustomEvent<TriggerUpdatedArgs>) => {
-    const updatedTrigger = e.detail.trigger;
-    this.applyTriggerChanges(updatedTrigger);
-  }
 
   private onDeleteTriggerRequested = (e: CustomEvent<DeleteTriggerRequestedArgs>) => {
     this.deleteTrigger(e.detail.trigger);

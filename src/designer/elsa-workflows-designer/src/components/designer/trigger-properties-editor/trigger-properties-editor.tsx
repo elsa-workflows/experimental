@@ -10,6 +10,7 @@ import {
   LiteralExpression, TabChangedArgs,
   TabDefinition, Trigger, TriggerDescriptor
 } from '../../../models';
+import {Hint} from "../../forms/hint";
 
 export interface TriggerUpdatedArgs {
   trigger: Trigger;
@@ -104,10 +105,17 @@ export class TriggerPropertiesEditor {
   private onDeleteTrigger = (e: any, action: ActionDefinition) => this.deleteTriggerRequested.emit({trigger: this.trigger});
 
   private renderPropertiesTab(trigger: Trigger, descriptor: TriggerDescriptor) {
-
+    const triggerId = trigger.id;
     const inputProperties = descriptor.inputProperties;
 
     return <div>
+      <div class="p-4">
+        <label htmlFor="TriggerId">ID</label>
+        <div class="mt-1">
+          <input type="text" name="TriggerId" id="TriggerId" value={triggerId} onChange={e => this.onTriggerIdChanged(e)}/>
+        </div>
+        <Hint text="The ID of the trigger."/>
+      </div>
       {inputProperties.map(inputProperty => {
         const propertyName = inputProperty.name;
         const camelCasePropertyName = camelCase(propertyName);
@@ -120,36 +128,18 @@ export class TriggerPropertiesEditor {
         const key = `${trigger.id}_${propertyName}`;
 
         return <div class="p-4" ref={el => this.inputPropertiesContainer = el}>
-          <label htmlFor={fieldId} class="block text-sm font-medium text-gray-700">
-            {displayName}
-          </label>
+          <label htmlFor={fieldId}>{displayName}</label>
           <div class="mt-1">
-            <input key={key} type="text" name={fieldName} id={fieldId} value={value}
-                   onChange={e => this.onPropertyEditorChanged(e, propertyName)}
-                   class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
+            <input key={key} type="text" name={fieldName} id={fieldId} value={value} onChange={e => this.onPropertyEditorChanged(e, propertyName)}/>
           </div>
-          {description ? <p class="mt-2 text-sm text-gray-500">{description}</p> : undefined}
+          <Hint text={description}/>
         </div>
       })}
     </div>
   }
 
   private renderCommonTab(trigger: Trigger, descriptor: TriggerDescriptor) {
-
-    const triggerId = trigger.id;
-
     return <div>
-      <div class="p-4">
-        <label htmlFor="TriggerId" class="block text-sm font-medium text-gray-700">
-          ID
-        </label>
-        <div class="mt-1">
-          <input type="text" name="TriggerId" id="TriggerId" value={triggerId}
-                 onChange={e => this.onTriggerIdChanged(e)}
-                 class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
-        </div>
-        <p class="mt-2 text-sm text-gray-500">The ID of the trigger.</p>
-      </div>
     </div>
   }
 }

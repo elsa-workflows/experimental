@@ -34,3 +34,11 @@
 
   @apply absolute py-4 bg-gray-50 border border-gray-400 text-gray-400 rounded-r z-10;
 }
+
+label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+input[type="text"], input[type="email"], input[type="tel"] {
+  @apply shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md
+}

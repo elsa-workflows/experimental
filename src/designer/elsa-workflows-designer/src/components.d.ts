@@ -16,6 +16,7 @@ import { TriggerDeselectedArgs, TriggerSelectedArgs, TriggersUpdatedArgs } from 
 import { DeleteTriggerRequestedArgs, TriggerUpdatedArgs } from "./components/designer/trigger-properties-editor/trigger-properties-editor";
 import { WorkflowUpdatedArgs } from "./components/designer/workflow-editor/workflow-editor";
 import { ActivityDriverRegistry } from "./services";
+import { WorkflowPropsUpdatedArgs } from "./components/designer/workflow-properties-editor/workflow-properties-editor";
 export namespace Components {
     interface ElsaActivityPropertiesEditor {
         "activity"?: Activity;
@@ -99,6 +100,11 @@ export namespace Components {
         "registerActivityDrivers": (register: (registry: ActivityDriverRegistry) => void) => Promise<void>;
         "triggerDescriptors": Array<TriggerDescriptor>;
         "workflow": Workflow;
+    }
+    interface ElsaWorkflowPropertiesEditor {
+        "hide": () => Promise<void>;
+        "show": () => Promise<void>;
+        "workflow"?: Workflow;
     }
     interface ElsaWorkflowPublishButton {
         "publishing": boolean;
@@ -205,6 +211,12 @@ declare global {
         prototype: HTMLElsaWorkflowEditorElement;
         new (): HTMLElsaWorkflowEditorElement;
     };
+    interface HTMLElsaWorkflowPropertiesEditorElement extends Components.ElsaWorkflowPropertiesEditor, HTMLStencilElement {
+    }
+    var HTMLElsaWorkflowPropertiesEditorElement: {
+        prototype: HTMLElsaWorkflowPropertiesEditorElement;
+        new (): HTMLElsaWorkflowPropertiesEditorElement;
+    };
     interface HTMLElsaWorkflowPublishButtonElement extends Components.ElsaWorkflowPublishButton, HTMLStencilElement {
     }
     var HTMLElsaWorkflowPublishButtonElement: {
@@ -240,6 +252,7 @@ declare global {
         "elsa-trigger-properties-editor": HTMLElsaTriggerPropertiesEditorElement;
         "elsa-workflow-definition-browser": HTMLElsaWorkflowDefinitionBrowserElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
+        "elsa-workflow-properties-editor": HTMLElsaWorkflowPropertiesEditorElement;
         "elsa-workflow-publish-button": HTMLElsaWorkflowPublishButtonElement;
         "elsa-workflow-toolbar": HTMLElsaWorkflowToolbarElement;
         "elsa-workflow-toolbar-menu": HTMLElsaWorkflowToolbarMenuElement;
@@ -330,6 +343,10 @@ declare namespace LocalJSX {
         "triggerDescriptors"?: Array<TriggerDescriptor>;
         "workflow"?: Workflow;
     }
+    interface ElsaWorkflowPropertiesEditor {
+        "onWorkflowPropsUpdated"?: (event: CustomEvent<WorkflowPropsUpdatedArgs>) => void;
+        "workflow"?: Workflow;
+    }
     interface ElsaWorkflowPublishButton {
         "onExportClicked"?: (event: CustomEvent<any>) => void;
         "onImportClicked"?: (event: CustomEvent<File>) => void;
@@ -358,6 +375,7 @@ declare namespace LocalJSX {
         "elsa-trigger-properties-editor": ElsaTriggerPropertiesEditor;
         "elsa-workflow-definition-browser": ElsaWorkflowDefinitionBrowser;
         "elsa-workflow-editor": ElsaWorkflowEditor;
+        "elsa-workflow-properties-editor": ElsaWorkflowPropertiesEditor;
         "elsa-workflow-publish-button": ElsaWorkflowPublishButton;
         "elsa-workflow-toolbar": ElsaWorkflowToolbar;
         "elsa-workflow-toolbar-menu": ElsaWorkflowToolbarMenu;
@@ -383,6 +401,7 @@ declare module "@stencil/core" {
             "elsa-trigger-properties-editor": LocalJSX.ElsaTriggerPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaTriggerPropertiesEditorElement>;
             "elsa-workflow-definition-browser": LocalJSX.ElsaWorkflowDefinitionBrowser & JSXBase.HTMLAttributes<HTMLElsaWorkflowDefinitionBrowserElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;
+            "elsa-workflow-properties-editor": LocalJSX.ElsaWorkflowPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowPropertiesEditorElement>;
             "elsa-workflow-publish-button": LocalJSX.ElsaWorkflowPublishButton & JSXBase.HTMLAttributes<HTMLElsaWorkflowPublishButtonElement>;
             "elsa-workflow-toolbar": LocalJSX.ElsaWorkflowToolbar & JSXBase.HTMLAttributes<HTMLElsaWorkflowToolbarElement>;
             "elsa-workflow-toolbar-menu": LocalJSX.ElsaWorkflowToolbarMenu & JSXBase.HTMLAttributes<HTMLElsaWorkflowToolbarMenuElement>;
