@@ -1,7 +1,7 @@
 import {Component, Element, h, Listen, Prop, Watch} from '@stencil/core';
 import 'reflect-metadata';
 import {Container} from 'typedi';
-import {ElsaApiClientProvider, ElsaClient, ServerSettings} from '../../../services';
+import {ElsaApiClientProvider, ElsaClient, SaveWorkflowRequest, ServerSettings} from '../../../services';
 import ShellTunnel, {ShellState} from './state';
 import {ActivityDescriptor, TriggerDescriptor, WorkflowDefinitionSummary} from '../../../models';
 import {WorkflowUpdatedArgs} from '../../designer/workflow-editor/workflow-editor';
@@ -27,10 +27,17 @@ export class ServerShell {
 
   @Listen('workflowUpdated')
   private async handleWorkflowUpdated(e: CustomEvent<WorkflowUpdatedArgs>) {
-    await this.elsaClient.workflows.post({
-      workflow: e.detail.workflow,
-      publish: false
-    });
+    const workflow = e.detail.workflow;
+
+    const request: SaveWorkflowRequest = {
+      definitionId: workflow.identity.definitionId,
+      name: workflow.metadata.name,
+      publish: false,
+      triggers: workflow.triggers,
+      root: workflow.root
+    };
+
+    await this.elsaClient.workflows.post(request);
   }
 
   @Listen('workflowDefinitionSelected')
@@ -41,7 +48,6 @@ export class ServerShell {
       return;
 
     const definitionId = e.detail.definitionId;
-    debugger;
     workflowEditorElement.workflow = await this.elsaClient.workflows.get({definitionId});
   }
 

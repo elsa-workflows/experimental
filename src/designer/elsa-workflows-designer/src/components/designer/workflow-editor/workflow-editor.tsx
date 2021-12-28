@@ -113,7 +113,6 @@ export class WorkflowEditor {
 
   @Watch('workflow')
   async handleWorkflowChange(value: Workflow) {
-    debugger;
     await this.canvas.importGraph(value.root);
   }
 

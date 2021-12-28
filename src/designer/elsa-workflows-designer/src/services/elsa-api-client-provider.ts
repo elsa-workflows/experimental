@@ -3,9 +3,10 @@ import {Service as MiddlewareService} from 'axios-middleware';
 import _, {collection} from 'lodash';
 import {EventBus} from './event-bus';
 import {
+  Activity,
   ActivityDescriptor,
   ActivityDescriptorResponse,
-  EventTypes, getVersionOptionsString, PagedList,
+  EventTypes, getVersionOptionsString, PagedList, Trigger,
   TriggerDescriptor,
   TriggerDescriptorResponse, VersionOptions,
   Workflow, WorkflowDefinitionSummary
@@ -56,7 +57,6 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
     },
     workflows: {
       async post(request: SaveWorkflowRequest): Promise<Workflow> {
-        debugger;
         const response = await httpClient.post<Workflow>('api/workflows', request);
         return response.data;
       },
@@ -131,8 +131,11 @@ export interface WorkflowsApi {
 }
 
 export interface SaveWorkflowRequest {
-  workflow: Workflow;
+  definitionId: string;
+  name?: string;
+  triggers?: Array<Trigger>;
   publish: boolean;
+  root?: Activity
 }
 
 export interface GetWorkflowRequest {

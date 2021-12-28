@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Elsa.Activities.Workflows;
+using Elsa.Contracts;
 using Elsa.Management.Contracts;
 using Elsa.Management.Serialization;
-using Elsa.Models;
 using Elsa.Persistence.Mappers;
 using Microsoft.AspNetCore.Http;
 
@@ -10,7 +12,12 @@ namespace Elsa.Api.Endpoints.Workflows;
 
 public static partial class Workflows
 {
-    public record SaveWorkflowRequest(Workflow Workflow, bool Publish);
+    public record SaveWorkflowRequest(
+        string? DefinitionId,
+        string? Name,
+        IActivity? Root,
+        ICollection<ITrigger>? Triggers,
+        bool Publish);
 
     public static async Task<IResult> PostAsync(
         HttpContext httpContext,
@@ -21,9 +28,7 @@ public static partial class Workflows
     {
         var serializerOptions = serializerOptionsProvider.CreateSerializerOptions();
         var model = (await httpContext.Request.ReadFromJsonAsync<SaveWorkflowRequest>(serializerOptions, cancellationToken))!;
-        var workflow = model.Workflow;
-        var identity = workflow.Identity;
-        var definitionId = identity.DefinitionId;
+        var definitionId = model.DefinitionId;
 
         // Get a workflow draft version.
         var draft = !string.IsNullOrWhiteSpace(definitionId)
@@ -42,7 +47,9 @@ public static partial class Workflows
         }
 
         // Update the draft with the received model.
-        draft = draft with { Root = workflow.Root, Triggers = workflow.Triggers };
+        var root = model.Root ?? new Sequence();
+        var triggers = model.Triggers ?? new List<ITrigger>();
+        draft = draft with { Root = root, Triggers = triggers, Metadata = draft.Metadata with { Name = model.Name } };
 
         // Publish?
         if (model.Publish)

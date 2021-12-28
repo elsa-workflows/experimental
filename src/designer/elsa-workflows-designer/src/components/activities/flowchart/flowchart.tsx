@@ -227,7 +227,6 @@ export class FlowchartComponent implements ContainerActivityComponent {
     const {node, x, y} = e;
     const activity = node.data as Activity;
 
-    debugger;
     activity.metadata = {
       ...activity.metadata,
       designer: {
@@ -238,7 +237,6 @@ export class FlowchartComponent implements ContainerActivityComponent {
       }
     }
   }
-
 
   private onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {
     const edge = e.edge;
