@@ -9,7 +9,7 @@ import {
   EventTypes, getVersionOptionsString, PagedList, Trigger,
   TriggerDescriptor,
   TriggerDescriptorResponse, VersionOptions,
-  Workflow, WorkflowDefinitionSummary
+  Workflow, WorkflowSummary
 } from "../models";
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
@@ -70,7 +70,7 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
         const response = await httpClient.get<Workflow>(`api/workflows/${request.definitionId}${queryStringText}`);
         return response.data;
       },
-      async list(request: ListWorkflowsRequest): Promise<PagedList<WorkflowDefinitionSummary>> {
+      async list(request: ListWorkflowsRequest): Promise<PagedList<WorkflowSummary>> {
         const queryString = {};
 
         if (!!request.versionOptions)
@@ -83,10 +83,10 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
           queryString['pageSize'] = request.pageSize;
 
         const queryStringText = serializeQueryString(queryString);
-        const response = await httpClient.get<PagedList<WorkflowDefinitionSummary>>(`api/workflows${queryStringText}`);
+        const response = await httpClient.get<PagedList<WorkflowSummary>>(`api/workflows${queryStringText}`);
         return response.data;
       },
-      async getMany(request: GetManyWorkflowsRequest): Promise<Array<WorkflowDefinitionSummary>> {
+      async getMany(request: GetManyWorkflowsRequest): Promise<Array<WorkflowSummary>> {
         const queryString = {};
 
         if (!!request.versionOptions)
@@ -95,7 +95,7 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
         queryString['definitionIds'] = request.definitionIds.join(',');
 
         const queryStringText = serializeQueryString(queryString);
-        const response = await httpClient.get<Array<WorkflowDefinitionSummary>>(`api/workflows/set${queryStringText}`);
+        const response = await httpClient.get<Array<WorkflowSummary>>(`api/workflows/set${queryStringText}`);
         return response.data;
       }
     }
@@ -125,9 +125,9 @@ export interface WorkflowsApi {
 
   get(request: GetWorkflowRequest): Promise<Workflow>;
 
-  list(request: ListWorkflowsRequest): Promise<PagedList<WorkflowDefinitionSummary>>;
+  list(request: ListWorkflowsRequest): Promise<PagedList<WorkflowSummary>>;
 
-  getMany(request: GetManyWorkflowsRequest): Promise<Array<WorkflowDefinitionSummary>>;
+  getMany(request: GetManyWorkflowsRequest): Promise<Array<WorkflowSummary>>;
 }
 
 export interface SaveWorkflowRequest {

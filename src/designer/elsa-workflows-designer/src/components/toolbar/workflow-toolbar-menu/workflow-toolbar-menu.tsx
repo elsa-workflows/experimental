@@ -8,7 +8,7 @@ import {leave, toggle} from 'el-transition';
 export class WorkflowToolbarMenu {
   private menu: HTMLElement;
   private element: HTMLElement;
-  private workflowDefinitionBrowser: HTMLElsaWorkflowDefinitionBrowserElement;
+  private workflowBrowser: HTMLElsaWorkflowBrowserElement;
 
   @Listen('click', {target: 'window'})
   private onWindowClicked(event: Event) {
@@ -28,7 +28,7 @@ export class WorkflowToolbarMenu {
 
   private onWorkflowDefinitionsClick = async (e: MouseEvent) => {
     e.preventDefault();
-    await this.workflowDefinitionBrowser.show();
+    await this.workflowBrowser.show();
     this.closeMenu();
   };
 
@@ -63,7 +63,7 @@ export class WorkflowToolbarMenu {
             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabindex="-1" id="user-menu-item-2">Settings</a>
           </div>
         </div>
-        <elsa-workflow-definition-browser ref={el => this.workflowDefinitionBrowser = el}/>
+        <elsa-workflow-browser ref={el => this.workflowBrowser = el}/>
       </Host>
     );
   }

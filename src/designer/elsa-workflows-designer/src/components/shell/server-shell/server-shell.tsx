@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import {Container} from 'typedi';
 import {ElsaApiClientProvider, ElsaClient, SaveWorkflowRequest, ServerSettings} from '../../../services';
 import ShellTunnel, {ShellState} from './state';
-import {ActivityDescriptor, TriggerDescriptor, Workflow, WorkflowDefinitionSummary} from '../../../models';
+import {ActivityDescriptor, TriggerDescriptor, Workflow, WorkflowSummary} from '../../../models';
 import {WorkflowUpdatedArgs} from '../../designer/workflow-editor/workflow-editor';
 import {PublishClickedArgs} from "../../toolbar/workflow-publish-button/workflow-publish-button";
 
@@ -33,14 +33,15 @@ export class ServerShell {
   }
 
   @Listen('workflowDefinitionSelected')
-  private async handleWorkflowDefinitionSelected(e: CustomEvent<WorkflowDefinitionSummary>) {
+  private async handleWorkflowDefinitionSelected(e: CustomEvent<WorkflowSummary>) {
     const workflowEditorElement = this.workflowEditorElement;
 
     if (!workflowEditorElement)
       return;
 
     const definitionId = e.detail.definitionId;
-    workflowEditorElement.workflow = await this.elsaClient.workflows.get({definitionId});
+    const workflow = await this.elsaClient.workflows.get({definitionId});
+    await workflowEditorElement.importWorkflow(workflow);
   }
 
   @Listen('publishClicked')
@@ -90,7 +91,7 @@ export class ServerShell {
     };
 
     const updatedWorkflow = await this.elsaClient.workflows.post(request);
-    this.workflowEditorElement.workflow = updatedWorkflow;
+    await this.workflowEditorElement.importWorkflowMetadata(updatedWorkflow);
     return updatedWorkflow;
   }
 }

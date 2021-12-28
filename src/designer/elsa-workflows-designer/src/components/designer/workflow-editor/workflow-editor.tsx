@@ -43,14 +43,7 @@ export class WorkflowEditor {
   private deleteTrigger: (trigger: Trigger) => void;
   private readonly saveChangesDebounced: () => void;
 
-  constructor() {
-    this.saveChangesDebounced = debounce(this.saveChanges, 1000);
-  }
-
-  @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
-  @Prop() triggerDescriptors: Array<TriggerDescriptor> = [];
-
-  @Prop() workflow: Workflow = {
+  private workflow: Workflow = {
     root: null,
     identity: {id: uuid(), definitionId: uuid(), version: 1},
     publication: {isLatest: true, isPublished: false},
@@ -58,11 +51,14 @@ export class WorkflowEditor {
     triggers: []
   };
 
-  @Event() workflowUpdated: EventEmitter<WorkflowUpdatedArgs>
-
-  @Method() getWorkflow(): Promise<Workflow> {
-    return this.getWorkflowInternal();
+  constructor() {
+    this.saveChangesDebounced = debounce(this.saveChanges, 1000);
   }
+
+  @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
+  @Prop() triggerDescriptors: Array<TriggerDescriptor> = [];
+
+  @Event() workflowUpdated: EventEmitter<WorkflowUpdatedArgs>
 
   @State() private selectedActivity?: Activity;
   @State() private selectedTrigger?: Trigger;
@@ -112,16 +108,24 @@ export class WorkflowEditor {
     this.saveChangesDebounced();
   }
 
-  @Watch('workflow')
-  async handleWorkflowChange(value: Workflow) {
-    await this.canvas.importGraph(value.root);
-    this.triggers = value.triggers;
-  }
-
   @Method()
   async registerActivityDrivers(register: (registry: ActivityDriverRegistry) => void): Promise<void> {
     const registry = Container.get(ActivityDriverRegistry);
     register(registry);
+  }
+
+  @Method() getWorkflow(): Promise<Workflow> {
+    return this.getWorkflowInternal();
+  }
+
+  @Method() async importWorkflow(workflow: Workflow): Promise<void> {
+    await this.importWorkflowMetadata(workflow);
+    await this.canvas.importGraph(workflow.root);
+  }
+
+  @Method() async importWorkflowMetadata(workflow: Workflow): Promise<void> {
+    this.workflow = workflow;
+    this.triggers = workflow.triggers;
   }
 
   public render() {
