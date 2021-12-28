@@ -2,6 +2,6 @@ using System;
 
 namespace Elsa.Models;
 
-public record WorkflowMetadata(string? Name = default, DateTime CreatedAt = default)
+public record WorkflowMetadata(string? Name = default, string? Description = default, DateTime CreatedAt = default)
 {
 }

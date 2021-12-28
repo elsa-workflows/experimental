@@ -32,6 +32,7 @@ export class ServerShell {
     const request: SaveWorkflowRequest = {
       definitionId: workflow.identity.definitionId,
       name: workflow.metadata.name,
+      description: workflow.metadata.description,
       publish: false,
       triggers: workflow.triggers,
       root: workflow.root

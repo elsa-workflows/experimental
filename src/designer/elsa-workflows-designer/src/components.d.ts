@@ -350,6 +350,7 @@ declare namespace LocalJSX {
     interface ElsaWorkflowPublishButton {
         "onExportClicked"?: (event: CustomEvent<any>) => void;
         "onImportClicked"?: (event: CustomEvent<File>) => void;
+        "onNewClicked"?: (event: CustomEvent<any>) => void;
         "onPublishClicked"?: (event: CustomEvent<any>) => void;
         "onUnPublishClicked"?: (event: CustomEvent<any>) => void;
         "publishing"?: boolean;

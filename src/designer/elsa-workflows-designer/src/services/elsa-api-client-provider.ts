@@ -133,6 +133,7 @@ export interface WorkflowsApi {
 export interface SaveWorkflowRequest {
   definitionId: string;
   name?: string;
+  description?: string;
   triggers?: Array<Trigger>;
   publish: boolean;
   root?: Activity

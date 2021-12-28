@@ -39,6 +39,6 @@ label {
   @apply block text-sm font-medium text-gray-700;
 }
 
-input[type="text"], input[type="email"], input[type="tel"] {
+input[type="text"], input[type="email"], input[type="tel"], textarea {
   @apply shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md
 }

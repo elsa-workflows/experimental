@@ -15,6 +15,7 @@ public static partial class Workflows
     public record SaveWorkflowRequest(
         string? DefinitionId,
         string? Name,
+        string? Description,
         IActivity? Root,
         ICollection<ITrigger>? Triggers,
         bool Publish);
@@ -49,16 +50,21 @@ public static partial class Workflows
         // Update the draft with the received model.
         var root = model.Root ?? new Sequence();
         var triggers = model.Triggers ?? new List<ITrigger>();
-        draft = draft with { Root = root, Triggers = triggers, Metadata = draft.Metadata with { Name = model.Name } };
 
-        // Publish?
-        if (model.Publish)
-            draft = await workflowPublisher.PublishAsync(draft, cancellationToken);
-        else
-            draft = await workflowPublisher.SaveDraftAsync(draft, cancellationToken);
-
+        draft = draft with
+        {
+            Root = root,
+            Triggers = triggers,
+            Metadata = draft.Metadata with
+            {
+                Name = model.Name,
+                Description = model.Description
+            }
+        };
+        
+        draft = model.Publish ? await workflowPublisher.PublishAsync(draft, cancellationToken) : await workflowPublisher.SaveDraftAsync(draft, cancellationToken);
         var statusCode = isNew ? StatusCodes.Status201Created : StatusCodes.Status200OK;
-
+        
         return Results.Json(draft, serializerOptions, statusCode: statusCode);
     }
 }

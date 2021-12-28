@@ -42,6 +42,7 @@ export interface Workflow {
 
 export interface WorkflowMetadata {
   name?: string;
+  description?: string;
   createdAt?: Date;
 }
 
