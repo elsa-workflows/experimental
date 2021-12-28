@@ -113,7 +113,7 @@ namespace Elsa.Management.Services
             var draft = workflow with
             {
                 Identity = new WorkflowIdentity(
-                    _identityGenerator.GenerateId(),
+                    workflow.Identity.DefinitionId,
                     workflow.Identity.Version + 1,
                     _identityGenerator.GenerateId()),
                 Publication = WorkflowPublication.LatestDraft
@@ -130,7 +130,7 @@ namespace Elsa.Management.Services
 
             if (latestVersion?.Publication is { IsPublished: true, IsLatest: true })
             {
-                latestVersion.WithLatest(false);
+                latestVersion = latestVersion.WithLatest(false);
                 await _mediator.ExecuteAsync(new SaveWorkflow(latestVersion), cancellationToken);
             }
 
