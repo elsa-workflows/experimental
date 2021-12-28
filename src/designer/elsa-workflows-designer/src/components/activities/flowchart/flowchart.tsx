@@ -75,11 +75,23 @@ export class FlowchartComponent implements ContainerActivityComponent {
   }
 
   @Watch('root')
-  private onRootChange(value: Activity) {
-    this.importRootInternal(value);
+  private async onRootChange(value: Activity) {
+    await this.importRootInternal(value);
   }
 
   public async componentDidLoad() {
+    await this.createAndInitializeGraph();
+  }
+
+  public render() {
+    return (
+      <div
+        class="absolute left-0 top-0 right-0 bottom-0"
+        ref={el => this.container = el}/>
+    );
+  }
+
+  private createAndInitializeGraph = async () => {
     const graph = this.graph = createGraph(this.container);
 
     graph.on('blank:click', this.onGraphClick);
@@ -95,14 +107,6 @@ export class FlowchartComponent implements ContainerActivityComponent {
     graph.on('edge:connected', this.onGraphChanged);
 
     await this.updateLayout();
-  }
-
-  public render() {
-    return (
-      <div
-        class="absolute left-0 top-0 right-0 bottom-0"
-        ref={el => this.container = el}/>
-    );
   }
 
   private exportRootInternal = (): Activity => {
@@ -145,7 +149,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
     } as Flowchart;
   }
 
-  private importRootInternal = (root: Activity) => {
+  private importRootInternal = async (root: Activity) => {
     this.rootId = root.id;
     const descriptors = this.activityDescriptors;
     const flowchart = root as Flowchart;
@@ -176,7 +180,11 @@ export class FlowchartComponent implements ContainerActivityComponent {
     }
 
     const model: FromJSONData = {nodes, edges};
-    this.graph.fromJSON(model, {silent: false})
+
+    // Freeze then unfreeze prevents an error from occurring when importing JSON a second time (e.g. after loading a new workflow.
+    this.graph.freeze();
+    this.graph.fromJSON(model, {silent: false});
+    this.graph.unfreeze();
   };
 
   private createEdges = (activityNode: ActivityNode): Array<Edge.Metadata> => {

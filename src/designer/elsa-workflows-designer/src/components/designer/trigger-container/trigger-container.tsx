@@ -7,7 +7,6 @@ import WorkflowEditorTunnel from "../state";
 
 export interface TriggersUpdatedArgs {
   triggers: Array<Trigger>;
-  workflow: Workflow;
 }
 
 export interface TriggerSelectedArgs {
@@ -27,11 +26,10 @@ export class TriggerContainer {
   private renderedTriggers: Map<string, string> = new Map<string, string>();
 
   @Prop({mutable: true}) public triggerDescriptors: Array<TriggerDescriptor> = [];
-  @Prop({mutable: true}) public workflow: Workflow;
+  @Prop({mutable: true}) public triggers: Array<Trigger> = [];
   @Event() public triggersUpdated: EventEmitter<TriggersUpdatedArgs>;
   @Event() triggerSelected: EventEmitter<TriggerSelectedArgs>;
   @Event() triggerDeselected: EventEmitter<TriggerDeselectedArgs>;
-  @State() private triggers: Array<Trigger> = [];
   @State() private selectedTriggers: Array<Trigger> = [];
 
   @Method()
@@ -48,7 +46,7 @@ export class TriggerContainer {
 
   public componentWillRender() {
     const triggerDescriptors = this.triggerDescriptors;
-    const triggers = this.workflow?.triggers || [];
+    const triggers = this.triggers;
     const triggerDriverRegistry = Container.get(TriggerDriverRegistry);
     const renderedTriggers = new Map<string, string>();
 
@@ -108,9 +106,8 @@ export class TriggerContainer {
   };
 
   private updateTriggers = (triggers: Array<Trigger>) => {
-    this.workflow.triggers = triggers;
     this.triggers = triggers;
-    this.triggersUpdated.emit({triggers: triggers, workflow: this.workflow});
+    this.triggersUpdated.emit({triggers: triggers});
   };
 
   private deleteTrigger = (trigger: Trigger) => {
@@ -130,7 +127,7 @@ export class TriggerContainer {
       triggerType: triggerDescriptor.triggerType
     };
 
-    const triggers = [...this.workflow.triggers, trigger];
+    const triggers = [...this.triggers, trigger];
     this.updateTriggers(triggers);
   };
 

@@ -61,6 +61,7 @@ export class WorkflowEditor {
 
   @State() private selectedActivity?: Activity;
   @State() private selectedTrigger?: Trigger;
+  @State() private triggers: Array<Trigger> = [];
 
   @Listen('resize', {target: 'window'})
   async handResize() {
@@ -106,14 +107,10 @@ export class WorkflowEditor {
     this.saveChangesDebounced();
   }
 
-  @Listen('triggersUpdated')
-  handleTriggersUpdated(e: CustomEvent<TriggersUpdatedArgs>) {
-    this.saveChangesDebounced();
-  }
-
   @Watch('workflow')
   async handleWorkflowChange(value: Workflow) {
     await this.canvas.importGraph(value.root);
+    this.triggers = value.triggers;
   }
 
   @Method()
@@ -123,7 +120,6 @@ export class WorkflowEditor {
   }
 
   public render() {
-
     const tunnelState: WorkflowEditorState = {
       workflow: this.workflow,
       activityDescriptors: this.activityDescriptors,
@@ -142,6 +138,8 @@ export class WorkflowEditor {
                       onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
                       position={PanelPosition.Top}>
             <elsa-trigger-container triggerDescriptors={this.triggerDescriptors}
+                                    triggers={this.triggers}
+                                    onTriggersUpdated={e => this.onTriggersUpdated(e.detail)}
                                     ref={el => this.triggerContainer = el}/>
           </elsa-panel>
           <elsa-canvas class="absolute" ref={el => this.canvas = el}
@@ -201,6 +199,11 @@ export class WorkflowEditor {
   private onActivityPickerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-picker-closed', e.expanded)
   private onTriggerContainerPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('trigger-container-closed', e.expanded)
   private onActivityEditorPanelStateChanged = async (e: PanelStateChangedArgs) => await this.updateContainerLayout('activity-editor-closed', e.expanded)
+
+  private onTriggersUpdated = async (e: TriggersUpdatedArgs) => {
+    this.workflow.triggers = e.triggers;
+    await this.saveChangesDebounced();
+  };
 
   private static onDragOver(e: DragEvent) {
     e.preventDefault();

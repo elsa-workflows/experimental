@@ -82,7 +82,7 @@ export namespace Components {
     interface ElsaTriggerContainer {
         "deselectAll": () => Promise<void>;
         "triggerDescriptors": Array<TriggerDescriptor>;
-        "workflow": Workflow;
+        "triggers": Array<Trigger>;
     }
     interface ElsaTriggerPropertiesEditor {
         "hide": () => Promise<void>;
@@ -313,7 +313,7 @@ declare namespace LocalJSX {
         "onTriggerSelected"?: (event: CustomEvent<TriggerSelectedArgs>) => void;
         "onTriggersUpdated"?: (event: CustomEvent<TriggersUpdatedArgs>) => void;
         "triggerDescriptors"?: Array<TriggerDescriptor>;
-        "workflow"?: Workflow;
+        "triggers"?: Array<Trigger>;
     }
     interface ElsaTriggerPropertiesEditor {
         "onDeleteTriggerRequested"?: (event: CustomEvent<DeleteTriggerRequestedArgs>) => void;
