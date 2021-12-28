@@ -81,6 +81,7 @@ public static class ServiceCollectionExtensions
 
                 // Workflow providers.
                 .AddWorkflowProvider<ConfigurationWorkflowProvider>()
+                .AddWorkflowProvider<DatabaseWorkflowProvider>()
                 
                 // Workflow engine.
                 .AddSingleton<IWorkflowServer, WorkflowServer>()

@@ -13,6 +13,9 @@ using Microsoft.Extensions.Options;
 
 namespace Elsa.Runtime.WorkflowProviders;
 
+/// <summary>
+/// Provides workflows to the system that are registered with <see cref="WorkflowRuntimeOptions"/>
+/// </summary>
 public class ConfigurationWorkflowProvider : IWorkflowProvider
 {
     private readonly IIdentityGraphService _identityGraphService;

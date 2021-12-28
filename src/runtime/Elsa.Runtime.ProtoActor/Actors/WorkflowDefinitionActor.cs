@@ -43,27 +43,27 @@ public class WorkflowDefinitionActor : IActor
         var workflowDefinitionId = message.Id;
         var cancellationToken = context.CancellationToken;
         var workflowInstance = await CreateWorkflowInstanceAsync(workflowDefinitionId, cancellationToken);
-            
+
         var executeWorkflowInstanceMessage = new ExecuteWorkflowInstance
         {
             Id = workflowInstance.Id
         };
-        
+
         var response = await context.ClusterRequestAsync<ExecuteWorkflowResponse>(workflowInstance.Id, GrainKinds.WorkflowInstance, executeWorkflowInstanceMessage, cancellationToken);
         context.Respond(response);
     }
-        
+
     private async Task OnDispatchWorkflowDefinitionAsync(IContext context, DispatchWorkflowDefinition message)
     {
         var workflowDefinitionId = message.Id;
         var cancellationToken = context.CancellationToken;
         var workflowInstance = await CreateWorkflowInstanceAsync(workflowDefinitionId, cancellationToken);
-            
+
         var dispatchWorkflowInstanceMessage = new DispatchWorkflowInstance
         {
             Id = workflowInstance.Id
         };
-        
+
         await context.ClusterRequestAsync<Unit>(workflowInstance.Id, GrainKinds.WorkflowInstance, dispatchWorkflowInstanceMessage, cancellationToken);
         context.Respond(new Unit());
     }
@@ -72,12 +72,15 @@ public class WorkflowDefinitionActor : IActor
     {
         var workflow = (await _workflowRegistry.FindByIdAsync(workflowDefinitionId, VersionOptions.Published, cancellationToken))!;
         var workflowInstanceId = Guid.NewGuid().ToString();
-        
+        var correlationId = Guid.NewGuid().ToString();
+
         var workflowInstance = new WorkflowInstance
         {
             Id = workflowInstanceId,
             Version = workflow.Identity.Version,
             DefinitionId = workflowDefinitionId,
+            DefinitionVersionId = workflow.Identity.Id,
+            CorrelationId = correlationId,
             CreatedAt = _systemClock.UtcNow,
             WorkflowStatus = WorkflowStatus.Idle,
             WorkflowState = new WorkflowState
@@ -85,7 +88,7 @@ public class WorkflowDefinitionActor : IActor
                 Id = workflowInstanceId
             }
         };
-        
+
         await _commandSender.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
         return workflowInstance;
     }
