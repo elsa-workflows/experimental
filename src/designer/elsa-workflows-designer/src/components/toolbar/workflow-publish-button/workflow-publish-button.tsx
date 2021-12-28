@@ -1,6 +1,11 @@
 import {Component, Event, EventEmitter, Host, h, Listen, Prop} from '@stencil/core';
 import {leave, toggle} from 'el-transition'
 
+export interface PublishClickedArgs {
+  begin: () => void;
+  complete: () => void;
+}
+
 @Component({
   tag: 'elsa-workflow-publish-button',
   shadow: false,
@@ -9,7 +14,7 @@ export class WorkflowPublishButton {
 
   @Prop() publishing: boolean;
   @Event({bubbles: true}) newClicked: EventEmitter;
-  @Event({bubbles: true}) publishClicked: EventEmitter;
+  @Event({bubbles: true}) publishClicked: EventEmitter<PublishClickedArgs>;
   @Event({bubbles: true}) unPublishClicked: EventEmitter;
   @Event({bubbles: true}) exportClicked: EventEmitter;
   @Event({bubbles: true}) importClicked: EventEmitter<File>;
@@ -35,8 +40,11 @@ export class WorkflowPublishButton {
   }
 
   private onPublishClick() {
-    this.publishClicked.emit();
-    this.publishing = true;
+    this.publishClicked.emit({
+      begin: () => this.publishing = true,
+      complete: () => this.publishing = false
+    });
+
     leave(this.menu);
   }
 

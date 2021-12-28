@@ -60,6 +60,10 @@ export class WorkflowEditor {
 
   @Event() workflowUpdated: EventEmitter<WorkflowUpdatedArgs>
 
+  @Method() getWorkflow(): Promise<Workflow> {
+    return this.getWorkflowInternal();
+  }
+
   @State() private selectedActivity?: Activity;
   @State() private selectedTrigger?: Trigger;
   @State() private triggers: Array<Trigger> = [];
@@ -178,12 +182,16 @@ export class WorkflowEditor {
       onWorkflowPropsUpdated={e => this.onWorkflowPropsUpdated(e)}/>;
   }
 
-  private saveChanges = async (): Promise<void> => {
+  private getWorkflowInternal = async (): Promise<Workflow> => {
     const root = await this.canvas.exportGraph();
     const workflow = this.workflow;
 
     workflow.root = root;
+    return workflow;
+  };
 
+  private saveChanges = async (): Promise<void> => {
+    const workflow = await this.getWorkflowInternal();
     this.workflowUpdated.emit({workflow});
   };
 

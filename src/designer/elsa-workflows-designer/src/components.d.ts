@@ -17,6 +17,7 @@ import { DeleteTriggerRequestedArgs, TriggerUpdatedArgs } from "./components/des
 import { WorkflowUpdatedArgs } from "./components/designer/workflow-editor/workflow-editor";
 import { ActivityDriverRegistry } from "./services";
 import { WorkflowPropsUpdatedArgs } from "./components/designer/workflow-properties-editor/workflow-properties-editor";
+import { PublishClickedArgs } from "./components/toolbar/workflow-publish-button/workflow-publish-button";
 export namespace Components {
     interface ElsaActivityPropertiesEditor {
         "activity"?: Activity;
@@ -97,6 +98,7 @@ export namespace Components {
     }
     interface ElsaWorkflowEditor {
         "activityDescriptors": Array<ActivityDescriptor>;
+        "getWorkflow": () => Promise<Workflow>;
         "registerActivityDrivers": (register: (registry: ActivityDriverRegistry) => void) => Promise<void>;
         "triggerDescriptors": Array<TriggerDescriptor>;
         "workflow": Workflow;
@@ -351,7 +353,7 @@ declare namespace LocalJSX {
         "onExportClicked"?: (event: CustomEvent<any>) => void;
         "onImportClicked"?: (event: CustomEvent<File>) => void;
         "onNewClicked"?: (event: CustomEvent<any>) => void;
-        "onPublishClicked"?: (event: CustomEvent<any>) => void;
+        "onPublishClicked"?: (event: CustomEvent<PublishClickedArgs>) => void;
         "onUnPublishClicked"?: (event: CustomEvent<any>) => void;
         "publishing"?: boolean;
     }

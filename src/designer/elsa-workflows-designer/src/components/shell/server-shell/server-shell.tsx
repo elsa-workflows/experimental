@@ -3,8 +3,9 @@ import 'reflect-metadata';
 import {Container} from 'typedi';
 import {ElsaApiClientProvider, ElsaClient, SaveWorkflowRequest, ServerSettings} from '../../../services';
 import ShellTunnel, {ShellState} from './state';
-import {ActivityDescriptor, TriggerDescriptor, WorkflowDefinitionSummary} from '../../../models';
+import {ActivityDescriptor, TriggerDescriptor, Workflow, WorkflowDefinitionSummary} from '../../../models';
 import {WorkflowUpdatedArgs} from '../../designer/workflow-editor/workflow-editor';
+import {PublishClickedArgs} from "../../toolbar/workflow-publish-button/workflow-publish-button";
 
 @Component({
   tag: 'elsa-server-shell'
@@ -28,17 +29,7 @@ export class ServerShell {
   @Listen('workflowUpdated')
   private async handleWorkflowUpdated(e: CustomEvent<WorkflowUpdatedArgs>) {
     const workflow = e.detail.workflow;
-
-    const request: SaveWorkflowRequest = {
-      definitionId: workflow.identity.definitionId,
-      name: workflow.metadata.name,
-      description: workflow.metadata.description,
-      publish: false,
-      triggers: workflow.triggers,
-      root: workflow.root
-    };
-
-    await this.elsaClient.workflows.post(request);
+    await this.saveWorkflow(workflow, false);
   }
 
   @Listen('workflowDefinitionSelected')
@@ -50,6 +41,19 @@ export class ServerShell {
 
     const definitionId = e.detail.definitionId;
     workflowEditorElement.workflow = await this.elsaClient.workflows.get({definitionId});
+  }
+
+  @Listen('publishClicked')
+  private async handlePublishClicked(e: CustomEvent<PublishClickedArgs>) {
+    const workflowEditorElement = this.workflowEditorElement;
+
+    if (!workflowEditorElement)
+      return;
+
+    e.detail.begin();
+    const workflow = await workflowEditorElement.getWorkflow();
+    await this.saveWorkflow(workflow, true);
+    e.detail.complete();
   }
 
   public async componentWillLoad() {
@@ -73,5 +77,20 @@ export class ServerShell {
     return <ShellTunnel.Provider state={tunnelState}>
       <slot/>
     </ShellTunnel.Provider>;
+  }
+
+  private saveWorkflow = async (workflow: Workflow, publish: boolean): Promise<Workflow> => {
+    const request: SaveWorkflowRequest = {
+      definitionId: workflow.identity.definitionId,
+      name: workflow.metadata.name,
+      description: workflow.metadata.description,
+      publish: publish,
+      triggers: workflow.triggers,
+      root: workflow.root
+    };
+
+    const updatedWorkflow = await this.elsaClient.workflows.post(request);
+    this.workflowEditorElement.workflow = updatedWorkflow;
+    return updatedWorkflow;
   }
 }
