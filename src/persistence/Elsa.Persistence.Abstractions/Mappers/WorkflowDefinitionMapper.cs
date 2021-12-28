@@ -15,7 +15,7 @@ public class WorkflowDefinitionMapper
         return new Workflow(
             new WorkflowIdentity(definition.DefinitionId, definition.Version, definition.Id),
             new WorkflowPublication(definition.IsLatest, definition.IsPublished),
-            new WorkflowMetadata(definition.Name, definition.CreatedAt),
+            new WorkflowMetadata(definition.Name, definition.Description, definition.CreatedAt),
             definition.Root,
             definition.Triggers);
     }
@@ -32,6 +32,7 @@ public class WorkflowDefinitionMapper
         definition.DefinitionId = identity.DefinitionId;
         definition.Version = identity.Version;
         definition.Name = metadata.Name;
+        definition.Description = metadata.Description;
         definition.Root = workflow.Root;
         definition.Triggers = workflow.Triggers;
         definition.CreatedAt = metadata.CreatedAt;

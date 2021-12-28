@@ -11,6 +11,7 @@ public class WorkflowDefinition : Entity
 {
     public string DefinitionId { get; set; } = default!;
     public string? Name { get; set; }
+    public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }
     public int Version { get; set; } = 1;
     public IActivity Root { get; set; } = default!;

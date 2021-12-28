@@ -36,6 +36,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Sqlite.Migrations
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     DefinitionId = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Version = table.Column<int>(type: "INTEGER", nullable: false),
                     IsLatest = table.Column<bool>(type: "INTEGER", nullable: false),
