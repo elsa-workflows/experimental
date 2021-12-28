@@ -216,15 +216,43 @@ export class FlowchartComponent implements ContainerActivityComponent {
     };
   }
 
+  private syncEdgeData = (cachedActivityId: string, updatedActivity: Activity) => {
+    const graph = this.graph;
+    const edges = graph.model.getEdges().filter(x => x.shape == 'elsa-edge' && !!x.data);
+
+    for (const edge of edges) {
+      const connection: Connection = edge.data;
+
+      if (connection.target != cachedActivityId && connection.source != cachedActivityId)
+        continue;
+
+      if (connection.target == cachedActivityId)
+        connection.target = updatedActivity.id;
+
+      if (connection.source == cachedActivityId)
+        connection.source = updatedActivity.id;
+
+      edge.data = connection;
+    }
+  };
+
   private onGraphClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => this.containerSelected.emit({});
 
   private onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
     const node = e.node;
     const activity = node.data as Activity;
+    const activityId = activity.id;
+    const graph = this.graph;
 
     const args: ActivitySelectedArgs = {
       activity: activity,
-      applyChanges: a => node.data = a,
+      applyChanges: a => {
+        node.data = a;
+
+        // If the ID of the activity changed, we need to update connection references (X6 stores deep copies of data).
+        if (a.id !== activityId)
+          this.syncEdgeData(activityId, a);
+      },
       deleteActivity: a => node.remove({deep: true})
     };
 
@@ -248,7 +276,6 @@ export class FlowchartComponent implements ContainerActivityComponent {
 
   private onEdgeConnected = (e: { isNew: boolean, edge: Edge }) => {
     const edge = e.edge;
-    const isNew = e.isNew;
     const sourceNode = edge.getSourceNode();
     const targetNode = edge.getTargetNode();
     const sourceActivity = edge.getSourceNode().data as Activity;
@@ -265,8 +292,6 @@ export class FlowchartComponent implements ContainerActivityComponent {
   }
 
   private onGraphChanged = async (e: any) => {
-    console.debug('changed');
-
     this.graphUpdated.emit({exportGraph: this.exportRootInternal});
   }
 }
