@@ -134,8 +134,8 @@ export class WorkflowInstanceBrowser {
 
   private async loadWorkflowInstances() {
     const elsaClient = this.elsaClient;
-    const page = 0;
-    const pageSize = WorkflowInstanceBrowser.DEFAULT_PAGE_SIZE;
+    const page = this.currentPage;
+    const pageSize = this.currentPageSize;
     this.workflowInstances = await elsaClient.workflowInstances.list({page: page, pageSize: pageSize});
   }
 
