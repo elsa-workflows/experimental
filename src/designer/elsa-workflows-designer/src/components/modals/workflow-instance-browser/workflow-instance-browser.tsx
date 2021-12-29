@@ -6,6 +6,7 @@ import {DeleteIcon, EditIcon} from "../../icons";
 import {getStatusColor, updateSelectedWorkflowInstances} from "./utils";
 import {formatTimestamp} from "../../../utils/utils";
 import {PagerData} from "../../shared/pager/pager";
+import {Search} from "./search";
 
 @Component({
   tag: 'elsa-workflow-instance-browser',
@@ -59,6 +60,9 @@ export class WorkflowInstanceBrowser {
         <elsa-modal-dialog ref={el => this.modalDialog = el} actions={actions} size="sm:w-fit max-w-fit">
           <div class="pt-4">
             <h2 class="text-lg font-medium ml-4 mb-2">Workflow Instances</h2>
+
+            <Search onSearch={this.onSearch}/>
+
             <div class="align-middle inline-block min-w-full border-b border-gray-200">
               <table>
                 <thead>
@@ -164,6 +168,10 @@ export class WorkflowInstanceBrowser {
       this.selectAllCheckbox.indeterminate = selectedItems.length != 0 && selectedItems.length != this.workflowInstances.items.length;
     }
   }
+
+  private onSearch = async (term: string) => {
+
+  };
 
   private async onDeleteClick(e: MouseEvent, workflowInstance: WorkflowInstanceSummary) {
 
