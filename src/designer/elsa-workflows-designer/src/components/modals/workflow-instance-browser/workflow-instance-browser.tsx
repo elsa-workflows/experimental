@@ -1,5 +1,5 @@
 import {Component, Event, EventEmitter, h, Host, Method, State} from '@stencil/core';
-import {DefaultActions, PagedList, WorkflowInstanceSummary, WorkflowSummary} from "../../../models";
+import {DefaultActions, PagedList, VersionOptions, WorkflowInstanceSummary, WorkflowSummary} from "../../../models";
 import {Container} from "typedi";
 import {ElsaApiClientProvider, ElsaClient} from "../../../services";
 import {DeleteIcon, EditIcon} from "../../icons";
@@ -23,6 +23,7 @@ export class WorkflowInstanceBrowser {
 
   @Event() public workflowInstanceSelected: EventEmitter<WorkflowInstanceSummary>;
   @State() private workflowInstances: PagedList<WorkflowInstanceSummary> = {items: [], totalCount: 0};
+  @State() workflows: Array<WorkflowSummary> = [];
   @State() private selectAllChecked: boolean;
   @State() private selectedWorkflowInstanceIds: Array<string> = [];
   @State() currentPage: number = 0;
@@ -46,7 +47,7 @@ export class WorkflowInstanceBrowser {
   }
 
   public render() {
-
+    const workflows = this.workflows;
     const workflowInstances = this.workflowInstances;
     const totalCount = workflowInstances.totalCount
     const closeAction = DefaultActions.Close();
@@ -84,12 +85,13 @@ export class WorkflowInstanceBrowser {
                 {workflowInstances.items.map(workflowInstance => {
                   const statusColor = getStatusColor(workflowInstance.workflowStatus);
                   const isSelected = this.selectedWorkflowInstanceIds.findIndex(x => x === workflowInstance.id) >= 0;
+                  const workflow: WorkflowSummary = workflows.find(x => x.definitionId == workflowInstance.definitionId && x.version == workflowInstance.version);
+                  const workflowName = !!workflow ? (workflow.name || 'Untitled') : '(Definition not found)';
 
                   return (
                     <tr>
                       <td>
-                        <input type="checkbox" value={workflowInstance.id} checked={isSelected}
-                               onChange={e => this.onWorkflowInstanceCheckChange(e, workflowInstance)}/>
+                        <input type="checkbox" value={workflowInstance.id} checked={isSelected} onChange={e => this.onWorkflowInstanceCheckChange(e, workflowInstance)}/>
                       </td>
                       <td>
                         <div class="flex items-center space-x-3 lg:pl-2">
@@ -98,7 +100,7 @@ export class WorkflowInstanceBrowser {
                       </td>
 
                       <td class="optional">{workflowInstance.correlationId}</td>
-                      <td class="optional">{workflowInstance.definitionId}</td>
+                      <td class="optional">{workflowName}</td>
                       <td class="align-right">{workflowInstance.version}</td>
                       <td class="optional">{workflowInstance.name}</td>
                       <td>
@@ -136,8 +138,19 @@ export class WorkflowInstanceBrowser {
     const elsaClient = this.elsaClient;
     const page = this.currentPage;
     const pageSize = this.currentPageSize;
-    this.workflowInstances = await elsaClient.workflowInstances.list({page: page, pageSize: pageSize});
+    const workflowInstances = await elsaClient.workflowInstances.list({page: page, pageSize: pageSize});
+    const definitionIds = new Set(workflowInstances.items.map(x => x.definitionId));
+
+    await this.loadWorkflowBlueprints(Array.from(definitionIds));
+    this.workflowInstances = workflowInstances;
   }
+
+  private loadWorkflowBlueprints = async (definitionIds: Array<string>) => {
+    debugger;
+    const elsaClient = this.elsaClient;
+    const versionOptions: VersionOptions = {allVersions: true};
+    this.workflows = await elsaClient.workflows.getMany({definitionIds, versionOptions});
+  };
 
   private getSelectAllState = () => {
     const {items} = this.workflowInstances;
