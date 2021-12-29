@@ -10,6 +10,7 @@ import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/d
 import { AddActivityArgs } from "./components/designer/canvas/canvas";
 import { MenuItem } from "./components/shared/context-menu/models";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/canvas/canvas";
+import { PagerData } from "./components/shared/pager/pager";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/panel/models";
 import { Graph } from "@antv/x6";
 import { TriggerDeselectedArgs, TriggerSelectedArgs, TriggersUpdatedArgs } from "./components/designer/trigger-container/trigger-container";
@@ -53,6 +54,11 @@ export namespace Components {
         "hide": (animate?: boolean) => Promise<void>;
         "show": (animate?: boolean) => Promise<void>;
         "size": string;
+    }
+    interface ElsaPager {
+        "page": number;
+        "pageSize": number;
+        "totalCount": number;
     }
     interface ElsaPanel {
         "position": PanelPosition;
@@ -159,6 +165,12 @@ declare global {
         prototype: HTMLElsaModalDialogElement;
         new (): HTMLElsaModalDialogElement;
     };
+    interface HTMLElsaPagerElement extends Components.ElsaPager, HTMLStencilElement {
+    }
+    var HTMLElsaPagerElement: {
+        prototype: HTMLElsaPagerElement;
+        new (): HTMLElsaPagerElement;
+    };
     interface HTMLElsaPanelElement extends Components.ElsaPanel, HTMLStencilElement {
     }
     var HTMLElsaPanelElement: {
@@ -256,6 +268,7 @@ declare global {
         "elsa-flowchart": HTMLElsaFlowchartElement;
         "elsa-form-panel": HTMLElsaFormPanelElement;
         "elsa-modal-dialog": HTMLElsaModalDialogElement;
+        "elsa-pager": HTMLElsaPagerElement;
         "elsa-panel": HTMLElsaPanelElement;
         "elsa-server-shell": HTMLElsaServerShellElement;
         "elsa-slide-over-panel": HTMLElsaSlideOverPanelElement;
@@ -307,6 +320,12 @@ declare namespace LocalJSX {
         "onHidden"?: (event: CustomEvent<any>) => void;
         "onShown"?: (event: CustomEvent<any>) => void;
         "size"?: string;
+    }
+    interface ElsaPager {
+        "onPaginated"?: (event: CustomEvent<PagerData>) => void;
+        "page"?: number;
+        "pageSize"?: number;
+        "totalCount"?: number;
     }
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
@@ -384,6 +403,7 @@ declare namespace LocalJSX {
         "elsa-flowchart": ElsaFlowchart;
         "elsa-form-panel": ElsaFormPanel;
         "elsa-modal-dialog": ElsaModalDialog;
+        "elsa-pager": ElsaPager;
         "elsa-panel": ElsaPanel;
         "elsa-server-shell": ElsaServerShell;
         "elsa-slide-over-panel": ElsaSlideOverPanel;
@@ -411,6 +431,7 @@ declare module "@stencil/core" {
             "elsa-flowchart": LocalJSX.ElsaFlowchart & JSXBase.HTMLAttributes<HTMLElsaFlowchartElement>;
             "elsa-form-panel": LocalJSX.ElsaFormPanel & JSXBase.HTMLAttributes<HTMLElsaFormPanelElement>;
             "elsa-modal-dialog": LocalJSX.ElsaModalDialog & JSXBase.HTMLAttributes<HTMLElsaModalDialogElement>;
+            "elsa-pager": LocalJSX.ElsaPager & JSXBase.HTMLAttributes<HTMLElsaPagerElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
             "elsa-server-shell": LocalJSX.ElsaServerShell & JSXBase.HTMLAttributes<HTMLElsaServerShellElement>;
             "elsa-slide-over-panel": LocalJSX.ElsaSlideOverPanel & JSXBase.HTMLAttributes<HTMLElsaSlideOverPanelElement>;

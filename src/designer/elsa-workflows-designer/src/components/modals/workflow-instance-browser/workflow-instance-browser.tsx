@@ -5,12 +5,18 @@ import {ElsaApiClientProvider, ElsaClient} from "../../../services";
 import {DeleteIcon, EditIcon} from "../../icons";
 import {getStatusColor, updateSelectedWorkflowInstances} from "./utils";
 import {formatTimestamp} from "../../../utils/utils";
+import {PagerData} from "../../shared/pager/pager";
 
 @Component({
   tag: 'elsa-workflow-instance-browser',
   shadow: false,
 })
 export class WorkflowInstanceBrowser {
+  static readonly DEFAULT_PAGE_SIZE = 15;
+  static readonly MIN_PAGE_SIZE = 5;
+  static readonly MAX_PAGE_SIZE = 100;
+  static readonly START_PAGE = 0;
+
   private elsaClient: ElsaClient;
   private modalDialog: HTMLElsaModalDialogElement;
   private selectAllCheckbox: HTMLInputElement;
@@ -19,6 +25,9 @@ export class WorkflowInstanceBrowser {
   @State() private workflowInstances: PagedList<WorkflowInstanceSummary> = {items: [], totalCount: 0};
   @State() private selectAllChecked: boolean;
   @State() private selectedWorkflowInstanceIds: Array<string> = [];
+  @State() currentPage: number = 0;
+  @State() currentPageSize: number = WorkflowInstanceBrowser.DEFAULT_PAGE_SIZE;
+  @State() currentSearchTerm?: string;
 
   @Method()
   public async show() {
@@ -39,6 +48,7 @@ export class WorkflowInstanceBrowser {
   public render() {
 
     const workflowInstances = this.workflowInstances;
+    const totalCount = workflowInstances.totalCount
     const closeAction = DefaultActions.Close();
     const actions = [closeAction];
 
@@ -112,6 +122,7 @@ export class WorkflowInstanceBrowser {
                 })}
                 </tbody>
               </table>
+              <elsa-pager page={this.currentPage} pageSize={this.currentPageSize} totalCount={totalCount} onPaginated={this.onPaginated}/>
             </div>
 
             {/*<confirm-dialog ref={el => this.confirmDialog = el} culture={this.culture}/>*/}
@@ -124,7 +135,7 @@ export class WorkflowInstanceBrowser {
   private async loadWorkflowInstances() {
     const elsaClient = this.elsaClient;
     const page = 0;
-    const pageSize = 50;
+    const pageSize = WorkflowInstanceBrowser.DEFAULT_PAGE_SIZE;
     this.workflowInstances = await elsaClient.workflowInstances.list({page: page, pageSize: pageSize});
   }
 
@@ -177,4 +188,9 @@ export class WorkflowInstanceBrowser {
 
     this.setSelectAllIndeterminateState();
   }
+
+  onPaginated = async (e: CustomEvent<PagerData>) => {
+    this.currentPage = e.detail.page;
+    await this.loadWorkflowInstances();
+  };
 }
