@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Elsa.Management.Serialization.Converters;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +15,7 @@ public class WorkflowSerializerOptionsProvider
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
         {
+            Create<JsonStringEnumConverter>(),
             Create<TypeJsonConverter>(),
             Create<ActivityJsonConverterFactory>(),
             Create<TriggerJsonConverterFactory>(),

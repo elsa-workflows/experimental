@@ -9,6 +9,7 @@ export class WorkflowToolbarMenu {
   private menu: HTMLElement;
   private element: HTMLElement;
   private workflowBrowser: HTMLElsaWorkflowBrowserElement;
+  private workflowInstanceBrowser: HTMLElsaWorkflowInstanceBrowserElement;
 
   @Listen('click', {target: 'window'})
   private onWindowClicked(event: Event) {
@@ -29,6 +30,12 @@ export class WorkflowToolbarMenu {
   private onWorkflowDefinitionsClick = async (e: MouseEvent) => {
     e.preventDefault();
     await this.workflowBrowser.show();
+    this.closeMenu();
+  };
+
+  private onWorkflowInstancesClick = async (e: MouseEvent) => {
+    e.preventDefault();
+    await this.workflowInstanceBrowser.show();
     this.closeMenu();
   };
 
@@ -59,11 +66,12 @@ export class WorkflowToolbarMenu {
                class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
             <a onClick={e => this.onWorkflowDefinitionsClick(e)} href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabindex="-1" id="user-menu-item-0">Workflow Definitions</a>
-            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabindex="-1" id="user-menu-item-1">Workflow Instances</a>
+            <a onClick={e => this.onWorkflowInstancesClick(e)} href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabindex="-1" id="user-menu-item-1">Workflow Instances</a>
             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabindex="-1" id="user-menu-item-2">Settings</a>
           </div>
         </div>
         <elsa-workflow-browser ref={el => this.workflowBrowser = el}/>
+        <elsa-workflow-instance-browser ref={el => this.workflowInstanceBrowser = el}/>
       </Host>
     );
   }

@@ -1,6 +1,8 @@
 using Elsa.Activities.Http.Extensions;
 using Elsa.Api.Endpoints.Events;
+using Elsa.Api.Endpoints.WorkflowInstances;
 using Elsa.Api.Endpoints.Workflows;
+using Elsa.Api.Extensions;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Persistence.Middleware.WorkflowExecution;
 using Elsa.Pipelines.WorkflowExecution.Components;
@@ -37,12 +39,7 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => "Hello World!");
 
 // Map Elsa API endpoints.
-app.MapWorkflows(workflows => workflows
-    .Execute()
-    .Dispatch());
-
-app.MapEvents(events => events
-    .Trigger());
+app.MapElsaApiEndpoints();
 
 // Register Elsa HTTP activity middleware.
 app.UseHttpActivities();

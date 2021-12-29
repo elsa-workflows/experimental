@@ -6,6 +6,7 @@ using Elsa.Activities.Workflows;
 using Elsa.Api.Endpoints.ActivityDescriptors;
 using Elsa.Api.Endpoints.Events;
 using Elsa.Api.Endpoints.TriggerDescriptors;
+using Elsa.Api.Endpoints.WorkflowInstances;
 using Elsa.Api.Endpoints.Workflows;
 using Elsa.Api.Extensions;
 using Elsa.Management.Contracts;
@@ -88,10 +89,7 @@ app.UseCors();
 app.MapGet("/", () => "Hello World!");
 
 // Map Elsa API endpoints.
-app.MapWorkflows();
-app.MapEvents();
-app.MapActivityDescriptors();
-app.MapTriggerDescriptors();
+app.MapElsaApiEndpoints();
 
 // Register Elsa middleware.
 app.UseJsonSerializationErrorHandler();

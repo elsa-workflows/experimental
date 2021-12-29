@@ -11,7 +11,6 @@ namespace Elsa.Activities.Workflows;
 [Category("Workflows")]
 public class Flowchart : Container
 {
-    //[Outbound]
     public IActivity? Start { get; set; } = default!;
     public ICollection<Connection> Connections { get; set; } = new List<Connection>();
 

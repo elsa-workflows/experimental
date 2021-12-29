@@ -19,9 +19,14 @@ public class EventsResource
         return this;
     }
 }
-    
+
 public static class EventsResourceExtensions
 {
-    public static void MapEvents(this IEndpointRouteBuilder endpoints, Action<EventsResource> configureResource) => configureResource(new(endpoints));
-    public static void MapEvents(this IEndpointRouteBuilder endpoints) => endpoints.MapEvents(x => x.Trigger());
+    public static IEndpointRouteBuilder MapEvents(this IEndpointRouteBuilder endpoints, Action<EventsResource> configureResource)
+    {
+        configureResource(new(endpoints));
+        return endpoints;
+    }
+
+    public static IEndpointRouteBuilder MapEvents(this IEndpointRouteBuilder endpoints) => endpoints.MapEvents(x => x.Trigger());
 }

@@ -9,7 +9,7 @@ import {
   EventTypes, getVersionOptionsString, PagedList, Trigger,
   TriggerDescriptor,
   TriggerDescriptorResponse, VersionOptions,
-  Workflow, WorkflowSummary
+  Workflow, WorkflowInstanceSummary, WorkflowSummary
 } from "../models";
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
@@ -98,6 +98,21 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
         const response = await httpClient.get<Array<WorkflowSummary>>(`api/workflows/set${queryStringText}`);
         return response.data;
       }
+    },
+    workflowInstances: {
+      async list(request: ListWorkflowInstancesRequest): Promise<PagedList<WorkflowInstanceSummary>> {
+        const queryString = {};
+
+        if (!!request.page)
+          queryString['page'] = request.page;
+
+        if (!!request.pageSize)
+          queryString['pageSize'] = request.pageSize;
+
+        const queryStringText = serializeQueryString(queryString);
+        const response = await httpClient.get<PagedList<WorkflowInstanceSummary>>(`api/workflow-instances${queryStringText}`);
+        return response.data;
+      }
     }
   };
 }
@@ -105,6 +120,7 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
 export interface ElsaClient {
   descriptors: DescriptorsApi;
   workflows: WorkflowsApi;
+  workflowInstances: WorkflowInstancesApi;
 }
 
 export interface DescriptorsApi {
@@ -130,6 +146,11 @@ export interface WorkflowsApi {
   getMany(request: GetManyWorkflowsRequest): Promise<Array<WorkflowSummary>>;
 }
 
+export interface WorkflowInstancesApi {
+
+  list(request: ListWorkflowInstancesRequest): Promise<PagedList<WorkflowInstanceSummary>>;
+}
+
 export interface SaveWorkflowRequest {
   definitionId: string;
   name?: string;
@@ -153,6 +174,11 @@ export interface ListWorkflowsRequest {
 export interface GetManyWorkflowsRequest {
   definitionIds?: Array<string>;
   versionOptions?: VersionOptions;
+}
+
+export interface ListWorkflowInstancesRequest {
+  page?: number;
+  pageSize?: number;
 }
 
 @Service()

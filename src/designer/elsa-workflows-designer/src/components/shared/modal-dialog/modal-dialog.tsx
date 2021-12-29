@@ -8,12 +8,13 @@ import {ActionDefinition, ActionInvokedArgs, ActionType} from '../../../models';
 })
 export class ElsaModalDialog {
   @Prop() public actions: Array<ActionDefinition> = [];
-  @Event() shown: EventEmitter;
-  @Event() hidden: EventEmitter;
+  @Prop() public size: string = 'sm:w-full sm:max-w-6xl';
+  @Event() public shown: EventEmitter;
+  @Event() public hidden: EventEmitter;
   @Event() public actionInvoked: EventEmitter<ActionInvokedArgs>;
-  @State() isVisible: boolean;
-  overlay: HTMLElement
-  modal: HTMLElement
+  @State() private isVisible: boolean;
+  private overlay: HTMLElement
+  private modal: HTMLElement
 
   render() {
     return this.renderModal();
@@ -88,7 +89,7 @@ export class ElsaModalDialog {
                  data-transition-leave="ease-in duration-200"
                  data-transition-leave-start="opacity-0 translate-y-0 sm:scale-100"
                  data-transition-leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 class="hidden inline-block sm:align-top bg-white rounded-lg text-left overflow-visible shadow-xl transform transition-all sm:my-8 sm:align-top sm:max-w-6xl sm:w-full"
+                 class={`hidden inline-block sm:align-top bg-white rounded-lg text-left overflow-visible shadow-xl transform transition-all sm:my-8 sm:align-top ${this.size}`}
                  role="dialog" aria-modal="true" aria-labelledby="modal-headline">
               <div class="modal-content">
                 <slot/>

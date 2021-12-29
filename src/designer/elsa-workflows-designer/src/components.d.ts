@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow, WorkflowSummary } from "./models";
+import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow, WorkflowInstanceSummary, WorkflowSummary } from "./models";
 import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/designer/activity-properties-editor/activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/canvas/canvas";
 import { MenuItem } from "./components/shared/context-menu/models";
@@ -52,6 +52,7 @@ export namespace Components {
         "actions": Array<ActionDefinition>;
         "hide": (animate?: boolean) => Promise<void>;
         "show": (animate?: boolean) => Promise<void>;
+        "size": string;
     }
     interface ElsaPanel {
         "position": PanelPosition;
@@ -103,6 +104,10 @@ export namespace Components {
         "importWorkflowMetadata": (workflow: Workflow) => Promise<void>;
         "registerActivityDrivers": (register: (registry: ActivityDriverRegistry) => void) => Promise<void>;
         "triggerDescriptors": Array<TriggerDescriptor>;
+    }
+    interface ElsaWorkflowInstanceBrowser {
+        "hide": () => Promise<void>;
+        "show": () => Promise<void>;
     }
     interface ElsaWorkflowPropertiesEditor {
         "hide": () => Promise<void>;
@@ -214,6 +219,12 @@ declare global {
         prototype: HTMLElsaWorkflowEditorElement;
         new (): HTMLElsaWorkflowEditorElement;
     };
+    interface HTMLElsaWorkflowInstanceBrowserElement extends Components.ElsaWorkflowInstanceBrowser, HTMLStencilElement {
+    }
+    var HTMLElsaWorkflowInstanceBrowserElement: {
+        prototype: HTMLElsaWorkflowInstanceBrowserElement;
+        new (): HTMLElsaWorkflowInstanceBrowserElement;
+    };
     interface HTMLElsaWorkflowPropertiesEditorElement extends Components.ElsaWorkflowPropertiesEditor, HTMLStencilElement {
     }
     var HTMLElsaWorkflowPropertiesEditorElement: {
@@ -255,6 +266,7 @@ declare global {
         "elsa-trigger-properties-editor": HTMLElsaTriggerPropertiesEditorElement;
         "elsa-workflow-browser": HTMLElsaWorkflowBrowserElement;
         "elsa-workflow-editor": HTMLElsaWorkflowEditorElement;
+        "elsa-workflow-instance-browser": HTMLElsaWorkflowInstanceBrowserElement;
         "elsa-workflow-properties-editor": HTMLElsaWorkflowPropertiesEditorElement;
         "elsa-workflow-publish-button": HTMLElsaWorkflowPublishButtonElement;
         "elsa-workflow-toolbar": HTMLElsaWorkflowToolbarElement;
@@ -294,6 +306,7 @@ declare namespace LocalJSX {
         "onActionInvoked"?: (event: CustomEvent<ActionInvokedArgs>) => void;
         "onHidden"?: (event: CustomEvent<any>) => void;
         "onShown"?: (event: CustomEvent<any>) => void;
+        "size"?: string;
     }
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
@@ -345,6 +358,9 @@ declare namespace LocalJSX {
         "onWorkflowUpdated"?: (event: CustomEvent<WorkflowUpdatedArgs>) => void;
         "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
+    interface ElsaWorkflowInstanceBrowser {
+        "onWorkflowInstanceSelected"?: (event: CustomEvent<WorkflowInstanceSummary>) => void;
+    }
     interface ElsaWorkflowPropertiesEditor {
         "onWorkflowPropsUpdated"?: (event: CustomEvent<WorkflowPropsUpdatedArgs>) => void;
         "workflow"?: Workflow;
@@ -378,6 +394,7 @@ declare namespace LocalJSX {
         "elsa-trigger-properties-editor": ElsaTriggerPropertiesEditor;
         "elsa-workflow-browser": ElsaWorkflowBrowser;
         "elsa-workflow-editor": ElsaWorkflowEditor;
+        "elsa-workflow-instance-browser": ElsaWorkflowInstanceBrowser;
         "elsa-workflow-properties-editor": ElsaWorkflowPropertiesEditor;
         "elsa-workflow-publish-button": ElsaWorkflowPublishButton;
         "elsa-workflow-toolbar": ElsaWorkflowToolbar;
@@ -404,6 +421,7 @@ declare module "@stencil/core" {
             "elsa-trigger-properties-editor": LocalJSX.ElsaTriggerPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaTriggerPropertiesEditorElement>;
             "elsa-workflow-browser": LocalJSX.ElsaWorkflowBrowser & JSXBase.HTMLAttributes<HTMLElsaWorkflowBrowserElement>;
             "elsa-workflow-editor": LocalJSX.ElsaWorkflowEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowEditorElement>;
+            "elsa-workflow-instance-browser": LocalJSX.ElsaWorkflowInstanceBrowser & JSXBase.HTMLAttributes<HTMLElsaWorkflowInstanceBrowserElement>;
             "elsa-workflow-properties-editor": LocalJSX.ElsaWorkflowPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaWorkflowPropertiesEditorElement>;
             "elsa-workflow-publish-button": LocalJSX.ElsaWorkflowPublishButton & JSXBase.HTMLAttributes<HTMLElsaWorkflowPublishButtonElement>;
             "elsa-workflow-toolbar": LocalJSX.ElsaWorkflowToolbar & JSXBase.HTMLAttributes<HTMLElsaWorkflowToolbarElement>;

@@ -20,9 +20,13 @@ public class WorkflowsResource : ResourceBase<WorkflowsResource>
 
 public static class WorkflowsResourceExtensions
 {
-    public static void MapWorkflows(this IEndpointRouteBuilder endpoints, Action<WorkflowsResource> configureResource) => configureResource(new(endpoints));
+    public static IEndpointRouteBuilder MapWorkflows(this IEndpointRouteBuilder endpoints, Action<WorkflowsResource> configureResource)
+    {
+        configureResource(new(endpoints));
+        return endpoints;
+    }
 
-    public static void MapWorkflows(this IEndpointRouteBuilder endpoints) => endpoints.MapWorkflows(x => x
+    public static IEndpointRouteBuilder MapWorkflows(this IEndpointRouteBuilder endpoints) => endpoints.MapWorkflows(x => x
         .Post()
         .Execute()
         .Dispatch()

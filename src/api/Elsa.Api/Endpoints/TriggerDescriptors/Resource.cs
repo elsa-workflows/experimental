@@ -19,9 +19,14 @@ public class TriggerDescriptorsResource
         return this;
     }
 }
-    
+
 public static class TriggerDescriptorsResourceExtensions
 {
-    public static void MapTriggerDescriptors(this IEndpointRouteBuilder endpoints, Action<TriggerDescriptorsResource> configureResource) => configureResource(new(endpoints));
-    public static void MapTriggerDescriptors(this IEndpointRouteBuilder endpoints) => endpoints.MapTriggerDescriptors(x => x.List());
+    public static IEndpointRouteBuilder MapTriggerDescriptors(this IEndpointRouteBuilder endpoints, Action<TriggerDescriptorsResource> configureResource)
+    {
+        configureResource(new(endpoints));
+        return endpoints;
+    }
+
+    public static IEndpointRouteBuilder MapTriggerDescriptors(this IEndpointRouteBuilder endpoints) => endpoints.MapTriggerDescriptors(x => x.List());
 }

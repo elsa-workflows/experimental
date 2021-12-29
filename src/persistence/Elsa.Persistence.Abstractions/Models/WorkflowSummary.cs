@@ -3,24 +3,15 @@ using Elsa.Persistence.Entities;
 
 namespace Elsa.Persistence.Models;
 
-public class WorkflowSummary
+public record WorkflowSummary(string Id, string DefinitionId, string? Name, int Version, bool IsLatest, bool IsPublished, DateTime CreatedAt)
 {
-    public string Id { get; set; } = default!;
-    public string DefinitionId { get; set; } = default!;
-    public string? Name { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public int Version { get; set; } = 1;
-    public bool IsLatest { get; set; }
-    public bool IsPublished { get; set; }
-
-    public static WorkflowSummary FromDefinition(WorkflowDefinition workflowDefinition) => new()
-    {
-        Id = workflowDefinition.Id,
-        DefinitionId = workflowDefinition.DefinitionId,
-        Name = workflowDefinition.Name,
-        Version = workflowDefinition.Version,
-        IsLatest = workflowDefinition.IsLatest,
-        IsPublished = workflowDefinition.IsPublished,
-        CreatedAt = workflowDefinition.CreatedAt,
-    };
+    public static WorkflowSummary FromDefinition(WorkflowDefinition workflowDefinition) => new(
+        workflowDefinition.Id,
+        workflowDefinition.DefinitionId,
+        workflowDefinition.Name,
+        workflowDefinition.Version,
+        workflowDefinition.IsLatest,
+        workflowDefinition.IsPublished,
+        workflowDefinition.CreatedAt
+    );
 }

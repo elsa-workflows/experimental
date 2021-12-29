@@ -19,9 +19,14 @@ public class ActivityDescriptorsResource
         return this;
     }
 }
-    
+
 public static class ActivityDescriptorsResourceExtensions
 {
-    public static void MapActivityDescriptors(this IEndpointRouteBuilder endpoints, Action<ActivityDescriptorsResource> configureResource) => configureResource(new(endpoints));
-    public static void MapActivityDescriptors(this IEndpointRouteBuilder endpoints) => endpoints.MapActivityDescriptors(x => x.List());
+    public static IEndpointRouteBuilder MapActivityDescriptors(this IEndpointRouteBuilder endpoints, Action<ActivityDescriptorsResource> configureResource)
+    {
+        configureResource(new(endpoints));
+        return endpoints;
+    }
+
+    public static IEndpointRouteBuilder MapActivityDescriptors(this IEndpointRouteBuilder endpoints) => endpoints.MapActivityDescriptors(x => x.List());
 }

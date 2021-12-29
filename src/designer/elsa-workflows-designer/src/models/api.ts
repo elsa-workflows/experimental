@@ -66,6 +66,31 @@ export interface WorkflowSummary {
   isLatest: boolean;
 }
 
+export enum WorkflowStatus {
+  Idle = 'Idle',
+  Running = 'Running',
+  Suspended = 'Suspended',
+  Finished = 'Finished',
+  Compensating = 'Compensating',
+  Cancelled = 'Cancelled',
+  Faulted = 'Faulted',
+}
+
+export interface WorkflowInstanceSummary {
+  id: string;
+  definitionId: string;
+  definitionVersionId: string;
+  version: number;
+  workflowStatus: WorkflowStatus;
+  correlationId: string;
+  name?: string;
+  createdAt: Date;
+  lastExecutedAt?: Date;
+  finishedAt?: Date;
+  cancelledAt?: Date;
+  faultedAt?: Date;
+}
+
 export interface PagedList<T> {
   items: Array<T>;
   page?: number;
