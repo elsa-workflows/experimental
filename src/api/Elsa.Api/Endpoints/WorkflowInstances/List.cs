@@ -15,20 +15,20 @@ public static partial class WorkflowInstances
         IRequestSender requestSender,
         WorkflowSerializerOptionsProvider serializerOptionsProvider,
         CancellationToken cancellationToken,
-        [FromQuery] int page = 0,
-        [FromQuery] int pageSize = 50,
-        [FromQuery] string? searchTerm = default,
-        [FromQuery] string? definitionId = default,
-        [FromQuery] string? correlationId = default,
-        [FromQuery] int version = -1,
-        [FromQuery] WorkflowStatus workflowStatus = default,
-        [FromQuery] OrderBy orderBy = OrderBy.Created,
-        [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending)
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
+        [FromQuery] string? searchTerm,
+        [FromQuery] string? definitionId,
+        [FromQuery] string? correlationId,
+        [FromQuery] int? version,
+        [FromQuery] WorkflowStatus? workflowStatus,
+        [FromQuery] OrderBy? orderBy,
+        [FromQuery] OrderDirection? orderDirection)
     {
         var serializerOptions = serializerOptionsProvider.CreateSerializerOptions();
         var skip = page * pageSize;
         var take = pageSize;
-        var request = new ListWorkflowInstanceSummaries(searchTerm, definitionId, version == -1 ? null : version, correlationId, workflowStatus, orderBy, orderDirection, skip, take);
+        var request = new ListWorkflowInstanceSummaries(searchTerm, definitionId, version, correlationId, workflowStatus, orderBy ?? OrderBy.Created, orderDirection ?? OrderDirection.Ascending, skip ?? 0, take ?? 50);
         var summaries = await requestSender.RequestAsync(request, cancellationToken);
 
         return Results.Json(summaries, serializerOptions, statusCode: StatusCodes.Status200OK);
