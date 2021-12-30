@@ -1,4 +1,5 @@
 import {FunctionalComponent, h} from "@stencil/core";
+import {debounce} from 'lodash';
 
 export interface SearchProps {
   onSearch: (term: string) => void;
@@ -15,6 +16,13 @@ export const Search: FunctionalComponent<SearchProps> = ({onSearch}) => {
     onSearch(searchTerm);
   }
 
+  const onSearchDebounced = debounce(onSearch, 200);
+
+  const onKeyUp = (e: KeyboardEvent) => {
+    const term = (e.target as HTMLInputElement).value;
+    onSearchDebounced(term);
+  };
+
   return <div class="relative z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200">
     <div class="flex-1 px-4 flex justify-between sm:px-6 lg:px-8">
       <div class="flex-1 flex">
@@ -29,6 +37,7 @@ export const Search: FunctionalComponent<SearchProps> = ({onSearch}) => {
               </svg>
             </div>
             <input name="searchTerm"
+                   onKeyUp={onKeyUp}
                    class="block w-full h-full pl-8 pr-3 py-2 rounded-md text-gray-900 placeholder-cool-gray-500 focus:placeholder-cool-gray-400 sm:text-sm border-0 focus:outline-none focus:ring-0"
                    placeholder="Search"
                    type="search"/>
