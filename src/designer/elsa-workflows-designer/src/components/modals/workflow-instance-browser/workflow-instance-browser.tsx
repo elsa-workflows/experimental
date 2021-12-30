@@ -1,5 +1,6 @@
 import {Component, Event, EventEmitter, h, Host, Method, State} from '@stencil/core';
-import {DefaultActions, PagedList, VersionOptions, WorkflowInstanceSummary, WorkflowSummary} from "../../../models";
+import _ from 'lodash';
+import {DefaultActions, OrderBy, OrderDirection, PagedList, VersionOptions, WorkflowInstanceSummary, WorkflowStatus, WorkflowSummary} from "../../../models";
 import {Container} from "typedi";
 import {ElsaApiClientProvider, ElsaClient, ListWorkflowInstancesRequest} from "../../../services";
 import {DeleteIcon, EditIcon} from "../../icons";
@@ -7,6 +8,7 @@ import {getStatusColor, updateSelectedWorkflowInstances} from "./utils";
 import {formatTimestamp} from "../../../utils/utils";
 import {PagerData} from "../../shared/pager/pager";
 import {Search} from "./search";
+import {Filter, FilterProps} from "./filter";
 
 @Component({
   tag: 'elsa-workflow-instance-browser',
@@ -21,19 +23,24 @@ export class WorkflowInstanceBrowser {
   private elsaClient: ElsaClient;
   private modalDialog: HTMLElsaModalDialogElement;
   private selectAllCheckbox: HTMLInputElement;
+  private publishedOrLatestWorkflows: Array<WorkflowSummary> = [];
 
   @Event() public workflowInstanceSelected: EventEmitter<WorkflowInstanceSummary>;
   @State() private workflowInstances: PagedList<WorkflowInstanceSummary> = {items: [], totalCount: 0};
   @State() private workflows: Array<WorkflowSummary> = [];
   @State() private selectAllChecked: boolean;
   @State() private selectedWorkflowInstanceIds: Array<string> = [];
+  @State() private searchTerm?: string;
   @State() private currentPage: number = 0;
   @State() private currentPageSize: number = WorkflowInstanceBrowser.DEFAULT_PAGE_SIZE;
-
+  @State() private selectedWorkflowDefinitionId?: string;
+  @State() private selectedStatus?: WorkflowStatus;
+  @State() private orderBy?: OrderBy;
 
   @Method()
   public async show() {
     await this.modalDialog.show();
+    await this.loadWorkflows();
     await this.loadWorkflowInstances();
   }
 
@@ -48,11 +55,31 @@ export class WorkflowInstanceBrowser {
   }
 
   public render() {
-    const workflows = this.workflows;
+    const publishedOrLatestWorkflows = this.publishedOrLatestWorkflows;
     const workflowInstances = this.workflowInstances;
     const totalCount = workflowInstances.totalCount
     const closeAction = DefaultActions.Close();
     const actions = [closeAction];
+
+    const filterProps: FilterProps = {
+      pageSizeFilter: {
+        selectedPageSize: this.currentPageSize,
+        onChange: this.onPageSizeChanged
+      },
+      orderByFilter: {
+        selectedOrderBy: this.orderBy,
+        onChange: this.onOrderByChanged
+      },
+      statusFilter: {
+        selectedStatus: this.selectedStatus,
+        onChange: this.onWorkflowStatusChanged
+      },
+      workflowFilter: {
+        workflows: publishedOrLatestWorkflows,
+        selectedWorkflowDefinitionId: this.selectedWorkflowDefinitionId,
+        onChange: this.onWorkflowChanged
+      }
+    };
 
     return (
       <Host class="block">
@@ -62,6 +89,7 @@ export class WorkflowInstanceBrowser {
             <h2 class="text-lg font-medium ml-4 mb-2">Workflow Instances</h2>
 
             <Search onSearch={this.onSearch}/>
+            <Filter {...filterProps}/>
 
             <div class="align-middle inline-block min-w-full border-b border-gray-200">
               <table>
@@ -89,7 +117,7 @@ export class WorkflowInstanceBrowser {
                 {workflowInstances.items.map(workflowInstance => {
                   const statusColor = getStatusColor(workflowInstance.workflowStatus);
                   const isSelected = this.selectedWorkflowInstanceIds.findIndex(x => x === workflowInstance.id) >= 0;
-                  const workflow: WorkflowSummary = workflows.find(x => x.definitionId == workflowInstance.definitionId && x.version == workflowInstance.version);
+                  const workflow: WorkflowSummary = publishedOrLatestWorkflows.find(x => x.definitionId == workflowInstance.definitionId);
                   const workflowName = !!workflow ? (workflow.name || 'Untitled') : '(Definition not found)';
 
                   return (
@@ -138,28 +166,32 @@ export class WorkflowInstanceBrowser {
     );
   }
 
-  private async loadWorkflowInstances(searchTerm?: string) {
+  private resetPagination = () => {
+    this.currentPage = 0;
+    this.selectedWorkflowInstanceIds = [];
+  };
+
+  private async loadWorkflowInstances() {
     const elsaClient = this.elsaClient;
-    const page = this.currentPage;
-    const pageSize = this.currentPageSize;
 
     const request: ListWorkflowInstancesRequest = {
-      searchTerm: searchTerm,
-      page: page,
-      pageSize: pageSize
+      searchTerm: this.searchTerm,
+      definitionId: this.selectedWorkflowDefinitionId,
+      workflowStatus: this.selectedStatus,
+      orderBy: this.orderBy,
+      orderDirection: OrderDirection.Descending,
+      page: this.currentPage,
+      pageSize: this.currentPageSize
     };
 
-    const workflowInstances = await elsaClient.workflowInstances.list(request);
-    const definitionIds = new Set(workflowInstances.items.map(x => x.definitionId));
-
-    await this.loadWorkflows(Array.from(definitionIds));
-    this.workflowInstances = workflowInstances;
+    this.workflowInstances = await elsaClient.workflowInstances.list(request);
   }
 
-  private loadWorkflows = async (definitionIds: Array<string>) => {
+  private loadWorkflows = async () => {
     const elsaClient = this.elsaClient;
     const versionOptions: VersionOptions = {allVersions: true};
-    this.workflows = await elsaClient.workflows.getMany({definitionIds, versionOptions});
+    const workflows = await elsaClient.workflows.list({versionOptions});
+    this.publishedOrLatestWorkflows = this.selectLatestWorkflows(workflows.items);
   };
 
   private getSelectAllState = () => {
@@ -175,7 +207,39 @@ export class WorkflowInstanceBrowser {
     }
   }
 
-  private onSearch = async (term: string) => await this.loadWorkflowInstances(term);
+  private selectLatestWorkflows = (workflows: Array<WorkflowSummary>): Array<WorkflowSummary> => {
+    const groups = _.groupBy(workflows, 'definitionId');
+    return _.map(groups, x => _.first(_.orderBy(x, 'version', 'desc')));
+  }
+
+  private onSearch = async (term: string) => {
+    this.searchTerm = term;
+    this.resetPagination();
+    await this.loadWorkflowInstances();
+  };
+
+  private onPageSizeChanged = async (pageSize: number) => {
+    this.currentPageSize = pageSize;
+    this.resetPagination();
+    await this.loadWorkflowInstances();
+  };
+
+  private onWorkflowChanged = async (definitionId: string) => {
+    this.selectedWorkflowDefinitionId = definitionId;
+    this.resetPagination();
+    await this.loadWorkflowInstances();
+  };
+
+  private onWorkflowStatusChanged = async (status: WorkflowStatus) => {
+    this.selectedStatus = status;
+    this.resetPagination();
+    await this.loadWorkflowInstances();
+  };
+
+  private onOrderByChanged = async (orderBy: OrderBy) => {
+    this.orderBy = orderBy;
+    await this.loadWorkflowInstances();
+  };
 
   private async onDeleteClick(e: MouseEvent, workflowInstance: WorkflowInstanceSummary) {
 

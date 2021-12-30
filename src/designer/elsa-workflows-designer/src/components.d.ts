@@ -9,6 +9,7 @@ import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, Acti
 import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/designer/activity-properties-editor/activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/canvas/canvas";
 import { MenuItem } from "./components/shared/context-menu/models";
+import { DropdownButtonItem, DropdownButtonOrigin } from "./components/shared/dropdown-button/models";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/canvas/canvas";
 import { PagerData } from "./components/shared/pager/pager";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/panel/models";
@@ -34,6 +35,12 @@ export namespace Components {
     }
     interface ElsaContextMenu {
         "menuItems": Array<MenuItem>;
+    }
+    interface ElsaDropdownButton {
+        "icon"?: any;
+        "items": Array<DropdownButtonItem>;
+        "origin": DropdownButtonOrigin;
+        "text": string;
     }
     interface ElsaFlowchart {
         "activityDescriptors": Array<ActivityDescriptor>;
@@ -146,6 +153,12 @@ declare global {
     var HTMLElsaContextMenuElement: {
         prototype: HTMLElsaContextMenuElement;
         new (): HTMLElsaContextMenuElement;
+    };
+    interface HTMLElsaDropdownButtonElement extends Components.ElsaDropdownButton, HTMLStencilElement {
+    }
+    var HTMLElsaDropdownButtonElement: {
+        prototype: HTMLElsaDropdownButtonElement;
+        new (): HTMLElsaDropdownButtonElement;
     };
     interface HTMLElsaFlowchartElement extends Components.ElsaFlowchart, HTMLStencilElement {
     }
@@ -265,6 +278,7 @@ declare global {
         "elsa-activity-properties-editor": HTMLElsaActivityPropertiesEditorElement;
         "elsa-canvas": HTMLElsaCanvasElement;
         "elsa-context-menu": HTMLElsaContextMenuElement;
+        "elsa-dropdown-button": HTMLElsaDropdownButtonElement;
         "elsa-flowchart": HTMLElsaFlowchartElement;
         "elsa-form-panel": HTMLElsaFormPanelElement;
         "elsa-modal-dialog": HTMLElsaModalDialogElement;
@@ -297,6 +311,13 @@ declare namespace LocalJSX {
     }
     interface ElsaContextMenu {
         "menuItems"?: Array<MenuItem>;
+    }
+    interface ElsaDropdownButton {
+        "icon"?: any;
+        "items"?: Array<DropdownButtonItem>;
+        "onItemSelected"?: (event: CustomEvent<DropdownButtonItem>) => void;
+        "origin"?: DropdownButtonOrigin;
+        "text"?: string;
     }
     interface ElsaFlowchart {
         "activityDescriptors"?: Array<ActivityDescriptor>;
@@ -400,6 +421,7 @@ declare namespace LocalJSX {
         "elsa-activity-properties-editor": ElsaActivityPropertiesEditor;
         "elsa-canvas": ElsaCanvas;
         "elsa-context-menu": ElsaContextMenu;
+        "elsa-dropdown-button": ElsaDropdownButton;
         "elsa-flowchart": ElsaFlowchart;
         "elsa-form-panel": ElsaFormPanel;
         "elsa-modal-dialog": ElsaModalDialog;
@@ -428,6 +450,7 @@ declare module "@stencil/core" {
             "elsa-activity-properties-editor": LocalJSX.ElsaActivityPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaActivityPropertiesEditorElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
             "elsa-context-menu": LocalJSX.ElsaContextMenu & JSXBase.HTMLAttributes<HTMLElsaContextMenuElement>;
+            "elsa-dropdown-button": LocalJSX.ElsaDropdownButton & JSXBase.HTMLAttributes<HTMLElsaDropdownButtonElement>;
             "elsa-flowchart": LocalJSX.ElsaFlowchart & JSXBase.HTMLAttributes<HTMLElsaFlowchartElement>;
             "elsa-form-panel": LocalJSX.ElsaFormPanel & JSXBase.HTMLAttributes<HTMLElsaFormPanelElement>;
             "elsa-modal-dialog": LocalJSX.ElsaModalDialog & JSXBase.HTMLAttributes<HTMLElsaModalDialogElement>;

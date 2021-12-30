@@ -25,9 +25,16 @@ public class ListWorkflowSummariesHandler : IRequestHandler<ListWorkflowSummarie
             query = query.WithVersion(request.VersionOptions.Value);
 
         var totalCount = query.Count();
-        var entities = query.Skip(request.Skip).Take(request.Take).ToList();
+        
+        if (request.Skip != null)
+            query = query.Skip(request.Skip.Value);
+
+        if (request.Take != null)
+            query = query.Take(request.Take.Value);
+        
+        var entities = query.ToList();
         var summaries = entities.Select(WorkflowSummary.FromDefinition).ToList();
-        var pagedList = new PagedList<WorkflowSummary>(summaries, request.Take, totalCount);
+        var pagedList = new PagedList<WorkflowSummary>(summaries, request.Take ?? totalCount, totalCount);
         return Task.FromResult(pagedList);
     }
 }

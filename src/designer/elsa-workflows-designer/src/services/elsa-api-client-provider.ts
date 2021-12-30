@@ -16,7 +16,7 @@ import {Container, Service} from "typedi";
 import {ServerSettings} from "./server-settings";
 
 function serializeQueryString(queryString: object): string {
-  const filteredItems = _(queryString).omitBy(_.isUndefined).value();
+  const filteredItems = _(queryString).omitBy(_.isUndefined).omitBy(_.isNull).value();
   const queryStringItems = _.map(filteredItems, (v, k) => `${k}=${v}`);
   return queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
 }

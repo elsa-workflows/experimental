@@ -16,9 +16,9 @@ public static partial class Workflows
         IRequestSender requestSender,
         WorkflowSerializerOptionsProvider serializerOptionsProvider,
         CancellationToken cancellationToken,
-        [FromQuery] string? versionOptions = default,
-        [FromQuery] int page = 0,
-        [FromQuery] int pageSize = 50)
+        [FromQuery] string? versionOptions,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize)
     {
         var serializerOptions = serializerOptionsProvider.CreateSerializerOptions();
         var skip = page * pageSize;
