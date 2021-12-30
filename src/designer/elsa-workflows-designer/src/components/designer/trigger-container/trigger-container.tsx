@@ -77,15 +77,13 @@ export class TriggerContainer {
 
     if (triggers.length == 0) {
       return <div>
-        <div class="border-2 border-dashed m-4 p-4 text-center">
-          <h2 class="text-lg font-medium text-gray-900">Triggers</h2>
-          <p
-            class="mt-1 text-sm text-gray-600">Place your workflow triggers here to automatically invoke your workflow when a trigger executes.</p>
+        <div class="border-2 border-dashed m-2 p-2 text-center">
+          <p class="mt-1 text-sm text-gray-600">Place your workflow triggers here to automatically invoke your workflow when a trigger executes.</p>
         </div>
       </div>
     }
 
-    return <div class="flex p-4 pt-8 space-x-4">
+    return <div class="flex p-2 pt-4 space-x-4">
       {triggers.map(this.renderTrigger)}
     </div>
   };
