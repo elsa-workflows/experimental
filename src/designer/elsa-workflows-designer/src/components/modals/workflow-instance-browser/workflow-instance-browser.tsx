@@ -145,12 +145,11 @@ export class WorkflowInstanceBrowser {
     const workflowInstances = await elsaClient.workflowInstances.list({page: page, pageSize: pageSize});
     const definitionIds = new Set(workflowInstances.items.map(x => x.definitionId));
 
-    await this.loadWorkflowBlueprints(Array.from(definitionIds));
+    await this.loadWorkflows(Array.from(definitionIds));
     this.workflowInstances = workflowInstances;
   }
 
-  private loadWorkflowBlueprints = async (definitionIds: Array<string>) => {
-    debugger;
+  private loadWorkflows = async (definitionIds: Array<string>) => {
     const elsaClient = this.elsaClient;
     const versionOptions: VersionOptions = {allVersions: true};
     this.workflows = await elsaClient.workflows.getMany({definitionIds, versionOptions});

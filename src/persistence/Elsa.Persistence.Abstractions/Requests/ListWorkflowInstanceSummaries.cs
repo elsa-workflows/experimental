@@ -1,6 +1,18 @@
 using Elsa.Mediator.Contracts;
+using Elsa.Persistence.Entities;
 using Elsa.Persistence.Models;
+using Elsa.State;
 
 namespace Elsa.Persistence.Requests;
 
-public record ListWorkflowInstanceSummaries(int Skip = 0, int Take = 50) : IRequest<PagedList<WorkflowInstanceSummary>>;
+public record ListWorkflowInstanceSummaries(
+    string? SearchTerm = default,
+    string? DefinitionId = default,
+    int? Version = default,
+    string? CorrelationId = default,
+    WorkflowStatus? WorkflowStatus = default,
+    OrderBy OrderBy = OrderBy.Created,
+    OrderDirection OrderDirection = OrderDirection.Ascending,
+    int Skip = 0,
+    int Take = 50
+) : IRequest<PagedList<WorkflowInstanceSummary>>;

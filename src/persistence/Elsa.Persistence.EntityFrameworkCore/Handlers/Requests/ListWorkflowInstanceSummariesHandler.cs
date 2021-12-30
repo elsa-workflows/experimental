@@ -1,10 +1,8 @@
 using Elsa.Mediator.Contracts;
 using Elsa.Persistence.Entities;
 using Elsa.Persistence.EntityFrameworkCore.Contracts;
-using Elsa.Persistence.Extensions;
 using Elsa.Persistence.Models;
 using Elsa.Persistence.Requests;
-using Microsoft.EntityFrameworkCore;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Handlers.Requests;
 
@@ -15,11 +13,46 @@ public class ListWorkflowInstanceSummariesHandler : IRequestHandler<ListWorkflow
 
     public async Task<PagedList<WorkflowInstanceSummary>> HandleAsync(ListWorkflowInstanceSummaries request, CancellationToken cancellationToken)
     {
-        await using var dbContext = await _store.CreateDbContextAsync(cancellationToken);
-        var set = dbContext.WorkflowInstances;
-        var query = set.AsQueryable();
-        var totalCount = await query.CountAsync(cancellationToken);
-        var summaries = query.OrderBy(x => x.CreatedAt).Select(x => WorkflowInstanceSummary.FromInstance(x)).Skip(request.Skip).Take(request.Take).ToList();
-        return new PagedList<WorkflowInstanceSummary>(summaries, request.Take, totalCount);
+        var dbContext = await _store.CreateDbContextAsync(cancellationToken);
+        var query = dbContext.WorkflowInstances.AsQueryable();
+        var (searchTerm, definitionId, version, correlationId, workflowStatus, orderBy, orderDirection, skip, take) = request;
+
+        if (!string.IsNullOrWhiteSpace(definitionId))
+            query = query.Where(x => x.DefinitionId == definitionId);
+
+        if (version != null)
+            query = query.Where(x => x.Version == version);
+
+        if (!string.IsNullOrWhiteSpace(correlationId))
+            query = query.Where(x => x.CorrelationId == correlationId);
+
+        if (workflowStatus != null)
+            query = query.Where(x => x.WorkflowStatus == workflowStatus);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            const StringComparison comparison = StringComparison.InvariantCultureIgnoreCase;
+
+            query =
+                from instance in query
+                where instance.Name!.Contains(searchTerm, comparison) == true
+                      || instance.Id.Contains(searchTerm, comparison)
+                      || instance.DefinitionId.Contains(searchTerm, comparison)
+                      || instance.CorrelationId.Contains(searchTerm, comparison)
+                select instance;
+        }
+
+        query = orderBy switch
+        {
+            OrderBy.Finished => orderDirection == OrderDirection.Ascending ? query.OrderBy(x => x.FinishedAt) : query.OrderByDescending(x => x.FinishedAt),
+            OrderBy.LastExecuted => orderDirection == OrderDirection.Ascending ? query.OrderBy(x => x.LastExecutedAt) : query.OrderByDescending(x => x.LastExecutedAt),
+            OrderBy.Created => orderDirection == OrderDirection.Ascending ? query.OrderBy(x => x.CreatedAt) : query.OrderByDescending(x => x.CreatedAt),
+            _ => query
+        };
+
+        var totalCount = query.Count();
+        var entities = query.Skip(skip).Take(take).ToList();
+        var summaries = entities.Select(WorkflowInstanceSummary.FromInstance).ToList();
+        return new PagedList<WorkflowInstanceSummary>(summaries, take, totalCount);
     }
 }
