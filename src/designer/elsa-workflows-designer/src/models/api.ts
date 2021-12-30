@@ -76,6 +76,17 @@ export enum WorkflowStatus {
   Faulted = 'Faulted',
 }
 
+export enum OrderBy {
+  Created = 'Created',
+  LastExecuted = 'LastExecuted',
+  Finished = 'Finished'
+}
+
+export enum OrderDirection {
+  Ascending = 'Ascending',
+  Descending = 'Descending'
+}
+
 export interface WorkflowInstanceSummary {
   id: string;
   definitionId: string;

@@ -6,17 +6,18 @@ import {
   Activity,
   ActivityDescriptor,
   ActivityDescriptorResponse,
-  EventTypes, getVersionOptionsString, PagedList, Trigger,
+  EventTypes, getVersionOptionsString, OrderBy, OrderDirection, PagedList, Trigger,
   TriggerDescriptor,
   TriggerDescriptorResponse, VersionOptions,
-  Workflow, WorkflowInstanceSummary, WorkflowSummary
+  Workflow, WorkflowInstanceSummary, WorkflowStatus, WorkflowSummary
 } from "../models";
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
 import {ServerSettings} from "./server-settings";
 
 function serializeQueryString(queryString: object): string {
-  const queryStringItems = _.map(queryString, (v, k) => `${k}=${v}`);
+  const filteredItems = _(queryString).omitBy(_.isUndefined).value();
+  const queryStringItems = _.map(filteredItems, (v, k) => `${k}=${v}`);
   return queryStringItems.length > 0 ? `?${queryStringItems.join('&')}` : '';
 }
 
@@ -101,15 +102,7 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
     },
     workflowInstances: {
       async list(request: ListWorkflowInstancesRequest): Promise<PagedList<WorkflowInstanceSummary>> {
-        const queryString = {};
-
-        if (!!request.page)
-          queryString['page'] = request.page;
-
-        if (!!request.pageSize)
-          queryString['pageSize'] = request.pageSize;
-
-        const queryStringText = serializeQueryString(queryString);
+        const queryStringText = serializeQueryString(request);
         const response = await httpClient.get<PagedList<WorkflowInstanceSummary>>(`api/workflow-instances${queryStringText}`);
         return response.data;
       }
@@ -177,6 +170,13 @@ export interface GetManyWorkflowsRequest {
 }
 
 export interface ListWorkflowInstancesRequest {
+  searchTerm?: string;
+  definitionId?: string;
+  correlationId?: string;
+  version?: number;
+  workflowStatus?: WorkflowStatus;
+  orderBy?: OrderBy;
+  orderDirection?: OrderDirection;
   page?: number;
   pageSize?: number;
 }

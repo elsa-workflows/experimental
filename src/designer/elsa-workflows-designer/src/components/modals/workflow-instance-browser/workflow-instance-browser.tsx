@@ -1,7 +1,7 @@
 import {Component, Event, EventEmitter, h, Host, Method, State} from '@stencil/core';
 import {DefaultActions, PagedList, VersionOptions, WorkflowInstanceSummary, WorkflowSummary} from "../../../models";
 import {Container} from "typedi";
-import {ElsaApiClientProvider, ElsaClient} from "../../../services";
+import {ElsaApiClientProvider, ElsaClient, ListWorkflowInstancesRequest} from "../../../services";
 import {DeleteIcon, EditIcon} from "../../icons";
 import {getStatusColor, updateSelectedWorkflowInstances} from "./utils";
 import {formatTimestamp} from "../../../utils/utils";
@@ -24,12 +24,12 @@ export class WorkflowInstanceBrowser {
 
   @Event() public workflowInstanceSelected: EventEmitter<WorkflowInstanceSummary>;
   @State() private workflowInstances: PagedList<WorkflowInstanceSummary> = {items: [], totalCount: 0};
-  @State() workflows: Array<WorkflowSummary> = [];
+  @State() private workflows: Array<WorkflowSummary> = [];
   @State() private selectAllChecked: boolean;
   @State() private selectedWorkflowInstanceIds: Array<string> = [];
-  @State() currentPage: number = 0;
-  @State() currentPageSize: number = WorkflowInstanceBrowser.DEFAULT_PAGE_SIZE;
-  @State() currentSearchTerm?: string;
+  @State() private currentPage: number = 0;
+  @State() private currentPageSize: number = WorkflowInstanceBrowser.DEFAULT_PAGE_SIZE;
+
 
   @Method()
   public async show() {
@@ -138,11 +138,18 @@ export class WorkflowInstanceBrowser {
     );
   }
 
-  private async loadWorkflowInstances() {
+  private async loadWorkflowInstances(searchTerm?: string) {
     const elsaClient = this.elsaClient;
     const page = this.currentPage;
     const pageSize = this.currentPageSize;
-    const workflowInstances = await elsaClient.workflowInstances.list({page: page, pageSize: pageSize});
+
+    const request: ListWorkflowInstancesRequest = {
+      searchTerm: searchTerm,
+      page: page,
+      pageSize: pageSize
+    };
+
+    const workflowInstances = await elsaClient.workflowInstances.list(request);
     const definitionIds = new Set(workflowInstances.items.map(x => x.definitionId));
 
     await this.loadWorkflows(Array.from(definitionIds));
@@ -168,9 +175,7 @@ export class WorkflowInstanceBrowser {
     }
   }
 
-  private onSearch = async (term: string) => {
-
-  };
+  private onSearch = async (term: string) => await this.loadWorkflowInstances(term);
 
   private async onDeleteClick(e: MouseEvent, workflowInstance: WorkflowInstanceSummary) {
 

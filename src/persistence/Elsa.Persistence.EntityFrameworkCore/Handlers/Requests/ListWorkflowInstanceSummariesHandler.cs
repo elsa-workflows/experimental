@@ -31,14 +31,12 @@ public class ListWorkflowInstanceSummariesHandler : IRequestHandler<ListWorkflow
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            const StringComparison comparison = StringComparison.InvariantCultureIgnoreCase;
-
             query =
                 from instance in query
-                where instance.Name!.Contains(searchTerm, comparison) == true
-                      || instance.Id.Contains(searchTerm, comparison)
-                      || instance.DefinitionId.Contains(searchTerm, comparison)
-                      || instance.CorrelationId.Contains(searchTerm, comparison)
+                where instance.Name!.Contains(searchTerm)
+                      || instance.Id.Contains(searchTerm)
+                      || instance.DefinitionId.Contains(searchTerm)
+                      || instance.CorrelationId.Contains(searchTerm)
                 select instance;
         }
 
