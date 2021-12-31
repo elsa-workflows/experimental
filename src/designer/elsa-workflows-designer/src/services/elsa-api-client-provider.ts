@@ -9,7 +9,7 @@ import {
   EventTypes, getVersionOptionsString, OrderBy, OrderDirection, PagedList, Trigger,
   TriggerDescriptor,
   TriggerDescriptorResponse, VersionOptions,
-  Workflow, WorkflowInstanceSummary, WorkflowStatus, WorkflowSummary
+  Workflow, WorkflowInstance, WorkflowInstanceSummary, WorkflowStatus, WorkflowSummary
 } from "../models";
 import 'reflect-metadata';
 import {Container, Service} from "typedi";
@@ -105,6 +105,10 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
         const queryStringText = serializeQueryString(request);
         const response = await httpClient.get<PagedList<WorkflowInstanceSummary>>(`api/workflow-instances${queryStringText}`);
         return response.data;
+      },
+      async get(request: GetWorkflowInstanceRequest): Promise<WorkflowInstance> {
+        const response = await httpClient.get<WorkflowInstance>(`api/workflow-instances/${request.id}`);
+        return response.data;
       }
     }
   };
@@ -142,6 +146,8 @@ export interface WorkflowsApi {
 export interface WorkflowInstancesApi {
 
   list(request: ListWorkflowInstancesRequest): Promise<PagedList<WorkflowInstanceSummary>>;
+
+  get(request: GetWorkflowInstanceRequest): Promise<WorkflowInstance>;
 }
 
 export interface SaveWorkflowRequest {
@@ -179,6 +185,10 @@ export interface ListWorkflowInstancesRequest {
   orderDirection?: OrderDirection;
   page?: number;
   pageSize?: number;
+}
+
+export interface GetWorkflowInstanceRequest {
+  id: string;
 }
 
 @Service()

@@ -19,7 +19,7 @@ export interface WorkflowPropsUpdatedArgs {
 @Component({
   tag: 'elsa-workflow-properties-editor',
 })
-export class ActivityPropertiesEditor {
+export class WorkflowPropertiesEditor {
   private slideOverPanel: HTMLElsaSlideOverPanelElement;
 
   @Prop({mutable: true}) workflow?: Workflow;
@@ -149,4 +149,4 @@ export class ActivityPropertiesEditor {
   };
 }
 
-WorkflowEditorTunnel.injectProps(ActivityPropertiesEditor, ['activityDescriptors']);
+WorkflowEditorTunnel.injectProps(WorkflowPropertiesEditor, ['activityDescriptors']);

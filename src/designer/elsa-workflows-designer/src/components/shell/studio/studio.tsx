@@ -2,21 +2,20 @@ import {Component, Element, h, Listen, Prop, Watch} from '@stencil/core';
 import 'reflect-metadata';
 import {Container} from 'typedi';
 import {ElsaApiClientProvider, ElsaClient, SaveWorkflowRequest, ServerSettings} from '../../../services';
-import ShellTunnel, {ShellState} from './state';
-import {ActivityDescriptor, TriggerDescriptor, Workflow, WorkflowSummary} from '../../../models';
+import {ActivityDescriptor, TriggerDescriptor, VersionOptions, Workflow, WorkflowInstanceSummary, WorkflowSummary} from '../../../models';
 import {WorkflowUpdatedArgs} from '../../designer/workflow-editor/workflow-editor';
 import {PublishClickedArgs} from "../../toolbar/workflow-publish-button/workflow-publish-button";
 
 @Component({
-  tag: 'elsa-server-shell'
+  tag: 'elsa-studio'
 })
-export class ServerShell {
+export class Studio {
   private activityDescriptors: Array<ActivityDescriptor>;
   private triggerDescriptors: Array<TriggerDescriptor>;
   private elsaClient: ElsaClient;
   private workflowEditorElement?: HTMLElsaWorkflowEditorElement;
 
-  @Element() private el: HTMLElsaServerShellElement;
+  @Element() private el: HTMLElsaStudioElement;
   @Prop({attribute: 'server'}) public serverUrl: string;
 
 
@@ -44,6 +43,22 @@ export class ServerShell {
     await workflowEditorElement.importWorkflow(workflow);
   }
 
+  @Listen('workflowInstanceSelected')
+  private async handleWorkflowInstanceSelected(e: CustomEvent<WorkflowInstanceSummary>) {
+    const workflowEditorElement = this.workflowEditorElement;
+
+    if (!workflowEditorElement)
+      return;
+
+    const workflowInstanceSummary = e.detail;
+    const definitionId = workflowInstanceSummary.definitionId;
+    const version = workflowInstanceSummary.version;
+    const versionOptions: VersionOptions = {version};
+    const workflow = await this.elsaClient.workflows.get({definitionId, versionOptions});
+    const workflowInstance = await this.elsaClient.workflowInstances.get({id: workflowInstanceSummary.id});
+    await workflowEditorElement.importWorkflow(workflow, workflowInstance);
+  }
+
   @Listen('publishClicked')
   private async handlePublishClicked(e: CustomEvent<PublishClickedArgs>) {
     const workflowEditorElement = this.workflowEditorElement;
@@ -64,20 +79,16 @@ export class ServerShell {
     this.elsaClient = await elsaClientProvider.getClient();
     this.activityDescriptors = await this.elsaClient.descriptors.activities.list();
     this.triggerDescriptors = await this.elsaClient.descriptors.triggers.list();
-
     this.workflowEditorElement = this.el.getElementsByTagName('elsa-workflow-editor')[0] as HTMLElsaWorkflowEditorElement;
+
+    if (!!this.workflowEditorElement) {
+      this.workflowEditorElement.activityDescriptors = this.activityDescriptors;
+      this.workflowEditorElement.triggerDescriptors = this.triggerDescriptors;
+    }
   }
 
   public render() {
-
-    const tunnelState: ShellState = {
-      activityDescriptors: this.activityDescriptors,
-      triggerDescriptors: this.triggerDescriptors
-    };
-
-    return <ShellTunnel.Provider state={tunnelState}>
-      <slot/>
-    </ShellTunnel.Provider>;
+    return <slot/>;
   }
 
   private saveWorkflow = async (workflow: Workflow, publish: boolean): Promise<Workflow> => {

@@ -57,6 +57,37 @@ export interface WorkflowPublication {
   isPublished: boolean;
 }
 
+export interface WorkflowState {
+  id: string;
+  activityOutput: Map<string, Map<string, any>>;
+  completionCallbacks: Array<CompletionCallbackState>;
+  activityExecutionContexts: Array<ActivityExecutionContextState>;
+  properties: Map<string, any>;
+}
+
+export interface CompletionCallbackState {
+  ownerId: string;
+  childId: string;
+  methodName: string;
+}
+
+export interface ActivityExecutionContextState {
+  id: string;
+  parentActivityExecutionContextId?: string;
+  scheduledActivityId: string;
+  ownerActivityId?: string;
+  properties: Map<string, any>;
+  register: RegisterState;
+}
+
+export interface RegisterState {
+  locations: Map<string, RegisterLocation>;
+}
+
+export interface RegisterLocation {
+  value: any;
+}
+
 export const getVersionOptionsString = (versionOptions?: VersionOptions) => {
 
   if (!versionOptions)

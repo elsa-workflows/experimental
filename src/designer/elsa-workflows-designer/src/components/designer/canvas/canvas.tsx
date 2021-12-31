@@ -1,4 +1,4 @@
-import {Component, h, Method} from '@stencil/core';
+import {Component, h, Method, Prop} from '@stencil/core';
 import {ContainerActivityComponent} from '../../activities/container-activity-component';
 import {Activity, ActivityDescriptor} from '../../../models';
 
@@ -15,6 +15,8 @@ export interface AddActivityArgs {
 export class Canvas {
 
   private root: ContainerActivityComponent;
+
+  @Prop() public interactiveMode: boolean = true;
 
   @Method()
   public async addActivity(args: AddActivityArgs): Promise<void> {
@@ -39,7 +41,7 @@ export class Canvas {
   render() {
     return (
       <div class="absolute left-0 top-0 right-0 bottom-0">
-        <elsa-flowchart ref={el => this.root = el} class="absolute left-0 top-0 right-0 bottom-0"/>
+        <elsa-flowchart ref={el => this.root = el} interactiveMode={this.interactiveMode} class="absolute left-0 top-0 right-0 bottom-0"/>
       </div>
     );
   }

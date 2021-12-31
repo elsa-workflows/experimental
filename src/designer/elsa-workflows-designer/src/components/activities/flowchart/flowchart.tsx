@@ -24,6 +24,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
 
   @Prop({mutable: true}) public activityDescriptors: Array<ActivityDescriptor> = [];
   @Prop({mutable: true}) public root?: Activity;
+  @Prop() public interactiveMode: boolean = true;
 
   @Element() el: HTMLElement;
   container: HTMLElement;
@@ -74,11 +75,6 @@ export class FlowchartComponent implements ContainerActivityComponent {
     return this.importRootInternal(root);
   }
 
-  @Watch('root')
-  private async onRootChange(value: Activity) {
-    await this.importRootInternal(value);
-  }
-
   public async componentDidLoad() {
     await this.createAndInitializeGraph();
   }
@@ -92,7 +88,19 @@ export class FlowchartComponent implements ContainerActivityComponent {
   }
 
   private createAndInitializeGraph = async () => {
-    const graph = this.graph = createGraph(this.container);
+    const graph = this.graph = createGraph(this.container, {
+      nodeMovable: () => this.interactiveMode,
+      edgeMovable: () => this.interactiveMode,
+      arrowheadMovable: () => this.interactiveMode,
+      edgeLabelMovable: () => this.interactiveMode,
+      magnetConnectable: () => this.interactiveMode,
+      useEdgeTools: () => this.interactiveMode,
+      toolsAddable: () => this.interactiveMode,
+      stopDelegateOnDragging: () => this.interactiveMode,
+      vertexAddable: () => this.interactiveMode,
+      vertexDeletable: () => this.interactiveMode,
+      vertexMovable: () => this.interactiveMode,
+    });
 
     graph.on('blank:click', this.onGraphClick);
     graph.on('node:click', this.onNodeClick);
@@ -236,13 +244,30 @@ export class FlowchartComponent implements ContainerActivityComponent {
     }
   };
 
+  @Watch('root')
+  private async onRootChange(value: Activity) {
+    await this.importRootInternal(value);
+  }
+
+  @Watch('interactiveMode')
+  private async onInteractiveModeChange(value: boolean) {
+    const graph = this.graph;
+
+    if (!value) {
+      graph.disableSelectionMovable();
+      graph.disableKeyboard();
+    } else {
+      graph.enableSelectionMovable();
+      graph.enableKeyboard();
+    }
+  }
+
   private onGraphClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => this.containerSelected.emit({});
 
   private onNodeClick = async (e: PositionEventArgs<JQuery.ClickEvent>) => {
     const node = e.node;
     const activity = node.data as Activity;
     const activityId = activity.id;
-    const graph = this.graph;
 
     const args: ActivitySelectedArgs = {
       activity: activity,

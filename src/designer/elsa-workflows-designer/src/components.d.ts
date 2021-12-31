@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow, WorkflowInstanceSummary, WorkflowSummary } from "./models";
+import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow, WorkflowInstance, WorkflowInstanceSummary, WorkflowSummary } from "./models";
 import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/designer/activity-properties-editor/activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/canvas/canvas";
 import { MenuItem } from "./components/shared/context-menu/models";
@@ -31,6 +31,7 @@ export namespace Components {
         "addActivity": (args: AddActivityArgs) => Promise<void>;
         "exportGraph": () => Promise<Activity>;
         "importGraph": (root: Activity) => Promise<void>;
+        "interactiveMode": boolean;
         "updateLayout": () => Promise<void>;
     }
     interface ElsaContextMenu {
@@ -47,6 +48,7 @@ export namespace Components {
         "addActivity": (args: AddActivityArgs) => Promise<void>;
         "exportRoot": () => Promise<Activity>;
         "importRoot": (root: Activity) => Promise<void>;
+        "interactiveMode": boolean;
         "root"?: Activity;
         "updateLayout": () => Promise<void>;
     }
@@ -70,9 +72,6 @@ export namespace Components {
     interface ElsaPanel {
         "position": PanelPosition;
     }
-    interface ElsaServerShell {
-        "serverUrl": string;
-    }
     interface ElsaSlideOverPanel {
         "actions": Array<ActionDefinition>;
         "expand": boolean;
@@ -81,6 +80,9 @@ export namespace Components {
         "selectedTab"?: TabDefinition;
         "show": () => Promise<void>;
         "tabs": Array<TabDefinition>;
+    }
+    interface ElsaStudio {
+        "serverUrl": string;
     }
     interface ElsaToolbox {
         "graph": Graph;
@@ -97,6 +99,7 @@ export namespace Components {
     }
     interface ElsaTriggerContainer {
         "deselectAll": () => Promise<void>;
+        "interactiveMode": boolean;
         "triggerDescriptors": Array<TriggerDescriptor>;
         "triggers": Array<Trigger>;
     }
@@ -113,7 +116,7 @@ export namespace Components {
     interface ElsaWorkflowEditor {
         "activityDescriptors": Array<ActivityDescriptor>;
         "getWorkflow": () => Promise<Workflow>;
-        "importWorkflow": (workflow: Workflow) => Promise<void>;
+        "importWorkflow": (workflow: Workflow, workflowInstance?: WorkflowInstance) => Promise<void>;
         "importWorkflowMetadata": (workflow: Workflow) => Promise<void>;
         "registerActivityDrivers": (register: (registry: ActivityDriverRegistry) => void) => Promise<void>;
         "triggerDescriptors": Array<TriggerDescriptor>;
@@ -190,17 +193,17 @@ declare global {
         prototype: HTMLElsaPanelElement;
         new (): HTMLElsaPanelElement;
     };
-    interface HTMLElsaServerShellElement extends Components.ElsaServerShell, HTMLStencilElement {
-    }
-    var HTMLElsaServerShellElement: {
-        prototype: HTMLElsaServerShellElement;
-        new (): HTMLElsaServerShellElement;
-    };
     interface HTMLElsaSlideOverPanelElement extends Components.ElsaSlideOverPanel, HTMLStencilElement {
     }
     var HTMLElsaSlideOverPanelElement: {
         prototype: HTMLElsaSlideOverPanelElement;
         new (): HTMLElsaSlideOverPanelElement;
+    };
+    interface HTMLElsaStudioElement extends Components.ElsaStudio, HTMLStencilElement {
+    }
+    var HTMLElsaStudioElement: {
+        prototype: HTMLElsaStudioElement;
+        new (): HTMLElsaStudioElement;
     };
     interface HTMLElsaToolboxElement extends Components.ElsaToolbox, HTMLStencilElement {
     }
@@ -284,8 +287,8 @@ declare global {
         "elsa-modal-dialog": HTMLElsaModalDialogElement;
         "elsa-pager": HTMLElsaPagerElement;
         "elsa-panel": HTMLElsaPanelElement;
-        "elsa-server-shell": HTMLElsaServerShellElement;
         "elsa-slide-over-panel": HTMLElsaSlideOverPanelElement;
+        "elsa-studio": HTMLElsaStudioElement;
         "elsa-toolbox": HTMLElsaToolboxElement;
         "elsa-toolbox-activities": HTMLElsaToolboxActivitiesElement;
         "elsa-toolbox-triggers": HTMLElsaToolboxTriggersElement;
@@ -308,6 +311,7 @@ declare namespace LocalJSX {
         "onDeleteActivityRequested"?: (event: CustomEvent<DeleteActivityRequestedArgs>) => void;
     }
     interface ElsaCanvas {
+        "interactiveMode"?: boolean;
     }
     interface ElsaContextMenu {
         "menuItems"?: Array<MenuItem>;
@@ -321,6 +325,7 @@ declare namespace LocalJSX {
     }
     interface ElsaFlowchart {
         "activityDescriptors"?: Array<ActivityDescriptor>;
+        "interactiveMode"?: boolean;
         "onActivitySelected"?: (event: CustomEvent<ActivitySelectedArgs>) => void;
         "onContainerSelected"?: (event: CustomEvent<ContainerSelectedArgs>) => void;
         "onGraphUpdated"?: (event: CustomEvent<GraphUpdatedArgs>) => void;
@@ -352,9 +357,6 @@ declare namespace LocalJSX {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
         "position"?: PanelPosition;
     }
-    interface ElsaServerShell {
-        "serverUrl"?: string;
-    }
     interface ElsaSlideOverPanel {
         "actions"?: Array<ActionDefinition>;
         "expand"?: boolean;
@@ -363,6 +365,9 @@ declare namespace LocalJSX {
         "onSubmitted"?: (event: CustomEvent<FormData>) => void;
         "selectedTab"?: TabDefinition;
         "tabs"?: Array<TabDefinition>;
+    }
+    interface ElsaStudio {
+        "serverUrl"?: string;
     }
     interface ElsaToolbox {
         "graph"?: Graph;
@@ -378,6 +383,7 @@ declare namespace LocalJSX {
         "triggerDescriptors"?: Array<TriggerDescriptor>;
     }
     interface ElsaTriggerContainer {
+        "interactiveMode"?: boolean;
         "onTriggerDeselected"?: (event: CustomEvent<TriggerDeselectedArgs>) => void;
         "onTriggerSelected"?: (event: CustomEvent<TriggerSelectedArgs>) => void;
         "onTriggersUpdated"?: (event: CustomEvent<TriggersUpdatedArgs>) => void;
@@ -427,8 +433,8 @@ declare namespace LocalJSX {
         "elsa-modal-dialog": ElsaModalDialog;
         "elsa-pager": ElsaPager;
         "elsa-panel": ElsaPanel;
-        "elsa-server-shell": ElsaServerShell;
         "elsa-slide-over-panel": ElsaSlideOverPanel;
+        "elsa-studio": ElsaStudio;
         "elsa-toolbox": ElsaToolbox;
         "elsa-toolbox-activities": ElsaToolboxActivities;
         "elsa-toolbox-triggers": ElsaToolboxTriggers;
@@ -456,8 +462,8 @@ declare module "@stencil/core" {
             "elsa-modal-dialog": LocalJSX.ElsaModalDialog & JSXBase.HTMLAttributes<HTMLElsaModalDialogElement>;
             "elsa-pager": LocalJSX.ElsaPager & JSXBase.HTMLAttributes<HTMLElsaPagerElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
-            "elsa-server-shell": LocalJSX.ElsaServerShell & JSXBase.HTMLAttributes<HTMLElsaServerShellElement>;
             "elsa-slide-over-panel": LocalJSX.ElsaSlideOverPanel & JSXBase.HTMLAttributes<HTMLElsaSlideOverPanelElement>;
+            "elsa-studio": LocalJSX.ElsaStudio & JSXBase.HTMLAttributes<HTMLElsaStudioElement>;
             "elsa-toolbox": LocalJSX.ElsaToolbox & JSXBase.HTMLAttributes<HTMLElsaToolboxElement>;
             "elsa-toolbox-activities": LocalJSX.ElsaToolboxActivities & JSXBase.HTMLAttributes<HTMLElsaToolboxActivitiesElement>;
             "elsa-toolbox-triggers": LocalJSX.ElsaToolboxTriggers & JSXBase.HTMLAttributes<HTMLElsaToolboxTriggersElement>;

@@ -1,9 +1,10 @@
-import {Graph, Node, Shape} from '@antv/x6';
+import {CellView, Graph, Node, Shape} from '@antv/x6';
 import './ports';
 
-export function createGraph(container: HTMLElement): Graph {
+export function createGraph(container: HTMLElement, interacting: CellView.Interacting): Graph {
   const graph = new Graph({
     container: container,
+    interacting: interacting,
     grid: {
       type: 'mesh',
       size: 20,

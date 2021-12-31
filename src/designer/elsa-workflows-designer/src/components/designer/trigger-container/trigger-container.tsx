@@ -27,6 +27,7 @@ export class TriggerContainer {
 
   @Prop({mutable: true}) public triggerDescriptors: Array<TriggerDescriptor> = [];
   @Prop({mutable: true}) public triggers: Array<Trigger> = [];
+  @Prop() public interactiveMode: boolean = true;
   @Event() public triggersUpdated: EventEmitter<TriggersUpdatedArgs>;
   @Event() triggerSelected: EventEmitter<TriggerSelectedArgs>;
   @Event() triggerDeselected: EventEmitter<TriggerDeselectedArgs>;
@@ -35,13 +36,6 @@ export class TriggerContainer {
   @Method()
   public async deselectAll(): Promise<void> {
     this.selectedTriggers = [];
-  }
-
-  static onDragOver(e: DragEvent) {
-    const isTrigger = e.dataTransfer.types.indexOf('trigger-descriptor') >= 0;
-
-    if (isTrigger)
-      e.preventDefault();
   }
 
   public componentWillRender() {
@@ -65,7 +59,7 @@ export class TriggerContainer {
   public render() {
     return (
       <div class="absolute left-0 top-0 right-0 bottom-0 overflow-auto"
-           onDragOver={e => TriggerContainer.onDragOver(e)}
+           onDragOver={this.onDragOver}
            onDrop={e => this.onDrop(e)}>
         {this.renderTriggers()}
       </div>
@@ -129,6 +123,13 @@ export class TriggerContainer {
     this.updateTriggers(triggers);
   };
 
+  private onDragOver(e: DragEvent) {
+    const isTrigger = e.dataTransfer.types.indexOf('trigger-descriptor') >= 0;
+
+    if (this.interactiveMode && isTrigger)
+      e.preventDefault();
+  }
+
   private onTriggerClick = (e: MouseEvent, trigger: Trigger) => {
     const isSelected = this.getIsTriggerSelected(trigger);
 
@@ -148,7 +149,7 @@ export class TriggerContainer {
   };
 
   private onKeyPress = (e: KeyboardEvent) => {
-    if (e.key != 'Delete')
+    if (e.key != 'Delete' || !this.interactiveMode)
       return;
 
     const selectedTriggers = this.selectedTriggers;

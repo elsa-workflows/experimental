@@ -9,10 +9,9 @@ import {
   ActivitySelectedArgs, ContainerSelectedArgs,
   GraphUpdatedArgs, Trigger,
   TriggerDescriptor,
-  Workflow
+  Workflow, WorkflowInstance
 } from '../../../models';
-import WorkflowEditorTunnel, {WorkflowEditorState} from '../state';
-import ShellTunnel from '../../shell/server-shell/state';
+import WorkflowEditorTunnel, {WorkflowDesignerState} from '../state';
 import {
   ActivityUpdatedArgs,
   DeleteActivityRequestedArgs
@@ -20,7 +19,6 @@ import {
 import {ActivityDriverRegistry} from '../../../services';
 import {TriggerSelectedArgs, TriggersUpdatedArgs} from '../trigger-container/trigger-container';
 import {DeleteTriggerRequestedArgs, TriggerUpdatedArgs} from "../trigger-properties-editor/trigger-properties-editor";
-import {list} from "postcss";
 import {WorkflowPropsUpdatedArgs} from "../workflow-properties-editor/workflow-properties-editor";
 
 export interface WorkflowUpdatedArgs {
@@ -51,26 +49,30 @@ export class WorkflowEditor {
     triggers: []
   };
 
+  private workflowInstance?: WorkflowInstance;
+
   constructor() {
     this.saveChangesDebounced = debounce(this.saveChanges, 1000);
   }
 
-  @Prop() activityDescriptors: Array<ActivityDescriptor> = [];
-  @Prop() triggerDescriptors: Array<TriggerDescriptor> = [];
-
-  @Event() workflowUpdated: EventEmitter<WorkflowUpdatedArgs>
-
+  @Prop() public activityDescriptors: Array<ActivityDescriptor> = [];
+  @Prop() public triggerDescriptors: Array<TriggerDescriptor> = [];
+  @Event() public workflowUpdated: EventEmitter<WorkflowUpdatedArgs>
   @State() private selectedActivity?: Activity;
   @State() private selectedTrigger?: Trigger;
   @State() private triggers: Array<Trigger> = [];
 
+  private get interactiveMode(): boolean {
+    return !this.workflowInstance;
+  }
+
   @Listen('resize', {target: 'window'})
-  async handResize() {
+  private async handleResize() {
     await this.updateLayout();
   }
 
   @Listen('collapsed')
-  async handPanelCollapsed() {
+  private async handlePanelCollapsed() {
     this.selectedActivity = null;
   }
 
@@ -105,7 +107,8 @@ export class WorkflowEditor {
 
   @Listen('graphUpdated')
   handleGraphUpdated(e: CustomEvent<GraphUpdatedArgs>) {
-    this.saveChangesDebounced();
+    if (this.interactiveMode)
+      this.saveChangesDebounced();
   }
 
   @Method()
@@ -118,46 +121,57 @@ export class WorkflowEditor {
     return this.getWorkflowInternal();
   }
 
-  @Method() async importWorkflow(workflow: Workflow): Promise<void> {
+  @Method()
+  async importWorkflow(workflow: Workflow, workflowInstance?: WorkflowInstance): Promise<void> {
+    this.workflowInstance = workflowInstance;
     await this.importWorkflowMetadata(workflow);
     await this.canvas.importGraph(workflow.root);
   }
 
-  @Method() async importWorkflowMetadata(workflow: Workflow): Promise<void> {
+  @Method()
+  async importWorkflowMetadata(workflow: Workflow): Promise<void> {
     this.workflow = workflow;
     this.triggers = workflow.triggers;
   }
 
   public render() {
-    const tunnelState: WorkflowEditorState = {
+    const tunnelState: WorkflowDesignerState = {
       workflow: this.workflow,
       activityDescriptors: this.activityDescriptors,
       triggerDescriptors: this.triggerDescriptors
     };
 
+    const interactiveMode = this.interactiveMode;
+
     return (
       <WorkflowEditorTunnel.Provider state={tunnelState}>
         <div class="absolute inset-0" ref={el => this.container = el}>
-          <elsa-panel class="elsa-activity-picker-container"
-                      position={PanelPosition.Left}
-                      onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
+          <elsa-panel
+            class="elsa-activity-picker-container"
+            position={PanelPosition.Left}
+            onExpandedStateChanged={e => this.onActivityPickerPanelStateChanged(e.detail)}>
             <elsa-toolbox ref={el => this.toolbox = el}/>
           </elsa-panel>
-          <elsa-panel class="elsa-trigger-container"
-                      onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
-                      position={PanelPosition.Top}>
-            <elsa-trigger-container triggerDescriptors={this.triggerDescriptors}
-                                    triggers={this.triggers}
-                                    onTriggersUpdated={e => this.onTriggersUpdated(e.detail)}
-                                    ref={el => this.triggerContainer = el}/>
+          <elsa-panel
+            class="elsa-trigger-container"
+            onExpandedStateChanged={e => this.onTriggerContainerPanelStateChanged(e.detail)}
+            position={PanelPosition.Top}>
+            <elsa-trigger-container
+              interactiveMode={interactiveMode}
+              triggerDescriptors={this.triggerDescriptors}
+              triggers={this.triggers}
+              onTriggersUpdated={e => this.onTriggersUpdated(e.detail)}
+              ref={el => this.triggerContainer = el}/>
           </elsa-panel>
-          <elsa-canvas class="absolute" ref={el => this.canvas = el}
-                       onDragOver={e => WorkflowEditor.onDragOver(e)}
-                       onDrop={e => this.onDrop(e)}/>
-
-          <elsa-panel class="elsa-activity-editor-container"
-                      position={PanelPosition.Right}
-                      onExpandedStateChanged={e => this.onActivityEditorPanelStateChanged(e.detail)}>
+          <elsa-canvas
+            class="absolute" ref={el => this.canvas = el}
+            interactiveMode={interactiveMode}
+            onDragOver={this.onDragOver}
+            onDrop={this.onDrop}/>
+          <elsa-panel
+            class="elsa-activity-editor-container"
+            position={PanelPosition.Right}
+            onExpandedStateChanged={e => this.onActivityEditorPanelStateChanged(e.detail)}>
             <div class="object-editor-container">
               {this.renderSelectedObject()}
             </div>
@@ -222,8 +236,9 @@ export class WorkflowEditor {
     await this.saveChangesDebounced();
   };
 
-  private static onDragOver(e: DragEvent) {
-    e.preventDefault();
+  private onDragOver(e: DragEvent) {
+    if (this.interactiveMode)
+      e.preventDefault();
   }
 
   private async onDrop(e: DragEvent) {
@@ -257,5 +272,3 @@ export class WorkflowEditor {
     this.selectedTrigger = null;
   };
 }
-
-ShellTunnel.injectProps(WorkflowEditor, ['activityDescriptors', 'triggerDescriptors']);

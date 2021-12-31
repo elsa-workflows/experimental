@@ -1,4 +1,5 @@
 import {Type} from './shared';
+import {WorkflowState} from "./core";
 
 export interface ActivityDescriptorResponse {
   activityDescriptors: Array<ActivityDescriptor>;
@@ -100,6 +101,10 @@ export interface WorkflowInstanceSummary {
   finishedAt?: Date;
   cancelledAt?: Date;
   faultedAt?: Date;
+}
+
+export interface WorkflowInstance extends WorkflowInstanceSummary {
+  workflowState: WorkflowState;
 }
 
 export interface PagedList<T> {
