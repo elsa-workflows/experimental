@@ -13,6 +13,7 @@ import { DropdownButtonItem, DropdownButtonOrigin } from "./components/shared/dr
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/canvas/canvas";
 import { PagerData } from "./components/shared/pager/pager";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/panel/models";
+import { RenderActivityPropContext } from "./components/designer/activity-properties-editor/activity-properties-editor";
 import { Graph } from "@antv/x6";
 import { TriggerDeselectedArgs, TriggerSelectedArgs, TriggersUpdatedArgs } from "./components/designer/trigger-container/trigger-container";
 import { DeleteTriggerRequestedArgs, TriggerUpdatedArgs } from "./components/designer/trigger-properties-editor/trigger-properties-editor";
@@ -71,6 +72,9 @@ export namespace Components {
     }
     interface ElsaPanel {
         "position": PanelPosition;
+    }
+    interface ElsaSingleLineInput {
+        "renderContext": RenderActivityPropContext;
     }
     interface ElsaSlideOverPanel {
         "actions": Array<ActionDefinition>;
@@ -193,6 +197,12 @@ declare global {
         prototype: HTMLElsaPanelElement;
         new (): HTMLElsaPanelElement;
     };
+    interface HTMLElsaSingleLineInputElement extends Components.ElsaSingleLineInput, HTMLStencilElement {
+    }
+    var HTMLElsaSingleLineInputElement: {
+        prototype: HTMLElsaSingleLineInputElement;
+        new (): HTMLElsaSingleLineInputElement;
+    };
     interface HTMLElsaSlideOverPanelElement extends Components.ElsaSlideOverPanel, HTMLStencilElement {
     }
     var HTMLElsaSlideOverPanelElement: {
@@ -287,6 +297,7 @@ declare global {
         "elsa-modal-dialog": HTMLElsaModalDialogElement;
         "elsa-pager": HTMLElsaPagerElement;
         "elsa-panel": HTMLElsaPanelElement;
+        "elsa-single-line-input": HTMLElsaSingleLineInputElement;
         "elsa-slide-over-panel": HTMLElsaSlideOverPanelElement;
         "elsa-studio": HTMLElsaStudioElement;
         "elsa-toolbox": HTMLElsaToolboxElement;
@@ -356,6 +367,9 @@ declare namespace LocalJSX {
     interface ElsaPanel {
         "onExpandedStateChanged"?: (event: CustomEvent<PanelStateChangedArgs>) => void;
         "position"?: PanelPosition;
+    }
+    interface ElsaSingleLineInput {
+        "renderContext"?: RenderActivityPropContext;
     }
     interface ElsaSlideOverPanel {
         "actions"?: Array<ActionDefinition>;
@@ -433,6 +447,7 @@ declare namespace LocalJSX {
         "elsa-modal-dialog": ElsaModalDialog;
         "elsa-pager": ElsaPager;
         "elsa-panel": ElsaPanel;
+        "elsa-single-line-input": ElsaSingleLineInput;
         "elsa-slide-over-panel": ElsaSlideOverPanel;
         "elsa-studio": ElsaStudio;
         "elsa-toolbox": ElsaToolbox;
@@ -462,6 +477,7 @@ declare module "@stencil/core" {
             "elsa-modal-dialog": LocalJSX.ElsaModalDialog & JSXBase.HTMLAttributes<HTMLElsaModalDialogElement>;
             "elsa-pager": LocalJSX.ElsaPager & JSXBase.HTMLAttributes<HTMLElsaPagerElement>;
             "elsa-panel": LocalJSX.ElsaPanel & JSXBase.HTMLAttributes<HTMLElsaPanelElement>;
+            "elsa-single-line-input": LocalJSX.ElsaSingleLineInput & JSXBase.HTMLAttributes<HTMLElsaSingleLineInputElement>;
             "elsa-slide-over-panel": LocalJSX.ElsaSlideOverPanel & JSXBase.HTMLAttributes<HTMLElsaSlideOverPanelElement>;
             "elsa-studio": LocalJSX.ElsaStudio & JSXBase.HTMLAttributes<HTMLElsaStudioElement>;
             "elsa-toolbox": LocalJSX.ElsaToolbox & JSXBase.HTMLAttributes<HTMLElsaToolboxElement>;

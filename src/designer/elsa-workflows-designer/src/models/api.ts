@@ -50,7 +50,7 @@ export interface InputDescriptor extends ActivityPropertyDescriptor {
   isReadOnly?: boolean;
 }
 
-export interface ActivityOutputDescriptor extends ActivityPropertyDescriptor {
+export interface OutputDescriptor extends ActivityPropertyDescriptor {
 }
 
 export interface Port {
