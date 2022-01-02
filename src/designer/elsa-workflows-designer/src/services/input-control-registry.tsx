@@ -2,22 +2,22 @@ import {h} from '@stencil/core';
 import {Service} from "typedi";
 import {UIHint} from "../models";
 
-export type InputControl = (RenderInputContext) => any;
+export type RenderActivityPropInputControl = (InputContext) => any;
 
 // A registry of input controls mapped against UI hints.
 @Service()
 export class InputControlRegistry {
-  private inputMap: Map<UIHint, InputControl> = new Map<UIHint, InputControl>();
+  private inputMap: Map<UIHint, RenderActivityPropInputControl> = new Map<UIHint, RenderActivityPropInputControl>();
 
   constructor() {
-    this.add('single-line', c => <elsa-single-line-input renderContext={c}/>)
-  }
-  
-  public add(uiHint: UIHint, control: InputControl) {
-    this.inputMap[uiHint] = control;
+    this.add('single-line', c => <elsa-single-line-input inputContext={c}/>)
   }
 
-  public get(uiHint: UIHint): InputControl {
+  public add(uiHint: UIHint, control: RenderActivityPropInputControl) {
+    this.inputMap.set(uiHint, control);
+  }
+
+  public get(uiHint: UIHint): RenderActivityPropInputControl {
     return this.inputMap.get(uiHint);
   }
 

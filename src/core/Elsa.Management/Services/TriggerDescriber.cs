@@ -40,7 +40,7 @@ public class TriggerDescriber : ITriggerDescriber
         {
             Category = category,
             Description = description,
-            TriggerType = fullTypeName,
+            NodeType = fullTypeName,
             DisplayName = displayName,
             InputProperties = DescribeInputProperties(inputProperties).ToList(),
             Constructor = context =>

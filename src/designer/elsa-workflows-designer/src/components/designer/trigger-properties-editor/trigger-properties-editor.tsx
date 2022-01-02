@@ -2,15 +2,18 @@ import {Component, Event, EventEmitter, h, Method, Prop, State} from '@stencil/c
 import {camelCase} from 'lodash';
 import WorkflowEditorTunnel from '../state';
 import {
-  ActionDefinition,
-  Activity,
-  ActivityDescriptor,
-  ActivityInput,
   DefaultActions,
-  LiteralExpression, TabChangedArgs,
-  TabDefinition, Trigger, TriggerDescriptor
+  RenderNodePropContext,
+  RenderNodePropsContext,
+  TabChangedArgs,
+  TabDefinition,
+  Trigger,
+  TriggerDescriptor
 } from '../../../models';
-import {Hint} from "../../forms/hint";
+import {FormEntry} from "../../shared/forms/form-entry";
+import {InputDriverRegistry} from "../../../services/input-driver-registry";
+import {Container} from "typedi";
+import {NodeInputContext} from "../../../services/node-input-driver";
 
 export interface TriggerUpdatedArgs {
   trigger: Trigger;
@@ -25,7 +28,12 @@ export interface DeleteTriggerRequestedArgs {
 })
 export class TriggerPropertiesEditor {
   private slideOverPanel: HTMLElsaSlideOverPanelElement;
-  private inputPropertiesContainer: HTMLElement;
+  private renderContext: RenderNodePropsContext;
+  private readonly inputDriverRegistry: InputDriverRegistry;
+
+  constructor() {
+    this.inputDriverRegistry = Container.get(InputDriverRegistry);
+  }
 
   @Prop({mutable: true}) triggerDescriptors: Array<TriggerDescriptor> = [];
   @Prop({mutable: true}) trigger?: Trigger;
@@ -45,22 +53,51 @@ export class TriggerPropertiesEditor {
     await this.slideOverPanel.hide();
   }
 
-  public render() {
+  public componentWillRender() {
     const trigger = this.trigger;
-    const descriptor = this.findDescriptor();
-    const title = descriptor?.displayName ?? descriptor?.triggerType ?? 'Unknown Trigger';
+    const triggerDescriptor = this.findDescriptor();
+    const title = triggerDescriptor?.displayName ?? triggerDescriptor?.nodeType ?? 'Unknown Trigger';
+    const driverRegistry = this.inputDriverRegistry;
+
+    const renderPropertyContexts: Array<RenderNodePropContext> = triggerDescriptor.inputProperties.map(inputDescriptor => {
+      const renderInputContext: NodeInputContext = {
+        node: trigger,
+        nodeDescriptor: triggerDescriptor,
+        inputDescriptor,
+        inputChanged: v => this.onPropertyEditorChanged(inputDescriptor.name, v)
+      };
+
+      const driver = driverRegistry.get(renderInputContext);
+      const control = driver?.renderInput(renderInputContext);
+
+      return {
+        inputContext: renderInputContext,
+        inputControl: control,
+      }
+    });
+
+    this.renderContext = {
+      node: trigger,
+      nodeDescriptor: triggerDescriptor,
+      title,
+      properties: renderPropertyContexts
+    }
+  }
+
+  public render() {
+    const {nodeDescriptor, title} = this.renderContext;
 
     const propertiesTab: TabDefinition = {
       displayText: 'Properties',
-      content: () => this.renderPropertiesTab(trigger, descriptor)
+      content: () => this.renderPropertiesTab()
     };
 
     const commonTab: TabDefinition = {
       displayText: 'Common',
-      content: () => this.renderCommonTab(trigger, descriptor)
+      content: () => this.renderCommonTab()
     };
 
-    const tabs = !!descriptor ? [propertiesTab, commonTab] : [];
+    const tabs = !!nodeDescriptor ? [propertiesTab, commonTab] : [];
     const actions = [DefaultActions.Delete(this.onDeleteTrigger)];
 
     return (
@@ -71,77 +108,56 @@ export class TriggerPropertiesEditor {
     );
   }
 
-  private findDescriptor = (): TriggerDescriptor => !!this.trigger ? this.triggerDescriptors.find(x => x.triggerType == this.trigger.triggerType) : null;
+  private findDescriptor = (): TriggerDescriptor => !!this.trigger ? this.triggerDescriptors.find(x => x.nodeType == this.trigger.nodeType) : null;
 
   private onSelectedTabIndexChanged(e: CustomEvent<TabChangedArgs>) {
     this.selectedTabIndex = e.detail.selectedTabIndex;
   }
 
-  private onTriggerIdChanged(e: any) {
+  private onTriggerIdChanged = (e: any) => {
     const trigger = this.trigger;
     const inputElement = e.target as HTMLInputElement;
 
     trigger.id = inputElement.value;
     this.triggerUpdated.emit({trigger});
-  }
+  };
 
-  private onPropertyEditorChanged(e: any, propertyName: string) {
+  private onPropertyEditorChanged = (propertyName: string, propertyValue: any) => {
     const trigger = this.trigger;
-    const inputElement = e.target as HTMLInputElement;
-    const value = inputElement.value;
     const camelCasePropertyName = camelCase(propertyName);
 
     trigger[camelCasePropertyName] = {
       type: 'string',
       expression: {
         type: 'Literal',
-        value: value
+        value: propertyValue
       }
     };
 
     this.triggerUpdated.emit({trigger});
   }
 
-  private onDeleteTrigger = (e: any, action: ActionDefinition) => this.deleteTriggerRequested.emit({trigger: this.trigger});
+  private onDeleteTrigger = () => this.deleteTriggerRequested.emit({trigger: this.trigger});
 
-  private renderPropertiesTab(trigger: Trigger, descriptor: TriggerDescriptor) {
-    const triggerId = trigger.id;
-    const inputProperties = descriptor.inputProperties;
+  private renderPropertiesTab = () => {
+    const {node, properties} = this.renderContext;
+    const activityId = node.id;
 
     return <div>
-      <div class="p-4">
-        <label htmlFor="TriggerId">ID</label>
-        <div class="mt-1">
-          <input type="text" name="TriggerId" id="TriggerId" value={triggerId} onChange={e => this.onTriggerIdChanged(e)}/>
-        </div>
-        <Hint text="The ID of the trigger."/>
-      </div>
-      {inputProperties.map(inputProperty => {
-        const propertyName = inputProperty.name;
-        const camelCasePropertyName = camelCase(propertyName);
-        const displayName = inputProperty.displayName || propertyName;
-        const description = inputProperty.description;
-        const fieldName = inputProperty.name;
-        const fieldId = inputProperty.name;
-        const input = trigger[camelCasePropertyName] as ActivityInput;
-        const value = (input?.expression as LiteralExpression)?.value;
-        const key = `${trigger.id}_${propertyName}`;
+      <FormEntry fieldId="ActivityId" label="ID" hint="The ID of the activity.">
+        <input type="text" name="ActivityId" id="ActivityId" value={activityId} onChange={e => this.onTriggerIdChanged(e)}/>
+      </FormEntry>
 
-        return <div class="p-4" ref={el => this.inputPropertiesContainer = el}>
-          <label htmlFor={fieldId}>{displayName}</label>
-          <div class="mt-1">
-            <input key={key} type="text" name={fieldName} id={fieldId} value={value} onChange={e => this.onPropertyEditorChanged(e, propertyName)}/>
-          </div>
-          <Hint text={description}/>
-        </div>
+      {properties.filter(x => !!x.inputControl).map(propertyContext => {
+        return propertyContext.inputControl;
       })}
     </div>
-  }
+  };
 
-  private renderCommonTab(trigger: Trigger, descriptor: TriggerDescriptor) {
+  private renderCommonTab = () => {
     return <div>
     </div>
-  }
+  };
 }
 
 WorkflowEditorTunnel.injectProps(TriggerPropertiesEditor, ['triggerDescriptors']);

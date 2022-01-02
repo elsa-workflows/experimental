@@ -87,7 +87,7 @@ public class IdentityGraphService : IIdentityGraphService
         if (!string.IsNullOrWhiteSpace(activityNode.NodeId))
             return activityNode.NodeId;
 
-        var type = activityNode.Activity.ActivityType;
+        var type = activityNode.Activity.NodeType;
         var index = GetNextIndexFor(type, identityCounters);
         var name = $"{Camelize(type)}{index + 1}";
         return name;

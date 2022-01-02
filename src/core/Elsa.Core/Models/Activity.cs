@@ -7,11 +7,11 @@ namespace Elsa.Models;
 
 public abstract class Activity : IActivity
 {
-    protected Activity() => ActivityType = TypeNameHelper.GenerateTypeName(GetType());
-    protected Activity(string activityType) => ActivityType = activityType;
+    protected Activity() => NodeType = TypeNameHelper.GenerateTypeName(GetType());
+    protected Activity(string activityType) => NodeType = activityType;
 
     public string Id { get; set; } = default!;
-    public string ActivityType { get; set; }
+    public string NodeType { get; set; }
     public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
 
     public virtual ValueTask ExecuteAsync(ActivityExecutionContext context)

@@ -57,7 +57,7 @@ public class ActivityDescriber : IActivityDescriber
         {
             Category = category,
             Description = description,
-            ActivityType = fullTypeName,
+            NodeType = fullTypeName,
             DisplayName = displayName,
             Traits = isTrigger ? ActivityTraits.Trigger : ActivityTraits.Action,
             OutPorts = outboundPorts.ToList(),
@@ -66,7 +66,7 @@ public class ActivityDescriber : IActivityDescriber
             Constructor = context =>
             {
                 var activity = _activityFactory.Create(activityType, context);
-                activity.ActivityType = fullTypeName;
+                activity.NodeType = fullTypeName;
                 return activity;
             }
         };

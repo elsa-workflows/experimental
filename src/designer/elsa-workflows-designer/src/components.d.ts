@@ -13,7 +13,7 @@ import { DropdownButtonItem, DropdownButtonOrigin } from "./components/shared/dr
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/canvas/canvas";
 import { PagerData } from "./components/shared/pager/pager";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/panel/models";
-import { RenderActivityPropContext } from "./components/designer/activity-properties-editor/activity-properties-editor";
+import { NodeInputContext } from "./services/node-input-driver";
 import { Graph } from "@antv/x6";
 import { TriggerDeselectedArgs, TriggerSelectedArgs, TriggersUpdatedArgs } from "./components/designer/trigger-container/trigger-container";
 import { DeleteTriggerRequestedArgs, TriggerUpdatedArgs } from "./components/designer/trigger-properties-editor/trigger-properties-editor";
@@ -74,7 +74,7 @@ export namespace Components {
         "position": PanelPosition;
     }
     interface ElsaSingleLineInput {
-        "renderContext": RenderActivityPropContext;
+        "inputContext": NodeInputContext;
     }
     interface ElsaSlideOverPanel {
         "actions": Array<ActionDefinition>;
@@ -369,7 +369,7 @@ declare namespace LocalJSX {
         "position"?: PanelPosition;
     }
     interface ElsaSingleLineInput {
-        "renderContext"?: RenderActivityPropContext;
+        "inputContext"?: NodeInputContext;
     }
     interface ElsaSlideOverPanel {
         "actions"?: Array<ActionDefinition>;

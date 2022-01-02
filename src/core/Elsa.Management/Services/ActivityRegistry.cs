@@ -29,7 +29,7 @@ public class ActivityRegistry : IActivityRegistry
         var descriptors = ListByProvider(provider).ToList();
 
         foreach (var descriptor in descriptors)
-            _activityDescriptors.Remove(descriptor.ActivityType);
+            _activityDescriptors.Remove(descriptor.NodeType);
 
         _providedActivityDescriptors.Remove(provider);
     }
@@ -41,7 +41,7 @@ public class ActivityRegistry : IActivityRegistry
 
     private void Add(ActivityDescriptor descriptor, ICollection<ActivityDescriptor> target)
     {
-        _activityDescriptors.Add(descriptor.ActivityType, descriptor);
+        _activityDescriptors.Add(descriptor.NodeType, descriptor);
         target.Add(descriptor);
     }
 

@@ -45,8 +45,8 @@ export class TriggerContainer {
     const renderedTriggers = new Map<string, string>();
 
     for (const trigger of triggers) {
-      const triggerType = trigger.triggerType;
-      const triggerDescriptor = triggerDescriptors.find(x => x.triggerType == triggerType);
+      const triggerType = trigger.nodeType;
+      const triggerDescriptor = triggerDescriptors.find(x => x.nodeType == triggerType);
       const driver = triggerDriverRegistry.createDriver(triggerType);
       const html = driver.display({triggerDescriptor: triggerDescriptor, trigger: trigger, displayType: 'designer'});
 
@@ -116,16 +116,16 @@ export class TriggerContainer {
 
     const trigger: Trigger = {
       id: uuid(),
-      triggerType: triggerDescriptor.triggerType
+      nodeType: triggerDescriptor.nodeType,
+      metadata: {}
     };
 
     const triggers = [...this.triggers, trigger];
     this.updateTriggers(triggers);
   };
 
-  private onDragOver(e: DragEvent) {
+  private onDragOver = (e: DragEvent) => {
     const isTrigger = e.dataTransfer.types.indexOf('trigger-descriptor') >= 0;
-
     if (this.interactiveMode && isTrigger)
       e.preventDefault();
   }

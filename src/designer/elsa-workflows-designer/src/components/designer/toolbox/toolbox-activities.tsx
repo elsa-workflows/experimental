@@ -57,11 +57,11 @@ export class ToolboxActivities {
     const activityDriverRegistry = Container.get(ActivityDriverRegistry);
 
     for (const activityDescriptor of value) {
-      const activityTypeName = activityDescriptor.activityType;
-      const driver = activityDriverRegistry.createDriver(activityTypeName);
+      const nodeType = activityDescriptor.nodeType;
+      const driver = activityDriverRegistry.createDriver(nodeType);
       const html = driver.display({displayType: 'picker', activityDescriptor: activityDescriptor});
 
-      renderedActivities.set(activityTypeName, html);
+      renderedActivities.set(nodeType, html);
     }
 
     this.renderedActivities = renderedActivities;
@@ -73,7 +73,7 @@ export class ToolboxActivities {
 
   private onActivityStartDrag(e: DragEvent, activityDescriptor: ActivityDescriptor) {
     const json = JSON.stringify(activityDescriptor);
-    const triggerDescriptor = this.triggerDescriptors.find(x => x.triggerType == activityDescriptor.activityType);
+    const triggerDescriptor = this.triggerDescriptors.find(x => x.nodeType == activityDescriptor.nodeType);
     const isTrigger = !!triggerDescriptor;
 
     e.dataTransfer.setData('activity-descriptor', json);
@@ -117,7 +117,7 @@ export class ToolboxActivities {
             <div class={`space-y-1 ${categoryContentClass}`}>
 
               {activityDescriptors.map(activityDescriptor => {
-                const activityHtml = renderedActivities.get(activityDescriptor.activityType);
+                const activityHtml = renderedActivities.get(activityDescriptor.nodeType);
                 return (
                   <div class="w-full flex items-center pl-10 pr-2 py-2">
                     <div class="cursor-move"

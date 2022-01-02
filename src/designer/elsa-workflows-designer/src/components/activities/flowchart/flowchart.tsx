@@ -50,7 +50,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
 
     const activity: Activity = {
       id: uuid(),
-      activityType: descriptor.activityType,
+      nodeType: descriptor.nodeType,
       metadata: {
         designer: {
           position: {
@@ -130,7 +130,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
     for (const connection of connections) {
       const source = activities.find(x => x.id == connection.source);
       const target = activities.find(x => x.id == connection.target);
-      const sourceDescriptor = activityDescriptors.find(x => x.activityType == source.activityType);
+      const sourceDescriptor = activityDescriptors.find(x => x.nodeType == source.nodeType);
       const matchingTargetPort = sourceDescriptor.outPorts.find(x => x.name == connection.sourcePort);
 
       if (!!matchingTargetPort) {
@@ -147,7 +147,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
     }
 
     return {
-      activityType: 'Workflows.Flowchart',
+      nodeType: 'Workflows.Flowchart',
       activities: remainingActivities,
       connections: remainingConnections,
       id: this.rootId,
@@ -171,7 +171,7 @@ export class FlowchartComponent implements ContainerActivityComponent {
       const activity = activityNode.activity;
       const position = activity.metadata.designer?.position || {x: 100, y: 100};
       const {x, y} = position;
-      const descriptor = descriptors.find(x => x.activityType == activity.activityType)
+      const descriptor = descriptors.find(x => x.nodeType == activity.nodeType)
       const node = createNode(descriptor, activity, x, y);
 
       nodes.push(node);

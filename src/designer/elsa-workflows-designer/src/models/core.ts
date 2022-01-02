@@ -4,17 +4,16 @@ import {VersionOptions} from "./api";
 
 export interface Node {
   id: string;
-}
-
-export interface Trigger extends Node {
-  triggerType: string;
-}
-
-export interface Activity extends Node {
-  activityType: string;
+  nodeType: string;
   metadata: any;
 
   [name: string]: any;
+}
+
+export interface Trigger extends Node {
+}
+
+export interface Activity extends Node {
 }
 
 export interface Container extends Activity {

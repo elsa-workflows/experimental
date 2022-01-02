@@ -18,8 +18,8 @@ public class Trigger : Activity, ITrigger
 
     public string TriggerType
     {
-        get => ActivityType;
-        set => ActivityType = value;
+        get => NodeType;
+        set => NodeType = value;
     }
 
     public virtual ValueTask<IEnumerable<object>> GetHashInputsAsync(TriggerIndexingContext context, CancellationToken cancellationToken = default)

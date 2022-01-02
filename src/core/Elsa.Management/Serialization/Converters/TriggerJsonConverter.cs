@@ -25,7 +25,7 @@ public class TriggerJsonConverter : JsonConverter<ITrigger>
         if (!JsonDocument.TryParseValue(ref reader, out var doc))
             throw new JsonException("Failed to parse JsonDocument");
 
-        if (!doc.RootElement.TryGetProperty("triggerType", out var triggerTypeNameElement))
+        if (!doc.RootElement.TryGetProperty("nodeType", out var triggerTypeNameElement))
             throw new JsonException("Failed to extract trigger type property");
 
         var triggerType = triggerTypeNameElement.GetString()!;

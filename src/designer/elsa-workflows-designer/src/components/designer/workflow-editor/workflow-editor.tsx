@@ -236,17 +236,17 @@ export class WorkflowEditor {
     await this.saveChangesDebounced();
   };
 
-  private onDragOver(e: DragEvent) {
+  private onDragOver = (e: DragEvent) => {
     if (this.interactiveMode)
       e.preventDefault();
-  }
+  };
 
-  private async onDrop(e: DragEvent) {
+  private onDrop = async (e: DragEvent) => {
     const json = e.dataTransfer.getData('activity-descriptor');
     const activityDescriptor: ActivityDescriptor = JSON.parse(json);
 
     await this.canvas.addActivity({descriptor: activityDescriptor, x: e.offsetX, y: e.offsetY});
-  }
+  };
 
   private onActivityUpdated = (e: CustomEvent<ActivityUpdatedArgs>) => {
     const updatedActivity = e.detail.activity;

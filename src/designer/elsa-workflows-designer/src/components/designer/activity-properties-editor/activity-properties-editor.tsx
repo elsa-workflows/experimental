@@ -2,18 +2,18 @@ import {Component, Event, EventEmitter, h, Method, Prop, State} from '@stencil/c
 import {camelCase} from 'lodash';
 import WorkflowEditorTunnel from '../state';
 import {
-  ActionDefinition,
   Activity,
   ActivityDescriptor,
-  ActivityInput,
-  DefaultActions, InputDescriptor,
-  LiteralExpression, TabChangedArgs,
+  DefaultActions,
+  RenderNodePropContext,
+  RenderNodePropsContext,
+  TabChangedArgs,
   TabDefinition
 } from '../../../models';
-import {Hint} from "../../forms/hint";
 import {InputDriverRegistry} from "../../../services/input-driver-registry";
 import {Container} from "typedi";
-import {RenderInputContext} from "../../../services/input-driver";
+import {NodeInputContext} from "../../../services/node-input-driver";
+import {FormEntry} from "../../shared/forms/form-entry";
 
 export interface ActivityUpdatedArgs {
   activity: Activity;
@@ -23,38 +23,23 @@ export interface DeleteActivityRequestedArgs {
   activity: Activity;
 }
 
-export interface RenderActivityPropsContext {
-  activity: Activity;
-  activityDescriptor: ActivityDescriptor;
-  title: string;
-  properties: Array<RenderActivityPropContext>;
-}
-
-export interface RenderActivityPropContext {
-  activity: Activity;
-  inputDescriptor: InputDescriptor;
-  inputControl: any;
-}
-
 @Component({
   tag: 'elsa-activity-properties-editor',
 })
 export class ActivityPropertiesEditor {
   private slideOverPanel: HTMLElsaSlideOverPanelElement;
-  private inputPropertiesContainer: HTMLElement;
-  private renderContext: RenderActivityPropsContext;
-  private inputDriverRegistry: InputDriverRegistry;
+  private renderContext: RenderNodePropsContext;
+  private readonly inputDriverRegistry: InputDriverRegistry;
 
   constructor() {
     this.inputDriverRegistry = Container.get(InputDriverRegistry);
   }
 
-  @Prop({mutable: true}) activityDescriptors: Array<ActivityDescriptor> = [];
-  @Prop({mutable: true}) activity?: Activity;
+  @Prop({mutable: true}) public activityDescriptors: Array<ActivityDescriptor> = [];
+  @Prop({mutable: true}) public activity?: Activity;
 
-  @Event() activityUpdated: EventEmitter<ActivityUpdatedArgs>;
-  @Event() deleteActivityRequested: EventEmitter<DeleteActivityRequestedArgs>;
-
+  @Event() public activityUpdated: EventEmitter<ActivityUpdatedArgs>;
+  @Event() public deleteActivityRequested: EventEmitter<DeleteActivityRequestedArgs>;
   @State() private selectedTabIndex: number = 0;
 
   @Method()
@@ -70,36 +55,36 @@ export class ActivityPropertiesEditor {
   public componentWillRender() {
     const activity = this.activity;
     const activityDescriptor = this.findActivityDescriptor();
-    const title = activityDescriptor?.displayName ?? activityDescriptor?.activityType ?? 'Unknown Activity';
+    const title = activityDescriptor?.displayName ?? activityDescriptor?.nodeType ?? 'Unknown Activity';
     const driverRegistry = this.inputDriverRegistry;
 
-    const renderPropertyContexts: Array<RenderActivityPropContext> = activityDescriptor.inputProperties.map(inputDescriptor => {
-      const renderInputContext: RenderInputContext = {
-        activity,
-        activityDescriptor,
-        inputDescriptor
+    const renderPropertyContexts: Array<RenderNodePropContext> = activityDescriptor.inputProperties.map(inputDescriptor => {
+      const renderInputContext: NodeInputContext = {
+        node: activity,
+        nodeDescriptor: activityDescriptor,
+        inputDescriptor,
+        inputChanged: v => this.onPropertyEditorChanged(inputDescriptor.name, v)
       };
 
       const driver = driverRegistry.get(renderInputContext);
-      const control = driver.renderInput(renderInputContext);
+      const control = driver?.renderInput(renderInputContext);
 
       return {
-        activity,
-        inputDescriptor,
-        inputControl: control
+        inputContext: renderInputContext,
+        inputControl: control,
       }
     });
 
     this.renderContext = {
-      activity,
-      activityDescriptor,
+      node: activity,
+      nodeDescriptor: activityDescriptor,
       title,
       properties: renderPropertyContexts
     }
   }
 
   public render() {
-    const {activity, activityDescriptor, title} = this.renderContext;
+    const {nodeDescriptor, title} = this.renderContext;
 
     const propertiesTab: TabDefinition = {
       displayText: 'Properties',
@@ -111,7 +96,7 @@ export class ActivityPropertiesEditor {
       content: () => this.renderCommonTab()
     };
 
-    const tabs = !!activityDescriptor ? [propertiesTab, commonTab] : [];
+    const tabs = !!nodeDescriptor ? [propertiesTab, commonTab] : [];
     const actions = [DefaultActions.Delete(this.onDeleteActivity)];
 
     return (
@@ -122,13 +107,10 @@ export class ActivityPropertiesEditor {
     );
   }
 
-  private findActivityDescriptor = (): ActivityDescriptor => !!this.activity ? this.activityDescriptors.find(x => x.activityType == this.activity.activityType) : null;
+  private findActivityDescriptor = (): ActivityDescriptor => !!this.activity ? this.activityDescriptors.find(x => x.nodeType == this.activity.nodeType) : null;
+  private onSelectedTabIndexChanged = (e: CustomEvent<TabChangedArgs>) => this.selectedTabIndex = e.detail.selectedTabIndex
 
-  private onSelectedTabIndexChanged(e: CustomEvent<TabChangedArgs>) {
-    this.selectedTabIndex = e.detail.selectedTabIndex;
-  }
-
-  private onActivityIdChanged(e: any) {
+  private onActivityIdChanged = (e: any) => {
     const activity = this.activity;
     const inputElement = e.target as HTMLInputElement;
 
@@ -136,71 +118,42 @@ export class ActivityPropertiesEditor {
     this.activityUpdated.emit({activity: activity});
   }
 
-  // private onPropertyEditorChanged(e: any, propertyName: string) {
-  //   const activity = this.activity;
-  //   const inputElement = e.target as HTMLInputElement;
-  //   const value = inputElement.value;
-  //   const camelCasePropertyName = camelCase(propertyName);
-  //
-  //   activity[camelCasePropertyName] = {
-  //     type: 'string',
-  //     expression: {
-  //       type: 'Literal',
-  //       value: value
-  //     }
-  //   };
-  //
-  //   this.activityUpdated.emit({activity: activity});
-  // }
+  private onPropertyEditorChanged = (propertyName: string, propertyValue: any) => {
+    const activity = this.activity;
+    const camelCasePropertyName = camelCase(propertyName);
 
-  private onDeleteActivity = (e: any, action: ActionDefinition) => this.deleteActivityRequested.emit({activity: this.activity});
+    activity[camelCasePropertyName] = {
+      type: 'string',
+      expression: {
+        type: 'Literal',
+        value: propertyValue
+      }
+    };
 
-  private renderPropertiesTab() {
-    const {activity, activityDescriptor, properties} = this.renderContext;
-    const activityId = activity.id;
-    const inputProperties = activityDescriptor.inputProperties;
+    this.activityUpdated.emit({activity: activity});
+  }
+
+  private onDeleteActivity = () => this.deleteActivityRequested.emit({activity: this.activity});
+
+  private renderPropertiesTab = () => {
+    const {node, properties} = this.renderContext;
+    const activityId = node.id;
 
     return <div>
-      <div class="p-4">
-        <label htmlFor="ActivityId">ID</label>
-        <div class="mt-1">
-          <input type="text" name="ActivityId" id="ActivityId" value={activityId} onChange={e => this.onActivityIdChanged(e)}/>
-        </div>
-        <Hint text="The ID of the activity."/>
-      </div>
+      <FormEntry fieldId="ActivityId" label="ID" hint="The ID of the activity.">
+        <input type="text" name="ActivityId" id="ActivityId" value={activityId} onChange={e => this.onActivityIdChanged(e)}/>
+      </FormEntry>
 
-      {properties.map(propertyContext => {
-        // const inputProperty = propertyContext.inputDescriptor;
-        // const propertyName = inputProperty.name;
-        // const camelCasePropertyName = camelCase(propertyName);
-        // const displayName = inputProperty.displayName || propertyName;
-        // const description = inputProperty.description;
-        // const fieldName = inputProperty.name;
-        // const fieldId = inputProperty.name;
-        // const uiHint = inputProperty.uiHint;
-        // const input = activity[camelCasePropertyName] as ActivityInput;
-        // const value = (input?.expression as LiteralExpression)?.value;
-        // const key = `${activity.id}_${propertyName}`;
-
+      {properties.filter(x => !!x.inputControl).map(propertyContext => {
         return propertyContext.inputControl;
-
-        // return <div class="p-4" ref={el => this.inputPropertiesContainer = el}>
-        //   <label htmlFor={fieldId}>
-        //     {displayName}
-        //   </label>
-        //   <div class="mt-1">
-        //     <input key={key} type="text" name={fieldName} id={fieldId} value={value} onChange={e => this.onPropertyEditorChanged(e, propertyName)}/>
-        //   </div>
-        //   <Hint text={description}/>
-        // </div>
       })}
     </div>
-  }
+  };
 
-  private renderCommonTab() {
+  private renderCommonTab = () => {
     return <div>
     </div>
-  }
+  };
 }
 
 WorkflowEditorTunnel.injectProps(ActivityPropertiesEditor, ['activityDescriptors']);

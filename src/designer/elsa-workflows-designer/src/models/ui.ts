@@ -1,3 +1,7 @@
+import {Activity, Node} from "./core";
+import {ActivityDescriptor, InputDescriptor, NodeDescriptor} from "./api";
+import {NodeInputContext} from "../services/node-input-driver";
+
 export interface TabDefinition {
   displayText: string;
   content: () => any;
@@ -60,4 +64,16 @@ export class DefaultActions {
     isDangerous: true,
     onClick: handler
   });
+}
+
+export interface RenderNodePropsContext {
+  node: Node;
+  nodeDescriptor: NodeDescriptor;
+  title: string;
+  properties: Array<RenderNodePropContext>;
+}
+
+export interface RenderNodePropContext {
+  inputContext: NodeInputContext
+  inputControl?: any;
 }

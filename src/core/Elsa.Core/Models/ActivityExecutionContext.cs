@@ -57,7 +57,7 @@ public class ActivityExecutionContext
     public void SetBookmark(string? hash, IDictionary<string, object?>? data = default, ExecuteActivityDelegate? callback = default) =>
         SetBookmark(new Bookmark(
             Guid.NewGuid().ToString(),
-            Activity.ActivityType,
+            Activity.NodeType,
             hash,
             Activity.Id,
             Id,

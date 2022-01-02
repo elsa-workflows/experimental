@@ -29,7 +29,7 @@ public class TriggerRegistry : ITriggerRegistry
         var descriptors = ListByProvider(provider).ToList();
 
         foreach (var descriptor in descriptors)
-            _triggerDescriptors.Remove(descriptor.TriggerType);
+            _triggerDescriptors.Remove(descriptor.NodeType);
 
         _providedTriggerDescriptors.Remove(provider);
     }
@@ -41,7 +41,7 @@ public class TriggerRegistry : ITriggerRegistry
 
     private void Add(TriggerDescriptor descriptor, ICollection<TriggerDescriptor> target)
     {
-        _triggerDescriptors.Add(descriptor.TriggerType, descriptor);
+        _triggerDescriptors.Add(descriptor.NodeType, descriptor);
         target.Add(descriptor);
     }
 

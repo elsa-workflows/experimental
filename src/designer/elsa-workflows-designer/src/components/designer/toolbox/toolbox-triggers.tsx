@@ -57,7 +57,7 @@ export class ToolboxTriggers {
     const driverRegistry = Container.get(TriggerDriverRegistry);
 
     for (const triggerDescriptor of value) {
-      const triggerType = triggerDescriptor.triggerType;
+      const triggerType = triggerDescriptor.nodeType;
       const driver = driverRegistry.createDriver(triggerType);
       const html = driver.display({displayType: 'picker', triggerDescriptor: triggerDescriptor});
 
@@ -73,7 +73,7 @@ export class ToolboxTriggers {
 
   private onTriggerStartDrag(e: DragEvent, triggerDescriptor: TriggerDescriptor) {
     const json = JSON.stringify(triggerDescriptor);
-    const activityDescriptor = this.activityDescriptors.find(x => x.activityType == triggerDescriptor.triggerType);
+    const activityDescriptor = this.activityDescriptors.find(x => x.nodeType == triggerDescriptor.nodeType);
     const isActivity = !!activityDescriptor;
 
     e.dataTransfer.setData('trigger-descriptor', json);
@@ -116,7 +116,7 @@ export class ToolboxTriggers {
             <div class={`space-y-1 ${categoryContentClass}`}>
 
               {triggers.map(trigger => {
-                const triggerHtml = renderedTriggers.get(trigger.triggerType);
+                const triggerHtml = renderedTriggers.get(trigger.nodeType);
 
                 return (
                   <div class="w-full flex items-center pl-10 pr-2 py-2">

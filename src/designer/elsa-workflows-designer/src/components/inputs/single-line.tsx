@@ -1,29 +1,31 @@
 import {Component, Prop, h} from '@stencil/core';
 import {camelCase} from 'lodash'
-import {RenderActivityPropContext} from '../designer/activity-properties-editor/activity-properties-editor';
 import {ActivityInput, LiteralExpression} from "../../models";
+import {NodeInputContext} from "../../services/node-input-driver";
 
 @Component({
   tag: 'elsa-single-line-input',
   shadow: false
 })
 export class SingleLineInput {
-  @Prop() renderContext: RenderActivityPropContext;
+  @Prop() inputContext: NodeInputContext;
 
   public render() {
-    const renderContext = this.renderContext;
-    const activity = this.renderContext.activity;
-    const inputProperty = renderContext.inputDescriptor;
+    //const renderContext = this.renderContext;
+    const inputContext = this.inputContext;
+    const node = inputContext.node;
+    const inputProperty = inputContext.inputDescriptor;
     const propertyName = inputProperty.name;
     const camelCasePropertyName = camelCase(propertyName);
     const fieldName = inputProperty.name;
     const fieldId = inputProperty.name;
-    const input = activity[camelCasePropertyName] as ActivityInput;
+    const input = node[camelCasePropertyName] as ActivityInput;
     const value = (input?.expression as LiteralExpression)?.value;
-    return <input type="text" name={fieldName} id={fieldId} value={value} onChange={e => this.onPropertyEditorChanged(e, propertyName)}/>
+    return <input type="text" name={fieldName} id={fieldId} value={value} onChange={this.onPropertyEditorChanged}/>
   }
 
-  private onPropertyEditorChanged(e: Event, propertyName: string) {
-
+  private onPropertyEditorChanged = (e: Event) => {
+    const inputElement = e.target as HTMLInputElement;
+    this.inputContext.inputChanged(inputElement.value);
   }
 }

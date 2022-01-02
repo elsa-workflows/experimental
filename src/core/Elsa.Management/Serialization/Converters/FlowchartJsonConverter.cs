@@ -54,7 +54,7 @@ public class FlowchartJsonConverter : JsonConverter<Flowchart>
 
         var model = new
         {
-            ActivityType = value.ActivityType,
+            NodeType = value.NodeType,
             Id = value.Id,
             Metadata = value.Metadata,
             Start = value.Start?.Id,

@@ -1,13 +1,11 @@
-import {InputDriver, RenderInputContext} from "../../services/input-driver";
+import {NodeInputDriver, NodeInputContext} from "../../services/node-input-driver";
 import {Container} from "typedi";
-import {camelCase} from 'lodash';
 import {InputControlRegistry} from "../../services/input-control-registry";
-import {Hint} from "../../components/forms/hint";
 import {h} from "@stencil/core";
-import {Activity, ActivityInput, LiteralExpression} from "../../models";
+import {FormEntry} from "../../components/shared/forms/form-entry";
 
-// A standard input driver that determines the UI to be displayed based on the UI hint.
-export class DefaultInputDriver implements InputDriver {
+// A standard input driver that determines the UI to be displayed based on the UI hint of the activity input property.
+export class DefaultInputDriver implements NodeInputDriver {
   private inputControlRegistry: InputControlRegistry;
 
   constructor() {
@@ -18,53 +16,25 @@ export class DefaultInputDriver implements InputDriver {
     return -1;
   }
 
-  renderInput(context: RenderInputContext): any {
+  renderInput(context: NodeInputContext): any {
     const inputDescriptor = context.inputDescriptor;
     const uiHint = inputDescriptor.uiHint;
     const inputControl = this.inputControlRegistry.get(uiHint);
-    const activity = context.activity;
+    const node = context.node;
     const propertyName = inputDescriptor.name;
-    const camelCasePropertyName = camelCase(propertyName);
     const displayName = inputDescriptor.displayName || propertyName;
     const description = inputDescriptor.description;
-    //const fieldName = inputDescriptor.name;
     const fieldId = inputDescriptor.name;
-    const input = activity[camelCasePropertyName] as ActivityInput;
-    //const value = (input?.expression as LiteralExpression)?.value;
-    const key = `${activity.id}_${propertyName}`;
+    const key = `${node.id}_${propertyName}`;
 
     return (
-      <div class="p-4">
-        <label htmlFor={fieldId}>
-          {displayName}
-        </label>
-        <div class="mt-1" key={key}>
-          {/*<input key={key} type="text" name={fieldName} id={fieldId} value={value} onChange={e => this.onPropertyEditorChanged(e, activity, propertyName)}/>*/}
-          {inputControl(context)}
-        </div>
-        <Hint text={description}/>
-      </div>
-    );
+      <FormEntry label={displayName} fieldId={fieldId} hint={description} key={key}>
+        {inputControl(context)}
+      </FormEntry>);
   }
 
-  supportsInput(context: RenderInputContext): boolean {
+  supportsInput(context: NodeInputContext): boolean {
     const uiHint = context.inputDescriptor.uiHint;
     return this.inputControlRegistry.has(uiHint);
-  }
-
-  private onPropertyEditorChanged = (e: Event, activity: Activity, propertyName: string) => {
-    const inputElement = e.target as HTMLInputElement;
-    const value = inputElement.value;
-    const camelCasePropertyName = camelCase(propertyName);
-
-    activity[camelCasePropertyName] = {
-      type: 'string',
-      expression: {
-        type: 'Literal',
-        value: value
-      }
-    };
-
-    //this.activityUpdated.emit({activity: activity});
   }
 }

@@ -37,7 +37,7 @@ public class HttpTrigger : Trigger
         {
             var hashInput = (path.ToLowerInvariant(), method.ToLowerInvariant());
             var hash = hasher.Hash(hashInput);
-            yield return new Bookmark(Guid.NewGuid().ToString(), ActivityType, hash, Id, context.Id);
+            yield return new Bookmark(Guid.NewGuid().ToString(), NodeType, hash, Id, context.Id);
         }
     }
 }
