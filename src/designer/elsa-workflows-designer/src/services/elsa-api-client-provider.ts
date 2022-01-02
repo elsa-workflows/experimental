@@ -6,7 +6,7 @@ import {
   Activity,
   ActivityDescriptor,
   ActivityDescriptorResponse,
-  EventTypes, getVersionOptionsString, OrderBy, OrderDirection, PagedList, Trigger,
+  EventTypes, getVersionOptionsString, OrderBy, OrderDirection, PagedList, SelectList, Trigger,
   TriggerDescriptor,
   TriggerDescriptorResponse, VersionOptions,
   Workflow, WorkflowInstance, WorkflowInstanceSummary, WorkflowStatus, WorkflowSummary
@@ -110,6 +110,17 @@ export async function createElsaClient(serverUrl: string): Promise<ElsaClient> {
         const response = await httpClient.get<WorkflowInstance>(`api/workflow-instances/${request.id}`);
         return response.data;
       }
+    },
+    designer: {
+      runtimeSelectListApi: {
+        get: async (providerTypeName: string, context?: any): Promise<SelectList> => {
+          const response = await httpClient.post('api/designer/runtime-select-list', {
+            providerTypeName: providerTypeName,
+            context: context
+          });
+          return response.data;
+        }
+      }
     }
   };
 }
@@ -118,6 +129,7 @@ export interface ElsaClient {
   descriptors: DescriptorsApi;
   workflows: WorkflowsApi;
   workflowInstances: WorkflowInstancesApi;
+  designer: DesignerApi;
 }
 
 export interface DescriptorsApi {
@@ -148,6 +160,14 @@ export interface WorkflowInstancesApi {
   list(request: ListWorkflowInstancesRequest): Promise<PagedList<WorkflowInstanceSummary>>;
 
   get(request: GetWorkflowInstanceRequest): Promise<WorkflowInstance>;
+}
+
+export interface DesignerApi {
+  runtimeSelectListApi: RuntimeSelectListApi;
+}
+
+export interface RuntimeSelectListApi {
+  get(providerTypeName: string, context?: any): Promise<SelectList>
 }
 
 export interface SaveWorkflowRequest {

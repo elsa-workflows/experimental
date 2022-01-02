@@ -11,7 +11,6 @@ export class SingleLineInput {
   @Prop() inputContext: NodeInputContext;
 
   public render() {
-    //const renderContext = this.renderContext;
     const inputContext = this.inputContext;
     const node = inputContext.node;
     const inputProperty = inputContext.inputDescriptor;

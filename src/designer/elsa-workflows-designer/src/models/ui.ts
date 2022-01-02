@@ -77,3 +77,18 @@ export interface RenderNodePropContext {
   inputContext: NodeInputContext
   inputControl?: any;
 }
+
+export interface SelectList {
+  items: Array<SelectListItem> | Array<string>;
+  isFlagsEnum: boolean;
+}
+
+export interface SelectListItem {
+  text: string;
+  value: string;
+}
+
+export interface RuntimeSelectListProviderSettings {
+  runtimeSelectListProviderType: string;
+  context?: any;
+}

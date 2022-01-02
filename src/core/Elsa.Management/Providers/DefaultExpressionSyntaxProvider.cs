@@ -8,6 +8,13 @@ namespace Elsa.Management.Providers;
 
 public class DefaultExpressionSyntaxProvider : IExpressionSyntaxProvider
 {
+    private readonly IIdentityGenerator _identityGenerator;
+
+    public DefaultExpressionSyntaxProvider(IIdentityGenerator identityGenerator)
+    {
+        _identityGenerator = identityGenerator;
+    }
+    
     public ValueTask<IEnumerable<ExpressionSyntaxDescriptor>> GetDescriptorsAsync(CancellationToken cancellationToken = default)
     {
         var literal = new ExpressionSyntaxDescriptor
@@ -15,7 +22,10 @@ public class DefaultExpressionSyntaxProvider : IExpressionSyntaxProvider
             Syntax = "Literal",
             Type = typeof(LiteralExpression),
             CreateExpression = CreateLiteralExpression,
-            CreateLocationReference = context => new Literal(context.GetExpression<LiteralExpression>().Value),
+            CreateLocationReference = context => new Literal(context.GetExpression<LiteralExpression>().Value)
+            {
+                Id = _identityGenerator.GenerateId()
+            },
             CreateSerializableObject = context => new
             {
                 Type = "Literal",

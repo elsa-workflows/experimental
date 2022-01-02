@@ -3,12 +3,8 @@ using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Http;
 using Elsa.Activities.Http.Extensions;
 using Elsa.Activities.Workflows;
-using Elsa.Api.Endpoints.ActivityDescriptors;
-using Elsa.Api.Endpoints.Events;
-using Elsa.Api.Endpoints.TriggerDescriptors;
-using Elsa.Api.Endpoints.WorkflowInstances;
-using Elsa.Api.Endpoints.Workflows;
 using Elsa.Api.Extensions;
+using Elsa.Extensions;
 using Elsa.Management.Contracts;
 using Elsa.Management.Extensions;
 using Elsa.Mediator.Extensions;
@@ -36,7 +32,6 @@ services
     .IndexWorkflowTriggers()
     .AddElsaManagement()
     .AddHttpActivityServices()
-    .AddWorkflowApiServices()
     .AddProtoActorWorkflowHost()
     .ConfigureWorkflowRuntime(options =>
     {

@@ -1,7 +1,8 @@
 using System;
 using Elsa.Contracts;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Elsa.Extensions;
 
 public static class ServiceProviderExtensions
 {

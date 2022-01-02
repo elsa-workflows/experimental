@@ -18,7 +18,7 @@ public class ListWorkflowSummariesHandler : IRequestHandler<ListWorkflowSummarie
         await using var dbContext = await _store.CreateDbContextAsync(cancellationToken);
         var set = dbContext.WorkflowDefinitions;
         var query = set.AsQueryable();
-
+        
         if (request.VersionOptions != null)
             query = query.WithVersion(request.VersionOptions.Value);
 

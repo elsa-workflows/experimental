@@ -8,12 +8,12 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { ActionDefinition, ActionInvokedArgs, Activity, ActivityDescriptor, ActivitySelectedArgs, ContainerSelectedArgs, GraphUpdatedArgs, TabChangedArgs, TabDefinition, Trigger, TriggerDescriptor, Workflow, WorkflowInstance, WorkflowInstanceSummary, WorkflowSummary } from "./models";
 import { ActivityUpdatedArgs, DeleteActivityRequestedArgs } from "./components/designer/activity-properties-editor/activity-properties-editor";
 import { AddActivityArgs } from "./components/designer/canvas/canvas";
+import { NodeInputContext } from "./services/node-input-driver";
 import { MenuItem } from "./components/shared/context-menu/models";
 import { DropdownButtonItem, DropdownButtonOrigin } from "./components/shared/dropdown-button/models";
 import { AddActivityArgs as AddActivityArgs1 } from "./components/designer/canvas/canvas";
 import { PagerData } from "./components/shared/pager/pager";
 import { PanelPosition, PanelStateChangedArgs } from "./components/designer/panel/models";
-import { NodeInputContext } from "./services/node-input-driver";
 import { Graph } from "@antv/x6";
 import { TriggerDeselectedArgs, TriggerSelectedArgs, TriggersUpdatedArgs } from "./components/designer/trigger-container/trigger-container";
 import { DeleteTriggerRequestedArgs, TriggerUpdatedArgs } from "./components/designer/trigger-properties-editor/trigger-properties-editor";
@@ -35,6 +35,9 @@ export namespace Components {
         "interactiveMode": boolean;
         "updateLayout": () => Promise<void>;
     }
+    interface ElsaCheckListInput {
+        "inputContext": NodeInputContext;
+    }
     interface ElsaContextMenu {
         "menuItems": Array<MenuItem>;
     }
@@ -43,6 +46,9 @@ export namespace Components {
         "items": Array<DropdownButtonItem>;
         "origin": DropdownButtonOrigin;
         "text": string;
+    }
+    interface ElsaDropdownInput {
+        "inputContext": NodeInputContext;
     }
     interface ElsaFlowchart {
         "activityDescriptors": Array<ActivityDescriptor>;
@@ -155,6 +161,12 @@ declare global {
         prototype: HTMLElsaCanvasElement;
         new (): HTMLElsaCanvasElement;
     };
+    interface HTMLElsaCheckListInputElement extends Components.ElsaCheckListInput, HTMLStencilElement {
+    }
+    var HTMLElsaCheckListInputElement: {
+        prototype: HTMLElsaCheckListInputElement;
+        new (): HTMLElsaCheckListInputElement;
+    };
     interface HTMLElsaContextMenuElement extends Components.ElsaContextMenu, HTMLStencilElement {
     }
     var HTMLElsaContextMenuElement: {
@@ -166,6 +178,12 @@ declare global {
     var HTMLElsaDropdownButtonElement: {
         prototype: HTMLElsaDropdownButtonElement;
         new (): HTMLElsaDropdownButtonElement;
+    };
+    interface HTMLElsaDropdownInputElement extends Components.ElsaDropdownInput, HTMLStencilElement {
+    }
+    var HTMLElsaDropdownInputElement: {
+        prototype: HTMLElsaDropdownInputElement;
+        new (): HTMLElsaDropdownInputElement;
     };
     interface HTMLElsaFlowchartElement extends Components.ElsaFlowchart, HTMLStencilElement {
     }
@@ -290,8 +308,10 @@ declare global {
     interface HTMLElementTagNameMap {
         "elsa-activity-properties-editor": HTMLElsaActivityPropertiesEditorElement;
         "elsa-canvas": HTMLElsaCanvasElement;
+        "elsa-check-list-input": HTMLElsaCheckListInputElement;
         "elsa-context-menu": HTMLElsaContextMenuElement;
         "elsa-dropdown-button": HTMLElsaDropdownButtonElement;
+        "elsa-dropdown-input": HTMLElsaDropdownInputElement;
         "elsa-flowchart": HTMLElsaFlowchartElement;
         "elsa-form-panel": HTMLElsaFormPanelElement;
         "elsa-modal-dialog": HTMLElsaModalDialogElement;
@@ -324,6 +344,9 @@ declare namespace LocalJSX {
     interface ElsaCanvas {
         "interactiveMode"?: boolean;
     }
+    interface ElsaCheckListInput {
+        "inputContext"?: NodeInputContext;
+    }
     interface ElsaContextMenu {
         "menuItems"?: Array<MenuItem>;
     }
@@ -333,6 +356,9 @@ declare namespace LocalJSX {
         "onItemSelected"?: (event: CustomEvent<DropdownButtonItem>) => void;
         "origin"?: DropdownButtonOrigin;
         "text"?: string;
+    }
+    interface ElsaDropdownInput {
+        "inputContext"?: NodeInputContext;
     }
     interface ElsaFlowchart {
         "activityDescriptors"?: Array<ActivityDescriptor>;
@@ -440,8 +466,10 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "elsa-activity-properties-editor": ElsaActivityPropertiesEditor;
         "elsa-canvas": ElsaCanvas;
+        "elsa-check-list-input": ElsaCheckListInput;
         "elsa-context-menu": ElsaContextMenu;
         "elsa-dropdown-button": ElsaDropdownButton;
+        "elsa-dropdown-input": ElsaDropdownInput;
         "elsa-flowchart": ElsaFlowchart;
         "elsa-form-panel": ElsaFormPanel;
         "elsa-modal-dialog": ElsaModalDialog;
@@ -470,8 +498,10 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "elsa-activity-properties-editor": LocalJSX.ElsaActivityPropertiesEditor & JSXBase.HTMLAttributes<HTMLElsaActivityPropertiesEditorElement>;
             "elsa-canvas": LocalJSX.ElsaCanvas & JSXBase.HTMLAttributes<HTMLElsaCanvasElement>;
+            "elsa-check-list-input": LocalJSX.ElsaCheckListInput & JSXBase.HTMLAttributes<HTMLElsaCheckListInputElement>;
             "elsa-context-menu": LocalJSX.ElsaContextMenu & JSXBase.HTMLAttributes<HTMLElsaContextMenuElement>;
             "elsa-dropdown-button": LocalJSX.ElsaDropdownButton & JSXBase.HTMLAttributes<HTMLElsaDropdownButtonElement>;
+            "elsa-dropdown-input": LocalJSX.ElsaDropdownInput & JSXBase.HTMLAttributes<HTMLElsaDropdownInputElement>;
             "elsa-flowchart": LocalJSX.ElsaFlowchart & JSXBase.HTMLAttributes<HTMLElsaFlowchartElement>;
             "elsa-form-panel": LocalJSX.ElsaFormPanel & JSXBase.HTMLAttributes<HTMLElsaFormPanelElement>;
             "elsa-modal-dialog": LocalJSX.ElsaModalDialog & JSXBase.HTMLAttributes<HTMLElsaModalDialogElement>;

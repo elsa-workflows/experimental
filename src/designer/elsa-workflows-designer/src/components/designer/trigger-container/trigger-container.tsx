@@ -31,7 +31,7 @@ export class TriggerContainer {
   @Event() public triggersUpdated: EventEmitter<TriggersUpdatedArgs>;
   @Event() triggerSelected: EventEmitter<TriggerSelectedArgs>;
   @Event() triggerDeselected: EventEmitter<TriggerDeselectedArgs>;
-  @State() private selectedTriggers: Array<Trigger> = [];
+  @State() private selectedTriggers: Array<string> = [];
 
   @Method()
   public async deselectAll(): Promise<void> {
@@ -108,7 +108,7 @@ export class TriggerContainer {
   };
 
   private updateTrigger = (trigger: Trigger) => this.updateTriggers([...this.triggers]);
-  private getIsTriggerSelected = (trigger: Trigger) => this.selectedTriggers.findIndex(x => x == trigger) >= 0;
+  private getIsTriggerSelected = (trigger: Trigger) => this.selectedTriggers.findIndex(x => x == trigger.id) >= 0;
 
   private onDrop = (e: DragEvent) => {
     const json = e.dataTransfer.getData('trigger-descriptor');
@@ -134,18 +134,15 @@ export class TriggerContainer {
     const isSelected = this.getIsTriggerSelected(trigger);
 
     if (e.ctrlKey)
-      this.selectedTriggers = isSelected ? this.selectedTriggers.filter(x => x != trigger) : [...this.selectedTriggers, trigger];
+      this.selectedTriggers = isSelected ? this.selectedTriggers.filter(x => x != trigger.id) : [...this.selectedTriggers, trigger.id];
     else
-      this.selectedTriggers = isSelected ? [] : [trigger];
+      this.selectedTriggers = [trigger.id];
 
-    if (isSelected)
-      this.triggerDeselected.emit({trigger});
-    else
-      this.triggerSelected.emit({
-        trigger: trigger,
-        applyChanges: this.updateTrigger,
-        deleteTrigger: this.deleteTrigger
-      });
+    this.triggerSelected.emit({
+      trigger: trigger,
+      applyChanges: this.updateTrigger,
+      deleteTrigger: this.deleteTrigger
+    });
   };
 
   private onKeyPress = (e: KeyboardEvent) => {
@@ -153,7 +150,7 @@ export class TriggerContainer {
       return;
 
     const selectedTriggers = this.selectedTriggers;
-    const triggers = this.triggers.filter(trigger => selectedTriggers.findIndex(x => x == trigger) < 0);
+    const triggers = this.triggers.filter(trigger => selectedTriggers.findIndex(x => x == trigger.id) < 0);
     this.updateTriggers(triggers);
   };
 }

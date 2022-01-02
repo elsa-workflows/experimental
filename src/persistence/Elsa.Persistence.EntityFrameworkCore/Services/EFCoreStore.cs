@@ -66,6 +66,20 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : Entity
         var set = dbContext.Set<TEntity>();
         return await set.Where(predicate).BatchDeleteWithWorkAroundAsync(dbContext, cancellationToken);
     }
+    
+    public async Task<IEnumerable<TEntity>> QueryAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> query, CancellationToken cancellationToken = default)
+    {
+        await using var dbContext = await CreateDbContextAsync(cancellationToken);
+        var set = dbContext.Set<TEntity>();
+        var queryable = query(set.AsQueryable());
+
+        queryable = query(queryable);
+        
+        return Load(dbContext, queryable).ToList();
+    }
+
+    public IEnumerable<TEntity> Load(ElsaDbContext dbContext, IEnumerable<TEntity> entities) => OnLoading(dbContext, entities.ToList());
+    
 
     private void OnSaving(ElsaDbContext dbContext, TEntity entity)
     {
@@ -88,12 +102,12 @@ public class EFCoreStore<TEntity> : IStore<TEntity> where TEntity : Entity
     {
         if (entity == null)
             return null;
-        
+
         var handler = _serviceProvider.GetService<IEntitySerializer<TEntity>>();
         handler?.Deserialize(dbContext, entity);
         return entity;
     }
-    
+
     private IEnumerable<TEntity> OnLoading(ElsaDbContext dbContext, ICollection<TEntity> entities)
     {
         var handler = _serviceProvider.GetService<IEntitySerializer<TEntity>>();

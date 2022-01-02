@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -11,23 +12,46 @@ using Elsa.Models;
 using Elsa.Persistence.Commands;
 using Elsa.Persistence.Entities;
 using Elsa.Runtime.Contracts;
+using Microsoft.Extensions.Logging;
 
 namespace Elsa.Runtime.Services;
 
 public class TriggerIndexer : ITriggerIndexer
 {
+    private readonly IWorkflowRegistry _workflowRegistry;
     private readonly IExpressionEvaluator _expressionEvaluator;
     private readonly ICommandSender _mediator;
     private readonly IHasher _hasher;
+    private readonly ILogger _logger;
 
     public TriggerIndexer(
+        IWorkflowRegistry workflowRegistry,
         IExpressionEvaluator expressionEvaluator,
         ICommandSender mediator,
-        IHasher hasher)
+        IHasher hasher,
+        ILogger<TriggerIndexer> logger)
     {
+        _workflowRegistry = workflowRegistry;
         _expressionEvaluator = expressionEvaluator;
         _mediator = mediator;
         _hasher = hasher;
+        _logger = logger;
+    }
+
+    public async Task IndexTriggersAsync(CancellationToken cancellationToken = default)
+    {
+        var stopwatch = new Stopwatch();
+
+        _logger.LogInformation("Indexing workflow triggers");
+        stopwatch.Start();
+        
+        var workflows = _workflowRegistry.StreamAllAsync(cancellationToken);
+
+        await foreach (var workflow in workflows.WithCancellation(cancellationToken))
+            await IndexTriggersAsync(workflow, cancellationToken);
+        
+        stopwatch.Stop();
+        _logger.LogInformation("Finished indexing workflow triggers in {ElapsedTime}", stopwatch.Elapsed);
     }
 
     public async Task IndexTriggersAsync(Workflow workflow, CancellationToken cancellationToken = default)
@@ -43,7 +67,7 @@ public class TriggerIndexer : ITriggerIndexer
     private async IAsyncEnumerable<WorkflowTrigger> GetTriggersAsync(Workflow workflow, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var context = new WorkflowIndexingContext(workflow);
-        var triggerSources = workflow.Triggers ?? Enumerable.Empty<ITrigger>();
+        var triggerSources = workflow.Triggers;
 
         foreach (var triggerSource in triggerSources)
         {

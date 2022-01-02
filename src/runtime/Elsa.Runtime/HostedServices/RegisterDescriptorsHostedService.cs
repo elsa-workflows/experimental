@@ -1,16 +1,14 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Elsa.Management.Contracts;
 using Microsoft.Extensions.Hosting;
 
-namespace Elsa.Api.HostedServices;
+namespace Elsa.Runtime.HostedServices;
 
-public class RegisterDescriptors : IHostedService
+public class RegisterDescriptorsHostedService : IHostedService
 {
     private readonly IActivityRegistryPopulator _activityRegistryPopulator;
     private readonly ITriggerRegistryPopulator _triggerRegistryPopulator;
 
-    public RegisterDescriptors(IActivityRegistryPopulator activityRegistryPopulator, ITriggerRegistryPopulator triggerRegistryPopulator)
+    public RegisterDescriptorsHostedService(IActivityRegistryPopulator activityRegistryPopulator, ITriggerRegistryPopulator triggerRegistryPopulator)
     {
         _activityRegistryPopulator = activityRegistryPopulator;
         _triggerRegistryPopulator = triggerRegistryPopulator;

@@ -9,6 +9,7 @@ using Elsa.Contracts;
 using Elsa.Dsl.Abstractions;
 using Elsa.Dsl.Contracts;
 using Elsa.Dsl.Extensions;
+using Elsa.Extensions;
 using Elsa.Models;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Scripting.JavaScript;

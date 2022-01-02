@@ -15,4 +15,8 @@
       <ProjectReference Include="..\..\runtime\Elsa.Runtime\Elsa.Runtime.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="HostedServices" />
+    </ItemGroup>
+
 </Project>

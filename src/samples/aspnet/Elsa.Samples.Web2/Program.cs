@@ -3,6 +3,7 @@ using Elsa.Api.Endpoints.Events;
 using Elsa.Api.Endpoints.WorkflowInstances;
 using Elsa.Api.Endpoints.Workflows;
 using Elsa.Api.Extensions;
+using Elsa.Extensions;
 using Elsa.Persistence.InMemory.Extensions;
 using Elsa.Persistence.Middleware.WorkflowExecution;
 using Elsa.Pipelines.WorkflowExecution.Components;

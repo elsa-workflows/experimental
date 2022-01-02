@@ -43,8 +43,7 @@ public class InputJsonConverter<T> : JsonConverter<Input<T>>
         var expression = expressionSyntaxDescriptor.CreateExpression(context);
         var locationReference = expressionSyntaxDescriptor.CreateLocationReference(new LocationReferenceConstructorContext(expression));
 
-        var input = (Input<T>)Activator.CreateInstance(typeof(Input<T>), expression, locationReference)!;
-        return input;
+        return (Input<T>)Activator.CreateInstance(typeof(Input<T>), expression, locationReference)!;
     }
 
     public override void Write(Utf8JsonWriter writer, Input<T> value, JsonSerializerOptions options)
