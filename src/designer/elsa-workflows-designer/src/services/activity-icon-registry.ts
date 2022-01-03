@@ -11,6 +11,9 @@ export class ActivityIconRegistry {
 
   constructor() {
     this.add('Console.WriteLine', Icons.WriteLineIcon);
+    this.add('Console.ReadLine', Icons.ReadLineIcon);
+    this.add('ControlFlow.If', Icons.IfIcon);
+    this.add('Workflows.Flowchart', Icons.FlowchartIcon);
     this.add('Http.HttpTrigger', Icons.HttpTriggerIcon);
   }
 
