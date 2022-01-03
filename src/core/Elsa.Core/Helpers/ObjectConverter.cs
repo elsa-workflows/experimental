@@ -1,8 +1,8 @@
 using System;
 using System.ComponentModel;
-using Elsa.Dsl.Exceptions;
+using Elsa.Exceptions;
 
-namespace Elsa.Dsl.Extensions;
+namespace Elsa.Helpers;
 
 public static class ObjectConverter
 {

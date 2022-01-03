@@ -97,7 +97,7 @@ public class ActivityExecutionContext
     {
         var evaluator = GetRequiredService<IExpressionEvaluator>();
         var locationReference = input.LocationReference;
-        var value = await evaluator.EvaluateAsync(input.Expression, ExpressionExecutionContext);
+        var value = await evaluator.EvaluateAsync(input, ExpressionExecutionContext);
         locationReference.Set(this, value);
         return (T?)value;
     }

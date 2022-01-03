@@ -4,7 +4,7 @@ import WorkflowEditorTunnel from '../state';
 import {
   Activity,
   ActivityDescriptor,
-  DefaultActions,
+  DefaultActions, InputDescriptor,
   RenderNodePropContext,
   RenderNodePropsContext,
   TabChangedArgs,
@@ -63,7 +63,7 @@ export class ActivityPropertiesEditor {
         node: activity,
         nodeDescriptor: activityDescriptor,
         inputDescriptor,
-        inputChanged: v => this.onPropertyEditorChanged(inputDescriptor.name, v)
+        inputChanged: (v, s) => this.onPropertyEditorChanged(inputDescriptor, v, s)
       };
 
       const driver = driverRegistry.get(renderInputContext);
@@ -118,14 +118,15 @@ export class ActivityPropertiesEditor {
     this.activityUpdated.emit({activity: activity});
   }
 
-  private onPropertyEditorChanged = (propertyName: string, propertyValue: any) => {
+  private onPropertyEditorChanged = (inputDescriptor: InputDescriptor, propertyValue: any, syntax: string) => {
     const activity = this.activity;
+    const propertyName = inputDescriptor.name;
     const camelCasePropertyName = camelCase(propertyName);
 
     activity[camelCasePropertyName] = {
-      type: 'string',
+      type: inputDescriptor.type,
       expression: {
-        type: 'Literal',
+        type: syntax,
         value: propertyValue
       }
     };

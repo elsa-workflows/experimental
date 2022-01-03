@@ -1,19 +1,25 @@
 ﻿import axios, {AxiosInstance, AxiosRequestConfig} from "axios";
 import {Service as MiddlewareService} from 'axios-middleware';
-import _, {collection} from 'lodash';
+import _ from 'lodash';
+import {Container, Service} from 'typedi';
 import {EventBus} from './event-bus';
 import {
   Activity,
   ActivityDescriptor,
   ActivityDescriptorResponse,
-  EventTypes, getVersionOptionsString, OrderBy, OrderDirection, PagedList, SelectList, Trigger,
+  EventTypes,
+  OrderBy,
+  OrderDirection,
+  PagedList,
+  SelectList,
+  Trigger,
   TriggerDescriptor,
   TriggerDescriptorResponse, VersionOptions,
   Workflow, WorkflowInstance, WorkflowInstanceSummary, WorkflowStatus, WorkflowSummary
-} from "../models";
+} from '../models';
 import 'reflect-metadata';
-import {Container, Service} from "typedi";
-import {ServerSettings} from "./server-settings";
+import {ServerSettings} from './server-settings';
+import {getVersionOptionsString} from "../utils/utils";
 
 function serializeQueryString(queryString: object): string {
   const filteredItems = _(queryString).omitBy(_.isUndefined).omitBy(_.isNull).value();

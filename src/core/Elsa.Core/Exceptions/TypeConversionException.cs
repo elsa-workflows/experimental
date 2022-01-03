@@ -1,6 +1,6 @@
 using System;
 
-namespace Elsa.Dsl.Exceptions;
+namespace Elsa.Exceptions;
 
 public class TypeConversionException : Exception
 {

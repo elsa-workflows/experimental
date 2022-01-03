@@ -6,6 +6,7 @@ using Elsa.Contracts;
 using Elsa.Dsl.Abstractions;
 using Elsa.Dsl.Extensions;
 using Elsa.Dsl.Interpreters;
+using Elsa.Helpers;
 using Elsa.Models;
 
 namespace Elsa.Dsl.Services;

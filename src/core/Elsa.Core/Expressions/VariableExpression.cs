@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -27,10 +28,10 @@ public class VariableExpression<T> : VariableExpression
 
 public class VariableExpressionHandler : IExpressionHandler
 {
-    public ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
+    public ValueTask<object?> EvaluateAsync(IExpression expression, Type returnType, ExpressionExecutionContext context)
     {
-        var variableReference = (VariableExpression)expression;
-        var variable = variableReference.Variable;
+        var variableExpression = (VariableExpression)expression;
+        var variable = variableExpression.Variable;
         var value = variable.Get(context);
         return ValueTask.FromResult(value);
     }

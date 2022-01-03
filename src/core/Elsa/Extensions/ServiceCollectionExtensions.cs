@@ -59,9 +59,10 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddDefaultExpressionHandlers(this IServiceCollection services) =>
         services
-            .AddExpressionHandler<LiteralHandler, LiteralExpression>()
+            .AddExpressionHandler<LiteralExpressionHandler, LiteralExpression>()
             .AddExpressionHandler<DelegateExpressionHandler, DelegateExpression>()
             .AddExpressionHandler<VariableExpressionHandler, VariableExpression>()
+            .AddExpressionHandler<JsonExpressionHandler, JsonExpression>()
             .AddExpressionHandler<ElsaExpressionHandler, ElsaExpression>();
 
     public static IServiceCollection AddWorkflowProvider<T>(this IServiceCollection services) where T : class, IWorkflowProvider => services.AddSingleton<IWorkflowProvider, T>();

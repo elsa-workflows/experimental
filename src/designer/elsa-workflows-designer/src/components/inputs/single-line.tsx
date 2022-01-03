@@ -1,6 +1,6 @@
 import {Component, Prop, h} from '@stencil/core';
 import {camelCase} from 'lodash'
-import {ActivityInput, LiteralExpression} from "../../models";
+import {ActivityInput, LiteralExpression, SyntaxNames} from "../../models";
 import {NodeInputContext} from "../../services/node-input-driver";
 
 @Component({
@@ -25,6 +25,6 @@ export class SingleLineInput {
 
   private onPropertyEditorChanged = (e: Event) => {
     const inputElement = e.target as HTMLInputElement;
-    this.inputContext.inputChanged(inputElement.value);
+    this.inputContext.inputChanged(inputElement.value, SyntaxNames.Literal);
   }
 }

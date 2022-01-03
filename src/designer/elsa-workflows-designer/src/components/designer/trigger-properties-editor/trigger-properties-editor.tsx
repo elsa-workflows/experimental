@@ -2,7 +2,7 @@ import {Component, Event, EventEmitter, h, Method, Prop, State} from '@stencil/c
 import {camelCase} from 'lodash';
 import WorkflowEditorTunnel from '../state';
 import {
-  DefaultActions,
+  DefaultActions, InputDescriptor,
   RenderNodePropContext,
   RenderNodePropsContext,
   TabChangedArgs,
@@ -64,7 +64,7 @@ export class TriggerPropertiesEditor {
         node: trigger,
         nodeDescriptor: triggerDescriptor,
         inputDescriptor,
-        inputChanged: v => this.onPropertyEditorChanged(inputDescriptor.name, v)
+        inputChanged: (v, s) => this.onPropertyEditorChanged(inputDescriptor, v, s)
       };
 
       const driver = driverRegistry.get(renderInputContext);
@@ -122,14 +122,15 @@ export class TriggerPropertiesEditor {
     this.triggerUpdated.emit({trigger});
   };
 
-  private onPropertyEditorChanged = (propertyName: string, propertyValue: any) => {
+  private onPropertyEditorChanged = (inputDescriptor: InputDescriptor, propertyValue: any, syntax: string) => {
     const trigger = this.trigger;
+    const propertyName = inputDescriptor.name;
     const camelCasePropertyName = camelCase(propertyName);
 
     trigger[camelCasePropertyName] = {
-      type: 'string',
+      type: inputDescriptor.type,
       expression: {
-        type: 'Literal',
+        type: syntax,
         value: propertyValue
       }
     };

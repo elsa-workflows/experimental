@@ -87,20 +87,8 @@ export interface RegisterLocation {
   value: any;
 }
 
-export const getVersionOptionsString = (versionOptions?: VersionOptions) => {
-
-  if (!versionOptions)
-    return '';
-
-  return versionOptions.allVersions
-    ? 'AllVersions'
-    : versionOptions.isDraft
-      ? 'Draft'
-      : versionOptions.isLatest
-        ? 'Latest'
-        : versionOptions.isPublished
-          ? 'Published'
-          : versionOptions.isLatestOrPublished
-            ? 'LatestOrPublished'
-            : versionOptions.version.toString();
-};
+export enum SyntaxNames {
+  Literal = 'Literal',
+  JavaScript = 'JavaScript',
+  Json = 'Json'
+}

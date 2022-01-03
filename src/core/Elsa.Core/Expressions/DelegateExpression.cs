@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -23,7 +24,7 @@ public class DelegateExpression<T> : DelegateExpression
 
 public class DelegateExpressionHandler : IExpressionHandler
 {
-    public async ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
+    public async ValueTask<object?> EvaluateAsync(IExpression expression, Type returnType, ExpressionExecutionContext context)
     {
         var delegateExpression = (DelegateExpression)expression;
         var @delegate = delegateExpression.DelegateReference.Delegate;

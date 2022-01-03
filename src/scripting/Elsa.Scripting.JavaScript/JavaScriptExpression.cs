@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -16,7 +17,7 @@ public class JavaScriptExpression : IExpression
     
 public class JavaScriptExpressionHandler : IExpressionHandler
 {
-    public ValueTask<object?> EvaluateAsync(IExpression expression, ExpressionExecutionContext context)
+    public ValueTask<object?> EvaluateAsync(IExpression expression, Type returnType, ExpressionExecutionContext context)
     {
         var javaScriptExpression = (JavaScriptExpression)expression;
             

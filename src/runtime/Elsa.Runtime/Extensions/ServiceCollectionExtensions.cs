@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddDefaultExpressionHandlers(this IServiceCollection services) =>
         services
-            .AddExpressionHandler<LiteralHandler, LiteralExpression>()
+            .AddExpressionHandler<LiteralExpressionHandler, LiteralExpression>()
             .AddExpressionHandler<DelegateExpressionHandler, DelegateExpression>()
             .AddExpressionHandler<VariableExpressionHandler, VariableExpression>()
             .AddExpressionHandler<ElsaExpressionHandler, ElsaExpression>();

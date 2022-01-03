@@ -1,6 +1,6 @@
 import {Component, Prop, h, State} from '@stencil/core';
 import {camelCase} from 'lodash'
-import {ActivityInput, LiteralExpression, SelectList} from "../../models";
+import {ActivityInput, LiteralExpression, SelectList, SyntaxNames} from "../../models";
 import {NodeInputContext} from "../../services/node-input-driver";
 import {getSelectListItems} from "../../utils/select-list-items";
 
@@ -49,6 +49,6 @@ export class SingleLineInput {
 
   private onChange = (e: Event) => {
     const inputElement = e.target as HTMLSelectElement;
-    this.inputContext.inputChanged(inputElement.value);
+    this.inputContext.inputChanged(inputElement.value, SyntaxNames.Literal);
   }
 }

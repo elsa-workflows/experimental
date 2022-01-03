@@ -89,7 +89,7 @@ public class TriggerIndexer : ITriggerIndexer
         foreach (var input in assignedInputs)
         {
             var locationReference = input.LocationReference;
-            var value = await _expressionEvaluator.EvaluateAsync(input.Expression, expressionExecutionContext);
+            var value = await _expressionEvaluator.EvaluateAsync(input, expressionExecutionContext);
             locationReference.Set(expressionExecutionContext, value);
         }
 

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Elsa.Contracts;
 using Elsa.Dsl.Extensions;
+using Elsa.Helpers;
 using Elsa.Models;
 
 namespace Elsa.Dsl.Interpreters;

@@ -4,7 +4,7 @@ export interface NodeInputContext {
   node: Node;
   nodeDescriptor: NodeDescriptor;
   inputDescriptor: InputDescriptor;
-  inputChanged: (value: any) => void;
+  inputChanged: (value: any, syntax: string) => void;
 }
 
 export interface NodeInputDriver {

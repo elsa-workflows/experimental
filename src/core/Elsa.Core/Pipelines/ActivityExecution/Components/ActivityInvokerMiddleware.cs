@@ -71,7 +71,7 @@ public class ActivityInvokerMiddleware : IActivityExecutionMiddleware
         foreach (var input in assignedInputs)
         {
             var locationReference = input.LocationReference;
-            var value = await evaluator.EvaluateAsync(input.Expression, expressionExecutionContext);
+            var value = await evaluator.EvaluateAsync(input, expressionExecutionContext);
             locationReference.Set(context, value);
         }
     }
