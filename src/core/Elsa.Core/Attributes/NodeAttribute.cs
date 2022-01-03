@@ -1,6 +1,6 @@
 namespace Elsa.Attributes;
 
 [AttributeUsage(AttributeTargets.Property)]
-public class InboundAttribute : Attribute
+public class NodeAttribute : Attribute
 {
 }

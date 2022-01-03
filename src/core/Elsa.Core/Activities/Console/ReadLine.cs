@@ -1,4 +1,3 @@
-using System;
 using Elsa.Attributes;
 using Elsa.Models;
 

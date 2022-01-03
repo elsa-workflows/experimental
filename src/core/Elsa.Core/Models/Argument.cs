@@ -1,5 +1,3 @@
-using System;
-
 namespace Elsa.Models;
 
 public abstract class Argument

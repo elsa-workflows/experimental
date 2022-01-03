@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Contracts;
@@ -22,12 +21,14 @@ public class WorkflowDefinitionActor : IActor
 {
     private readonly IWorkflowRegistry _workflowRegistry;
     private readonly ICommandSender _commandSender;
+    private readonly IIdentityGenerator _identityGenerator;
     private readonly ISystemClock _systemClock;
 
-    public WorkflowDefinitionActor(IWorkflowRegistry workflowRegistry, ICommandSender commandSender, ISystemClock systemClock)
+    public WorkflowDefinitionActor(IWorkflowRegistry workflowRegistry, ICommandSender commandSender, IIdentityGenerator identityGenerator, ISystemClock systemClock)
     {
         _workflowRegistry = workflowRegistry;
         _commandSender = commandSender;
+        _identityGenerator = identityGenerator;
         _systemClock = systemClock;
     }
 
@@ -71,8 +72,8 @@ public class WorkflowDefinitionActor : IActor
     private async Task<WorkflowInstance> CreateWorkflowInstanceAsync(string workflowDefinitionId, CancellationToken cancellationToken)
     {
         var workflow = (await _workflowRegistry.FindByIdAsync(workflowDefinitionId, VersionOptions.Published, cancellationToken))!;
-        var workflowInstanceId = Guid.NewGuid().ToString();
-        var correlationId = Guid.NewGuid().ToString();
+        var workflowInstanceId = _identityGenerator.GenerateId();
+        var correlationId = _identityGenerator.GenerateId();
 
         var workflowInstance = new WorkflowInstance
         {

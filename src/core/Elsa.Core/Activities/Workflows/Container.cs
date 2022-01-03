@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Elsa.Attributes;
 using Elsa.Contracts;

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Elsa.Attributes;
 using Elsa.Contracts;
@@ -27,7 +24,8 @@ public class OutboundActivityNodeResolver : IActivityNodeResolver
             from prop in nodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
             where typeof(IActivity).IsAssignableFrom(prop.PropertyType) || typeof(IEnumerable<IActivity>).IsAssignableFrom(prop.PropertyType)
             let portAttr = prop.GetCustomAttribute<OutboundAttribute>()
-            where portAttr != null
+            let nodeAttr = prop.GetCustomAttribute<NodeAttribute>()
+            where portAttr != null || nodeAttr != null
             let value = prop.GetValue(activity)
             let isCollection = GetPropertyIsCollection(prop.PropertyType)
             select isCollection ? (IEnumerable<IActivity>)value : new[] { (IActivity)value };

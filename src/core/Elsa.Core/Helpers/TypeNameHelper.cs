@@ -1,10 +1,8 @@
-using System;
-
 namespace Elsa.Helpers;
 
 public static class TypeNameHelper
 {
-    private static readonly string[] WellknownNamespaces = new[]{"Elsa.Activities", "Elsa.Triggers"};
+    private static readonly string[] WellknownNamespaces = { "Elsa.Activities", "Elsa.Triggers" };
 
     public static string? GenerateNamespace(Type activityType) => GenerateTypeNamespace(activityType);
 
@@ -13,6 +11,8 @@ public static class TypeNameHelper
         var typeName = type.Name;
         return ns != null ? $"{ns}.{typeName}" : typeName;
     }
+
+    public static string GenerateTypeName<T>() => GenerateTypeName(typeof(T));
 
     public static string GenerateTypeName(Type type)
     {
@@ -32,9 +32,9 @@ public static class TypeNameHelper
 
     private static string? GenerateTypeNamespace(Type type)
     {
-        if(type.Namespace == null)
+        if (type.Namespace == null)
             return null;
-        
+
         foreach (var wellknownNamespace in WellknownNamespaces)
             if (type.Namespace.StartsWith(wellknownNamespace))
                 return type.Namespace[(wellknownNamespace.Length + 1)..];

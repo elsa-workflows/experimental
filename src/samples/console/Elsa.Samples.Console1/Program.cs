@@ -48,9 +48,9 @@ class Program
         var workflow11 = new Func<IActivity>(ForEachWorkflow.Create);
         var workflow12 = new Func<IActivity>(ParallelForEachWorkflow.Create);
         var workflow13 = new Func<IActivity>(BlockingParallelForEachWorkflow.Create);
-        var workflow14 = new Func<IActivity>(FreeFlowchartWorkflow.Create);
+        var workflow14 = new Func<IActivity>(FlowchartWorkflow.Create);
 
-        var workflowFactory = workflow2;
+        var workflowFactory = workflow14;
         var workflowGraph = workflowFactory();
         var workflow = Workflow.FromActivity(workflowGraph);
 

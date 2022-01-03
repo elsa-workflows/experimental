@@ -1,4 +1,3 @@
-using System;
 using Elsa.Contracts;
 
 namespace Elsa.Services;

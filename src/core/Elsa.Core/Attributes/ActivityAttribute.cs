@@ -1,5 +1,3 @@
-using System;
-
 namespace Elsa.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]

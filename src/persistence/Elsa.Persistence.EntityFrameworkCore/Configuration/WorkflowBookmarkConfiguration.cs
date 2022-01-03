@@ -1,4 +1,3 @@
-using Elsa.Models;
 using Elsa.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

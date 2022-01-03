@@ -1,6 +1,6 @@
-using Elsa.Management.Contracts;
+using Elsa.Contracts;
 
-namespace Elsa.Management.Services;
+namespace Elsa.Services;
 
 public class IdentityGenerator : IIdentityGenerator
 {

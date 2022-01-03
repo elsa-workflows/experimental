@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Elsa.Attributes;
 using Elsa.Contracts;
@@ -89,7 +87,7 @@ public class WorkflowStateSerializer : IWorkflowStateSerializer
     {
         foreach (var completionCallbackEntry in state.CompletionCallbacks)
         {
-            var owner = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == completionCallbackEntry.OwnerId);
+            var owner = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Activity.Id == completionCallbackEntry.OwnerId);
             var child = workflowExecutionContext.FindNodeById(completionCallbackEntry.ChildId).Activity;
             var callbackName = completionCallbackEntry.MethodName;
             var callbackDelegate = owner.Activity.GetActivityCompletionCallback(callbackName);

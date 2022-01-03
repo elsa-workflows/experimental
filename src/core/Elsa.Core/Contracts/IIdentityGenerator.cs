@@ -1,8 +1,6 @@
-namespace Elsa.Management.Contracts;
+namespace Elsa.Contracts;
 
 public interface IIdentityGenerator
 {
     string GenerateId();
 }
-
-//public interface ICloc

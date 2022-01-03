@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Extensions;
+using Elsa.Helpers;
 using Elsa.Mediator.Contracts;
 using Elsa.Models;
 using Elsa.Persistence.Commands;
@@ -95,12 +91,14 @@ public class TriggerIndexer : ITriggerIndexer
 
         var triggerIndexingContext = new TriggerIndexingContext(context, expressionExecutionContext, trigger);
         var hashInputs = await trigger.GetHashInputsAsync(triggerIndexingContext, cancellationToken);
+        var triggerType = trigger.GetType();
+        var triggerTypeName = TypeNameHelper.GenerateTypeName(triggerType);
 
         var triggers = hashInputs.Select(x => new WorkflowTrigger
         {
             Id = Guid.NewGuid().ToString(),
             WorkflowDefinitionId = workflow.Identity.DefinitionId,
-            Name = trigger.GetType().Name,
+            Name = triggerTypeName,
             Hash = _hasher.Hash(x)
         });
 

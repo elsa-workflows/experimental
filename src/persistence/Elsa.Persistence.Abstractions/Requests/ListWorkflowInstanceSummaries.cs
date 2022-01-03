@@ -1,7 +1,6 @@
 using Elsa.Mediator.Contracts;
 using Elsa.Persistence.Entities;
 using Elsa.Persistence.Models;
-using Elsa.State;
 
 namespace Elsa.Persistence.Requests;
 

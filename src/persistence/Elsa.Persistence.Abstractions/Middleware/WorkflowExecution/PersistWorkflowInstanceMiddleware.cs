@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,30 +25,34 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
     private readonly IRequestSender _requestSender;
     private readonly ICommandSender _commandSender;
     private readonly IWorkflowStateSerializer _workflowStateSerializer;
+    private readonly IIdentityGenerator _identityGenerator;
     private readonly ISystemClock _clock;
 
     public PersistWorkflowInstanceMiddleware(
-        WorkflowMiddlewareDelegate next, 
-        IRequestSender requestSender, 
-        ICommandSender commandSender, 
+        WorkflowMiddlewareDelegate next,
+        IRequestSender requestSender,
+        ICommandSender commandSender,
         IWorkflowStateSerializer workflowStateSerializer,
+        IIdentityGenerator identityGenerator,
         ISystemClock clock)
     {
         _next = next;
         _requestSender = requestSender;
         _commandSender = commandSender;
         _workflowStateSerializer = workflowStateSerializer;
+        _identityGenerator = identityGenerator;
         _clock = clock;
     }
 
     public async ValueTask InvokeAsync(WorkflowExecutionContext context)
     {
+        var cancellationToken = context.CancellationToken;
         var workflow = context.Workflow;
         var (definitionId, version, definitionVersionId) = workflow.Identity;
-        var correlationId = Guid.NewGuid().ToString("N");
-
-        // Setup a new workflow instance.
-        var workflowInstance = new WorkflowInstance
+        var existingWorkflowInstance = await _requestSender.RequestAsync(new FindWorkflowInstance(context.Id), cancellationToken);
+        
+        // Setup a new workflow instance if no existing instance was found.
+        var workflowInstance = existingWorkflowInstance ?? new WorkflowInstance
         {
             Id = context.Id,
             DefinitionId = definitionId,
@@ -57,11 +60,9 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
             DefinitionVersionId = definitionVersionId,
             CreatedAt = _clock.UtcNow,
             WorkflowStatus = WorkflowStatus.Running,
-            CorrelationId = correlationId,
+            CorrelationId = _identityGenerator.GenerateId(),
             WorkflowState = _workflowStateSerializer.ReadState(context)
         };
-
-        var cancellationToken = context.CancellationToken;
 
         // Get a copy of current bookmarks.
         var existingBookmarks = await _requestSender.RequestAsync(new FindWorkflowBookmarks(workflowInstance.Id), cancellationToken);
@@ -87,7 +88,8 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
         await _next(context);
 
         // Update workflow instance.
-        workflowInstance.WorkflowState = _workflowStateSerializer.ReadState(context);
+        var workflowState = _workflowStateSerializer.ReadState(context);
+        workflowInstance.WorkflowState = workflowState;
 
         // Persist updated workflow instance.
         await _commandSender.ExecuteAsync(new SaveWorkflowInstance(workflowInstance), cancellationToken);
@@ -102,6 +104,7 @@ public class PersistWorkflowInstanceMiddleware : IWorkflowExecutionMiddleware
             Id = x.Id,
             WorkflowDefinitionId = definitionId,
             WorkflowInstanceId = workflowInstance.Id,
+            CorrelationId = workflowInstance.CorrelationId,
             Hash = x.Hash,
             Data = x.Data,
             Name = x.Name,

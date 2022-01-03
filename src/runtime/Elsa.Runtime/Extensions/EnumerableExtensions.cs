@@ -1,4 +1,3 @@
-using System.Linq;
 using Elsa.Persistence.Models;
 
 namespace Elsa.Runtime.Extensions;

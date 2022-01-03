@@ -1,5 +1,3 @@
-using System;
-
 namespace Elsa.Contracts;
 
 public interface IExpressionHandlerRegistry

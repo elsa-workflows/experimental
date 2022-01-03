@@ -1,4 +1,3 @@
-using System.Linq;
 using Elsa.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Elsa.Models;
 
 public record Bookmark(

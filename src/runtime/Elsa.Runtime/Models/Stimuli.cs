@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Elsa.Runtime.Stimuli;
 
 namespace Elsa.Runtime.Models;

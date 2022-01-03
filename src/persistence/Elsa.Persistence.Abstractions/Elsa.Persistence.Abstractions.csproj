@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Elsa.Persistence</RootNamespace>
     </PropertyGroup>
 
@@ -14,5 +15,5 @@
     <ItemGroup>
       <PackageReference Include="LinqKit" Version="1.1.27" />
     </ItemGroup>
-
+    
 </Project>

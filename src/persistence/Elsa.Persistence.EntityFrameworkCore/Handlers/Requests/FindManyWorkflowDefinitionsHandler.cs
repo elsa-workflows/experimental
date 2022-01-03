@@ -4,7 +4,6 @@ using Elsa.Persistence.EntityFrameworkCore.Contracts;
 using Elsa.Persistence.Extensions;
 using Elsa.Persistence.Models;
 using Elsa.Persistence.Requests;
-using Microsoft.EntityFrameworkCore;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Handlers.Requests;
 

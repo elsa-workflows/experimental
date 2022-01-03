@@ -1,18 +1,16 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
 using Elsa.Contracts;
 using Elsa.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Models;
 
+//public record ActivityCompletionCallbackEntry(ActivityExecutionContext Owner, IActivity Child, ActivityCompletionCallback CompletionCallback);
 public record ActivityCompletionCallbackEntry(ActivityExecutionContext Owner, IActivity Child, ActivityCompletionCallback CompletionCallback);
 
 public class WorkflowExecutionContext
 {
+    private static ValueTask Noop(ActivityExecutionContext context) => new();
     private readonly IServiceProvider _serviceProvider;
     private readonly IList<ActivityNode> _nodes;
     private readonly IList<ActivityCompletionCallbackEntry> _completionCallbackEntries = new List<ActivityCompletionCallbackEntry>();
@@ -109,5 +107,27 @@ public class WorkflowExecutionContext
     {
         foreach (var bookmark in bookmarks)
             _bookmarks.Remove(bookmark);
+    }
+
+    public void ScheduleRoot()
+    {
+        var activityInvoker = GetRequiredService<IActivityInvoker>();
+        var workItem = new ActivityWorkItem(Workflow.Root.Id, async () => await activityInvoker.InvokeAsync(this, Workflow.Root));
+        Scheduler.Push(workItem);
+    }
+
+    public void ScheduleBookmark(Bookmark bookmark)
+    {
+        // Construct bookmark.
+        var bookmarkedActivityContext = ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
+        var bookmarkedActivity = bookmarkedActivityContext.Activity;
+
+        // Schedule the activity to resume.
+        var activityInvoker = GetRequiredService<IActivityInvoker>();
+        var workItem = new ActivityWorkItem(bookmarkedActivity.Id, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
+        Scheduler.Push(workItem);
+        
+        // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
+        ExecuteDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : Noop;
     }
 }

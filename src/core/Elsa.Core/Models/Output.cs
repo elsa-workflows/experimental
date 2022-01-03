@@ -1,5 +1,3 @@
-using System;
-
 namespace Elsa.Models;
 
 public class Output : Argument

@@ -5,6 +5,7 @@ using Elsa.Management.Providers;
 using Elsa.Management.Serialization;
 using Elsa.Management.Services;
 using Elsa.Persistence.Mappers;
+using Elsa.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Management.Extensions;
@@ -14,7 +15,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddElsaManagement(this IServiceCollection services)
     {
         return services
-            .AddSingleton<IIdentityGenerator, IdentityGenerator>()
             .AddSingleton<IWorkflowPublisher, WorkflowPublisher>()
             .AddSingleton<IActivityDescriber, ActivityDescriber>()
             .AddSingleton<IActivityRegistry, ActivityRegistry>()
@@ -32,8 +32,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IExpressionSyntaxRegistry, ExpressionSyntaxRegistry>()
             .AddSingleton<IExpressionSyntaxProvider, DefaultExpressionSyntaxProvider>()
             .AddSingleton<IExpressionSyntaxRegistryPopulator, ExpressionSyntaxRegistryPopulator>()
-            .AddSingleton<WorkflowSerializerOptionsProvider>()
-            .AddSingleton<WorkflowDefinitionMapper>();
+            .AddSingleton<WorkflowSerializerOptionsProvider>();
     }
     
     public static IServiceCollection ConfigureApiOptions(this IServiceCollection services, Action<ApiOptions> configure) => services.Configure(configure);

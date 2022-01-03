@@ -1,9 +1,4 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Elsa.Contracts;
-using Elsa.Extensions;
 using Elsa.Models;
 using Elsa.State;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,14 +41,26 @@ public class WorkflowEngine : IWorkflowEngine
         var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, default, default, default, cancellationToken);
 
         // Schedule the first node.
-        var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
-        var workItem = new ActivityWorkItem(workflow.Root.Id, async () => await activityInvoker.InvokeAsync(workflowExecutionContext, workflow.Root));
-        workflowExecutionContext.Scheduler.Push(workItem);
+        workflowExecutionContext.ScheduleRoot();
 
         return await ExecuteAsync(workflowExecutionContext);
     }
 
-    public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, Bookmark? bookmark = default, CancellationToken cancellationToken = default)
+    public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, CancellationToken cancellationToken = default)
+    {
+        // Create a child scope.
+        using var scope = _serviceScopeFactory.CreateScope();
+
+        // Create workflow execution context.
+        var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, default, default, cancellationToken);
+        
+        // Schedule the first node.
+        workflowExecutionContext.ScheduleRoot();
+        
+        return await ExecuteAsync(workflowExecutionContext);
+    }
+
+    public async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, Bookmark? bookmark, CancellationToken cancellationToken = default)
     {
         // Create a child scope.
         using var scope = _serviceScopeFactory.CreateScope();
@@ -61,22 +68,8 @@ public class WorkflowEngine : IWorkflowEngine
         // Create workflow execution context.
         var workflowExecutionContext = CreateWorkflowExecutionContext(scope.ServiceProvider, workflow, workflowState, bookmark, default, cancellationToken);
 
-        if (bookmark != null)
-        {
-            // Construct bookmark.
-            var bookmarkedActivityContext = workflowExecutionContext.ActivityExecutionContexts.First(x => x.Id == bookmark.ActivityInstanceId);
-            var bookmarkedActivity = bookmarkedActivityContext.Activity;
-
-            // If no resumption point was specified, use Noop to prevent the regular "ExecuteAsync" method to be invoked.
-            var resumeDelegate = bookmark.CallbackMethodName != null ? bookmarkedActivity.GetResumeActivityDelegate(bookmark.CallbackMethodName) : Noop;
-
-            // Schedule the activity to resume.
-            var activityInvoker = scope.ServiceProvider.GetRequiredService<IActivityInvoker>();
-            var workItem = new ActivityWorkItem(bookmarkedActivity.Id, async () => await activityInvoker.InvokeAsync(bookmarkedActivityContext));
-            workflowExecutionContext.Scheduler.Push(workItem);
-
-            workflowExecutionContext.ExecuteDelegate = resumeDelegate;
-        }
+        if (bookmark != null) 
+            workflowExecutionContext.ScheduleBookmark(bookmark);
 
         return await ExecuteAsync(workflowExecutionContext);
     }

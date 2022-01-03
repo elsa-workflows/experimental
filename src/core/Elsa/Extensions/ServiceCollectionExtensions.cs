@@ -6,6 +6,7 @@ using Elsa.Dsl.Extensions;
 using Elsa.Dsl.Services;
 using Elsa.Expressions;
 using Elsa.Options;
+using Elsa.Persistence.Extensions;
 using Elsa.Pipelines.ActivityExecution;
 using Elsa.Pipelines.WorkflowExecution;
 using Elsa.Runtime.Contracts;
@@ -40,6 +41,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IActivityNodeResolver, OutboundActivityNodeResolver>()
             .AddSingleton<ITypeSystem, TypeSystem>()
             .AddSingleton<IHasher, Hasher>()
+            .AddSingleton<IIdentityGenerator, IdentityGenerator>()
             .AddSingleton<ISystemClock, SystemClock>()
 
             // DSL.
@@ -52,6 +54,9 @@ public static class ServiceCollectionExtensions
             // Pipelines.
             .AddSingleton<IActivityExecutionPipeline, ActivityExecutionPipeline>()
             .AddSingleton<IWorkflowExecutionPipeline, WorkflowExecutionPipeline>()
+
+            // Persistence services.
+            .AddPersistenceServices()
 
             // Logging
             .AddLogging();

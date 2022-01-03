@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Elsa.Activities.Workflows;
 using Elsa.Attributes;
 using Elsa.Contracts;

@@ -1,5 +1,3 @@
-using System;
-
 namespace Elsa.Exceptions;
 
 public class TypeConversionException : Exception

@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using Elsa.Runtime.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

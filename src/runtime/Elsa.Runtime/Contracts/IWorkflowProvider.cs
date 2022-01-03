@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Elsa.Models;
+﻿using Elsa.Models;
 using Elsa.Persistence.Models;
 
 namespace Elsa.Runtime.Contracts;

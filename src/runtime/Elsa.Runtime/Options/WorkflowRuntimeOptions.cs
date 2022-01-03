@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Elsa.Runtime.Contracts;
 
 namespace Elsa.Runtime.Options;

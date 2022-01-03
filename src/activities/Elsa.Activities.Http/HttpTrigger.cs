@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using Elsa.Attributes;
@@ -36,15 +35,17 @@ public class HttpTrigger : Trigger
 
     private IEnumerable<Bookmark> CreateBookmarks(ActivityExecutionContext context)
     {
-        var path = context.Get<string>(Path.LocationReference)!;
-        var methods = context.Get<ICollection<string>>(SupportedMethods.LocationReference)!;
+        var path = context.Get(Path)!;
+        var methods = context.Get(SupportedMethods)!;
         var hasher = context.GetRequiredService<IHasher>();
+        var identityGenerator = context.GetRequiredService<IIdentityGenerator>();
 
         foreach (var method in methods)
         {
             var hashInput = (path.ToLowerInvariant(), method.ToLowerInvariant());
             var hash = hasher.Hash(hashInput);
-            yield return new Bookmark(Guid.NewGuid().ToString(), NodeType, hash, Id, context.Id);
+            var bookmarkId = identityGenerator.GenerateId();
+            yield return new Bookmark(bookmarkId, NodeType, hash, Id, context.Id);
         }
     }
 }

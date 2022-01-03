@@ -2,6 +2,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Elsa.Contracts;
+using Elsa.Helpers;
 using Elsa.Runtime.Contracts;
 using Elsa.Runtime.Models;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +26,7 @@ public class HttpTriggerMiddleware
         var method = httpContext.Request.Method!.ToLowerInvariant();
         var abortToken = httpContext.RequestAborted;
         var hash = _hasher.Hash((path.ToLowerInvariant(), method.ToLowerInvariant()));
-        var activityTypeName = nameof(HttpTrigger);
+        var activityTypeName = TypeNameHelper.GenerateTypeName<HttpTrigger>();
         var stimulus = Stimuli.Standard(activityTypeName, hash);
         var executionResults = (await workflowServer.ExecuteStimulusAsync(stimulus, abortToken)).ToList();
             

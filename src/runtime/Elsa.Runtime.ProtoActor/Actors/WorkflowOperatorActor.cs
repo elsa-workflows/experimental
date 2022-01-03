@@ -97,7 +97,7 @@ public class WorkflowOperatorActor : IActor
     private async Task<ExecuteWorkflowResult> ExecuteAsync(Workflow workflow, WorkflowState workflowState, Bookmark? bookmarkMessage, CancellationToken cancellationToken)
     {
         if (bookmarkMessage == null)
-            return await _workflowEngine.ExecuteAsync(workflow, cancellationToken);
+            return await _workflowEngine.ExecuteAsync(workflow, workflowState, cancellationToken);
 
         var bookmark =
             new Elsa.Models.Bookmark(

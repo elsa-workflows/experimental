@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Elsa.Activities.Workflows;
 using Elsa.Contracts;
 using Elsa.Models;

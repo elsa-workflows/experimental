@@ -1,7 +1,4 @@
 using Elsa.Activities.Http.Extensions;
-using Elsa.Api.Endpoints.Events;
-using Elsa.Api.Endpoints.WorkflowInstances;
-using Elsa.Api.Endpoints.Workflows;
 using Elsa.Api.Extensions;
 using Elsa.Extensions;
 using Elsa.Persistence.InMemory.Extensions;

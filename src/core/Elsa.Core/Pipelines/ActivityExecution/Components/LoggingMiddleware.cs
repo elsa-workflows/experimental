@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Elsa.Contracts;
 using Elsa.Models;
 using Microsoft.Extensions.Logging;

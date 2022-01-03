@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Elsa.State;
 
 public class ActivityExecutionContextState

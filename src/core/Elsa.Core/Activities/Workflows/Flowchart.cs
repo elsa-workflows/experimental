@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Contracts;
 using Elsa.Models;
@@ -11,7 +8,7 @@ namespace Elsa.Activities.Workflows;
 [Category("Workflows")]
 public class Flowchart : Container
 {
-    public IActivity? Start { get; set; } = default!;
+    [Node] public IActivity? Start { get; set; } = default!;
     public ICollection<Connection> Connections { get; set; } = new List<Connection>();
 
     protected override void ScheduleChildren(ActivityExecutionContext context)
@@ -24,7 +21,7 @@ public class Flowchart : Container
 
     private ValueTask OnChildCompleted(ActivityExecutionContext context, ActivityExecutionContext childContext)
     {
-        ScheduleChildren(childContext, childContext.Activity);
+        ScheduleChildren(context, childContext.Activity);
         return ValueTask.CompletedTask;
     }
 

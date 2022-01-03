@@ -6,7 +6,7 @@ using Elsa.Models;
 
 namespace Elsa.Samples.Console1.Workflows;
 
-public static class FreeFlowchartWorkflow
+public static class FlowchartWorkflow
 {
     public static IActivity Create()
     {

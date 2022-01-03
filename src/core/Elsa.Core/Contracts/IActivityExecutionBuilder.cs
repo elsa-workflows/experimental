@@ -1,4 +1,3 @@
-using System;
 using Elsa.Pipelines.ActivityExecution;
 
 namespace Elsa.Contracts;

@@ -2,10 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Management.Serialization;
 using Elsa.Mediator.Contracts;
-using Elsa.Persistence.Entities;
 using Elsa.Persistence.Requests;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Elsa.Api.Endpoints.WorkflowInstances;
 
