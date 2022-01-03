@@ -2,8 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Controls */
 .btn {
   @apply px-4 py-2 bg-blue-600 text-white rounded font-sans;
+}
+
+/* Activities */
+.activity-content-wrapper {
+  min-height: 2rem;
 }
 
 /* Panels */

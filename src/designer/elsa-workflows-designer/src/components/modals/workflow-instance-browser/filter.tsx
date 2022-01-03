@@ -1,5 +1,5 @@
 import {FunctionalComponent, h} from "@stencil/core";
-import {BulkActionsIcon, OrderByIcon, PageSizeIcon, WorkflowIcon, WorkflowStatusIcon} from "../../icons";
+import {BulkActionsIcon, OrderByIcon, PageSizeIcon, WorkflowIcon, WorkflowStatusIcon} from "../../icons/tooling";
 import {DropdownButtonItem, DropdownButtonOrigin} from "../../shared/dropdown-button/models";
 import {OrderBy, WorkflowStatus, WorkflowSummary} from "../../../models";
 

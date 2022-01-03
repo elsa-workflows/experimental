@@ -2,7 +2,7 @@ import {Component, Event, EventEmitter, h, Host, Method, Prop, State, Watch} fro
 import {DefaultActions, PagedList, VersionOptions, WorkflowSummary} from "../../../models";
 import {Container} from "typedi";
 import {ElsaApiClientProvider, ElsaClient} from "../../../services";
-import {DeleteIcon, EditIcon, PublishIcon, UnPublishIcon} from "../../icons";
+import {DeleteIcon, EditIcon, PublishIcon, UnPublishIcon} from "../../icons/tooling";
 
 @Component({
   tag: 'elsa-workflow-browser',
