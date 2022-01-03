@@ -1,8 +1,7 @@
-import {Component, Prop, h, State} from '@stencil/core';
-import {camelCase} from 'lodash'
-import {ActivityInput, LiteralExpression, SelectList, SyntaxNames} from "../../models";
+import {Component, Prop, h} from '@stencil/core';
+import {LiteralExpression, SelectList, SyntaxNames} from "../../models";
 import {NodeInputContext} from "../../services/node-input-driver";
-import {getSelectListItems} from "../../utils/select-list-items";
+import {getInputPropertyValue, getSelectListItems} from "../../utils";
 
 @Component({
   tag: 'elsa-dropdown-input',
@@ -13,19 +12,16 @@ export class SingleLineInput {
 
   private selectList: SelectList = {items: [], isFlagsEnum: false};
 
-  public async componentWillLoad(){
+  public async componentWillLoad() {
     this.selectList = await getSelectListItems(this.inputContext.inputDescriptor);
   }
 
   public render() {
     const inputContext = this.inputContext;
-    const node = inputContext.node;
     const inputDescriptor = inputContext.inputDescriptor;
-    const propertyName = inputDescriptor.name;
-    const camelCasePropertyName = camelCase(propertyName);
     const fieldName = inputDescriptor.name;
     const fieldId = inputDescriptor.name;
-    const input = node[camelCasePropertyName] as ActivityInput;
+    const input = getInputPropertyValue(inputContext);
     const value = (input?.expression as LiteralExpression)?.value;
     const {items} = this.selectList;
     let currentValue = value;

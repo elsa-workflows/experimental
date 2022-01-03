@@ -1,9 +1,8 @@
 import {Component, h, Prop, State} from '@stencil/core';
-import {camelCase, uniq} from 'lodash'
-import {ActivityInput, JsonExpression, SelectList, SyntaxNames} from "../../models";
+import {uniq} from 'lodash'
+import {JsonExpression, SelectList, SyntaxNames} from "../../models";
 import {NodeInputContext} from "../../services/node-input-driver";
-import {parseJson} from "../../utils/utils";
-import {getSelectListItems} from "../../utils/select-list-items";
+import {getSelectListItems, getInputPropertyValue, parseJson, setInputPropertyValue} from "../../utils";
 
 @Component({
   tag: 'elsa-check-list-input',
@@ -61,26 +60,9 @@ export class CheckList {
   }
 
   private getSelectedValues = (selectList: SelectList): number | Array<string> => {
-    const input = this.getPropValue();
+    const input = getInputPropertyValue(this.inputContext);
     const json = (input?.expression as JsonExpression)?.value;
     return selectList.isFlagsEnum ? parseInt(json) : parseJson(json) || [];
-  };
-
-  private getPropName = () => {
-    const inputContext = this.inputContext;
-    const inputProperty = inputContext.inputDescriptor;
-    const propertyName = inputProperty.name;
-    return camelCase(propertyName);
-  }
-
-  private getPropValue = (): ActivityInput => {
-    const propName = this.getPropName();
-    return this.inputContext.node[propName] as ActivityInput
-  };
-
-  private setPropValue = (value: any) => {
-    const propName = this.getPropName();
-    return this.inputContext.node[propName] = value;
   };
 
   private onCheckChanged = (e: Event) => {
@@ -112,8 +94,7 @@ export class CheckList {
       json = JSON.stringify(newValue);
     }
 
-    this.setPropValue(json);
-    debugger;
+    setInputPropertyValue(this.inputContext, json);
     this.inputContext.inputChanged(json, SyntaxNames.Json);
   }
 }
